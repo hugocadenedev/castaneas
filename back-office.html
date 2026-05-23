@@ -807,7 +807,7 @@ tbody tr:last-child td { border-bottom: none; }
               </div>
               <div class="form-field">
                 <label>Sticker — titre</label>
-                <input type="text" id="hp-hist-sticker-label" placeholder="Lauzerte · Quercy">
+                <input type="text" id="hp-hist-sticker-label" placeholder="Albias · Quercy">
               </div>
               <div class="form-field">
                 <label>Sticker — sous-texte</label>
@@ -1004,7 +1004,7 @@ tbody tr:last-child td { border-bottom: none; }
           </div>
           <div class="comp-ing-row">
             <input type="number" id="p-ing-0-pct" placeholder="72" min="0" max="100">
-            <input type="text" id="p-ing-0-origin" placeholder="Lauzerte · Quercy">
+            <input type="text" id="p-ing-0-origin" placeholder="Albias · Quercy">
             <input type="text" id="p-ing-0-name" placeholder="Châtaigne">
             <input type="text" id="p-ing-0-desc" placeholder="Description…">
           </div>
@@ -1310,10 +1310,10 @@ const DEFAULT_CATS = [
   { id: 'cat-coffrets', name: 'Coffrets cadeaux', slug: 'coffrets', desc: 'Nos coffrets cadeaux gourmands', emoji: '🎁', color: '#E8C4B8', header: true, status: 'active' },
 ];
 
-const _COMP_NATURE = { heading: 'Trois ingrédients, pas un de plus.', ings: [ { pct: 72, origin: 'Lauzerte · Quercy', name: 'Châtaigne', desc: 'Variété « Marigoule », ramassée à la main, cuite à l\'eau, épluchée à la veillée.' }, { pct: 26, origin: 'Île de la Réunion', name: 'Sucre roux', desc: 'Sucre de canne non raffiné, à la mélasse intacte. Cuisson lente.' }, { pct: 2, origin: 'France · eau de source', name: 'Eau', desc: 'Eau de source, rien d\'autre.' } ], restDesc: 'Sans gluten · sans huile de palme · sans pectine · sans conservateur.' };
-const _COMP_VANILLEE = { heading: 'Trois ingrédients, pas un de plus.', ings: [ { pct: 65, origin: 'Lauzerte · Quercy', name: 'Châtaigne', desc: 'Variété « Marigoule », cueillie à la main, cuite doucement.' }, { pct: 27, origin: 'Île de la Réunion', name: 'Sucre roux', desc: 'Sucre de canne non raffiné, à la mélasse intacte. Cuisson lente.' }, { pct: 2, origin: 'Madagascar', name: 'Vanille Bourbon', desc: 'Gousse fendue à la main, infusée à froid pendant 48h dans le sirop.' } ], restDesc: 'Sans gluten · sans huile de palme · sans pectine · sans conservateur.' };
+const _COMP_NATURE = { heading: 'Trois ingrédients, pas un de plus.', ings: [ { pct: 72, origin: 'Albias · Quercy', name: 'Châtaigne', desc: 'Variété « Marigoule », ramassée à la main, cuite à l\'eau, épluchée à la veillée.' }, { pct: 26, origin: 'Île de la Réunion', name: 'Sucre roux', desc: 'Sucre de canne non raffiné, à la mélasse intacte. Cuisson lente.' }, { pct: 2, origin: 'France · eau de source', name: 'Eau', desc: 'Eau de source, rien d\'autre.' } ], restDesc: 'Sans gluten · sans huile de palme · sans pectine · sans conservateur.' };
+const _COMP_VANILLEE = { heading: 'Trois ingrédients, pas un de plus.', ings: [ { pct: 65, origin: 'Albias · Quercy', name: 'Châtaigne', desc: 'Variété « Marigoule », cueillie à la main, cuite doucement.' }, { pct: 27, origin: 'Île de la Réunion', name: 'Sucre roux', desc: 'Sucre de canne non raffiné, à la mélasse intacte. Cuisson lente.' }, { pct: 2, origin: 'Madagascar', name: 'Vanille Bourbon', desc: 'Gousse fendue à la main, infusée à froid pendant 48h dans le sirop.' } ], restDesc: 'Sans gluten · sans huile de palme · sans pectine · sans conservateur.' };
 const _COMP_PATE = { heading: 'Deux ingrédients, pas un de plus.', ings: [ { pct: 99, origin: 'Piémont · Italie', name: 'Noisettes', desc: 'Torréfiées à la main, 30 min à sec, sans huile ajoutée.' }, { pct: 1, origin: 'Guérande · Bretagne', name: 'Sel de Guérande', desc: 'Sel gris non raffiné, récolté à la main.' } ], restDesc: 'Sans gluten · sans huile de palme · sans sucre ajouté · sans conservateur.' };
-const _COMP_COFFRET = { heading: 'Trois crèmes signatures,', ings: [ { pct: 100, origin: 'Quercy · France', name: 'Crèmes artisanales', desc: 'Sélection de 3 pots fabriqués à Lauzerte.' } ], restDesc: 'Boîte bois gravée · emballage cadeau inclus · livraison soignée.' };
+const _COMP_COFFRET = { heading: 'Trois crèmes signatures,', ings: [ { pct: 100, origin: 'Quercy · France', name: 'Crèmes artisanales', desc: 'Sélection de 3 pots fabriqués à Albias.' } ], restDesc: 'Boîte bois gravée · emballage cadeau inclus · livraison soignée.' };
 
 const DEFAULT_PRODUCTS = [
   { id: 'creme-nature-150', name: 'Crème de châtaigne nature', category: 'cat-cremes', price: 6.90, weight: '150g', stock: 'in_stock', desc: 'La pure châtaigne du Quercy, sans artifice.', ingredients: 'Châtaignes (70%), sucre de canne, eau', image: 'assets/product-pate-tartiner.png', badge: 'Bestseller', status: 'active', composition: _COMP_NATURE },
@@ -2135,7 +2135,7 @@ function buildCatPageHTML(cat, products) {
       <div><h4>La maison</h4><ul><li><a href="index.html#histoire">Notre histoire</a></li><li><a href="recettes.html">Recettes</a></li></ul></div>
       <div><h4>Aide</h4><ul><li><a href="#">Livraison &amp; retours</a></li><li><a href="#">Nous contacter</a></li><li><a href="cgv.html">CGV</a></li></ul></div>
     </div>
-    <div class="footer-bottom"><div>© 2026 Castaneas · Lauzerte, Tarn-et-Garonne (82)</div><div>Fait à la main, par petites fournées 🌰</div></div>
+    <div class="footer-bottom"><div>© 2026 Castaneas · Albias, Tarn-et-Garonne (82)</div><div>Fait à la main, par petites fournées 🌰</div></div>
   </div>
 </footer>
 
@@ -2491,7 +2491,7 @@ function renderHomepage() {
   hpSetVal('hp-hist-para2',        hi.para2         ?? '');
   hpSetVal('hp-hist-cta-text',     hi.ctaText       ?? 'Lire le récit complet');
   hpSetVal('hp-hist-cta-href',     hi.ctaHref       ?? '#');
-  hpSetVal('hp-hist-sticker-label',hi.stickerLabel  ?? 'Lauzerte · Quercy');
+  hpSetVal('hp-hist-sticker-label',hi.stickerLabel  ?? 'Albias · Quercy');
   hpSetVal('hp-hist-sticker-sub',  hi.stickerSub    ?? '44.25°N · 1.13°E · Tarn-et-Garonne (82)');
   hpSetVal('hp-hist-sig-name',     hi.signatureName ?? 'Lucie & Marc');
   hpSetVal('hp-hist-sig-role',     hi.signatureRole ?? 'Les fondateurs');
