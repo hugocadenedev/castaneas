@@ -120,6 +120,37 @@
     .steps { padding: 0 16px; }
     .step-label { display: none; }
     .footer-inner { padding: 40px 24px 24px; border-radius: 22px; }
+
+    /* Cart items — 2 lignes : [img | nom+qty] puis [prix | supprimer] */
+    .c-item {
+      grid-template-columns: 60px 1fr;
+      grid-template-rows: auto auto;
+      gap: 8px 12px;
+      padding: 14px 16px;
+    }
+    .c-item__img {
+      width: 60px;
+      height: 60px;
+      grid-row: 1 / 3;
+    }
+    .c-item__price-col {
+      grid-column: 2;
+      grid-row: 2;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0;
+      text-align: left;
+    }
+    .c-item__name { font-size: 14px; }
+    .c-item__qty { margin-top: 8px; }
+
+    /* Code promo et résumé */
+    .promo-block { border-radius: 14px; padding: 16px; }
+    .card-header { padding: 14px 16px; }
+    .cart-summary { padding: 20px 16px; }
+    .shipping-zip { flex-wrap: wrap; }
+    .shipping-zip button { width: 100%; }
   }
 </style>
 </head>
