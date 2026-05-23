@@ -71,6 +71,35 @@
   .crumb .sep { color: var(--muted); }
   .crumb .current { color: var(--brown-deep); font-weight: 700; }
 
+  @media (max-width: 640px) {
+    /* Mobile : affiche uniquement "← Catégorie" */
+    .crumb :nth-child(1),
+    .crumb :nth-child(2),
+    .crumb :nth-child(4),
+    .crumb :nth-child(5) { display: none; }
+    .crumb :nth-child(3) {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--brown-deep);
+    }
+    .crumb :nth-child(3)::before {
+      content: "";
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      background: var(--cream-soft);
+      border-radius: 50%;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B3A2A' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m15 18-6-6 6-6'/%3E%3C/svg%3E");
+      background-size: 14px;
+      background-repeat: no-repeat;
+      background-position: center;
+      flex-shrink: 0;
+    }
+  }
+
   /* =========================================================
      HERO — STICKY INFO + GALLERY (déclinaison V1)
      - V1: gallery G + info D (déjà similaire), mais ici on
