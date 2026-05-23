@@ -1,0 +1,140 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coffrets cadeaux · Castaneas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="categorie.css">
+</head>
+<body>
+
+<div class="promo-bar pill">Livraison offerte dès 40€ d'achat — récolte 2025 disponible 🌰</div>
+
+<header class="navbar pill-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand" aria-label="Castaneas">
+      <img src="assets/castaneas-logo.svg" alt="Castaneas" class="brand-logo">
+    </a>
+    <nav class="nav-links"></nav>
+    <div class="nav-actions">
+      <a href="login.html" class="icon-btn" aria-label="Mon compte">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke-linecap="round"/></svg>
+      </a>
+      <button class="cart-pill" aria-label="Panier" data-cart-toggle>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 7h14l-1.5 11.5a2 2 0 0 1-2 1.5h-7a2 2 0 0 1-2-1.5L5 7Z"/><path d="M9 7V5a3 3 0 0 1 6 0v2" stroke-linecap="round"/></svg>
+        <span data-cart-count>0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<nav class="breadcrumb" aria-label="Fil d'ariane">
+  <a href="index.html">Accueil</a>
+  <span class="sep">›</span>
+  <span class="current" id="bc-name">Coffrets cadeaux</span>
+</nav>
+
+<div class="page">
+
+  <!-- BANNER -->
+  <div class="cat-banner" id="cat-banner">
+    <img id="cat-banner-img" src="assets/story-atelier.jpg" alt="">
+    <div class="cat-banner__bg" id="cat-banner-bg"></div>
+    <div class="cat-banner__content">
+      <div class="cat-banner__eyebrow">La collection</div>
+      <h1 class="cat-banner__title" id="cat-title">Coffrets cadeaux</h1>
+      <p class="cat-banner__desc" id="cat-desc">Fabriquées à la main, en petites quantités</p>
+    </div>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <div class="filter-group" id="filter-tabs"></div>
+    <button class="sort-select" type="button" id="sort-btn" onclick="toggleSort()">
+      <span id="sort-label">Trier par prix</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+
+  <!-- RESULT META -->
+  <div class="result-meta">
+    <div><span id="result-count">—</span> · récolte d'automne</div>
+    <div>Cueilli en Ardèche · pots de verre consignés</div>
+  </div>
+
+  <!-- PRODUCT GRID -->
+  <div class="product-grid" id="product-grid"></div>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand"><img src="assets/castaneas-logo.svg" alt="Castaneas" class="footer-brand-logo"></div>
+        <p>Crèmes de châtaigne et pâtes de noisette faites à la main en Tarn-et-Garonne, en petites quantités, depuis 2018.</p>
+      </div>
+      <div>
+        <h4>Boutique</h4>
+        <ul>
+          <li><a href="creme-de-chataigne.html">Crèmes de châtaigne</a></li>
+          <li><a href="coffrets.html">Coffrets</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>La maison</h4>
+        <ul>
+          <li><a href="index.html#histoire">Notre histoire</a></li>
+          <li><a href="recettes.html">Recettes</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Aide</h4>
+        <ul>
+          <li><a href="#">Livraison &amp; retours</a></li>
+          <li><a href="#">Nous contacter</a></li>
+          <li><a href="cgv.html">CGV</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 Castaneas · Lauzerte, Tarn-et-Garonne (82)</div>
+      <div>Fait à la main, par petites fournées 🌰</div>
+    </div>
+  </div>
+</footer>
+
+<!-- CART DRAWER -->
+<div class="cart-backdrop" data-cart-close></div>
+<aside class="cart-drawer" role="dialog" aria-label="Votre panier">
+  <div class="cart-head">
+    <h3>Votre panier</h3>
+    <button class="cart-close" data-cart-close aria-label="Fermer le panier">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="cart-body" data-cart-body></div>
+  <div class="cart-foot" data-cart-foot>
+    <div class="cart-total-row">
+      <span>Sous-total</span>
+      <span data-cart-total>0,00€</span>
+    </div>
+    <p class="cart-shipping-note">🚚 Livraison offerte dès 40€ d'achat</p>
+    <a href="panier.html" class="cart-checkout-btn">
+      Passer commande
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"/></svg>
+    </a>
+  </div>
+</aside>
+
+<script>var CAT_SLUG = 'coffrets';</script>
+<script src="site-data.js"></script>
+<script src="cart.js"></script>
+<script src="categorie-page.js"></script>
+</body>
+</html>

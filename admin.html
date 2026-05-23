@@ -1,0 +1,2577 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<base href="/">
+<title>Administration · Castaneas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   CASTANEAS ADMIN — Design system aligné sur la charte
+   ============================================================ */
+:root {
+  --cream:        #F2E8D9;
+  --cream-soft:   #F8F1E4;
+  --cream-light:  #FBF6EC;
+  --brown-deep:   #3B1F0E;
+  --brown-chest:  #6B3A2A;
+  --green:        #5C7560;
+  --green-soft:   #7F957D;
+  --green-light:  #EBF0EA;
+  --ink:          #2A1810;
+  --ink-soft:     #5C4438;
+  --muted:        #9A8676;
+  --line:         rgba(59,31,14,.10);
+  --line-strong:  rgba(59,31,14,.20);
+  --corail:       #D45A47;
+  --corail-light: #FDF0EE;
+  --sans: 'Inter', -apple-system, Arial, sans-serif;
+  --serif: 'Fraunces', Georgia, serif;
+  --r: 14px;
+  --r-lg: 20px;
+  --r-pill: 999px;
+  --shadow: 0 4px 24px -8px rgba(59,31,14,.14);
+  --shadow-lg: 0 12px 48px -12px rgba(59,31,14,.22);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+body {
+  font-family: var(--sans);
+  background: var(--cream-soft);
+  color: var(--ink);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+a { text-decoration: none; color: inherit; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+img { display: block; max-width: 100%; }
+
+/* ---- GUARD / LOGIN SCREEN ---- */
+#admin-guard {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--cream);
+  display: flex; align-items: center; justify-content: center;
+}
+.guard-card {
+  width: 400px; background: #fff; border-radius: var(--r-lg);
+  padding: 48px 40px 40px; box-shadow: var(--shadow-lg);
+  text-align: center;
+}
+.guard-logo { height: 44px; width: auto; margin: 0 auto 24px; }
+.guard-title { font-family: var(--serif); font-size: 26px; font-weight: 600; margin-bottom: 6px; }
+.guard-sub { font-size: 13px; color: var(--muted); margin-bottom: 28px; }
+.guard-field { text-align: left; margin-bottom: 16px; }
+.guard-field label { display: block; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 6px; }
+.guard-field input {
+  width: 100%; padding: 10px 14px; border: 1.5px solid var(--line-strong);
+  border-radius: var(--r); font-family: var(--sans); font-size: 14px; outline: none;
+  background: var(--cream-soft); transition: border .15s;
+}
+.guard-field input:focus { border-color: var(--green); }
+.guard-btn {
+  width: 100%; padding: 12px; background: var(--brown-deep); color: #fff;
+  font-size: 14px; font-weight: 700; border-radius: var(--r-pill); margin-top: 4px;
+  transition: background .15s, transform .1s;
+}
+.guard-btn:hover { background: #5C2A14; }
+.guard-btn:active { transform: scale(.98); }
+.guard-error { font-size: 12px; color: var(--corail); font-weight: 600; margin-top: 10px; min-height: 18px; }
+
+/* ---- LAYOUT ---- */
+#admin-app { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 260px; flex-shrink: 0; background: #fff; border-right: 1.5px solid var(--line);
+  display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh;
+  overflow-y: auto;
+}
+.sidebar-brand {
+  padding: 24px 24px 20px; border-bottom: 1.5px solid var(--line);
+  display: flex; align-items: center; gap: 12px;
+}
+.sidebar-brand img { height: 32px; width: auto; }
+.sidebar-brand-tag {
+  font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+  background: var(--green-light); color: var(--green); padding: 3px 8px; border-radius: var(--r-pill);
+}
+.sidebar-nav { padding: 16px 12px; flex: 1; }
+.sidebar-section { font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 12px 12px 6px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+  border-radius: var(--r); font-size: 13.5px; font-weight: 600; color: var(--ink-soft);
+  cursor: pointer; transition: background .12s, color .12s; margin-bottom: 2px;
+}
+.nav-item svg { width: 18px; height: 18px; flex-shrink: 0; opacity: .7; }
+.nav-item:hover { background: var(--cream-soft); color: var(--ink); }
+.nav-item.active { background: var(--green-light); color: var(--green); }
+.nav-item.active svg { opacity: 1; }
+.sidebar-footer {
+  padding: 16px; border-top: 1.5px solid var(--line);
+  display: flex; align-items: center; gap: 10px;
+}
+.sidebar-footer-avatar {
+  width: 36px; height: 36px; border-radius: var(--r-pill);
+  background: var(--brown-deep); color: #fff; font-weight: 800; font-size: 13px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.sidebar-footer-info { flex: 1; min-width: 0; }
+.sidebar-footer-name { font-size: 13px; font-weight: 700; }
+.sidebar-footer-role { font-size: 11px; color: var(--muted); }
+.sidebar-logout { color: var(--muted); padding: 4px; border-radius: 8px; transition: color .12s; }
+.sidebar-logout:hover { color: var(--corail); }
+.sidebar-logout svg { width: 16px; height: 16px; }
+
+/* ---- MAIN CONTENT ---- */
+.main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.topbar {
+  padding: 16px 32px; background: #fff; border-bottom: 1.5px solid var(--line);
+  display: flex; align-items: center; gap: 16px; position: sticky; top: 0; z-index: 20;
+}
+.topbar-title { font-family: var(--serif); font-size: 22px; font-weight: 600; flex: 1; }
+.topbar-actions { display: flex; gap: 10px; align-items: center; }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 18px; border-radius: var(--r-pill); font-size: 13px; font-weight: 700;
+  cursor: pointer; border: none; transition: background .15s, transform .1s;
+}
+.btn:active { transform: scale(.97); }
+.btn-primary { background: var(--brown-deep); color: #fff; }
+.btn-primary:hover { background: #5C2A14; }
+.btn-secondary { background: var(--cream-soft); color: var(--ink); border: 1.5px solid var(--line-strong); }
+.btn-secondary:hover { background: var(--cream); }
+.btn-danger { background: var(--corail-light); color: var(--corail); }
+.btn-danger:hover { background: #fce0dc; }
+.btn-green { background: var(--green-light); color: var(--green); }
+.btn-green:hover { background: #d8e8d6; }
+.btn svg { width: 15px; height: 15px; }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.btn-icon { padding: 8px; border-radius: var(--r); background: var(--cream-soft); color: var(--ink-soft); border: 1.5px solid var(--line); }
+.btn-icon:hover { background: var(--cream); color: var(--ink); }
+.btn-icon svg { width: 16px; height: 16px; display: block; }
+
+.content { flex: 1; padding: 32px; }
+
+/* ---- PANELS (tabs) ---- */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ---- STATS ROW ---- */
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 32px; }
+.stat-card {
+  background: #fff; border-radius: var(--r-lg); padding: 22px 24px;
+  box-shadow: var(--shadow); border: 1.5px solid var(--line);
+}
+.stat-label { font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.stat-value { font-family: var(--serif); font-size: 32px; font-weight: 600; line-height: 1; margin-bottom: 4px; }
+.stat-delta { font-size: 12px; font-weight: 600; color: var(--green); }
+.stat-delta.neg { color: var(--corail); }
+.stat-icon { float: right; width: 40px; height: 40px; border-radius: var(--r); display: flex; align-items: center; justify-content: center; }
+.stat-icon svg { width: 20px; height: 20px; }
+.stat-icon.brown { background: #f4ede6; color: var(--brown-chest); }
+.stat-icon.green { background: var(--green-light); color: var(--green); }
+.stat-icon.orange { background: #fef3e8; color: #c07a2a; }
+.stat-icon.red { background: var(--corail-light); color: var(--corail); }
+
+/* ---- SECTION HEADER ---- */
+.section-header {
+  display: flex; align-items: center; gap: 16px; margin-bottom: 20px;
+}
+.section-title { font-family: var(--serif); font-size: 20px; font-weight: 600; flex: 1; }
+.search-box {
+  display: flex; align-items: center; gap: 8px; background: #fff;
+  border: 1.5px solid var(--line-strong); border-radius: var(--r-pill);
+  padding: 8px 14px; min-width: 220px;
+}
+.search-box svg { width: 15px; height: 15px; color: var(--muted); flex-shrink: 0; }
+.search-box input { border: none; outline: none; font-family: var(--sans); font-size: 13px; background: transparent; color: var(--ink); width: 100%; }
+.search-box input::placeholder { color: var(--muted); }
+
+/* ---- TABLE ---- */
+.table-wrap {
+  background: #fff; border-radius: var(--r-lg); border: 1.5px solid var(--line);
+  box-shadow: var(--shadow); overflow: hidden;
+}
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 800;
+  letter-spacing: .07em; text-transform: uppercase; color: var(--muted);
+  background: var(--cream-soft); border-bottom: 1.5px solid var(--line);
+}
+tbody tr { transition: background .1s; }
+tbody tr:hover { background: var(--cream-soft); }
+tbody td { padding: 14px 16px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+tbody tr:last-child td { border-bottom: none; }
+.td-img { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; background: var(--cream-soft); }
+.td-name { font-weight: 700; font-size: 14px; }
+.td-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.td-price { font-weight: 700; font-family: var(--serif); font-size: 16px; }
+.td-actions { display: flex; gap: 6px; }
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: var(--r-pill); font-size: 11px; font-weight: 700; }
+.badge-green { background: var(--green-light); color: var(--green); }
+.badge-orange { background: #fef3e8; color: #c07a2a; }
+.badge-red { background: var(--corail-light); color: var(--corail); }
+.badge-gray { background: var(--cream-soft); color: var(--muted); }
+
+/* ---- CATEGORY CARDS ---- */
+.cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
+.cat-card {
+  background: #fff; border-radius: var(--r-lg); border: 1.5px solid var(--line);
+  box-shadow: var(--shadow); overflow: hidden; transition: box-shadow .15s;
+}
+.cat-card:hover { box-shadow: var(--shadow-lg); }
+.cat-card-banner {
+  height: 100px; display: flex; align-items: center; justify-content: center;
+  font-size: 40px; position: relative;
+}
+.cat-card-body { padding: 16px 18px 18px; }
+.cat-card-title { font-family: var(--serif); font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+.cat-card-meta { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+.cat-card-slug {
+  font-size: 11px; background: var(--cream-soft); padding: 4px 10px; border-radius: var(--r-pill);
+  color: var(--ink-soft); font-weight: 600; font-family: monospace; display: inline-block; margin-bottom: 12px;
+}
+.cat-card-actions { display: flex; gap: 8px; }
+
+/* ---- MODAL ---- */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 200; background: rgba(42,24,16,.45);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity .2s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: #fff; border-radius: var(--r-lg); width: 680px; max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 64px); display: flex; flex-direction: column;
+  box-shadow: var(--shadow-lg); transform: translateY(12px); transition: transform .2s;
+}
+#modal-product .modal {
+  width: min(1120px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  border-radius: var(--r-lg);
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal-head {
+  padding: 24px 28px 20px; border-bottom: 1.5px solid var(--line);
+  display: flex; align-items: center; gap: 12px;
+}
+.modal-head h2 { font-family: var(--serif); font-size: 20px; font-weight: 600; flex: 1; }
+.modal-close { padding: 6px; border-radius: 10px; color: var(--muted); transition: color .12s, background .12s; }
+.modal-close:hover { color: var(--ink); background: var(--cream-soft); }
+.modal-close svg { width: 18px; height: 18px; display: block; }
+.modal-body { padding: 24px 28px; overflow-y: auto; flex: 1; }
+.modal-foot {
+  padding: 18px 28px; border-top: 1.5px solid var(--line);
+  display: flex; justify-content: flex-end; gap: 10px;
+}
+
+/* ---- FORM ---- */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-grid.full { grid-template-columns: 1fr; }
+.form-field { display: flex; flex-direction: column; gap: 6px; }
+.form-field.span2 { grid-column: span 2; }
+.form-field label { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft); }
+.form-field input,
+.form-field select,
+.form-field textarea {
+  padding: 10px 14px; border: 1.5px solid var(--line-strong); border-radius: var(--r);
+  font-family: var(--sans); font-size: 14px; outline: none; background: var(--cream-soft);
+  color: var(--ink); transition: border .15s, box-shadow .15s;
+}
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  border-color: var(--green); box-shadow: 0 0 0 3px rgba(92,117,96,.12);
+  background: #fff;
+}
+.form-field textarea { resize: vertical; min-height: 80px; }
+.form-field small { font-size: 11px; color: var(--muted); }
+.form-hint { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* Image drop zone */
+.img-drop {
+  border: 2px dashed var(--line-strong); border-radius: var(--r-lg);
+  padding: 32px; text-align: center; cursor: pointer; transition: border-color .15s, background .15s;
+  background: var(--cream-soft);
+}
+.img-drop:hover, .img-drop.drag { border-color: var(--green); background: var(--green-light); }
+.img-drop svg { width: 32px; height: 32px; color: var(--muted); margin: 0 auto 8px; }
+.img-drop p { font-size: 13px; color: var(--muted); }
+.img-drop strong { color: var(--green); }
+.img-preview-wrap { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+.img-slot { position: relative; display: inline-flex; }
+.img-remove {
+  display: none; position: absolute; top: -5px; right: -5px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--brown-deep); color: #fff; font-size: 12px; font-weight: 700;
+  line-height: 1; cursor: pointer; border: none; padding: 0;
+  align-items: center; justify-content: center; z-index: 1;
+}
+.img-slot:has(.selected) .img-remove,
+.img-slot:has(.selected-extra) .img-remove { display: flex; }
+.img-preview {
+  width: 72px; height: 72px; border-radius: var(--r); object-fit: cover;
+  border: 2px solid var(--line-strong); cursor: pointer; transition: border-color .12s;
+}
+.img-preview:hover { border-color: var(--corail); }
+.img-preview.selected { border-color: var(--green); outline: 3px solid var(--green-light); }
+.img-preview.selected-extra { border-color: var(--accent-cocoa); outline: 3px solid rgba(160,110,60,.22); }
+.img-sub-label { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-top: 14px; margin-bottom: 2px; }
+.img-sub-label span { font-weight: 400; text-transform: none; letter-spacing: 0; }
+
+.img-add-row { display: flex; gap: 8px; margin-top: 10px; }
+.img-add-row input { flex: 1; padding: 7px 12px; border: 1.5px solid var(--line-strong); border-radius: var(--r); font-size: 13px; background: var(--cream-soft); color: var(--ink); }
+.img-add-row button { padding: 7px 14px; border-radius: var(--r); background: var(--cream-soft); border: 1.5px solid var(--line-strong); font-size: 13px; cursor: pointer; white-space: nowrap; }
+.img-add-row button:hover { background: var(--line); }
+.banner-drop-zone {
+  border: 2px dashed var(--line-strong); border-radius: 12px;
+  min-height: 110px; cursor: pointer; position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color .18s, background .18s;
+  background: var(--cream-soft);
+}
+.banner-drop-zone:hover, .banner-drop-zone.drag-over { border-color: var(--green); background: rgba(90,130,90,.05); }
+.banner-drop-zone.has-image { border-style: solid; min-height: 0; }
+.banner-drop-zone__empty { text-align: center; color: var(--muted); pointer-events: none; padding: 18px; }
+.banner-drop-zone__empty svg { display: block; margin: 0 auto 8px; opacity: .45; }
+.banner-drop-zone__empty p { margin: 0; font-size: 13px; line-height: 1.5; }
+.banner-drop-zone__img { width: 100%; max-height: 130px; object-fit: cover; border-radius: 10px; display: none; }
+.banner-drop-zone__remove {
+  display: none; position: absolute; top: 7px; right: 7px;
+  width: 26px; height: 26px; border-radius: 50%; border: none;
+  background: rgba(0,0,0,.55); color: #fff; font-size: 16px; line-height: 1;
+  cursor: pointer; align-items: center; justify-content: center;
+}
+.banner-drop-zone__remove:hover { background: rgba(0,0,0,.78); }
+.comp-ing-row { display: grid; grid-template-columns: 56px 1fr 1fr 2fr; gap: 6px; margin-bottom: 6px; }
+.comp-ing-row input { margin: 0; }
+.uses-card-row { display: grid; grid-template-columns: 150px 1fr 2fr; gap: 6px; margin-bottom: 6px; }
+.uses-card-row input, .uses-card-row select { margin: 0; }
+.comp-ing-header { margin-bottom: 4px; }
+.comp-ing-header span { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+
+/* Color picker row */
+.color-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.color-swatch {
+  width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+  border: 3px solid transparent; transition: transform .1s, border-color .1s;
+}
+.color-swatch:hover { transform: scale(1.15); }
+.color-swatch.selected { border-color: var(--ink); transform: scale(1.1); }
+
+/* Emoji picker */
+.emoji-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.emoji-btn {
+  font-size: 22px; width: 40px; height: 40px; border-radius: 10px; border: 2px solid transparent;
+  display: flex; align-items: center; justify-content: center; cursor: pointer; transition: border-color .1s, background .1s;
+}
+.emoji-btn:hover { background: var(--cream-soft); }
+.emoji-btn.selected { border-color: var(--green); background: var(--green-light); }
+
+/* ---- ORDERS ---- */
+.order-row-expand { background: var(--cream-soft); }
+.order-row-expand td { padding: 0; }
+.order-expand-inner { padding: 16px 24px; display: flex; gap: 16px; flex-wrap: wrap; }
+.order-item { display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 10px; padding: 10px 14px; border: 1.5px solid var(--line); }
+.order-item img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
+.order-item-name { font-size: 13px; font-weight: 700; }
+.order-item-meta { font-size: 11px; color: var(--muted); }
+.order-item-price { font-weight: 700; margin-left: 16px; font-family: var(--serif); font-size: 15px; }
+
+/* ---- EMPTY STATE ---- */
+.empty-state { text-align: center; padding: 64px 32px; }
+.empty-state svg { width: 56px; height: 56px; color: var(--muted); margin: 0 auto 16px; }
+.empty-state h3 { font-family: var(--serif); font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+.empty-state p { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+
+/* ---- TOAST ---- */
+.admin-toast {
+  position: fixed; bottom: 28px; right: 28px; z-index: 1000;
+  background: var(--ink); color: #fff; padding: 14px 20px; border-radius: var(--r-pill);
+  font-size: 14px; font-weight: 600; box-shadow: var(--shadow-lg);
+  transform: translateY(16px); opacity: 0; transition: transform .25s, opacity .25s;
+  pointer-events: none; display: flex; align-items: center; gap: 8px;
+}
+.admin-toast.show { transform: translateY(0); opacity: 1; }
+.admin-toast.success { background: var(--green); }
+.admin-toast.error { background: var(--corail); }
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 900px) {
+  .sidebar { width: 200px; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+  .form-field.span2 { grid-column: 1; }
+}
+
+/* ---- PAGE PREVIEW TAG ---- */
+.page-live-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 700; background: var(--green-light); color: var(--green);
+  padding: 3px 10px; border-radius: var(--r-pill);
+}
+.page-live-badge::before { content: ''; width: 7px; height: 7px; background: var(--green); border-radius: 50%; }
+</style>
+</head>
+<body>
+
+<!-- ===================== LOGIN GUARD ===================== -->
+<div id="admin-guard">
+  <div class="guard-card">
+    <img src="assets/castaneas-logo.svg" alt="Castaneas" class="guard-logo">
+    <h1 class="guard-title">Administration</h1>
+    <p class="guard-sub">Accès réservé à l'équipe Castaneas</p>
+    <form id="guard-form">
+      <div class="guard-field">
+        <label>Identifiant</label>
+        <input type="text" id="guard-user" placeholder="admin" autocomplete="username">
+      </div>
+      <div class="guard-field">
+        <label>Mot de passe</label>
+        <input type="password" id="guard-pass" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button type="submit" class="guard-btn">Accéder au back-office</button>
+      <p class="guard-error" id="guard-error"></p>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== ADMIN APP ===================== -->
+<div id="admin-app" style="display:none;">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img src="assets/castaneas-logo.svg" alt="Castaneas">
+      <span class="sidebar-brand-tag">Admin</span>
+    </div>
+    <nav class="sidebar-nav">
+      <p class="sidebar-section">Tableau de bord</p>
+      <div class="nav-item active" data-panel="dashboard" onclick="switchPanel(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>
+        Vue d'ensemble
+      </div>
+      <p class="sidebar-section">Catalogue</p>
+      <div class="nav-item" data-panel="products" onclick="switchPanel(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        Produits
+        <span id="products-badge" style="margin-left:auto;font-size:11px;font-weight:800;background:var(--cream-soft);padding:2px 8px;border-radius:999px;"></span>
+      </div>
+      <div class="nav-item" data-panel="categories" onclick="switchPanel(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        Catégories
+        <span id="cats-badge" style="margin-left:auto;font-size:11px;font-weight:800;background:var(--cream-soft);padding:2px 8px;border-radius:999px;"></span>
+      </div>
+      <p class="sidebar-section">Boutique</p>
+      <div class="nav-item" data-panel="orders" onclick="switchPanel(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        Commandes
+        <span id="orders-badge" style="margin-left:auto;font-size:11px;font-weight:800;background:var(--corail-light);color:var(--corail);padding:2px 8px;border-radius:999px;"></span>
+      </div>
+      <p class="sidebar-section">Site</p>
+      <div class="nav-item" data-panel="homepage" onclick="switchPanel(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5Z"/><path d="M9 21V12h6v9"/></svg>
+        Page d'accueil
+      </div>
+      <div class="nav-item" data-panel="recipes" onclick="switchPanel(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3c-1.5 5-5 7.5-5 11a5 5 0 0 0 10 0c0-3.5-3.5-6-5-11Z"/><path d="M9 17.5c.7 1 1.8 1.5 3 1.5" stroke-linecap="round"/></svg>
+        Recettes
+        <span id="recipes-badge" style="margin-left:auto;font-size:11px;font-weight:800;background:var(--cream-soft);padding:2px 8px;border-radius:999px;"></span>
+      </div>
+      <div class="nav-item" data-panel="pages" onclick="switchPanel(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Pages générées
+      </div>
+      <p class="sidebar-section">Paramètres</p>
+      <div class="nav-item" data-panel="settings" onclick="switchPanel(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Paramètres
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-avatar" id="sidebar-avatar">A</div>
+      <div class="sidebar-footer-info">
+        <div class="sidebar-footer-name" id="sidebar-name">Admin</div>
+        <div class="sidebar-footer-role">Administrateur</div>
+      </div>
+      <button class="sidebar-logout" onclick="logout()" title="Déconnexion">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <h1 class="topbar-title" id="topbar-title">Vue d'ensemble</h1>
+      <div class="topbar-actions" id="topbar-actions">
+        <a href="index.html" target="_blank" class="btn btn-secondary btn-sm">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Voir le site
+        </a>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- ========== DASHBOARD ========== -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-icon brown" style="float:right">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            </div>
+            <div class="stat-label">Produits</div>
+            <div class="stat-value" id="stat-products">0</div>
+            <div class="stat-delta" id="stat-products-cats"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green" style="float:right">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="stat-label">Catégories</div>
+            <div class="stat-value" id="stat-cats">0</div>
+            <div class="stat-delta" id="stat-cats-sub"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon orange" style="float:right">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            </div>
+            <div class="stat-label">Commandes</div>
+            <div class="stat-value" id="stat-orders">0</div>
+            <div class="stat-delta">simulées</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon red" style="float:right">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <div class="stat-label">Chiffre d'affaires</div>
+            <div class="stat-value" id="stat-revenue">0€</div>
+            <div class="stat-delta">simulé</div>
+          </div>
+        </div>
+
+        <!-- Recent activity -->
+        <div class="section-header">
+          <h2 class="section-title">Activité récente</h2>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Référence</th><th>Produits</th><th>Client</th><th>Total</th><th>Statut</th></tr></thead>
+            <tbody id="dashboard-orders-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ========== PRODUCTS ========== -->
+      <div class="panel" id="panel-products">
+        <div class="section-header">
+          <h2 class="section-title">Produits</h2>
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Rechercher un produit…" oninput="filterProducts(this.value)">
+          </div>
+          <button class="btn btn-primary" onclick="openProductModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nouveau produit
+          </button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Image</th><th>Nom</th><th>Catégorie</th><th>Prix</th><th>Stock</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody id="products-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ========== CATEGORIES ========== -->
+      <div class="panel" id="panel-categories">
+        <div class="section-header">
+          <h2 class="section-title">Catégories</h2>
+          <button class="btn btn-primary" onclick="openCatModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nouvelle catégorie
+          </button>
+        </div>
+        <div class="cat-grid" id="cat-grid"></div>
+      </div>
+
+      <!-- ========== ORDERS ========== -->
+      <div class="panel" id="panel-orders">
+        <div class="section-header">
+          <h2 class="section-title">Commandes</h2>
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Rechercher par référence…" oninput="filterOrders(this.value)">
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="generateFakeOrder()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Simuler une commande
+          </button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Référence</th><th>Date</th><th>Client</th><th>Total</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody id="orders-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ========== RECIPES ========== -->
+      <div class="panel" id="panel-recipes">
+        <div class="section-header">
+          <h2 class="section-title">Recettes</h2>
+          <button class="btn btn-primary" onclick="openRecipeModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nouvelle recette
+          </button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Image</th><th>Titre</th><th>Durée</th><th>Personnes</th><th>Produits liés</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody id="recipes-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ========== PAGES ========== -->
+      <!-- ========== HOMEPAGE ========== -->
+      <div class="panel" id="panel-homepage">
+        <form id="homepage-form" onsubmit="saveHomepage(event)">
+
+          <!-- HERO -->
+          <div class="table-wrap" style="padding:24px 28px;margin-bottom:20px;">
+            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">🌄</span> Hero — bannière principale</h3>
+            <div class="form-grid">
+              <div class="form-field span2">
+                <label>Image de fond (hero)</label>
+                <input type="hidden" id="hp-hero-image">
+                <input type="file" id="hp-hero-img-file" accept="image/*" style="display:none" onchange="handleHpImgFile(this.files[0],'hero')">
+                <div class="banner-drop-zone" id="hp-hero-img-drop"
+                     onclick="document.getElementById('hp-hero-img-file').click()"
+                     ondragover="event.preventDefault();this.classList.add('drag-over')"
+                     ondragleave="this.classList.remove('drag-over')"
+                     ondrop="event.preventDefault();this.classList.remove('drag-over');handleHpImgFile(event.dataTransfer.files[0],'hero')">
+                  <div class="banner-drop-zone__empty" id="hp-hero-img-empty">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <p>Glissez une image ici<br><span style="font-size:12px">ou cliquez pour parcourir</span></p>
+                  </div>
+                  <img class="banner-drop-zone__img" id="hp-hero-img-preview" src="" alt="">
+                  <button type="button" class="banner-drop-zone__remove" id="hp-hero-img-remove" onclick="event.stopPropagation();removeHpImg('hero')">&times;</button>
+                </div>
+                <small>Dimensions recommandées : 1440 × 600 px — l’image est compressée automatiquement.</small>
+              </div>
+              <div class="form-field span2">
+                <label>Accroche (ligne au-dessus du titre)</label>
+                <input type="text" id="hp-hero-eyebrow" placeholder="Maison Castaneas · Quercy · Tarn-et-Garonne">
+              </div>
+              <div class="form-field">
+                <label>Titre — partie normale</label>
+                <input type="text" id="hp-hero-title" placeholder="Châtaignes et noisettes,">
+              </div>
+              <div class="form-field">
+                <label>Titre — partie <em>italique</em></label>
+                <input type="text" id="hp-hero-title-em" placeholder="faites à la main.">
+              </div>
+              <div class="form-field span2">
+                <label>Sous-titre</label>
+                <textarea id="hp-hero-subtitle" rows="2" placeholder="Crèmes, pâtes à tartiner et huiles…"></textarea>
+              </div>
+              <div class="form-field">
+                <label>Bouton principal — texte</label>
+                <input type="text" id="hp-hero-btn1-text" placeholder="Découvrir la boutique">
+              </div>
+              <div class="form-field">
+                <label>Bouton principal — lien</label>
+                <input type="text" id="hp-hero-btn1-href" placeholder="creme-de-chataigne.html">
+              </div>
+              <div class="form-field">
+                <label>Bouton secondaire — texte</label>
+                <input type="text" id="hp-hero-btn2-text" placeholder="Notre histoire">
+              </div>
+              <div class="form-field">
+                <label>Bouton secondaire — lien</label>
+                <input type="text" id="hp-hero-btn2-href" placeholder="#histoire">
+              </div>
+            </div>
+          </div>
+
+          <!-- CATÉGORIES -->
+          <div class="table-wrap" style="padding:24px 28px;margin-bottom:20px;">
+            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">🗂️</span> Catégories mises en avant</h3>
+            <div class="form-grid">
+              <div class="form-field">
+                <label>Accroche</label>
+                <input type="text" id="hp-cats-eyebrow" placeholder="Nos collections">
+              </div>
+              <div class="form-field">
+                <label>Titre — partie normale</label>
+                <input type="text" id="hp-cats-title" placeholder="Deux fruits du verger,">
+              </div>
+              <div class="form-field">
+                <label>Titre — partie italique</label>
+                <input type="text" id="hp-cats-title-em" placeholder="un même chaudron de cuivre.">
+              </div>
+            </div>
+            <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
+              <div class="form-field"><label>Carte 1</label><select id="hp-cat-1"></select></div>
+              <div class="form-field"><label>Carte 2</label><select id="hp-cat-2"></select></div>
+              <div class="form-field"><label>Carte 3</label><select id="hp-cat-3"></select></div>
+            </div>
+          </div>
+
+          <!-- PRODUITS -->
+          <div class="table-wrap" style="padding:24px 28px;margin-bottom:20px;">
+            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">⭐</span> Produits mis en avant</h3>
+            <div class="form-grid">
+              <div class="form-field">
+                <label>Accroche</label>
+                <input type="text" id="hp-bs-eyebrow" placeholder="Nos incontournables">
+              </div>
+              <div class="form-field">
+                <label>Titre — partie normale</label>
+                <input type="text" id="hp-bs-title" placeholder="Ce que">
+              </div>
+              <div class="form-field">
+                <label>Titre — partie italique</label>
+                <input type="text" id="hp-bs-title-em" placeholder="vous préférez.">
+              </div>
+              <div class="form-field span2">
+                <label>Lede (texte sous le titre)</label>
+                <input type="text" id="hp-bs-lede" placeholder="Une sélection des pots les plus commandés…">
+              </div>
+            </div>
+            <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;">
+              <div class="form-field"><label>Produit 1</label><select id="hp-prod-1"></select></div>
+              <div class="form-field"><label>Produit 2</label><select id="hp-prod-2"></select></div>
+              <div class="form-field"><label>Produit 3</label><select id="hp-prod-3"></select></div>
+              <div class="form-field"><label>Produit 4</label><select id="hp-prod-4"></select></div>
+            </div>
+          </div>
+
+          <!-- NOTRE HISTOIRE -->
+          <div class="table-wrap" style="padding:24px 28px;margin-bottom:20px;">
+            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">📖</span> Section "Notre histoire"</h3>
+            <div class="form-grid">
+              <div class="form-field span2">
+                <label>Image</label>
+                <input type="hidden" id="hp-hist-image">
+                <input type="file" id="hp-hist-img-file" accept="image/*" style="display:none" onchange="handleHpImgFile(this.files[0],'hist')">
+                <div class="banner-drop-zone" id="hp-hist-img-drop"
+                     onclick="document.getElementById('hp-hist-img-file').click()"
+                     ondragover="event.preventDefault();this.classList.add('drag-over')"
+                     ondragleave="this.classList.remove('drag-over')"
+                     ondrop="event.preventDefault();this.classList.remove('drag-over');handleHpImgFile(event.dataTransfer.files[0],'hist')">
+                  <div class="banner-drop-zone__empty" id="hp-hist-img-empty">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <p>Glissez une image ici<br><span style="font-size:12px">ou cliquez pour parcourir</span></p>
+                  </div>
+                  <img class="banner-drop-zone__img" id="hp-hist-img-preview" src="" alt="">
+                  <button type="button" class="banner-drop-zone__remove" id="hp-hist-img-remove" onclick="event.stopPropagation();removeHpImg('hist')">&times;</button>
+                </div>
+                <small>Dimensions recommandées : 600 × 480 px — l’image est compressée automatiquement.</small>
+              </div>
+              <div class="form-field">
+                <label>Accroche</label>
+                <input type="text" id="hp-hist-eyebrow" placeholder="Notre histoire">
+              </div>
+              <div class="form-field">
+                <label>Titre — partie normale</label>
+                <input type="text" id="hp-hist-title" placeholder="Deux vergers de famille,">
+              </div>
+              <div class="form-field">
+                <label>Titre — partie italique</label>
+                <input type="text" id="hp-hist-title-em" placeholder="devenus une maison.">
+              </div>
+              <div class="form-field span2">
+                <label>Paragraphe 1</label>
+                <textarea id="hp-hist-para1" rows="3" placeholder="Tout a commencé…"></textarea>
+              </div>
+              <div class="form-field span2">
+                <label>Paragraphe 2</label>
+                <textarea id="hp-hist-para2" rows="3" placeholder="Aujourd'hui…"></textarea>
+              </div>
+              <div class="form-field">
+                <label>Bouton CTA — texte</label>
+                <input type="text" id="hp-hist-cta-text" placeholder="Lire le récit complet">
+              </div>
+              <div class="form-field">
+                <label>Bouton CTA — lien</label>
+                <input type="text" id="hp-hist-cta-href" placeholder="#">
+              </div>
+              <div class="form-field">
+                <label>Sticker — titre</label>
+                <input type="text" id="hp-hist-sticker-label" placeholder="Lauzerte · Quercy">
+              </div>
+              <div class="form-field">
+                <label>Sticker — sous-texte</label>
+                <input type="text" id="hp-hist-sticker-sub" placeholder="44.25°N · 1.13°E · Tarn-et-Garonne (82)">
+              </div>
+              <div class="form-field">
+                <label>Signature — nom</label>
+                <input type="text" id="hp-hist-sig-name" placeholder="Lucie &amp; Marc">
+              </div>
+              <div class="form-field">
+                <label>Signature — rôle</label>
+                <input type="text" id="hp-hist-sig-role" placeholder="Les fondateurs">
+              </div>
+            </div>
+          </div>
+
+          <!-- VALEURS -->
+          <div class="table-wrap" style="padding:24px 28px;margin-bottom:20px;">
+            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">✨</span> Section "Nos valeurs"</h3>
+            <div class="form-grid">
+              <div class="form-field">
+                <label>Accroche</label>
+                <input type="text" id="hp-val-eyebrow" placeholder="Trois ingrédients, aucun secret">
+              </div>
+              <div class="form-field">
+                <label>Titre — partie normale</label>
+                <input type="text" id="hp-val-title" placeholder="Du verger au pot,">
+              </div>
+              <div class="form-field">
+                <label>Titre — partie italique</label>
+                <input type="text" id="hp-val-title-em" placeholder="et rien à cacher.">
+              </div>
+            </div>
+            <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;">
+              <div>
+                <p style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:10px;">Valeur 1</p>
+                <div class="form-field" style="margin-bottom:10px;"><label>Titre</label><input type="text" id="hp-val1-title" placeholder="Cueillies à la main"></div>
+                <div class="form-field"><label>Description</label><textarea id="hp-val1-desc" rows="3" placeholder="Châtaignes et noisettes…"></textarea></div>
+              </div>
+              <div>
+                <p style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:10px;">Valeur 2</p>
+                <div class="form-field" style="margin-bottom:10px;"><label>Titre</label><input type="text" id="hp-val2-title" placeholder="Cuites en cuivre"></div>
+                <div class="form-field"><label>Description</label><textarea id="hp-val2-desc" rows="3" placeholder="Dans le chaudron de famille…"></textarea></div>
+              </div>
+              <div>
+                <p style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:10px;">Valeur 3</p>
+                <div class="form-field" style="margin-bottom:10px;"><label>Titre</label><input type="text" id="hp-val3-title" placeholder="Trois ingrédients"></div>
+                <div class="form-field"><label>Description</label><textarea id="hp-val3-desc" rows="3" placeholder="Fruit, sucre roux, vanille…"></textarea></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;justify-content:flex-end;padding-bottom:32px;">
+            <button type="submit" class="btn btn-primary" style="padding:13px 28px;font-size:14px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Enregistrer et publier
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="panel" id="panel-pages">
+        <div class="section-header">
+          <h2 class="section-title">Pages générées automatiquement</h2>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Page</th><th>Slug</th><th>Catégorie</th><th>Produits</th><th>Lien header</th><th>Actions</th></tr></thead>
+            <tbody id="pages-tbody"></tbody>
+          </table>
+        </div>
+        <div style="margin-top:20px;padding:16px 20px;background:#fff;border-radius:var(--r-lg);border:1.5px solid var(--line);font-size:13px;color:var(--muted);">
+          💡 Chaque catégorie crée automatiquement une page HTML dédiée et un lien dans la barre de navigation. Supprimez une catégorie pour retirer la page et le lien.
+        </div>
+      </div>
+
+      <!-- ========== SETTINGS ========== -->
+      <div class="panel" id="panel-settings">
+        <div class="section-header">
+          <h2 class="section-title">Paramètres</h2>
+        </div>
+        <div style="display:grid;gap:20px;max-width:600px;">
+          <div class="table-wrap" style="padding:24px 28px;">
+            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:16px;">Compte administrateur</h3>
+            <form class="form-grid full" id="settings-form" onsubmit="saveSettings(event)">
+              <div class="form-field">
+                <label>Identifiant admin</label>
+                <input type="text" id="setting-user" value="">
+              </div>
+              <div class="form-field">
+                <label>Nouveau mot de passe</label>
+                <input type="password" id="setting-pass" placeholder="Laisser vide pour ne pas changer">
+              </div>
+              <div>
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+              </div>
+            </form>
+          </div>
+          <div class="table-wrap" style="padding:24px 28px;">
+            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:8px;">Données du site</h3>
+            <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Toutes les données (produits, catégories, commandes) sont stockées dans le localStorage du navigateur.</p>
+            <button class="btn btn-danger" onclick="confirmReset()">Réinitialiser toutes les données</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /admin-app -->
+
+<!-- ========== MODAL PRODUIT ========== -->
+<div class="modal-overlay" id="modal-product">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="modal-product-title">Nouveau produit</h2>
+      <button class="modal-close" onclick="closeModal('modal-product')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form class="form-grid" id="product-form" onsubmit="saveProduct(event)">
+        <input type="hidden" id="p-id">
+        <div class="form-field span2">
+          <label>Nom du produit *</label>
+          <input type="text" id="p-name" placeholder="Crème de châtaigne vanillée" required>
+        </div>
+        <div class="form-field">
+          <label>Catégorie *</label>
+          <select id="p-category" required></select>
+        </div>
+        <div class="form-field">
+          <label>Prix (€) *</label>
+          <input type="number" id="p-price" step="0.01" min="0" placeholder="7.50" required>
+        </div>
+        <div class="form-field">
+          <label>Poids / Format</label>
+          <input type="text" id="p-weight" placeholder="150g">
+        </div>
+        <div class="form-field">
+          <label>Stock</label>
+          <select id="p-stock">
+            <option value="in_stock">En stock</option>
+            <option value="low_stock">Stock faible</option>
+            <option value="out_of_stock">Rupture</option>
+          </select>
+        </div>
+        <div class="form-field span2">
+          <label>Description</label>
+          <textarea id="p-desc" placeholder="Description courte du produit…"></textarea>
+        </div>
+        <div class="form-field span2">
+          <label>Images du produit</label>
+          <input type="hidden" id="p-image">
+          <div class="img-sub-label">Image principale <span>— un seul choix</span></div>
+          <div class="img-preview-wrap" id="img-picker-main"></div>
+          <div class="img-add-row">
+            <input type="text" id="p-img-add-main" placeholder="Ajouter : assets/photo.jpg">
+            <button type="button" onclick="addImgToCatalog(true)">+ Ajouter</button>
+          </div>
+          <div class="img-sub-label" style="margin-top:18px;">Images complémentaires <span>— sélection multiple, galerie produit</span></div>
+          <div class="img-preview-wrap" id="img-picker-extra"></div>
+          <div class="img-add-row">
+            <input type="text" id="p-img-add-extra" placeholder="Ajouter : assets/photo.jpg">
+            <button type="button" onclick="addImgToCatalog(false)">+ Ajouter</button>
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Badge promo</label>
+          <input type="text" id="p-badge" placeholder="Bestseller · Nouveau · −20%…">
+        </div>
+        <div class="form-field">
+          <label>Statut</label>
+          <select id="p-status">
+            <option value="active">Publié</option>
+            <option value="draft">Brouillon</option>
+          </select>
+        </div>
+
+        <!-- COMPOSITION -->
+        <div class="form-field span2" style="border-top:1px solid var(--line);padding-top:18px;margin-top:4px;">
+          <label style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;">Composition — section publique</label>
+        </div>
+        <div class="form-field span2">
+          <label>Titre de section</label>
+          <input type="text" id="p-comp-heading" placeholder="Trois ingrédients, pas un de plus.">
+        </div>
+        <div class="form-field span2">
+          <label>Ingrédients principaux</label>
+          <div class="comp-ing-header comp-ing-row">
+            <span style="text-align:center">%</span>
+            <span>Origine</span>
+            <span>Nom</span>
+            <span>Description</span>
+          </div>
+          <div class="comp-ing-row">
+            <input type="number" id="p-ing-0-pct" placeholder="72" min="0" max="100">
+            <input type="text" id="p-ing-0-origin" placeholder="Lauzerte · Quercy">
+            <input type="text" id="p-ing-0-name" placeholder="Châtaigne">
+            <input type="text" id="p-ing-0-desc" placeholder="Description…">
+          </div>
+          <div class="comp-ing-row">
+            <input type="number" id="p-ing-1-pct" placeholder="26" min="0" max="100">
+            <input type="text" id="p-ing-1-origin" placeholder="Île de la Réunion">
+            <input type="text" id="p-ing-1-name" placeholder="Sucre roux">
+            <input type="text" id="p-ing-1-desc" placeholder="Description…">
+          </div>
+          <div class="comp-ing-row">
+            <input type="number" id="p-ing-2-pct" placeholder="2" min="0" max="100">
+            <input type="text" id="p-ing-2-origin" placeholder="Madagascar">
+            <input type="text" id="p-ing-2-name" placeholder="Vanille Bourbon">
+            <input type="text" id="p-ing-2-desc" placeholder="Description…">
+          </div>
+        </div>
+        <div class="form-field span2">
+          <label>Carte « Sans rien d'autre » <small style="font-weight:400;color:var(--muted)">— texte libre</small></label>
+          <input type="text" id="p-comp-rest" placeholder="Sans gluten · sans huile de palme · sans pectine · sans conservateur.">
+        </div>
+
+        <!-- UTILISATIONS -->
+        <div class="form-field span2" style="border-top:1px solid var(--line);padding-top:18px;margin-top:4px;">
+          <label style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;">Utilisations — section « Comment le déguster »</label>
+        </div>
+        <div class="form-field">
+          <label>Titre de section</label>
+          <input type="text" id="p-uses-heading" placeholder="Quatre petites idées pour le pot.">
+        </div>
+        <div class="form-field">
+          <label>Sous-titre <small style="font-weight:400;color:var(--muted)">— affiché à droite</small></label>
+          <input type="text" id="p-uses-sub" placeholder="— et la cuillère bien sûr">
+        </div>
+        <div class="form-field span2">
+          <label>4 idées de dégustation</label>
+          <div class="uses-card-row" style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">
+            <span>Icône</span><span>Titre</span><span>Description</span>
+          </div>
+          <div class="uses-card-row">
+            <select id="p-use-0-icon">
+              <option value="tartine">🍞 Tartine</option>
+              <option value="yaourt">🥛 Yaourt</option>
+              <option value="dessert">😊 Dessert</option>
+              <option value="cuillere">🥄 Cuillère / Pot</option>
+              <option value="gateau">🎂 Gâteau</option>
+              <option value="smoothie">🥤 Smoothie</option>
+              <option value="bol">🍜 Bol</option>
+              <option value="aperitif">🍷 Apéritif</option>
+            </select>
+            <input type="text" id="p-use-0-title" placeholder="Sur tartine">
+            <input type="text" id="p-use-0-desc" placeholder="Pain au levain grillé…">
+          </div>
+          <div class="uses-card-row">
+            <select id="p-use-1-icon">
+              <option value="tartine">🍞 Tartine</option>
+              <option value="yaourt">🥛 Yaourt</option>
+              <option value="dessert">😊 Dessert</option>
+              <option value="cuillere">🥄 Cuillère / Pot</option>
+              <option value="gateau">🎂 Gâteau</option>
+              <option value="smoothie">🥤 Smoothie</option>
+              <option value="bol">🍜 Bol</option>
+              <option value="aperitif">🍷 Apéritif</option>
+            </select>
+            <input type="text" id="p-use-1-title" placeholder="En yaourt">
+            <input type="text" id="p-use-1-desc" placeholder="Deux cuillères dans un fromage blanc…">
+          </div>
+          <div class="uses-card-row">
+            <select id="p-use-2-icon">
+              <option value="tartine">🍞 Tartine</option>
+              <option value="yaourt">🥛 Yaourt</option>
+              <option value="dessert">😊 Dessert</option>
+              <option value="cuillere">🥄 Cuillère / Pot</option>
+              <option value="gateau">🎂 Gâteau</option>
+              <option value="smoothie">🥤 Smoothie</option>
+              <option value="bol">🍜 Bol</option>
+              <option value="aperitif">🍷 Apéritif</option>
+            </select>
+            <input type="text" id="p-use-2-title" placeholder="En Mont-Blanc">
+            <input type="text" id="p-use-2-desc" placeholder="Vermicelles sur meringue…">
+          </div>
+          <div class="uses-card-row">
+            <select id="p-use-3-icon">
+              <option value="tartine">🍞 Tartine</option>
+              <option value="yaourt">🥛 Yaourt</option>
+              <option value="dessert">😊 Dessert</option>
+              <option value="cuillere">🥄 Cuillère / Pot</option>
+              <option value="gateau">🎂 Gâteau</option>
+              <option value="smoothie">🥤 Smoothie</option>
+              <option value="bol">🍜 Bol</option>
+              <option value="aperitif">🍷 Apéritif</option>
+            </select>
+            <input type="text" id="p-use-3-title" placeholder="À la cuillère">
+            <input type="text" id="p-use-3-desc" placeholder="Directement dans le pot…">
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" onclick="closeModal('modal-product')">Annuler</button>
+      <button class="btn btn-primary" onclick="document.getElementById('product-form').requestSubmit()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Enregistrer
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODAL CATÉGORIE ========== -->
+<div class="modal-overlay" id="modal-cat">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-head">
+      <h2 id="modal-cat-title">Nouvelle catégorie</h2>
+      <button class="modal-close" onclick="closeModal('modal-cat')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form class="form-grid full" id="cat-form" onsubmit="saveCat(event)">
+        <input type="hidden" id="c-id">
+        <div class="form-field">
+          <label>Nom de la catégorie *</label>
+          <input type="text" id="c-name" placeholder="Crèmes de châtaigne" required oninput="autoSlug()">
+        </div>
+        <div class="form-field">
+          <label>Slug (URL) *</label>
+          <input type="text" id="c-slug" placeholder="cremes-chataigne" required>
+          <small>Utilisé dans l'URL et le nom de fichier HTML</small>
+        </div>
+        <div class="form-field">
+          <label>Description</label>
+          <textarea id="c-desc" placeholder="Notre gamme de crèmes artisanales…"></textarea>
+        </div>
+        <div class="form-field">
+          <label>Emoji / icône</label>
+          <div class="emoji-row" id="emoji-row">
+            <button type="button" class="emoji-btn selected" data-emoji="🌰" onclick="pickEmoji(this)">🌰</button>
+            <button type="button" class="emoji-btn" data-emoji="🫙" onclick="pickEmoji(this)">🫙</button>
+            <button type="button" class="emoji-btn" data-emoji="🎁" onclick="pickEmoji(this)">🎁</button>
+            <button type="button" class="emoji-btn" data-emoji="🌿" onclick="pickEmoji(this)">🌿</button>
+            <button type="button" class="emoji-btn" data-emoji="🍃" onclick="pickEmoji(this)">🍃</button>
+            <button type="button" class="emoji-btn" data-emoji="🧈" onclick="pickEmoji(this)">🧈</button>
+            <button type="button" class="emoji-btn" data-emoji="🍯" onclick="pickEmoji(this)">🍯</button>
+            <button type="button" class="emoji-btn" data-emoji="✨" onclick="pickEmoji(this)">✨</button>
+          </div>
+          <input type="hidden" id="c-emoji" value="🌰">
+        </div>
+        <div class="form-field">
+          <label>Couleur de la bannière</label>
+          <div class="color-row" id="color-row">
+            <div class="color-swatch selected" style="background:#F2E8D9;" data-color="#F2E8D9" onclick="pickColor(this)" title="Crème"></div>
+            <div class="color-swatch" style="background:#E8C9A0;" data-color="#E8C9A0" onclick="pickColor(this)" title="Terracotta"></div>
+            <div class="color-swatch" style="background:#E8C4B8;" data-color="#E8C4B8" onclick="pickColor(this)" title="Vieux rose"></div>
+            <div class="color-swatch" style="background:#C8D5B9;" data-color="#C8D5B9" onclick="pickColor(this)" title="Sauge"></div>
+            <div class="color-swatch" style="background:#E5D5A8;" data-color="#E5D5A8" onclick="pickColor(this)" title="Doré"></div>
+            <div class="color-swatch" style="background:#D4C5E2;" data-color="#D4C5E2" onclick="pickColor(this)" title="Lavande"></div>
+            <div class="color-swatch" style="background:#B8D4D0;" data-color="#B8D4D0" onclick="pickColor(this)" title="Aqua"></div>
+            <div class="color-swatch" style="background:#5C7560;" data-color="#5C7560" onclick="pickColor(this)" title="Vert"></div>
+          </div>
+          <input type="hidden" id="c-color" value="#F2E8D9">
+        </div>
+        <div class="form-field">
+          <label>Photo de couverture</label>
+          <input type="hidden" id="c-banner">
+          <input type="file" id="c-banner-file" accept="image/*" style="display:none" onchange="handleCatBannerFile(this.files[0])">
+          <div class="banner-drop-zone" id="cat-banner-drop"
+               onclick="document.getElementById('c-banner-file').click()"
+               ondragover="event.preventDefault();this.classList.add('drag-over')"
+               ondragleave="this.classList.remove('drag-over')"
+               ondrop="handleCatBannerDrop(event)">
+            <div class="banner-drop-zone__empty" id="cat-banner-empty">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <p>Glissez une image ici<br><span style="font-size:12px">ou cliquez pour parcourir</span></p>
+            </div>
+            <img class="banner-drop-zone__img" id="c-banner-img-preview" src="" alt="">
+            <button type="button" class="banner-drop-zone__remove" id="cat-banner-remove" onclick="removeCatBanner(event)">&times;</button>
+          </div>
+          <small>Dimensions recommandées&nbsp;: 1180 × 420&nbsp;px &mdash; l&rsquo;image est compressée automatiquement.</small>
+        </div>
+        <div class="form-field">
+          <label>Afficher dans le header</label>
+          <select id="c-header">
+            <option value="1">Oui — lien visible dans la navigation</option>
+            <option value="0">Non — page créée mais lien masqué</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Statut</label>
+          <select id="c-status">
+            <option value="active">Active</option>
+            <option value="draft">Brouillon</option>
+          </select>
+        </div>
+      </form>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" onclick="closeModal('modal-cat')">Annuler</button>
+      <button class="btn btn-primary" onclick="document.getElementById('cat-form').requestSubmit()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Créer la catégorie
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODAL RECETTE ========== -->
+<div class="modal-overlay" id="modal-recipe">
+  <div class="modal" style="width:min(900px,calc(100vw - 32px));max-height:calc(100vh - 32px);">
+    <div class="modal-head">
+      <h2 id="modal-recipe-title">Nouvelle recette</h2>
+      <button type="button" class="modal-close" onclick="closeModal('modal-recipe')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form class="form-grid" id="recipe-form" onsubmit="saveRecipe(event)">
+        <input type="hidden" id="r-id">
+        <div class="form-field">
+          <label>Titre (mot principal) *</label>
+          <input type="text" id="r-title" placeholder="Tartine" required>
+        </div>
+        <div class="form-field">
+          <label>Titre <em>en italique</em></label>
+          <input type="text" id="r-title-em" placeholder="d'automne">
+        </div>
+        <div class="form-field">
+          <label>Durée</label>
+          <input type="text" id="r-time" placeholder="5 min">
+        </div>
+        <div class="form-field">
+          <label>Personnes / cuisson</label>
+          <input type="text" id="r-servings" placeholder="4 personnes ou Sans cuisson">
+        </div>
+        <div class="form-field span2">
+          <label>Accroche <small style="font-weight:400;color:var(--muted)">— 1 phrase courte</small></label>
+          <input type="text" id="r-intro" placeholder="Le classique revisité. Simple, direct, inratable.">
+        </div>
+        <div class="form-field span2">
+          <label>Description courte <small style="font-weight:400;color:var(--muted)">— pour la carte listing</small></label>
+          <textarea id="r-desc" rows="2" placeholder="Pain au levain grillé, beurre demi-sel…"></textarea>
+        </div>
+        <div class="form-field span2" style="border-top:1px solid var(--line);padding-top:16px;margin-top:4px;">
+          <label>Image de la recette</label>
+          <input type="hidden" id="r-image">
+          <div id="recipe-img-picker" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
+          <div class="img-add-row" style="margin-top:8px;">
+            <input type="text" id="r-img-add" placeholder="Chemin vers l'image (assets/…)">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="addRecipeImg()">Ajouter</button>
+          </div>
+        </div>
+        <div class="form-field span2" style="border-top:1px solid var(--line);padding-top:16px;margin-top:4px;">
+          <label>Produits associés <small style="font-weight:400;color:var(--muted)">— cochez pour afficher dans la recette</small></label>
+          <div id="recipe-products-picker" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
+        </div>
+        <div class="form-field span2" style="border-top:1px solid var(--line);padding-top:16px;margin-top:4px;">
+          <label>Étapes de préparation</label>
+          <div id="recipe-steps-list" style="display:flex;flex-direction:column;gap:8px;margin-top:8px;"></div>
+          <button type="button" class="btn btn-secondary btn-sm" style="margin-top:8px;" onclick="addRecipeStep()">+ Ajouter une étape</button>
+        </div>
+        <div class="form-field">
+          <label>Statut</label>
+          <select id="r-status">
+            <option value="published">Publié</option>
+            <option value="draft">Brouillon</option>
+          </select>
+        </div>
+      </form>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" onclick="closeModal('modal-recipe')">Annuler</button>
+      <button class="btn btn-primary" onclick="document.getElementById('recipe-form').requestSubmit()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Enregistrer
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="admin-toast" id="admin-toast"></div>
+
+<script>
+/* ============================================================
+   CASTANEAS ADMIN — JS Engine
+   ============================================================ */
+
+/* ---------- Storage keys ---------- */
+const KEYS = {
+  admin: 'castaneas_admin_creds',
+  products: 'castaneas_admin_products',
+  categories: 'castaneas_admin_categories',
+  orders: 'castaneas_admin_orders',
+  imagesMain:  'castaneas_admin_images_main',
+  imagesExtra: 'castaneas_admin_images_extra',
+  recipes: 'castaneas_admin_recipes',
+  homepage: 'castaneas_homepage_v1',
+};
+
+/* ---------- Default data (pre-seeded) ---------- */
+const DEFAULT_CATS = [
+  { id: 'cat-cremes', name: 'Crèmes de châtaigne', slug: 'cremes', desc: 'Nos crèmes de châtaigne artisanales', emoji: '🌰', color: '#F2E8D9', header: true, status: 'active' },
+  { id: 'cat-pates', name: 'Pâtes à tartiner', slug: 'pates-tartiner', desc: 'Pâtes à tartiner noisette et châtaigne', emoji: '🧈', color: '#E8C9A0', header: true, status: 'active' },
+  { id: 'cat-huiles', name: 'Huiles', slug: 'huiles', desc: 'Huiles artisanales pressées à froid', emoji: '🫙', color: '#E5D5A8', header: true, status: 'active' },
+  { id: 'cat-coffrets', name: 'Coffrets cadeaux', slug: 'coffrets', desc: 'Nos coffrets cadeaux gourmands', emoji: '🎁', color: '#E8C4B8', header: true, status: 'active' },
+];
+
+const _COMP_NATURE = { heading: 'Trois ingrédients, pas un de plus.', ings: [ { pct: 72, origin: 'Lauzerte · Quercy', name: 'Châtaigne', desc: 'Variété « Marigoule », ramassée à la main, cuite à l\'eau, épluchée à la veillée.' }, { pct: 26, origin: 'Île de la Réunion', name: 'Sucre roux', desc: 'Sucre de canne non raffiné, à la mélasse intacte. Cuisson lente.' }, { pct: 2, origin: 'France · eau de source', name: 'Eau', desc: 'Eau de source, rien d\'autre.' } ], restDesc: 'Sans gluten · sans huile de palme · sans pectine · sans conservateur.' };
+const _COMP_VANILLEE = { heading: 'Trois ingrédients, pas un de plus.', ings: [ { pct: 65, origin: 'Lauzerte · Quercy', name: 'Châtaigne', desc: 'Variété « Marigoule », cueillie à la main, cuite doucement.' }, { pct: 27, origin: 'Île de la Réunion', name: 'Sucre roux', desc: 'Sucre de canne non raffiné, à la mélasse intacte. Cuisson lente.' }, { pct: 2, origin: 'Madagascar', name: 'Vanille Bourbon', desc: 'Gousse fendue à la main, infusée à froid pendant 48h dans le sirop.' } ], restDesc: 'Sans gluten · sans huile de palme · sans pectine · sans conservateur.' };
+const _COMP_PATE = { heading: 'Deux ingrédients, pas un de plus.', ings: [ { pct: 99, origin: 'Piémont · Italie', name: 'Noisettes', desc: 'Torréfiées à la main, 30 min à sec, sans huile ajoutée.' }, { pct: 1, origin: 'Guérande · Bretagne', name: 'Sel de Guérande', desc: 'Sel gris non raffiné, récolté à la main.' } ], restDesc: 'Sans gluten · sans huile de palme · sans sucre ajouté · sans conservateur.' };
+const _COMP_COFFRET = { heading: 'Trois crèmes signatures,', ings: [ { pct: 100, origin: 'Quercy · France', name: 'Crèmes artisanales', desc: 'Sélection de 3 pots fabriqués à Lauzerte.' } ], restDesc: 'Boîte bois gravée · emballage cadeau inclus · livraison soignée.' };
+
+const DEFAULT_PRODUCTS = [
+  { id: 'creme-nature-150', name: 'Crème de châtaigne nature', category: 'cat-cremes', price: 6.90, weight: '150g', stock: 'in_stock', desc: 'La pure châtaigne du Quercy, sans artifice.', ingredients: 'Châtaignes (70%), sucre de canne, eau', image: 'assets/product-pate-tartiner.png', badge: 'Bestseller', status: 'active', composition: _COMP_NATURE },
+  { id: 'creme-nature-300', name: 'Crème de châtaigne nature', category: 'cat-cremes', price: 11.90, weight: '300g', stock: 'in_stock', desc: 'La pure châtaigne du Quercy, format familial.', ingredients: 'Châtaignes (70%), sucre de canne, eau', image: 'assets/product-pate-tartiner.png', badge: '', status: 'active', composition: _COMP_NATURE },
+  { id: 'creme-vanillee-150', name: 'Châtaigne vanillée', category: 'cat-cremes', price: 7.50, weight: '150g', stock: 'in_stock', desc: 'Vanille Bourbon de Madagascar infusée 48h.', ingredients: 'Châtaignes (65%), sucre de canne, vanille Bourbon', image: 'assets/product-huile-noisettes.png', badge: 'Coup de cœur', status: 'active', composition: _COMP_VANILLEE },
+  { id: 'creme-vanillee-300', name: 'Châtaigne vanillée', category: 'cat-cremes', price: 12.90, weight: '300g', stock: 'low_stock', desc: 'Vanille Bourbon de Madagascar, format familial.', ingredients: 'Châtaignes (65%), sucre de canne, vanille Bourbon', image: 'assets/product-huile-noisettes.png', badge: '', status: 'active', composition: _COMP_VANILLEE },
+  { id: 'pate-noisette-200', name: 'Pâte de noisette', category: 'cat-pates', price: 9.90, weight: '200g', stock: 'in_stock', desc: 'Noisettes du Piémont torréfiées à la main.', ingredients: 'Noisettes (99%), sel de Guérande', image: 'assets/product-noisettes-crues.png', badge: 'Nouveau', status: 'active', composition: _COMP_PATE },
+  { id: 'coffret-quercy', name: 'Coffret Quercy', category: 'cat-coffrets', price: 29.90, weight: '3×150g', stock: 'in_stock', desc: 'Trois pots + boîte bois gravée.', ingredients: 'Assortiment de 3 crèmes', image: 'assets/product-pate-tartiner.png', badge: '🎁 Coffret', status: 'active', composition: _COMP_COFFRET },
+  { id: 'coffret-prestige', name: 'Coffret Prestige', category: 'cat-coffrets', price: 34.90, weight: '3×300g', stock: 'low_stock', desc: 'Notre écrin bois signé à la main. 200 ex.', ingredients: 'Assortiment de 3 crèmes grand format', image: 'assets/product-huile-noisettes.png', badge: 'Édition limitée', status: 'active', composition: _COMP_COFFRET },
+];
+
+const DEFAULT_ORDERS = [
+  { id: 'CAS-A1B2C3', date: '2026-05-14', customer: 'Marie Dupont', email: 'marie@exemple.fr', items: [{id:'creme-vanillee-150',name:'Châtaigne vanillée',qty:2,price:7.50,image:'assets/product-huile-noisettes.png'}], total: 15.00, status: 'delivered' },
+  { id: 'CAS-D4E5F6', date: '2026-05-13', customer: 'Jean Martin', email: 'jean@exemple.fr', items: [{id:'coffret-quercy',name:'Coffret Quercy',qty:1,price:29.90,image:'assets/product-pate-tartiner.png'},{id:'pate-noisette-200',name:'Pâte de noisette',qty:1,price:9.90,image:'assets/product-noisettes-crues.png'}], total: 39.80, status: 'shipped' },
+  { id: 'CAS-G7H8I9', date: '2026-05-15', customer: 'Sophie Blanc', email: 'sophie@exemple.fr', items: [{id:'creme-nature-300',name:'Crème nature 300g',qty:3,price:11.90,image:'assets/product-pate-tartiner.png'}], total: 35.70, status: 'pending' },
+];
+
+const DEFAULT_RECIPES = [
+  {
+    id: 'recipe-tartine-automne',
+    title: 'Tartine',
+    titleEm: "d'automne",
+    time: '5 min',
+    servings: 'Sans cuisson',
+    intro: "Le classique revisité. Simple, direct, inratable.",
+    desc: "Pain au levain grillé, beurre demi-sel, une grosse cuillère de châtaigne vanillée.",
+    image: 'assets/product-pate-tartiner.png',
+    products: ['creme-vanillee-150', 'creme-nature-150'],
+    steps: [
+      { step: 1, text: "Faites griller deux tranches de pain au levain jusqu'à ce qu'elles soient bien dorées." },
+      { step: 2, text: "Beurrez généreusement avec du beurre demi-sel encore froid." },
+      { step: 3, text: "Ajoutez une généreuse cuillère de crème de châtaigne vanillée." },
+    ],
+    status: 'published',
+  },
+  {
+    id: 'recipe-mont-blanc-express',
+    title: 'Mont-Blanc',
+    titleEm: 'express',
+    time: '25 min',
+    servings: '6 personnes',
+    intro: "Le dessert de grand-mère, revisité en 3 gestes.",
+    desc: "Meringues, crème fouettée, vermicelles de châtaigne vanillée par-dessus.",
+    image: 'assets/product-noisettes-crues.png',
+    products: ['creme-vanillee-300', 'creme-nature-300'],
+    steps: [
+      { step: 1, text: "Posez une meringue dans chaque assiette." },
+      { step: 2, text: "Fouettez la crème entière bien froide en chantilly légère." },
+      { step: 3, text: "Déposez une quenelle de chantilly sur la meringue." },
+      { step: 4, text: "Passez la crème de châtaigne au presse-purée pour former les vermicelles." },
+      { step: 5, text: "Servez immédiatement, bien frais." },
+    ],
+    status: 'published',
+  },
+];
+
+/* ---------- State ---------- */
+const DEFAULT_IMAGE_CATALOG = [
+  'assets/product-pate-tartiner.png',
+  'assets/product-huile-noisettes.png',
+  'assets/product-noisettes-crues.png',
+  'assets/banniere-cremes.png',
+  'assets/pate-a-tartiner-220g.webp',
+  'assets/story-atelier.jpg',
+  'uploads/Gemini_Generated_Image_3qtwht3qtwht3qtw.png',
+  'uploads/Gemini_Generated_Image_k3rcack3rcack3rc.png',
+  'uploads/Gemini_Generated_Image_p5f05ep5f05ep5f0.png',
+  'uploads/Gemini_Generated_Image_v6kb56v6kb56v6kb.png',
+];
+let state = { products: [], categories: [], orders: [], imageCatalogMain: [], imageCatalogExtra: [], recipes: [] };
+let editingProduct = null;
+let editingCat = null;
+let editingRecipe = null;
+let selectedExtraImages = [];
+let recipeSteps = [];
+
+/* ---------- Init ---------- */
+function init() {
+  // Load or seed
+  state.categories  = load(KEYS.categories) || JSON.parse(JSON.stringify(DEFAULT_CATS));
+  state.products     = load(KEYS.products)   || JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
+  state.orders       = load(KEYS.orders)     || JSON.parse(JSON.stringify(DEFAULT_ORDERS));
+  state.imageCatalogMain  = load(KEYS.imagesMain)  || [...DEFAULT_IMAGE_CATALOG];
+  state.imageCatalogExtra  = load(KEYS.imagesExtra) || [...DEFAULT_IMAGE_CATALOG];
+  state.recipes = load(KEYS.recipes) || JSON.parse(JSON.stringify(DEFAULT_RECIPES));
+
+  const creds = load(KEYS.admin) || { user: 'admin', pass: btoa('castaneas2026') };
+  if (!localStorage.getItem(KEYS.admin)) save(KEYS.admin, creds);
+
+  // Check session
+  const session = sessionStorage.getItem('castaneas_admin_session');
+  if (session === 'ok') {
+    showApp();
+  }
+}
+
+/* ---------- Guard ---------- */
+document.getElementById('guard-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const creds = load(KEYS.admin) || { user: 'admin', pass: btoa('castaneas2026') };
+  const user = document.getElementById('guard-user').value.trim();
+  const pass = document.getElementById('guard-pass').value;
+  if (user === creds.user && btoa(pass) === creds.pass) {
+    sessionStorage.setItem('castaneas_admin_session', 'ok');
+    document.getElementById('sidebar-name').textContent = user.charAt(0).toUpperCase() + user.slice(1);
+    document.getElementById('sidebar-avatar').textContent = user.charAt(0).toUpperCase();
+    document.getElementById('setting-user').value = user;
+    showApp();
+  } else {
+    document.getElementById('guard-error').textContent = 'Identifiant ou mot de passe incorrect.';
+  }
+});
+
+function showApp() {
+  document.getElementById('admin-guard').style.display = 'none';
+  document.getElementById('admin-app').style.display = 'flex';
+  const creds = load(KEYS.admin);
+  document.getElementById('setting-user').value = creds ? creds.user : 'admin';
+  renderAll();
+}
+
+function logout() {
+  sessionStorage.removeItem('castaneas_admin_session');
+  location.reload();
+}
+
+/* ---------- Routing ---------- */
+const panelMeta = {
+  dashboard:  { title: 'Vue d\'ensemble',        actions: '' },
+  products:   { title: 'Produits',               actions: '<button class="btn btn-primary" onclick="openProductModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nouveau produit</button>' },
+  categories: { title: 'Catégories',             actions: '<button class="btn btn-primary" onclick="openCatModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nouvelle catégorie</button>' },
+  orders:     { title: 'Commandes',              actions: '' },
+  recipes:    { title: 'Recettes',               actions: '<button class="btn btn-primary" onclick="openRecipeModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nouvelle recette</button>' },
+  homepage:   { title: 'Page d\'accueil',        actions: '' },
+  pages:      { title: 'Pages générées',         actions: '' },
+  settings:   { title: 'Paramètres',             actions: '' },
+};
+
+function switchPanel(el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  const panel = el.dataset.panel;
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + panel).classList.add('active');
+  document.getElementById('topbar-title').textContent = panelMeta[panel].title;
+  const ta = document.getElementById('topbar-actions');
+  ta.innerHTML = panelMeta[panel].actions + `<a href="index.html" target="_blank" class="btn btn-secondary btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> Voir le site</a>`;
+  if (panel === 'pages') renderPages();
+  if (panel === 'recipes') renderRecipes();
+  if (panel === 'homepage') renderHomepage();
+}
+
+/* ---------- Render ALL ---------- */
+function renderAll() {
+  renderDashboard();
+  renderProducts();
+  renderCategories();
+  renderOrders();
+  renderRecipes();
+  updateBadges();
+}
+
+function updateBadges() {
+  document.getElementById('products-badge').textContent = state.products.length;
+  document.getElementById('cats-badge').textContent = state.categories.length;
+  const pending = state.orders.filter(o => o.status === 'pending').length;
+  const ob = document.getElementById('orders-badge');
+  ob.textContent = pending || '';
+  ob.style.display = pending ? '' : 'none';
+  document.getElementById('recipes-badge').textContent = state.recipes.length;
+}
+
+/* ---------- Dashboard ---------- */
+function renderDashboard() {
+  document.getElementById('stat-products').textContent = state.products.length;
+  document.getElementById('stat-products-cats').textContent = state.categories.filter(c => c.status === 'active').length + ' catégories actives';
+  document.getElementById('stat-cats').textContent = state.categories.length;
+  document.getElementById('stat-cats-sub').textContent = state.categories.filter(c => c.header).length + ' dans le header';
+  document.getElementById('stat-orders').textContent = state.orders.length;
+  const rev = state.orders.reduce((a, o) => a + o.total, 0);
+  document.getElementById('stat-revenue').textContent = rev.toFixed(2).replace('.', ',') + '€';
+
+  const tbody = document.getElementById('dashboard-orders-tbody');
+  if (!state.orders.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--muted);">Aucune commande</td></tr>';
+    return;
+  }
+  tbody.innerHTML = [...state.orders].reverse().slice(0, 5).map(o => `
+    <tr>
+      <td><span style="font-weight:700;font-family:monospace;">${o.id}</span></td>
+      <td>${o.items.map(i => i.name + ' ×' + i.qty).join(', ')}</td>
+      <td>${o.customer}</td>
+      <td class="td-price">${o.total.toFixed(2).replace('.', ',')}€</td>
+      <td>${statusBadge(o.status)}</td>
+    </tr>
+  `).join('');
+}
+
+/* ---------- Products ---------- */
+function renderProducts(filter = '') {
+  const tbody = document.getElementById('products-tbody');
+  let list = state.products;
+  if (filter) list = list.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
+
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg><h3>Aucun produit</h3><p>Créez votre premier produit</p><button class="btn btn-primary" onclick="openProductModal()">+ Nouveau produit</button></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(p => {
+    const cat = state.categories.find(c => c.id === p.category);
+    const stockBadge = { in_stock: '<span class="badge badge-green">En stock</span>', low_stock: '<span class="badge badge-orange">Stock faible</span>', out_of_stock: '<span class="badge badge-red">Rupture</span>' }[p.stock] || '';
+    return `<tr>
+      <td><img class="td-img" src="${p.image || 'assets/product-pate-tartiner.png'}" alt="" onerror="this.onerror=null;this.src='assets/product-pate-tartiner.png'"></td>
+      <td>
+        <div class="td-name">${p.name}</div>
+        <div class="td-sub">${p.weight || ''} ${p.badge ? '· <span style="color:var(--corail)">' + p.badge + '</span>' : ''}</div>
+      </td>
+      <td>${cat ? '<span class="badge badge-gray">' + cat.emoji + ' ' + cat.name + '</span>' : '<span class="badge badge-gray">—</span>'}</td>
+      <td class="td-price">${p.price.toFixed(2).replace('.', ',')}€</td>
+      <td>${stockBadge}</td>
+      <td>${p.status === 'active' ? '<span class="badge badge-green">Publié</span>' : '<span class="badge badge-gray">Brouillon</span>'}</td>
+      <td><div class="td-actions">
+        <button class="btn-icon" onclick="editProduct('${p.id}')" title="Modifier">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="btn-icon" onclick="deleteProduct('${p.id}')" title="Supprimer" style="color:var(--corail);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterProducts(v) { renderProducts(v); }
+
+/* ---------- Categories ---------- */
+function renderCategories() {
+  const grid = document.getElementById('cat-grid');
+  if (!state.categories.length) {
+    grid.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><h3>Aucune catégorie</h3><p>Créez votre première catégorie pour générer une page</p><button class="btn btn-primary" onclick="openCatModal()">+ Nouvelle catégorie</button></div>';
+    return;
+  }
+  grid.innerHTML = state.categories.map(c => {
+    const count = state.products.filter(p => p.category === c.id).length;
+    return `<div class="cat-card">
+      <div class="cat-card-banner" style="background:${c.color};">
+        <span style="font-size:44px;">${c.emoji}</span>
+        ${c.status === 'draft' ? '<span class="badge badge-gray" style="position:absolute;top:10px;right:10px;">Brouillon</span>' : ''}
+      </div>
+      <div class="cat-card-body">
+        <h3 class="cat-card-title">${c.name}</h3>
+        <p class="cat-card-meta">${count} produit${count > 1 ? 's' : ''} · ${c.header ? 'Visible dans le header' : 'Hors navigation'}</p>
+        <span class="cat-card-slug">${c.slug}.html</span>
+        <div class="cat-card-actions">
+          <button class="btn btn-green btn-sm" onclick="editCat('${c.id}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Modifier
+          </button>
+          <button class="btn btn-secondary btn-sm" onclick="previewCatPage('${c.id}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Aperçu
+          </button>
+          <button class="btn btn-danger btn-sm" onclick="deleteCat('${c.id}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ---------- Orders ---------- */
+function renderOrders(filter = '') {
+  const tbody = document.getElementById('orders-tbody');
+  let list = state.orders;
+  if (filter) list = list.filter(o => o.id.toLowerCase().includes(filter.toLowerCase()) || o.customer.toLowerCase().includes(filter.toLowerCase()));
+
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted);">Aucune commande</td></tr>';
+    return;
+  }
+  tbody.innerHTML = [...list].reverse().map(o => `
+    <tr style="cursor:pointer;" onclick="toggleOrderExpand('${o.id}')">
+      <td><span style="font-weight:700;font-family:monospace;font-size:13px;">${o.id}</span></td>
+      <td>${o.date}</td>
+      <td>
+        <div style="font-weight:700;">${o.customer}</div>
+        <div style="font-size:12px;color:var(--muted);">${o.email}</div>
+      </td>
+      <td class="td-price">${o.total.toFixed(2).replace('.', ',')}€</td>
+      <td>
+        <select onchange="updateOrderStatus('${o.id}', this.value)" onclick="event.stopPropagation()" style="font-size:12px;font-weight:700;padding:4px 8px;border-radius:999px;border:none;background:transparent;cursor:pointer;">
+          <option value="pending" ${o.status==='pending'?'selected':''}>⏳ En attente</option>
+          <option value="processing" ${o.status==='processing'?'selected':''}>🔄 En préparation</option>
+          <option value="shipped" ${o.status==='shipped'?'selected':''}>📦 Expédiée</option>
+          <option value="delivered" ${o.status==='delivered'?'selected':''}>✅ Livrée</option>
+          <option value="cancelled" ${o.status==='cancelled'?'selected':''}>❌ Annulée</option>
+        </select>
+      </td>
+      <td><div class="td-actions">
+        <button class="btn-icon" onclick="event.stopPropagation();deleteOrder('${o.id}')" title="Supprimer" style="color:var(--corail);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+        </button>
+      </div></td>
+    </tr>
+    <tr class="order-row-expand" id="order-expand-${o.id}" style="display:none;">
+      <td colspan="6"><div class="order-expand-inner">
+        ${o.items.map(i => `<div class="order-item">
+          <img src="${i.image}" alt="" onerror="this.onerror=null;this.src='assets/product-pate-tartiner.png'">
+          <div><div class="order-item-name">${i.name}</div><div class="order-item-meta">Qté : ${i.qty}</div></div>
+          <div class="order-item-price">${(i.price * i.qty).toFixed(2).replace('.', ',')}€</div>
+        </div>`).join('')}
+      </div></td>
+    </tr>
+  `).join('');
+}
+
+function toggleOrderExpand(id) {
+  const row = document.getElementById('order-expand-' + id);
+  row.style.display = row.style.display === 'none' ? '' : 'none';
+}
+function updateOrderStatus(id, status) {
+  const order = state.orders.find(o => o.id === id);
+  if (order) { order.status = status; save(KEYS.orders, state.orders); updateBadges(); }
+}
+function filterOrders(v) { renderOrders(v); }
+function deleteOrder(id) {
+  if (!confirm('Supprimer cette commande ?')) return;
+  state.orders = state.orders.filter(o => o.id !== id);
+  save(KEYS.orders, state.orders); renderOrders(); renderDashboard(); updateBadges(); toast('Commande supprimée');
+}
+
+function generateFakeOrder() {
+  const names = ['Alice Bernard','Luc Moreau','Clara Petit','Hugo Roux','Emma Simon','Paul Girard'];
+  const products = state.products.filter(p => p.status === 'active');
+  if (!products.length) { toast('Créez des produits d\'abord', 'error'); return; }
+  const n = Math.floor(Math.random() * 2) + 1;
+  const items = [];
+  for (let i = 0; i < n; i++) {
+    const p = products[Math.floor(Math.random() * products.length)];
+    const qty = Math.floor(Math.random() * 3) + 1;
+    items.push({ id: p.id, name: p.name, qty, price: p.price, image: p.image });
+  }
+  const total = items.reduce((a, i) => a + i.price * i.qty, 0);
+  const name = names[Math.floor(Math.random() * names.length)];
+  const order = {
+    id: 'CAS-' + Math.random().toString(36).substr(2, 6).toUpperCase(),
+    date: new Date().toISOString().slice(0, 10),
+    customer: name,
+    email: name.split(' ')[0].toLowerCase() + '@exemple.fr',
+    items, total, status: 'pending',
+  };
+  state.orders.push(order);
+  save(KEYS.orders, state.orders);
+  renderOrders(); renderDashboard(); updateBadges();
+  toast('Commande simulée ajoutée ✓', 'success');
+}
+
+function statusBadge(status) {
+  const map = { pending: '<span class="badge badge-orange">⏳ En attente</span>', processing: '<span class="badge badge-gray">🔄 En prép.</span>', shipped: '<span class="badge badge-green">📦 Expédiée</span>', delivered: '<span class="badge badge-green">✅ Livrée</span>', cancelled: '<span class="badge badge-red">❌ Annulée</span>' };
+  return map[status] || status;
+}
+
+/* ---------- Pages ---------- */
+function renderPages() {
+  const tbody = document.getElementById('pages-tbody');
+  if (!state.categories.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted);">Aucune catégorie créée</td></tr>';
+    return;
+  }
+  tbody.innerHTML = state.categories.map(c => {
+    const count = state.products.filter(p => p.category === c.id && p.status === 'active').length;
+    return `<tr>
+      <td><strong>${c.emoji} ${c.name}</strong></td>
+      <td><span style="font-family:monospace;font-size:12px;">${c.slug}.html</span></td>
+      <td><span class="badge badge-gray">${c.slug}</span></td>
+      <td>${count} produit${count > 1 ? 's' : ''}</td>
+      <td>${c.header ? '<span class="page-live-badge">Visible</span>' : '<span class="badge badge-gray">Masqué</span>'}</td>
+      <td><div class="td-actions">
+        <button class="btn btn-green btn-sm" onclick="generateCatPage('${c.id}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Générer HTML
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="previewCatPage('${c.id}')">
+          Aperçu
+        </button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+/* ---------- Product Modal ---------- */
+function openProductModal(id = null) {
+  editingProduct = id;
+  const f = document.getElementById('product-form');
+  f.reset();
+  selectedExtraImages = [];
+
+  // Populate category select
+  const sel = document.getElementById('p-category');
+  sel.innerHTML = state.categories.map(c => `<option value="${c.id}">${c.emoji} ${c.name}</option>`).join('');
+
+  if (id) {
+    const p = state.products.find(x => x.id === id);
+    if (!p) return;
+    document.getElementById('modal-product-title').textContent = 'Modifier le produit';
+    document.getElementById('p-id').value = p.id;
+    document.getElementById('p-name').value = p.name;
+    document.getElementById('p-category').value = p.category;
+    document.getElementById('p-price').value = p.price;
+    document.getElementById('p-weight').value = p.weight || '';
+    document.getElementById('p-stock').value = p.stock;
+    document.getElementById('p-desc').value = p.desc || '';
+    document.getElementById('p-image').value = p.image || '';
+    selectedExtraImages = p.images ? [...p.images] : [];
+    document.getElementById('p-badge').value = p.badge || '';
+    document.getElementById('p-status').value = p.status;
+    renderImagePickers();
+    // Composition
+    const comp = p.composition || {};
+    document.getElementById('p-comp-heading').value = comp.heading || '';
+    const ings = comp.ings || [];
+    [0, 1, 2].forEach(i => {
+      const ing = ings[i] || {};
+      document.getElementById(`p-ing-${i}-pct`).value = ing.pct !== undefined ? ing.pct : '';
+      document.getElementById(`p-ing-${i}-origin`).value = ing.origin || '';
+      document.getElementById(`p-ing-${i}-name`).value = ing.name || '';
+      document.getElementById(`p-ing-${i}-desc`).value = ing.desc || '';
+    });
+    document.getElementById('p-comp-rest').value = comp.restDesc || '';
+    // Utilisations
+    const usages = p.usages || {};
+    document.getElementById('p-uses-heading').value = usages.heading || '';
+    document.getElementById('p-uses-sub').value = usages.sub || '';
+    const ucards = usages.cards || [];
+    [0, 1, 2, 3].forEach(i => {
+      const c = ucards[i] || {};
+      document.getElementById(`p-use-${i}-icon`).value = c.icon || ['tartine','yaourt','dessert','cuillere'][i];
+      document.getElementById(`p-use-${i}-title`).value = c.title || '';
+      document.getElementById(`p-use-${i}-desc`).value = c.desc || '';
+    });
+  } else {
+    document.getElementById('modal-product-title').textContent = 'Nouveau produit';
+    selectedExtraImages = [];
+    renderImagePickers();
+  }
+  openModal('modal-product');
+}
+
+function editProduct(id) { openProductModal(id); }
+
+function saveProduct(e) {
+  e.preventDefault();
+  const id = editingProduct || 'prod-' + Date.now();
+  const product = {
+    id,
+    name:        document.getElementById('p-name').value.trim(),
+    category:    document.getElementById('p-category').value,
+    price:       parseFloat(document.getElementById('p-price').value),
+    weight:      document.getElementById('p-weight').value.trim(),
+    stock:       document.getElementById('p-stock').value,
+    desc:        document.getElementById('p-desc').value.trim(),
+    image:       document.getElementById('p-image').value.trim() || 'assets/product-pate-tartiner.png',
+    images:      [...selectedExtraImages],
+    badge:       document.getElementById('p-badge').value.trim(),
+    status:      document.getElementById('p-status').value,
+    composition: {
+      heading:  document.getElementById('p-comp-heading').value.trim(),
+      ings:     [0, 1, 2].map(i => ({
+        pct:    parseInt(document.getElementById(`p-ing-${i}-pct`).value) || 0,
+        origin: document.getElementById(`p-ing-${i}-origin`).value.trim(),
+        name:   document.getElementById(`p-ing-${i}-name`).value.trim(),
+        desc:   document.getElementById(`p-ing-${i}-desc`).value.trim(),
+      })).filter(ing => ing.name),
+      restDesc: document.getElementById('p-comp-rest').value.trim(),
+    },
+    usages: {
+      heading: document.getElementById('p-uses-heading').value.trim(),
+      sub:     document.getElementById('p-uses-sub').value.trim(),
+      cards:   [0, 1, 2, 3].map(i => ({
+        icon:  document.getElementById(`p-use-${i}-icon`).value,
+        title: document.getElementById(`p-use-${i}-title`).value.trim(),
+        desc:  document.getElementById(`p-use-${i}-desc`).value.trim(),
+      })).filter(c => c.title),
+    },
+  };
+  const idx = state.products.findIndex(p => p.id === id);
+  if (idx >= 0) state.products[idx] = product;
+  else state.products.push(product);
+  save(KEYS.products, state.products);
+  closeModal('modal-product');
+  renderProducts(); renderDashboard(); updateBadges();
+  toast((editingProduct ? 'Produit mis à jour' : 'Produit créé') + ' ✓', 'success');
+  generateAllCatPages();
+}
+
+function deleteProduct(id) {
+  if (!confirm('Supprimer ce produit définitivement ?')) return;
+  state.products = state.products.filter(p => p.id !== id);
+  save(KEYS.products, state.products);
+  renderProducts(); renderDashboard(); updateBadges();
+  toast('Produit supprimé');
+  generateAllCatPages();
+}
+
+function renderImagePickers() {
+  const mainPicker  = document.getElementById('img-picker-main');
+  const extraPicker = document.getElementById('img-picker-extra');
+  if (!mainPicker || !extraPicker) return;
+  const currentMain = document.getElementById('p-image').value;
+  const makeSlot = (src, isMain) => {
+    const cls = isMain
+      ? (src === currentMain ? ' selected' : '')
+      : (selectedExtraImages.includes(src) ? ' selected-extra' : '');
+    const clickFn = isMain ? 'pickImgMain(this)' : 'pickImgExtra(this)';
+    const esc = src.replace(/"/g, '&quot;').replace(/'/g, "\\'");
+    const flag = isMain ? 'true' : 'false';
+    return `<div class="img-slot"><img class="img-preview${cls}" data-src="${src}" src="${src}" alt="" onerror="this.onerror=null;this.src='assets/product-pate-tartiner.png'" onclick="${clickFn}"><button type="button" class="img-remove" onclick="removeImgFromCatalog('${esc}',${flag},event)">×</button></div>`;
+  };
+  mainPicker.innerHTML  = state.imageCatalogMain.map(s  => makeSlot(s, true)).join('');
+  extraPicker.innerHTML = state.imageCatalogExtra.map(s => makeSlot(s, false)).join('');
+}
+function removeImgFromCatalog(src, isMain, e) {
+  e.stopPropagation();
+  if (isMain) {
+    state.imageCatalogMain = state.imageCatalogMain.filter(s => s !== src);
+    save(KEYS.imagesMain, state.imageCatalogMain);
+    if (document.getElementById('p-image').value === src) document.getElementById('p-image').value = '';
+  } else {
+    state.imageCatalogExtra = state.imageCatalogExtra.filter(s => s !== src);
+    save(KEYS.imagesExtra, state.imageCatalogExtra);
+    selectedExtraImages = selectedExtraImages.filter(s => s !== src);
+  }
+  renderImagePickers();
+}
+function addImgToCatalog(isMain) {
+  const inp = document.getElementById(isMain ? 'p-img-add-main' : 'p-img-add-extra');
+  const src = inp.value.trim();
+  const catalog = isMain ? state.imageCatalogMain : state.imageCatalogExtra;
+  if (!src || catalog.includes(src)) { inp.value = ''; return; }
+  catalog.push(src);
+  save(isMain ? KEYS.imagesMain : KEYS.imagesExtra, catalog);
+  inp.value = '';
+  renderImagePickers();
+}
+function pickImgMain(el) {
+  document.querySelectorAll('#img-picker-main .img-preview').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('p-image').value = el.dataset.src;
+}
+function pickImgExtra(el) {
+  const src = el.dataset.src;
+  if (selectedExtraImages.includes(src)) {
+    selectedExtraImages = selectedExtraImages.filter(s => s !== src);
+    el.classList.remove('selected-extra');
+  } else {
+    selectedExtraImages.push(src);
+    el.classList.add('selected-extra');
+  }
+}
+
+/* ---------- Category Modal ---------- */
+function openCatModal(id = null) {
+  editingCat = id;
+  document.getElementById('cat-form').reset();
+  document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.color-swatch').forEach(b => b.classList.remove('selected'));
+  document.querySelector('.emoji-btn[data-emoji="🌰"]').classList.add('selected');
+  document.querySelector('.color-swatch[data-color="#F2E8D9"]').classList.add('selected');
+  document.getElementById('c-emoji').value = '🌰';
+  document.getElementById('c-color').value = '#F2E8D9';
+  document.getElementById('c-banner').value = '';
+
+  if (id) {
+    const c = state.categories.find(x => x.id === id);
+    if (!c) return;
+    document.getElementById('modal-cat-title').textContent = 'Modifier la catégorie';
+    document.getElementById('c-id').value = c.id;
+    document.getElementById('c-name').value = c.name;
+    document.getElementById('c-slug').value = c.slug;
+    document.getElementById('c-desc').value = c.desc || '';
+    document.getElementById('c-header').value = c.header ? '1' : '0';
+    document.getElementById('c-status').value = c.status;
+    document.getElementById('c-emoji').value = c.emoji;
+    document.getElementById('c-color').value = c.color;
+    document.getElementById('c-banner').value = c.banner || '';
+    document.querySelectorAll('.emoji-btn').forEach(b => {
+      b.classList.toggle('selected', b.dataset.emoji === c.emoji);
+    });
+    document.querySelectorAll('.color-swatch').forEach(b => {
+      b.classList.toggle('selected', b.dataset.color === c.color);
+    });
+  } else {
+    document.getElementById('modal-cat-title').textContent = 'Nouvelle catégorie';
+  }
+  renderCatBannerPicker();
+  openModal('modal-cat');
+}
+
+function editCat(id) { openCatModal(id); }
+
+function autoSlug() {
+  if (editingCat) return;
+  const name = document.getElementById('c-name').value;
+  const slug = name.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  document.getElementById('c-slug').value = slug;
+}
+
+function pickEmoji(el) {
+  document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('c-emoji').value = el.dataset.emoji;
+}
+
+function pickColor(el) {
+  document.querySelectorAll('.color-swatch').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('c-color').value = el.dataset.color;
+}
+
+function renderCatBannerPicker() {
+  const src        = document.getElementById('c-banner').value;
+  const img        = document.getElementById('c-banner-img-preview');
+  const empty      = document.getElementById('cat-banner-empty');
+  const removeBtn  = document.getElementById('cat-banner-remove');
+  const drop       = document.getElementById('cat-banner-drop');
+  if (src) {
+    img.src = src;
+    img.style.display = 'block';
+    empty.style.display = 'none';
+    removeBtn.style.display = 'flex';
+    drop.classList.add('has-image');
+  } else {
+    img.src = '';
+    img.style.display = 'none';
+    empty.style.display = 'block';
+    removeBtn.style.display = 'none';
+    drop.classList.remove('has-image');
+  }
+}
+
+function handleCatBannerFile(file) {
+  if (!file || !file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const tmp = new Image();
+    tmp.onload = () => {
+      const maxW = 1200;
+      let w = tmp.width, h = tmp.height;
+      if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(tmp, 0, 0, w, h);
+      document.getElementById('c-banner').value = canvas.toDataURL('image/jpeg', 0.82);
+      renderCatBannerPicker();
+    };
+    tmp.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleCatBannerDrop(e) {
+  e.preventDefault();
+  document.getElementById('cat-banner-drop').classList.remove('drag-over');
+  handleCatBannerFile(e.dataTransfer.files[0]);
+}
+
+function removeCatBanner(e) {
+  e.stopPropagation();
+  document.getElementById('c-banner').value = '';
+  document.getElementById('c-banner-file').value = '';
+  renderCatBannerPicker();
+}
+
+function saveCat(e) {
+  e.preventDefault();
+  const id = editingCat || 'cat-' + Date.now();
+  const cat = {
+    id,
+    name:   document.getElementById('c-name').value.trim(),
+    slug:   document.getElementById('c-slug').value.trim(),
+    desc:   document.getElementById('c-desc').value.trim(),
+    emoji:  document.getElementById('c-emoji').value,
+    color:  document.getElementById('c-color').value,
+    banner: document.getElementById('c-banner').value.trim(),
+    header: document.getElementById('c-header').value === '1',
+    status: document.getElementById('c-status').value,
+  };
+  const idx = state.categories.findIndex(c => c.id === id);
+  if (idx >= 0) state.categories[idx] = cat;
+  else state.categories.push(cat);
+  save(KEYS.categories, state.categories);
+  closeModal('modal-cat');
+  renderCategories(); updateBadges();
+  toast((editingCat ? 'Catégorie mise à jour' : 'Catégorie créée + page générée') + ' ✓', 'success');
+  generateAllCatPages();
+  updateAllNavBars();
+}
+
+function deleteCat(id) {
+  const cat = state.categories.find(c => c.id === id);
+  if (!cat) return;
+  const count = state.products.filter(p => p.category === id).length;
+  if (!confirm(`Supprimer la catégorie "${cat.name}" ?\n\n${count > 0 ? count + ' produit(s) seront sans catégorie.\n\n' : ''}Cette action supprimera aussi la page ${cat.slug}.html du header.`)) return;
+  state.categories = state.categories.filter(c => c.id !== id);
+  save(KEYS.categories, state.categories);
+  renderCategories(); renderProducts(); updateBadges();
+  toast('Catégorie supprimée + navigation mise à jour');
+  generateAllCatPages();
+  updateAllNavBars();
+}
+
+/* ---------- Page generation ---------- */
+function generateCatPage(catId) {
+  const cat = state.categories.find(c => c.id === catId);
+  if (!cat) return;
+  const products = state.products.filter(p => p.category === catId && p.status === 'active');
+  const html = buildCatPageHTML(cat, products);
+  downloadHTML(html, cat.slug + '.html');
+  toast(`Page ${cat.slug}.html téléchargée ✓`, 'success');
+}
+
+function generateAllCatPages() {
+  // Auto-generates and "stores" the nav definition — actual download is on demand
+  // Also updates localStorage so front-end pages can read dynamic nav
+  const nav = state.categories.filter(c => c.status === 'active' && c.header).map(c => ({
+    name: c.name, slug: c.slug, emoji: c.emoji
+  }));
+  localStorage.setItem('castaneas_dynamic_nav', JSON.stringify(nav));
+  // Re-render pages panel if active
+  const pagesPanel = document.getElementById('panel-pages');
+  if (pagesPanel.classList.contains('active')) renderPages();
+}
+
+function updateAllNavBars() {
+  generateAllCatPages();
+}
+
+function previewCatPage(catId) {
+  const cat = state.categories.find(c => c.id === catId);
+  if (!cat) return;
+  const products = state.products.filter(p => p.category === catId && p.status === 'active');
+  const html = buildCatPageHTML(cat, products);
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  window.open(url, '_blank');
+}
+
+function buildCatPageHTML(cat, products) {
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${cat.name} · Castaneas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="categorie.css">
+</head>
+<body>
+
+<div class="promo-bar pill">Livraison offerte dès 40€ d'achat — récolte 2025 disponible 🌰</div>
+
+<header class="navbar pill-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand" aria-label="Castaneas">
+      <img src="assets/castaneas-logo.svg" alt="Castaneas" class="brand-logo">
+    </a>
+    <nav class="nav-links"></nav>
+    <div class="nav-actions">
+      <a href="login.html" class="icon-btn" aria-label="Mon compte">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke-linecap="round"/></svg>
+      </a>
+      <button class="cart-pill" aria-label="Panier" data-cart-toggle>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 7h14l-1.5 11.5a2 2 0 0 1-2 1.5h-7a2 2 0 0 1-2-1.5L5 7Z"/><path d="M9 7V5a3 3 0 0 1 6 0v2" stroke-linecap="round"/></svg>
+        <span data-cart-count>0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<nav class="breadcrumb" aria-label="Fil d'ariane">
+  <a href="index.html">Accueil</a>
+  <span class="sep">›</span>
+  <span class="current" id="bc-name">${cat.name}</span>
+</nav>
+
+<div class="page">
+  <div class="cat-banner" id="cat-banner">
+    <div class="cat-banner__bg" id="cat-banner-bg" style="background:${cat.color || 'var(--cream-soft)'}"></div>
+    <div class="cat-banner__content">
+      <div class="cat-banner__eyebrow">La collection</div>
+      <h1 class="cat-banner__title" id="cat-title">${cat.name}</h1>
+      <p class="cat-banner__desc" id="cat-desc">${cat.desc || 'Fabriqué à la main, en petites quantités'}</p>
+    </div>
+  </div>
+  <div class="cat-toolbar">
+    <div><strong id="result-count">—</strong> · récolte d'automne</div>
+    <button class="sort-select" type="button" id="sort-btn" onclick="toggleSort()">
+      <span id="sort-label">Trier par prix</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+  <div class="product-grid" id="product-grid"></div>
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand"><img src="assets/castaneas-logo.svg" alt="Castaneas" class="footer-brand-logo"></div>
+        <p>Crèmes de châtaigne et pâtes de noisette faites à la main en Tarn-et-Garonne, en petites quantités, depuis 2018.</p>
+      </div>
+      <div><h4>Boutique</h4><ul><li><a href="creme-de-chataigne.html">Crèmes de châtaigne</a></li><li><a href="coffrets.html">Coffrets</a></li></ul></div>
+      <div><h4>La maison</h4><ul><li><a href="index.html#histoire">Notre histoire</a></li><li><a href="recettes.html">Recettes</a></li></ul></div>
+      <div><h4>Aide</h4><ul><li><a href="#">Livraison &amp; retours</a></li><li><a href="#">Nous contacter</a></li><li><a href="cgv.html">CGV</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><div>© 2026 Castaneas · Lauzerte, Tarn-et-Garonne (82)</div><div>Fait à la main, par petites fournées 🌰</div></div>
+  </div>
+</footer>
+
+<div class="cart-backdrop" data-cart-close></div>
+<aside class="cart-drawer" role="dialog" aria-label="Votre panier">
+  <div class="cart-head"><h3>Votre panier</h3><button class="cart-close" data-cart-close aria-label="Fermer le panier"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/></svg></button></div>
+  <div class="cart-body" data-cart-body></div>
+  <div class="cart-foot" data-cart-foot>
+    <div class="cart-total-row"><span>Sous-total</span><span data-cart-total>0,00€</span></div>
+    <p class="cart-shipping-note">🚚 Livraison offerte dès 40€ d'achat</p>
+    <a href="confirmation.html" class="cart-checkout-btn">Passer commande<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"/></svg></a>
+  </div>
+</aside>
+
+<script>var CAT_SLUG = '${cat.slug}';<\/script>
+<script src="site-data.js"><\/script>
+<script src="cart.js"><\/script>
+<script src="categorie-page.js"><\/script>
+</body>
+</html>`;
+}
+
+function downloadHTML(html, filename) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+  a.download = filename;
+  a.click();
+}
+
+/* ---------- Settings ---------- */
+function saveSettings(e) {
+  e.preventDefault();
+  const user = document.getElementById('setting-user').value.trim();
+  const pass = document.getElementById('setting-pass').value;
+  const current = load(KEYS.admin) || { user: 'admin', pass: btoa('castaneas2026') };
+  const updated = { user: user || current.user, pass: pass ? btoa(pass) : current.pass };
+  save(KEYS.admin, updated);
+  document.getElementById('setting-pass').value = '';
+  toast('Paramètres enregistrés ✓', 'success');
+}
+
+function confirmReset() {
+  if (!confirm('Réinitialiser TOUTES les données ? Cette action est irréversible.')) return;
+  [KEYS.products, KEYS.categories, KEYS.orders].forEach(k => localStorage.removeItem(k));
+  location.reload();
+}
+
+/* ---------- Modal helpers ---------- */
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+});
+
+/* ---------- Toast ---------- */
+let toastTimer;
+function toast(msg, type = '') {
+  const el = document.getElementById('admin-toast');
+  el.textContent = msg;
+  el.className = 'admin-toast show' + (type ? ' ' + type : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+/* ---------- RECIPES ---------- */
+function renderRecipes() {
+  const tbody = document.getElementById('recipes-tbody');
+  if (!tbody) return;
+  if (!state.recipes.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted);">Aucune recette — créez la première !</td></tr>';
+    return;
+  }
+  tbody.innerHTML = state.recipes.map(r => {
+    const prods = (r.products || []).map(id => {
+      const p = state.products.find(x => x.id === id);
+      return p ? `<span style="background:var(--cream-soft);padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700;">${p.name}</span>` : '';
+    }).join(' ');
+    const statusLabel = r.status === 'published'
+      ? '<span class="badge badge-green">Publié</span>'
+      : '<span class="badge badge-gray">Brouillon</span>';
+    return `<tr>
+      <td><img src="${r.image || 'assets/product-pate-tartiner.png'}" onerror="this.onerror=null;this.src='assets/product-pate-tartiner.png'" style="width:52px;height:52px;object-fit:cover;border-radius:10px;"></td>
+      <td style="font-weight:700;">${r.title}${r.titleEm ? ' <em>' + r.titleEm + '</em>' : ''}</td>
+      <td>${r.time || '—'}</td>
+      <td>${r.servings || '—'}</td>
+      <td style="display:flex;flex-wrap:wrap;gap:4px;">${prods || '<span style="color:var(--muted)">Aucun</span>'}</td>
+      <td>${statusLabel}</td>
+      <td>
+        <div class="action-btns">
+          <a href="recette.html#${r.id}" target="_blank" class="btn btn-secondary btn-sm" title="Voir">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </a>
+          <button class="btn btn-secondary btn-sm" onclick="editRecipe('${r.id}')">Modifier</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteRecipe('${r.id}')">Supprimer</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function openRecipeModal(id) {
+  editingRecipe = id || null;
+  recipeSteps = [];
+  document.getElementById('modal-recipe-title').textContent = id ? 'Modifier la recette' : 'Nouvelle recette';
+  document.getElementById('recipe-form').reset();
+  document.getElementById('r-image').value = '';
+
+  if (id) {
+    const r = state.recipes.find(x => x.id === id);
+    if (!r) return;
+    document.getElementById('r-id').value = r.id;
+    document.getElementById('r-title').value = r.title || '';
+    document.getElementById('r-title-em').value = r.titleEm || '';
+    document.getElementById('r-time').value = r.time || '';
+    document.getElementById('r-servings').value = r.servings || '';
+    document.getElementById('r-intro').value = r.intro || '';
+    document.getElementById('r-desc').value = r.desc || '';
+    document.getElementById('r-image').value = r.image || '';
+    document.getElementById('r-status').value = r.status || 'published';
+    recipeSteps = (r.steps || []).map(s => ({ ...s }));
+  }
+
+  renderRecipeImgPicker();
+  renderRecipeProductsPicker(id ? state.recipes.find(x => x.id === id)?.products || [] : []);
+  renderRecipeSteps();
+  openModal('modal-recipe');
+}
+
+function editRecipe(id) { openRecipeModal(id); }
+
+function renderRecipeImgPicker() {
+  const picker = document.getElementById('recipe-img-picker');
+  const currentImg = document.getElementById('r-image').value;
+  const catalog = [...new Set([...state.imageCatalogMain, ...state.imageCatalogExtra])];
+  picker.innerHTML = catalog.map(src => {
+    const sel = src === currentImg ? ' selected' : '';
+    return `<div class="img-slot"><img class="img-preview${sel}" data-src="${src}" src="${src}" style="width:72px;height:72px;object-fit:cover;border-radius:12px;cursor:pointer;border:2px solid ${sel ? 'var(--brown-deep)' : 'transparent'}" onerror="this.onerror=null;this.src='assets/product-pate-tartiner.png'" onclick="pickRecipeImg(this)"></div>`;
+  }).join('');
+}
+
+function pickRecipeImg(el) {
+  document.querySelectorAll('#recipe-img-picker .img-preview').forEach(i => {
+    i.classList.remove('selected');
+    i.style.border = '2px solid transparent';
+  });
+  el.classList.add('selected');
+  el.style.border = '2px solid var(--brown-deep)';
+  document.getElementById('r-image').value = el.dataset.src;
+}
+
+function addRecipeImg() {
+  const inp = document.getElementById('r-img-add');
+  const src = inp.value.trim();
+  if (!src) return;
+  if (!state.imageCatalogMain.includes(src)) {
+    state.imageCatalogMain.push(src);
+    save(KEYS.imagesMain, state.imageCatalogMain);
+  }
+  document.getElementById('r-image').value = src;
+  inp.value = '';
+  renderRecipeImgPicker();
+}
+
+function renderRecipeProductsPicker(selected) {
+  const picker = document.getElementById('recipe-products-picker');
+  if (!state.products.length) {
+    picker.innerHTML = '<em style="color:var(--muted);font-size:13px">Aucun produit dans le catalogue.</em>';
+    return;
+  }
+  picker.innerHTML = state.products.filter(p => p.status === 'active').map(p => {
+    const checked = selected.includes(p.id);
+    return `<label style="display:inline-flex;align-items:center;gap:6px;background:${checked ? 'var(--cream)' : 'var(--cream-soft)'};border:2px solid ${checked ? 'var(--brown-deep)' : 'transparent'};padding:6px 12px;border-radius:999px;cursor:pointer;font-size:13px;font-weight:600;transition:all .12s;">
+      <input type="checkbox" name="recipe-product" value="${p.id}" ${checked ? 'checked' : ''} style="accent-color:var(--brown-deep)">
+      ${p.name} <span style="color:var(--muted);font-weight:400">${p.weight}</span>
+    </label>`;
+  }).join('');
+}
+
+function renderRecipeSteps() {
+  const list = document.getElementById('recipe-steps-list');
+  if (!recipeSteps.length) {
+    list.innerHTML = '<em style="color:var(--muted);font-size:13px;">Aucune étape. Cliquez sur « + Ajouter une étape ».</em>';
+    return;
+  }
+  list.innerHTML = recipeSteps.map((s, i) => `
+    <div style="display:grid;grid-template-columns:36px 1fr 36px;gap:8px;align-items:center;">
+      <span style="background:var(--accent-cocoa);color:#fff;border-radius:50%;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;justify-self:center;">${i + 1}</span>
+      <input type="text" value="${s.text.replace(/"/g, '&quot;')}" oninput="recipeSteps[${i}].text=this.value" style="margin:0;" placeholder="Décrivez cette étape…">
+      <button type="button" onclick="removeRecipeStep(${i})" style="background:none;border:none;color:var(--corail);cursor:pointer;font-size:18px;font-weight:700;padding:0;line-height:1;">×</button>
+    </div>`).join('');
+}
+
+function addRecipeStep() {
+  recipeSteps.push({ step: recipeSteps.length + 1, text: '' });
+  renderRecipeSteps();
+}
+
+function removeRecipeStep(i) {
+  recipeSteps.splice(i, 1);
+  recipeSteps.forEach((s, idx) => s.step = idx + 1);
+  renderRecipeSteps();
+}
+
+function saveRecipe(e) {
+  e.preventDefault();
+  const id = editingRecipe || 'recipe-' + Date.now();
+  const selectedProducts = [...document.querySelectorAll('#recipe-products-picker input[name="recipe-product"]:checked')].map(el => el.value);
+  const recipe = {
+    id,
+    title:    document.getElementById('r-title').value.trim(),
+    titleEm:  document.getElementById('r-title-em').value.trim(),
+    time:     document.getElementById('r-time').value.trim(),
+    servings: document.getElementById('r-servings').value.trim(),
+    intro:    document.getElementById('r-intro').value.trim(),
+    desc:     document.getElementById('r-desc').value.trim(),
+    image:    document.getElementById('r-image').value.trim() || 'assets/product-pate-tartiner.png',
+    products: selectedProducts,
+    steps:    recipeSteps.filter(s => s.text.trim()),
+    status:   document.getElementById('r-status').value,
+  };
+  const idx = state.recipes.findIndex(r => r.id === id);
+  if (idx >= 0) state.recipes[idx] = recipe;
+  else state.recipes.push(recipe);
+  save(KEYS.recipes, state.recipes);
+  closeModal('modal-recipe');
+  renderRecipes(); updateBadges();
+  toast((editingRecipe ? 'Recette mise à jour' : 'Recette créée') + ' ✓', 'success');
+}
+
+function deleteRecipe(id) {
+  if (!confirm('Supprimer cette recette définitivement ?')) return;
+  state.recipes = state.recipes.filter(r => r.id !== id);
+  save(KEYS.recipes, state.recipes);
+  renderRecipes(); updateBadges();
+  toast('Recette supprimée');
+}
+
+/* ---------- Homepage image pickers ---------- */
+function renderHpImgPicker(suffix) {
+  const src       = document.getElementById('hp-' + suffix + '-image').value;
+  const preview   = document.getElementById('hp-' + suffix + '-img-preview');
+  const empty     = document.getElementById('hp-' + suffix + '-img-empty');
+  const removeBtn = document.getElementById('hp-' + suffix + '-img-remove');
+  const drop      = document.getElementById('hp-' + suffix + '-img-drop');
+  if (!preview) return;
+  if (src) {
+    preview.src = src; preview.style.display = 'block';
+    if (empty) empty.style.display = 'none';
+    if (removeBtn) removeBtn.style.display = 'flex';
+    if (drop) drop.classList.add('has-image');
+  } else {
+    preview.src = ''; preview.style.display = 'none';
+    if (empty) empty.style.display = 'block';
+    if (removeBtn) removeBtn.style.display = 'none';
+    if (drop) drop.classList.remove('has-image');
+  }
+}
+
+function handleHpImgFile(file, suffix) {
+  if (!file || !file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const tmp = new Image();
+    tmp.onload = () => {
+      const maxW = suffix === 'hero' ? 1440 : 900;
+      let w = tmp.width, h = tmp.height;
+      if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(tmp, 0, 0, w, h);
+      document.getElementById('hp-' + suffix + '-image').value = canvas.toDataURL('image/jpeg', 0.82);
+      renderHpImgPicker(suffix);
+    };
+    tmp.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeHpImg(suffix) {
+  document.getElementById('hp-' + suffix + '-image').value = '';
+  const f = document.getElementById('hp-' + suffix + '-img-file');
+  if (f) f.value = '';
+  renderHpImgPicker(suffix);
+}
+
+/* ---------- Homepage ---------- */
+function hpSetVal(id, val) {
+  const el = document.getElementById(id);
+  if (el && val !== undefined && val !== null) el.value = val;
+}
+
+function renderHomepage() {
+  const catOpts = '<option value="">— Aucune —</option>'
+    + state.categories.filter(c => c.status === 'active').map(c =>
+        `<option value="${c.id}">${c.emoji ? c.emoji + ' ' : ''}${c.name}</option>`
+      ).join('');
+  ['hp-cat-1', 'hp-cat-2', 'hp-cat-3'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = catOpts;
+  });
+
+  const prodOpts = '<option value="">— Aucun —</option>'
+    + state.products.filter(p => p.status === 'active').map(p =>
+        `<option value="${p.id}">${p.name}${p.weight ? ' · ' + p.weight : ''}</option>`
+      ).join('');
+  ['hp-prod-1', 'hp-prod-2', 'hp-prod-3', 'hp-prod-4'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = prodOpts;
+  });
+
+  const cfg = load(KEYS.homepage) || {};
+
+  const h = cfg.hero || {};
+  hpSetVal('hp-hero-image', h.image || '');
+  renderHpImgPicker('hero');
+  hpSetVal('hp-hero-eyebrow',  h.eyebrow  ?? 'Maison Castaneas · Quercy · Tarn-et-Garonne');
+  hpSetVal('hp-hero-title',    h.title    ?? 'Châtaignes et noisettes,');
+  hpSetVal('hp-hero-title-em', h.titleEm  ?? 'faites à la main.');
+  hpSetVal('hp-hero-subtitle', h.subtitle ?? 'Crèmes, pâtes à tartiner et huiles, cuisinées en petites fournées à Albias depuis 2018.');
+  hpSetVal('hp-hero-btn1-text',h.btn1Text ?? 'Découvrir la boutique');
+  hpSetVal('hp-hero-btn1-href',h.btn1Href ?? 'creme-de-chataigne.html');
+  hpSetVal('hp-hero-btn2-text',h.btn2Text ?? 'Notre histoire');
+  hpSetVal('hp-hero-btn2-href',h.btn2Href ?? '#histoire');
+
+  const cs = cfg.catsSection || {};
+  hpSetVal('hp-cats-eyebrow',  cs.eyebrow ?? 'Nos collections');
+  hpSetVal('hp-cats-title',    cs.title   ?? 'Deux fruits du verger,');
+  hpSetVal('hp-cats-title-em', cs.titleEm ?? 'un même chaudron de cuivre.');
+  const ch = cfg.catsHighlight || [];
+  ['hp-cat-1','hp-cat-2','hp-cat-3'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el && ch[i]) el.value = ch[i];
+  });
+
+  const bs = cfg.bsSection || {};
+  hpSetVal('hp-bs-eyebrow',  bs.eyebrow ?? 'Nos incontournables');
+  hpSetVal('hp-bs-title',    bs.title   ?? 'Ce que');
+  hpSetVal('hp-bs-title-em', bs.titleEm ?? 'vous préférez.');
+  hpSetVal('hp-bs-lede',     bs.lede    ?? 'Une sélection des pots les plus commandés cette saison — préparés à la ferme, en Tarn-et-Garonne.');
+  const ph = cfg.productsHighlight || [];
+  ['hp-prod-1','hp-prod-2','hp-prod-3','hp-prod-4'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el && ph[i]) el.value = ph[i];
+  });
+
+  const hi = cfg.histoire || {};
+  hpSetVal('hp-hist-image', hi.image || '');
+  renderHpImgPicker('hist');
+  hpSetVal('hp-hist-eyebrow',      hi.eyebrow       ?? 'Notre histoire');
+  hpSetVal('hp-hist-title',        hi.title         ?? 'Deux vergers de famille,');
+  hpSetVal('hp-hist-title-em',     hi.titleEm       ?? 'devenus une maison.');
+  hpSetVal('hp-hist-para1',        hi.para1         ?? '');
+  hpSetVal('hp-hist-para2',        hi.para2         ?? '');
+  hpSetVal('hp-hist-cta-text',     hi.ctaText       ?? 'Lire le récit complet');
+  hpSetVal('hp-hist-cta-href',     hi.ctaHref       ?? '#');
+  hpSetVal('hp-hist-sticker-label',hi.stickerLabel  ?? 'Lauzerte · Quercy');
+  hpSetVal('hp-hist-sticker-sub',  hi.stickerSub    ?? '44.25°N · 1.13°E · Tarn-et-Garonne (82)');
+  hpSetVal('hp-hist-sig-name',     hi.signatureName ?? 'Lucie & Marc');
+  hpSetVal('hp-hist-sig-role',     hi.signatureRole ?? 'Les fondateurs');
+
+  const v = cfg.valeurs || {};
+  hpSetVal('hp-val-eyebrow',  v.eyebrow ?? 'Trois ingrédients, aucun secret');
+  hpSetVal('hp-val-title',    v.title   ?? 'Du verger au pot,');
+  hpSetVal('hp-val-title-em', v.titleEm ?? 'et rien à cacher.');
+  const items = v.items || [];
+  hpSetVal('hp-val1-title', items[0]?.title ?? 'Cueillies à la main');
+  hpSetVal('hp-val1-desc',  items[0]?.desc  ?? 'Châtaignes et noisettes ramassées une à une dans nos vergers du Quercy, à pleine maturité.');
+  hpSetVal('hp-val2-title', items[1]?.title ?? 'Cuites en cuivre');
+  hpSetVal('hp-val2-desc',  items[1]?.desc  ?? 'Dans le chaudron de famille, sans presse, à feu doux — le soir même de la récolte.');
+  hpSetVal('hp-val3-title', items[2]?.title ?? 'Trois ingrédients');
+  hpSetVal('hp-val3-desc',  items[2]?.desc  ?? 'Fruit, sucre roux, vanille. Sans gluten, sans huile de palme, sans conservateur.');
+}
+
+function saveHomepage(e) {
+  e.preventDefault();
+  const g = id => document.getElementById(id).value.trim();
+  const cfg = {
+    hero: {
+      image:    g('hp-hero-image'),
+      eyebrow:  g('hp-hero-eyebrow'),
+      title:    g('hp-hero-title'),
+      titleEm:  g('hp-hero-title-em'),
+      subtitle: g('hp-hero-subtitle'),
+      btn1Text: g('hp-hero-btn1-text'),
+      btn1Href: g('hp-hero-btn1-href'),
+      btn2Text: g('hp-hero-btn2-text'),
+      btn2Href: g('hp-hero-btn2-href'),
+    },
+    catsSection: {
+      eyebrow: g('hp-cats-eyebrow'),
+      title:   g('hp-cats-title'),
+      titleEm: g('hp-cats-title-em'),
+    },
+    catsHighlight: ['hp-cat-1','hp-cat-2','hp-cat-3'].map(id => g(id)).filter(Boolean),
+    bsSection: {
+      eyebrow: g('hp-bs-eyebrow'),
+      title:   g('hp-bs-title'),
+      titleEm: g('hp-bs-title-em'),
+      lede:    g('hp-bs-lede'),
+    },
+    productsHighlight: ['hp-prod-1','hp-prod-2','hp-prod-3','hp-prod-4'].map(id => g(id)).filter(Boolean),
+    histoire: {
+      image:         g('hp-hist-image'),
+      eyebrow:       g('hp-hist-eyebrow'),
+      title:         g('hp-hist-title'),
+      titleEm:       g('hp-hist-title-em'),
+      para1:         g('hp-hist-para1'),
+      para2:         g('hp-hist-para2'),
+      ctaText:       g('hp-hist-cta-text'),
+      ctaHref:       g('hp-hist-cta-href'),
+      stickerLabel:  g('hp-hist-sticker-label'),
+      stickerSub:    g('hp-hist-sticker-sub'),
+      signatureName: g('hp-hist-sig-name'),
+      signatureRole: g('hp-hist-sig-role'),
+    },
+    valeurs: {
+      eyebrow: g('hp-val-eyebrow'),
+      title:   g('hp-val-title'),
+      titleEm: g('hp-val-title-em'),
+      items: [
+        { title: g('hp-val1-title'), desc: g('hp-val1-desc') },
+        { title: g('hp-val2-title'), desc: g('hp-val2-desc') },
+        { title: g('hp-val3-title'), desc: g('hp-val3-desc') },
+      ],
+    },
+  };
+  save(KEYS.homepage, cfg);
+  toast('Page d\'accueil mise à jour ✓', 'success');
+}
+
+/* ---------- Storage helpers ---------- */
+function load(key) { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } }
+function save(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+
+/* ---------- Boot ---------- */
+init();
+</script>
+</body>
+</html>

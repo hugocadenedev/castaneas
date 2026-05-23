@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connexion · Castaneas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  :root {
+    --serif: 'Fraunces', Georgia, serif;
+    --sans: 'Inter', -apple-system, Arial, sans-serif;
+  }
+  body { font-family: var(--sans); }
+  h1,h2,h3 { font-family: var(--serif); }
+</style>
+</head>
+<body>
+
+<div class="auth-page">
+  <div class="auth-card">
+    <a href="index.html" class="auth-logo">
+      <img src="assets/castaneas-logo.svg" alt="Castaneas" style="height:44px;width:auto;">
+    </a>
+
+    <h1 class="auth-title">Bienvenue</h1>
+    <p class="auth-subtitle">Connectez-vous à votre compte Castaneas</p>
+
+    <div class="auth-alert" id="auth-alert" style="display:none;"></div>
+
+    <form class="auth-form" id="login-form" novalidate>
+      <div class="auth-field">
+        <label for="email">Adresse e-mail</label>
+        <input type="email" id="email" name="email" placeholder="vous@exemple.fr" autocomplete="email">
+        <span class="auth-error" id="err-email"></span>
+      </div>
+      <div class="auth-field">
+        <label for="password">Mot de passe</label>
+        <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password">
+        <span class="auth-error" id="err-password"></span>
+      </div>
+      <button type="submit" class="auth-submit" id="submit-btn">Se connecter</button>
+    </form>
+
+    <div class="auth-divider">
+      <span>Pas encore de compte ?</span>
+      <a href="register.html">Créer un compte</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const USERS_KEY = 'castaneas_users_v1';
+const SESSION_KEY = 'castaneas_session_v1';
+
+function getUsers() {
+  try { return JSON.parse(localStorage.getItem(USERS_KEY) || '[]'); }
+  catch { return []; }
+}
+
+function showError(fieldId, msg) {
+  const el = document.getElementById(fieldId);
+  el.textContent = msg;
+  el.classList.add('show');
+}
+function clearErrors() {
+  document.querySelectorAll('.auth-error').forEach(el => { el.textContent = ''; el.classList.remove('show'); });
+  const alert = document.getElementById('auth-alert');
+  alert.style.display = 'none';
+  alert.textContent = '';
+}
+function showAlert(msg) {
+  const alert = document.getElementById('auth-alert');
+  alert.textContent = msg;
+  alert.style.display = 'block';
+}
+
+document.getElementById('login-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  clearErrors();
+
+  const email = document.getElementById('email').value.trim().toLowerCase();
+  const password = document.getElementById('password').value;
+  let valid = true;
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    showError('err-email', 'Veuillez entrer un e-mail valide.');
+    valid = false;
+  }
+  if (!password || password.length < 6) {
+    showError('err-password', 'Mot de passe requis (6 caractères min).');
+    valid = false;
+  }
+  if (!valid) return;
+
+  const users = getUsers();
+  const user = users.find(u => u.email === email);
+
+  if (!user) {
+    showAlert('Aucun compte trouvé avec cet e-mail. Créez un compte pour commencer.');
+    return;
+  }
+
+  // Simple hash comparison (btoa for demo — not production-grade)
+  if (user.password !== btoa(password)) {
+    showAlert('E-mail ou mot de passe incorrect.');
+    return;
+  }
+
+  // Store session
+  const session = { email: user.email, prenom: user.prenom, nom: user.nom, ts: Date.now() };
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+
+  const btn = document.getElementById('submit-btn');
+  btn.textContent = '✓ Connecté !';
+  btn.disabled = true;
+
+  setTimeout(() => {
+    const redirect = new URLSearchParams(location.search).get('redirect') || 'index.html';
+    window.location.href = redirect;
+  }, 700);
+});
+</script>
+<script src="site-data.js"></script>
+</body>
+</html>

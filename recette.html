@@ -1,0 +1,425 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recette · Castaneas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  :root {
+    --serif: 'Fraunces', Georgia, serif;
+    --sans: 'Inter', -apple-system, Arial, sans-serif;
+    --hand: 'Caveat', cursive;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  body { font-family: var(--sans); letter-spacing: -.005em; }
+  h1,h2,h3,h4 { font-family: var(--serif); letter-spacing: -.02em; }
+
+  /* NAV */
+  .navbar.pill-nav { background: transparent; border-bottom: none; position: sticky; top: 14px; z-index: 50; }
+  .navbar.pill-nav .nav-inner { max-width: 1340px; margin: 16px auto 0; background: #fff; border-radius: 999px; padding: 12px 16px 12px 28px; box-shadow: 0 6px 24px -10px rgba(59,31,14,.18); }
+  .navbar.pill-nav .nav-links { font-weight: 600; }
+  .navbar.pill-nav .nav-links a { color: var(--brown-deep); }
+  .navbar.pill-nav .nav-actions { background: transparent; border-radius: 0; padding: 0; gap: 8px; }
+  .navbar.pill-nav .icon-btn { width: 40px; height: 40px; background: #EDEFE5; border-radius: 999px; }
+  .cart-pill { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px 8px 12px; background: #EDEFE5; color: var(--brown-deep); font-weight: 700; font-size: 13px; border-radius: 999px; border: none; cursor: pointer; transition: background .15s; }
+  .cart-pill:hover { background: #dfe3d5; }
+  .cart-pill svg { width: 18px; height: 18px; }
+  .promo-bar.pill { max-width: 1340px; margin: 14px auto 0; border-radius: 999px; }
+
+  /* LAYOUT */
+  .page { max-width: 1340px; margin: 0 auto; padding: 0 24px 100px; }
+
+  /* BREADCRUMB */
+  .crumb { font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); font-weight: 700; padding: 28px 0 0; display: flex; align-items: center; gap: 8px; }
+  .crumb a { color: var(--muted); text-decoration: none; transition: color .15s; }
+  .crumb a:hover { color: var(--brown-deep); }
+  .crumb .sep { opacity: .5; }
+
+  /* RECIPE HERO */
+  .recipe-hero {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 48px;
+    align-items: start;
+    margin: 36px 0 72px;
+  }
+  .recipe-hero__img {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border-radius: 32px;
+    overflow: hidden;
+    background: var(--terracotta);
+  }
+  .recipe-hero__img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .recipe-hero__info { display: flex; flex-direction: column; gap: 20px; padding-top: 8px; }
+  .recipe-hero__eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: .32em; text-transform: uppercase; color: var(--brown-chest); font-weight: 700; display: inline-flex; align-items: center; gap: 12px; }
+  .recipe-hero__eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--brown-chest); opacity: .5; }
+  .recipe-hero__title { font-family: var(--serif); font-size: clamp(38px,4.5vw,64px); font-weight: 700; line-height: 1.02; color: var(--brown-deep); letter-spacing: -.015em; margin: 0; }
+  .recipe-hero__title em { color: var(--brown-chest); font-weight: 600; }
+  .recipe-hero__intro { font-family: var(--hand); font-size: 22px; color: var(--brown-chest); line-height: 1.3; }
+  .recipe-hero__desc { font-size: 16px; color: var(--ink-soft); line-height: 1.6; font-weight: 500; }
+  .recipe-meta-pills { display: flex; gap: 10px; flex-wrap: wrap; }
+  .recipe-meta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--cream-soft);
+    padding: 10px 16px;
+    border-radius: 999px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--brown-chest);
+  }
+  .recipe-meta-pill svg { width: 15px; height: 15px; color: var(--brown-chest); }
+
+  /* STEPS */
+  .recipe-steps { margin-bottom: 72px; }
+  .section-head { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 28px; margin-bottom: 36px; }
+  .section-head__eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: .32em; text-transform: uppercase; color: var(--brown-chest); font-weight: 700; margin-bottom: 12px; display: inline-flex; align-items: center; gap: 12px; }
+  .section-head__eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--brown-chest); opacity: .5; }
+  .section-head__title { font-family: var(--serif); font-size: clamp(28px,3.2vw,40px); line-height: 1.05; font-weight: 700; color: var(--brown-deep); letter-spacing: -.015em; margin: 0; }
+  .section-head__title em { color: var(--brown-chest); font-weight: 600; }
+  .section-head__sub { font-family: var(--hand); font-size: 22px; color: var(--brown-chest); }
+
+  .steps-list { display: flex; flex-direction: column; gap: 16px; }
+  .step {
+    background: #fff;
+    border-radius: 22px;
+    padding: 26px 30px;
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    gap: 20px;
+    align-items: center;
+    box-shadow: 0 2px 10px -4px rgba(59,31,14,.1);
+  }
+  .step__num {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: var(--accent-cocoa);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .step__text { font-size: 16px; color: var(--ink); line-height: 1.6; font-weight: 500; }
+
+  /* PRODUITS ASSOCIÉS */
+  .recipe-products { margin-bottom: 72px; }
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+  }
+  .prod-card {
+    background: #fff;
+    border-radius: 24px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 2px 12px -6px rgba(59,31,14,.12);
+    transition: box-shadow .2s, transform .18s;
+    display: flex;
+    flex-direction: column;
+  }
+  .prod-card:hover { box-shadow: 0 10px 32px -10px rgba(59,31,14,.22); transform: translateY(-2px); }
+  .prod-card__media {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    background: var(--cream-soft);
+    overflow: hidden;
+  }
+  .prod-card__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .35s; }
+  .prod-card:hover .prod-card__media img { transform: scale(1.04); }
+  .prod-card__badge {
+    position: absolute; top: 12px; left: 12px;
+    background: rgba(255,255,255,.95);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--brown-deep);
+  }
+  .prod-card__body { padding: 18px 20px 20px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  .prod-card__cat { font-family: var(--mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--brown-chest); font-weight: 700; }
+  .prod-card__name { font-family: var(--serif); font-size: 19px; color: var(--brown-deep); font-weight: 700; line-height: 1.15; margin: 0 0 2px; letter-spacing: -.01em; }
+  .prod-card__desc { font-size: 13px; color: var(--ink-soft); line-height: 1.45; font-weight: 500; flex: 1; }
+  .prod-card__foot { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; gap: 8px; }
+  .prod-card__price { font-family: var(--serif); font-size: 20px; color: var(--brown-deep); font-weight: 700; }
+  .prod-card__weight { font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .prod-card__add {
+    background: var(--accent-cocoa);
+    color: #fff;
+    padding: 9px 16px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: background .15s;
+    white-space: nowrap;
+  }
+  .prod-card__add:hover { background: var(--ink); }
+  .prod-card__add svg { width: 11px; height: 11px; }
+
+  /* BACK LINK */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent-cocoa);
+    border-bottom: 1px solid var(--accent-cocoa);
+    padding-bottom: 2px;
+    text-decoration: none;
+    margin-bottom: 32px;
+  }
+
+  /* FOOTER */
+  .footer { background: transparent; margin-top: 0; padding: 0 16px 24px; }
+  .footer-inner { max-width: 1340px; margin: 0 auto; background: var(--accent-cocoa); color: var(--cream); border-radius: 28px; padding: 56px 48px 28px; box-shadow: 0 12px 40px -16px rgba(59,31,14,.35); }
+
+  @media (max-width: 1000px) {
+    .recipe-hero { grid-template-columns: 1fr; }
+    .recipe-hero__img { aspect-ratio: 16/9; }
+  }
+  @media (max-width: 600px) {
+    .step { grid-template-columns: 40px 1fr; gap: 14px; padding: 20px; }
+    .step__num { width: 40px; height: 40px; font-size: 18px; }
+  }
+  @media (max-width: 768px) {
+    .navbar.pill-nav { top: 0; }
+    .navbar.pill-nav .nav-inner { margin: 0 auto; border-radius: 0 0 22px 22px; padding: 10px 14px 10px 18px; }
+    .promo-bar.pill { margin: 0; border-radius: 0; }
+    .footer-inner { padding: 40px 24px 24px; border-radius: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="promo-bar pill">Livraison offerte dès 40€ d'achat — récolte 2025 disponible 🌰</div>
+
+<header class="navbar pill-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand" aria-label="Castaneas"><img src="assets/castaneas-logo.svg" alt="Castaneas" class="brand-logo"></a>
+    <nav class="nav-links">
+      <a href="index.html">Accueil</a>
+      <a href="creme-de-chataigne.html">Crèmes de châtaigne</a>
+      <a href="#">Pâtes à tartiner</a>
+      <a href="#">Huiles</a>
+      <a href="recettes.html">Recettes</a>
+      <a href="index.html#histoire">Notre histoire</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="login.html" class="icon-btn" aria-label="Mon compte">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke-linecap="round"/></svg>
+      </a>
+      <button class="cart-pill" aria-label="Panier" data-cart-toggle>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 7h14l-1.5 11.5a2 2 0 0 1-2 1.5h-7a2 2 0 0 1-2-1.5L5 7Z"/><path d="M9 7V5a3 3 0 0 1 6 0v2" stroke-linecap="round"/></svg>
+        <span data-cart-count>0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="page" id="main-content">
+  <!-- Filled by JS -->
+  <div style="padding: 80px 0; text-align: center; color: var(--muted);">Chargement…</div>
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand"><img src="assets/castaneas-logo.svg" alt="Castaneas" class="footer-brand-logo"></div>
+        <p>Crèmes de châtaigne et pâtes de noisette faites à la main en Tarn-et-Garonne, en petites quantités, depuis 2018.</p>
+      </div>
+      <div>
+        <h4>Boutique</h4>
+        <ul>
+          <li><a href="creme-de-chataigne.html">Crèmes de châtaigne</a></li>
+          <li><a href="coffrets.html">Coffrets</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>La maison</h4>
+        <ul>
+          <li><a href="index.html#histoire">Notre histoire</a></li>
+          <li><a href="recettes.html">Recettes</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Aide</h4>
+        <ul>
+          <li><a href="#">Livraison &amp; retours</a></li>
+          <li><a href="#">Nous contacter</a></li>
+          <li><a href="cgv.html">CGV</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 Castaneas · Lauzerte, Tarn-et-Garonne (82)</div>
+      <div>Fait à la main, par petites fournées 🌰</div>
+    </div>
+  </div>
+</footer>
+
+<!-- CART DRAWER -->
+<div class="cart-backdrop" data-cart-close></div>
+<aside class="cart-drawer" role="dialog" aria-label="Votre panier">
+  <div class="cart-head">
+    <h3>Votre panier</h3>
+    <button class="cart-close" data-cart-close aria-label="Fermer le panier">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="cart-body" data-cart-body></div>
+  <div class="cart-foot" data-cart-foot>
+    <div class="cart-total-row">
+      <span>Sous-total</span>
+      <span data-cart-total>0,00€</span>
+    </div>
+    <p class="cart-shipping-note">🚚 Livraison offerte dès 40€ d'achat</p>
+    <a href="panier.html" class="cart-checkout-btn">
+      Passer commande
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"/></svg>
+    </a>
+  </div>
+</aside>
+
+<script src="site-data.js"></script>
+<script src="cart.js"></script>
+<script>
+(function () {
+  var recipeId = location.hash.replace('#', '') || '';
+  var main = document.getElementById('main-content');
+
+  if (!recipeId) {
+    main.innerHTML = '<div style="padding:80px 0;text-align:center;"><h2 style="font-family:var(--serif);color:var(--brown-deep);">Recette introuvable</h2><p style="color:var(--muted);margin:12px 0 24px;">Aucun identifiant de recette fourni.</p><a href="recettes.html" style="color:var(--accent-cocoa);font-weight:700;border-bottom:1px solid var(--accent-cocoa);">← Toutes les recettes</a></div>';
+    return;
+  }
+
+  var r = SiteData.getRecipeById(recipeId);
+  if (!r) {
+    main.innerHTML = '<div style="padding:80px 0;text-align:center;"><h2 style="font-family:var(--serif);color:var(--brown-deep);">Recette introuvable</h2><p style="color:var(--muted);margin:12px 0 24px;">Cette recette n\'existe pas ou a été supprimée.</p><a href="recettes.html" style="color:var(--accent-cocoa);font-weight:700;border-bottom:1px solid var(--accent-cocoa);">← Toutes les recettes</a></div>';
+    return;
+  }
+
+  // Update page title
+  document.title = r.title + (r.titleEm ? ' ' + r.titleEm : '') + ' · Recette Castaneas';
+
+  // Build associated products HTML
+  var products = (r.products || []).map(function (id) {
+    var p = SiteData.getProductById(id);
+    if (!p || p.status !== 'active') return '';
+    var cat = SiteData.getCategoryById(p.category);
+    var catName = cat ? cat.name : '';
+    return '<div class="prod-card">'
+      + '<a href="Fiche Produit.html#' + p.id + '" style="text-decoration:none;color:inherit;display:block;">'
+      +   '<div class="prod-card__media">'
+      +     (p.badge ? '<span class="prod-card__badge">' + p.badge + '</span>' : '')
+      +     '<img src="' + p.image + '" alt="' + p.name + '" onerror="this.onerror=null;this.src=\'assets/product-pate-tartiner.png\'">'
+      +   '</div>'
+      +   '<div class="prod-card__body">'
+      +     (catName ? '<div class="prod-card__cat">' + catName + '</div>' : '')
+      +     '<h3 class="prod-card__name">' + p.name + '</h3>'
+      +     '<p class="prod-card__desc">' + p.desc + '</p>'
+      +     '<div class="prod-card__foot">'
+      +       '<div><span class="prod-card__price">' + p.price.toFixed(2).replace('.', ',') + '€</span> <span class="prod-card__weight">' + p.weight + '</span></div>'
+      +     '</div>'
+      +   '</div>'
+      + '</a>'
+      + '<div style="padding: 0 20px 20px;">'
+      +   '<button class="prod-card__add" onclick="Cart.add({id:\'' + p.id + '\',name:\'' + p.name.replace(/'/g, "\\'") + '\',price:' + p.price + ',weight:\'' + p.weight + '\',image:\'' + p.image + '\'},1)">'
+      +     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'
+      +     'Ajouter au panier'
+      +   '</button>'
+      + '</div>'
+      + '</div>';
+  }).filter(Boolean).join('');
+
+  // Build steps HTML
+  var stepsHTML = '';
+  if (r.steps && r.steps.length) {
+    stepsHTML = '<section class="recipe-steps">'
+      + '<div class="section-head">'
+      +   '<div>'
+      +     '<div class="section-head__eyebrow">Préparation</div>'
+      +     '<h2 class="section-head__title">Les étapes <em>pas à pas.</em></h2>'
+      +   '</div>'
+      +   '<div class="section-head__sub">— ' + r.steps.length + ' étape' + (r.steps.length > 1 ? 's' : '') + '</div>'
+      + '</div>'
+      + '<div class="steps-list">'
+      + r.steps.map(function (s) {
+          return '<div class="step">'
+            + '<span class="step__num">' + s.step + '</span>'
+            + '<p class="step__text">' + s.text + '</p>'
+            + '</div>';
+        }).join('')
+      + '</div>'
+      + '</section>';
+  }
+
+  // Build products section HTML
+  var productsSection = '';
+  if (products) {
+    productsSection = '<section class="recipe-products">'
+      + '<div class="section-head">'
+      +   '<div>'
+      +     '<div class="section-head__eyebrow">Produits utilisés</div>'
+      +     '<h2 class="section-head__title">Commander <em>les produits.</em></h2>'
+      +   '</div>'
+      +   '<div class="section-head__sub">— directement depuis la recette</div>'
+      + '</div>'
+      + '<div class="products-grid">' + products + '</div>'
+      + '</section>';
+  }
+
+  main.innerHTML =
+    '<nav class="crumb">'
+    +   '<a href="index.html">Accueil</a>'
+    +   '<span class="sep">›</span>'
+    +   '<a href="recettes.html">Recettes</a>'
+    +   '<span class="sep">›</span>'
+    +   '<span>' + r.title + (r.titleEm ? ' ' + r.titleEm : '') + '</span>'
+    + '</nav>'
+
+    + '<div class="recipe-hero">'
+    +   '<div class="recipe-hero__img">'
+    +     '<img src="' + (r.image || 'assets/product-pate-tartiner.png') + '" alt="' + r.title + (r.titleEm ? ' ' + r.titleEm : '') + '" onerror="this.onerror=null;this.src=\'assets/product-pate-tartiner.png\'">'
+    +   '</div>'
+    +   '<div class="recipe-hero__info">'
+    +     '<div class="recipe-hero__eyebrow">Recette Castaneas</div>'
+    +     '<h1 class="recipe-hero__title">' + r.title + (r.titleEm ? '<br><em>' + r.titleEm + '</em>' : '') + '</h1>'
+    +     (r.intro ? '<p class="recipe-hero__intro">' + r.intro + '</p>' : '')
+    +     (r.desc ? '<p class="recipe-hero__desc">' + r.desc + '</p>' : '')
+    +     '<div class="recipe-meta-pills">'
+    +       (r.time ? '<div class="recipe-meta-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3" stroke-linecap="round"/></svg>' + r.time + '</div>' : '')
+    +       (r.servings ? '<div class="recipe-meta-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75" stroke-linecap="round"/><path d="M21 21v-2a4 4 0 0 0-3-3.87" stroke-linecap="round"/></svg>' + r.servings + '</div>' : '')
+    +     '</div>'
+    +   '</div>'
+    + '</div>'
+
+    + stepsHTML
+    + productsSection
+
+    + '<a href="recettes.html" class="back-link">← Toutes les recettes</a>';
+})();
+</script>
+</body>
+</html>

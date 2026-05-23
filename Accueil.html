@@ -1,0 +1,1217 @@
+﻿<!DOCTYPE html><html lang="fr"><head>
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Castaneas · Crèmes de châtaigne &amp; noisettes du Quercy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&amp;family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  /* =========================================================
+     TYPOGRAPHIE — alignée sur produit-v2 (Fraunces + Inter)
+     ========================================================= */
+  :root {
+    --serif: 'Fraunces', 'Cormorant Garamond', Georgia, serif;
+    --sans: 'Inter', -apple-system, "Helvetica Neue", Arial, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+    --hand: 'Caveat', cursive;
+  }
+  body { font-family: var(--sans); letter-spacing: -0.005em; }
+  h1, h2, h3, h4 { font-family: var(--serif); letter-spacing: -0.02em; }
+  .home-hero__title em,
+  .section-head__title em,
+  .histoire-card__title em,
+  .cta-title em,
+  .editorial-text em { font-style: italic; font-weight: 400; }
+</style>
+<style>
+  /* =========================================================
+     PAGE — ACCUEIL v2 (alignée sur la boutique : bannière hero + grilles arrondies)
+     ========================================================= */
+
+  /* --- NAVBAR pill --- */
+  .navbar.pill-nav {
+    background: transparent;
+    border-bottom: none;
+    position: sticky;
+    top: 14px;
+    z-index: 50;
+  }
+  .navbar.pill-nav .nav-inner {
+    max-width: 1340px;
+    margin: 16px auto 0;
+    background: #ffffff;
+    border-radius: 999px;
+    padding: 12px 16px 12px 28px;
+    box-shadow: 0 6px 24px -10px rgba(59, 31, 14, 0.18);
+  }
+  .navbar.pill-nav .brand { font-size: 26px; font-weight: 700; }
+  .navbar.pill-nav .nav-links { font-weight: 600; }
+  .navbar.pill-nav .nav-links a { color: var(--brown-deep); }
+  .navbar.pill-nav .nav-actions {
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    gap: 8px;
+  }
+  .navbar.pill-nav .icon-btn {
+    width: 40px;
+    height: 40px;
+    background: #EDEFE5;
+    border-radius: 999px;
+    transition: background .15s;
+  }
+  .navbar.pill-nav .icon-btn:hover { background: #dfe3d5; }
+  .cart-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px 8px 12px;
+    background: #EDEFE5;
+    color: var(--brown-deep);
+    font-weight: 700;
+    font-size: 13px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .cart-pill:hover { background: #dfe3d5; }
+  .cart-pill svg { width: 18px; height: 18px; }
+
+  /* --- PROMO BAR pill --- */
+  .promo-bar.pill {
+    max-width: 1340px;
+    margin: 14px auto 0;
+    border-radius: 999px;
+    padding: 11px 24px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  /* --- PAGE WRAP --- */
+  .home {
+    max-width: 1340px;
+    margin: 0 auto;
+    padding: 28px 16px 0;
+  }
+
+  /* =========================================================
+     HERO — bannière arrondie pleine largeur (façon boutique)
+     ========================================================= */
+  .home-hero {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1180 / 520;
+    border-radius: 28px;
+    overflow: hidden;
+    margin-bottom: 80px;
+    background: #2A2A23;
+  }
+  .home-hero > img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .home-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(20,15,8,0.10) 0%, rgba(20,15,8,0.55) 100%);
+  }
+  .home-hero__content {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #fff;
+    padding: 0 32px;
+    text-shadow: 0 2px 18px rgba(0,0,0,0.35);
+  }
+  .home-hero__eyebrow {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 12px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    opacity: 0.92;
+    margin-bottom: 22px;
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    font-weight: 600;
+  }
+  .home-hero__eyebrow::before,
+  .home-hero__eyebrow::after {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: #fff;
+    opacity: 0.7;
+  }
+  .home-hero__title {
+    font-family: var(--serif);
+    font-size: clamp(44px, 6.4vw, 88px);
+    line-height: 1.02;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    margin: 0 0 18px;
+    max-width: 14ch;
+  }
+  .home-hero__title em { font-style: italic; font-weight: 600; }
+  .home-hero__subtitle {
+    margin: 0 0 32px;
+    font-size: 17px;
+    line-height: 1.5;
+    letter-spacing: 0.01em;
+    opacity: 0.94;
+    max-width: 480px;
+    font-weight: 500;
+  }
+  .home-hero__actions {
+    display: inline-flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .home-hero__actions .btn--white {
+    background: #fff;
+    color: var(--brown-deep);
+    border: none;
+    padding: 14px 24px;
+    border-radius: 999px;
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: 14px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform .15s, background .15s;
+  }
+  .home-hero__actions .btn--white:hover { transform: translateY(-1px); background: #f6f3ec; }
+  .home-hero__actions .btn--outline {
+    background: transparent;
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.55);
+    padding: 14px 24px;
+    border-radius: 999px;
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    transition: background .15s;
+  }
+  .home-hero__actions .btn--outline:hover { background: rgba(255,255,255,0.12); }
+
+  /* =========================================================
+     SECTION HEADER (réutilisable)
+     ========================================================= */
+  .section-head {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .section-head__eyebrow {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--brown-chest);
+    margin-bottom: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+  }
+  .section-head__eyebrow::before,
+  .section-head__eyebrow::after {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--brown-chest);
+    opacity: 0.5;
+  }
+  .section-head__title {
+    font-family: var(--serif);
+    font-size: clamp(34px, 4vw, 52px);
+    line-height: 1.05;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0 0 14px;
+    color: var(--brown-deep);
+  }
+  .section-head__title em { font-style: italic; color: var(--brown-chest); font-weight: 600; }
+  .section-head__lede {
+    max-width: 560px;
+    margin: 0 auto;
+    color: var(--ink-soft);
+    font-size: 15px;
+    line-height: 1.55;
+    font-weight: 500;
+  }
+
+  /* =========================================================
+     CATÉGORIES — 3 grandes cards arrondies
+     ========================================================= */
+  .cats {
+    margin-bottom: 100px;
+  }
+  .cats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  .cat-card {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    border-radius: 24px;
+    overflow: hidden;
+    text-decoration: none;
+    color: var(--brown-deep);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 24px;
+    transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .25s;
+  }
+  .cat-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px -20px rgba(59,31,14,.25); }
+  .cat-card__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+  .cat-card__bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  .cat-card.bg-sage .cat-card__bg   { background: #C2D2BC; }
+  .cat-card.bg-cream .cat-card__bg  { background: #F0E5D2; }
+  .cat-card.bg-cocoa .cat-card__bg  { background: #D6BFA4; }
+  .cat-card__fade {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 55%;
+    background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,251,242,0.92) 65%, rgba(255,251,242,1) 100%);
+    z-index: 1;
+  }
+  .cat-card__label {
+    position: relative;
+    z-index: 2;
+  }
+  .cat-card__eyebrow {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--brown-chest);
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+  .cat-card__title {
+    font-family: var(--serif);
+    font-size: 30px;
+    line-height: 1.1;
+    font-weight: 700;
+    margin: 0 0 10px;
+  }
+  .cat-card__arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent-cocoa);
+  }
+  .cat-card__arrow svg {
+    width: 16px;
+    height: 16px;
+    transition: transform .25s;
+  }
+  .cat-card:hover .cat-card__arrow svg { transform: translateX(4px); }
+
+  /* Soft tag */
+  .cat-card__tag {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    z-index: 2;
+    background: rgba(255,255,255,0.92);
+    color: var(--brown-deep);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  /* =========================================================
+     BESTSELLERS — réutilise le style product-card de la boutique
+     ========================================================= */
+  .bestsellers { margin-bottom: 100px; }
+
+  .bs-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+  .bs-card {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+  }
+  .bs-card__media {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 14px;
+    background: #EFE8D8;
+  }
+  .bs-card__media img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .4s cubic-bezier(.2,.8,.2,1);
+  }
+  .bs-card:hover .bs-card__media img { transform: scale(1.05); }
+  .bs-card__badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    z-index: 2;
+    background: rgba(255,255,255,0.95);
+    color: var(--brown-deep);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .bs-card__fav {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 2;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.95);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--brown-chest);
+    transition: background .15s, color .15s;
+  }
+  .bs-card__fav:hover { color: #c0392b; }
+  .bs-card__fav svg { width: 16px; height: 16px; }
+  .bs-card__name {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--brown-deep);
+    line-height: 1.2;
+    margin: 0 0 4px;
+  }
+  .bs-card__sub {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 0 0 10px;
+    font-weight: 500;
+  }
+  .bs-card__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .bs-card__price {
+    font-family: var(--serif);
+    font-size: 20px;
+    color: var(--brown-deep);
+    font-weight: 700;
+  }
+  .bs-card__add {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--brown-chest);
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .bs-card__add:hover { background: var(--accent-cocoa); }
+  .bs-card__add svg { width: 12px; height: 12px; }
+
+  /* =========================================================
+     HISTOIRE — split banner
+     ========================================================= */
+  .histoire-section {
+    margin-bottom: 100px;
+  }
+  .histoire-card {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    border-radius: 28px;
+    overflow: hidden;
+    background: #F6F0E3;
+    min-height: 460px;
+  }
+  .histoire-card__media {
+    position: relative;
+    background: #C2D2BC;
+    overflow: hidden;
+  }
+  .histoire-card__media img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .histoire-card__sticker {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    background: rgba(255,255,255,0.92);
+    padding: 12px 16px;
+    border-radius: 14px;
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 10px;
+    line-height: 1.4;
+    letter-spacing: 0.08em;
+    color: var(--brown-deep);
+    font-weight: 600;
+  }
+  .histoire-card__sticker strong {
+    display: block;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    margin-bottom: 4px;
+    font-weight: 800;
+  }
+  .histoire-card__body {
+    padding: 56px 52px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 14px;
+  }
+  .histoire-card__eyebrow {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--brown-chest);
+    font-weight: 700;
+  }
+  .histoire-card__title {
+    font-family: var(--serif);
+    font-size: clamp(32px, 3.4vw, 46px);
+    line-height: 1.08;
+    font-weight: 700;
+    color: var(--brown-deep);
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .histoire-card__title em { font-style: italic; color: var(--brown-chest); font-weight: 600; }
+  .histoire-card__body p {
+    color: var(--ink-soft);
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0;
+    font-weight: 500;
+  }
+  .histoire-card__cta {
+    align-self: flex-start;
+    margin-top: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 22px;
+    border-radius: 999px;
+    background: var(--accent-cocoa);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+    transition: background .15s;
+  }
+  .histoire-card__cta:hover { background: #2A1408; }
+  .histoire-card__signature {
+    margin-top: 18px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-family: var(--serif);
+  }
+  .histoire-card__signature-name { font-size: 22px; color: var(--brown-deep); font-style: italic; font-weight: 600; }
+  .histoire-card__signature-role { font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--brown-chest); font-weight: 700; }
+
+  /* =========================================================
+     VALEURS — 3 piliers texte sur fond crème
+     ========================================================= */
+  .valeurs {
+    background: #F0E5D2;
+    border-radius: 28px;
+    padding: 60px 48px;
+    margin-bottom: 100px;
+  }
+  .valeurs-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 36px;
+    margin-top: 40px;
+  }
+  .valeur {
+    text-align: center;
+  }
+  .valeur__icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--brown-chest);
+    margin-bottom: 18px;
+  }
+  .valeur__icon svg { width: 28px; height: 28px; }
+  .valeur__title {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--brown-deep);
+    margin: 0 0 10px;
+  }
+  .valeur__desc {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin: 0;
+    max-width: 280px;
+    margin-left: auto;
+    margin-right: auto;
+    font-weight: 500;
+  }
+
+  /* =========================================================
+     CTA NEWSLETTER
+     ========================================================= */
+  .cta-wrap {
+    text-align: center;
+    padding: 40px 16px 80px;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .cta-eyebrow {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--brown-chest);
+    margin-bottom: 14px;
+    font-weight: 700;
+  }
+  .cta-title {
+    font-family: var(--serif);
+    font-size: clamp(30px, 3.4vw, 44px);
+    line-height: 1.1;
+    font-weight: 700;
+    color: var(--brown-deep);
+    margin: 0 0 14px;
+    letter-spacing: -0.01em;
+  }
+  .cta-title em { font-style: italic; color: var(--brown-chest); font-weight: 600; }
+  .cta-sub { font-size: 15px; color: var(--ink-soft); margin: 0 auto 28px; max-width: 500px; font-weight: 500; }
+  .cta-form {
+    display: flex;
+    gap: 6px;
+    max-width: 440px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 999px;
+    padding: 6px 6px 6px 22px;
+    box-shadow: 0 8px 24px -10px rgba(59, 31, 14, 0.18);
+  }
+  .cta-form input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--brown-deep);
+    font-weight: 500;
+  }
+  .cta-form input::placeholder { color: var(--muted); }
+
+  /* =========================================================
+     FOOTER (identique aux autres pages)
+     ========================================================= */
+  .footer { background: transparent; margin-top: 0; padding: 0 16px 24px; }
+  .footer-inner {
+    max-width: 1340px;
+    margin: 0 auto;
+    background: var(--accent-cocoa);
+    color: var(--cream);
+    border-radius: 28px;
+    padding: 56px 48px 28px;
+    box-shadow: 0 12px 40px -16px rgba(59, 31, 14, 0.35);
+  }
+
+  /* Logo SVG */
+  .brand-logo { display: block; height: 34px; width: auto; }
+  .navbar.pill-nav .brand { display: inline-flex; align-items: center; }
+  .footer-brand { margin-bottom: 14px; }
+  .footer-brand-logo { display: block; height: 42px; width: auto; filter: brightness(0) invert(1); }
+
+  /* =========================================================
+     RESPONSIVE
+     ========================================================= */
+  @media (max-width: 900px) {
+    .cats-grid { grid-template-columns: 1fr; }
+    .bs-grid { grid-template-columns: repeat(2, 1fr); }
+    .valeurs-grid { grid-template-columns: 1fr; gap: 28px; }
+    .histoire-card { grid-template-columns: 1fr; }
+    .histoire-card__media { aspect-ratio: 4/3; }
+    .histoire-card__body { padding: 40px 28px; }
+    .valeurs { padding: 48px 24px; }
+  }
+  @media (max-width: 768px) {
+    .home-hero { aspect-ratio: 3/4; }
+    /* pill-nav padding tweak — nav-links hidden via styles.css */
+    .navbar.pill-nav { top: 0; }
+    .navbar.pill-nav .nav-inner { margin: 0 auto; border-radius: 0 0 22px 22px; padding: 10px 14px 10px 18px; }
+    .promo-bar.pill { margin: 0; border-radius: 0; }
+    .footer-inner { padding: 40px 24px 24px; border-radius: 22px; }
+  }
+  @media (max-width: 480px) {
+    .bs-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+  }
+</style>
+</head>
+<body style="">
+
+<!-- PROMO BAR pill -->
+<div class="promo-bar pill">Livraison offerte dès 40€ d'achat — récolte 2025 disponible 🌰</div>
+
+<!-- NAVBAR pill -->
+<header class="navbar pill-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand" aria-label="Castaneas"><img src="assets/castaneas-logo.svg" alt="Castaneas" class="brand-logo"></a>
+    <nav class="nav-links">
+      <a href="index.html" class="active" style="">Accueil</a>
+      <a href="creme-de-chataigne.html" style="">Crèmes de châtaigne</a>
+      <a href="#">Pâtes à tartiner</a>
+      <a href="#">Huiles</a>
+      <a href="recettes.html">Recettes</a>
+      <a href="#histoire">Notre histoire</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="login.html" class="icon-btn" aria-label="Mon compte">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke-linecap="round"></path></svg>
+      </a>
+      <button class="cart-pill" aria-label="Panier" data-cart-toggle>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 7h14l-1.5 11.5a2 2 0 0 1-2 1.5h-7a2 2 0 0 1-2-1.5L5 7Z"></path><path d="M9 7V5a3 3 0 0 1 6 0v2" stroke-linecap="round"></path></svg>
+        <span data-cart-count>0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="home">
+
+  <!-- HERO bannière -->
+  <section class="home-hero">
+    <img id="hp-hero-img" src="assets/banniere-cremes.png" alt="Atelier Castaneas — récolte d'automne en Quercy">
+    <div class="home-hero__content">
+      <div id="hp-hero-eyebrow" class="home-hero__eyebrow">Maison Castaneas · Quercy · Tarn-et-Garonne</div>
+      <h1 id="hp-hero-title" class="home-hero__title" style="">Châtaignes et noisettes,<br><em>faites à la main.</em></h1>
+      <p id="hp-hero-subtitle" class="home-hero__subtitle" style="">
+        Crèmes, pâtes à tartiner et huiles, cuisinées en petites fournées à Albias depuis 2018.
+      </p>
+      <div class="home-hero__actions">
+        <a id="hp-hero-btn1" href="creme-de-chataigne.html" class="btn--white">
+          Découvrir la boutique
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"></path></svg>
+        </a>
+        <a id="hp-hero-btn2" href="#histoire" class="btn--outline">Notre histoire</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATÉGORIES -->
+  <section class="cats">
+    <div class="section-head">
+      <div id="hp-cats-eyebrow" class="section-head__eyebrow">Nos collections</div>
+      <h2 id="hp-cats-title" class="section-head__title">Deux fruits du verger,<br>un même <em>chaudron de cuivre.</em></h2>
+    </div>
+
+    <div id="hp-cats-grid" class="cats-grid">
+      <a href="creme-de-chataigne.html" class="cat-card bg-sage">
+        <span class="cat-card__tag">Bestseller</span>
+        <img class="cat-card__img" src="assets/product-pate-tartiner.png" alt="">
+        <div class="cat-card__fade"></div>
+        <div class="cat-card__label">
+          <div class="cat-card__eyebrow">8 références</div>
+          <h3 class="cat-card__title">Crèmes de châtaigne</h3>
+          <span class="cat-card__arrow">
+            Voir la collection
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"></path></svg>
+          </span>
+        </div>
+      </a>
+
+      <a href="#" class="cat-card bg-cream">
+        <span class="cat-card__tag">Nouveauté</span>
+        <img class="cat-card__img" src="assets/product-pate-tartiner.png" alt="">
+        <div class="cat-card__fade"></div>
+        <div class="cat-card__label">
+          <div class="cat-card__eyebrow">4 références</div>
+          <h3 class="cat-card__title">Pâtes de noisette</h3>
+          <span class="cat-card__arrow">
+            Voir la collection
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"></path></svg>
+          </span>
+        </div>
+      </a>
+
+      <a href="#" class="cat-card bg-cocoa">
+        <img class="cat-card__img" src="assets/product-huile-noisettes.png" alt="">
+        <div class="cat-card__fade"></div>
+        <div class="cat-card__label">
+          <div class="cat-card__eyebrow">3 références</div>
+          <h3 class="cat-card__title" style="">Huiles</h3>
+          <span class="cat-card__arrow">
+            Voir la collection
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"></path></svg>
+          </span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- BESTSELLERS -->
+  <section class="bestsellers">
+    <div class="section-head">
+      <div id="hp-bs-eyebrow" class="section-head__eyebrow">Nos incontournables</div>
+      <h2 id="hp-bs-title" class="section-head__title">Ce que <em>vous préférez.</em></h2>
+      <p id="hp-bs-lede" class="section-head__lede">Une sélection des pots les plus commandés cette saison — préparés à la ferme, en Tarn-et-Garonne.</p>
+    </div>
+
+    <div id="hp-bs-grid" class="bs-grid">
+      <a href="Fiche Produit.html" class="bs-card">
+        <div class="bs-card__media">
+          <span class="bs-card__badge">Bestseller</span>
+          <button class="bs-card__fav" aria-label="Favoris" onclick="event.preventDefault();">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10Z" stroke-linejoin="round"></path></svg>
+          </button>
+          <img src="assets/product-pate-tartiner.png" alt="Crème Nature">
+        </div>
+        <h3 class="bs-card__name">Crème de châtaigne</h3>
+        <p class="bs-card__sub">Châtaigne du Quercy · sucre roux · 150g</p>
+        <div class="bs-card__foot">
+          <span class="bs-card__price">6,90€</span>
+          <button class="bs-card__add" onclick="event.stopPropagation();window.Castaneas.addToCartUI({id:'creme-nature-150',name:'Crème de châtaigne',price:6.90,image:'assets/product-pate-tartiner.png',variant:'150g',weight:'150g'},this);">Ajouter
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5v14" stroke-linecap="round"></path></svg>
+          </button>
+        </div>
+      </a>
+
+      <a href="Fiche Produit.html" class="bs-card">
+        <div class="bs-card__media">
+          <span class="bs-card__badge">Coup de cœur</span>
+          <button class="bs-card__fav" aria-label="Favoris" onclick="event.preventDefault();">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10Z" stroke-linejoin="round"></path></svg>
+          </button>
+          <img src="assets/product-huile-noisettes.png" alt="Crème Vanillée">
+        </div>
+        <h3 class="bs-card__name">Châtaigne vanillée</h3>
+        <p class="bs-card__sub">Vanille Bourbon · 150g</p>
+        <div class="bs-card__foot">
+          <span class="bs-card__price">7,50€</span>
+          <button class="bs-card__add" onclick="event.stopPropagation();window.Castaneas.addToCartUI({id:'creme-vanillee-150',name:'Châtaigne vanillée',price:7.50,image:'assets/product-huile-noisettes.png',variant:'150g',weight:'150g'},this);">Ajouter
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5v14" stroke-linecap="round"></path></svg>
+          </button>
+        </div>
+      </a>
+
+      <a href="Fiche Produit.html" class="bs-card">
+        <div class="bs-card__media">
+          <span class="bs-card__badge">Nouveauté</span>
+          <button class="bs-card__fav" aria-label="Favoris" onclick="event.preventDefault();">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10Z" stroke-linejoin="round"></path></svg>
+          </button>
+          <img src="assets/product-noisettes-crues.png" alt="Crème Noisette">
+        </div>
+        <h3 class="bs-card__name">Pâte de noisette</h3>
+        <p class="bs-card__sub">Noisettes torréfiées au four à bois · 200g</p>
+        <div class="bs-card__foot">
+          <span class="bs-card__price">7,90€</span>
+          <button class="bs-card__add" onclick="event.stopPropagation();window.Castaneas.addToCartUI({id:'pate-noisette-200',name:'Pâte de noisette',price:7.90,image:'assets/product-noisettes-crues.png',variant:'200g',weight:'200g'},this);">Ajouter
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5v14" stroke-linecap="round"></path></svg>
+          </button>
+        </div>
+      </a>
+
+      <a href="Fiche Produit.html" class="bs-card">
+        <div class="bs-card__media">
+          <span class="bs-card__badge">🎁 Coffret</span>
+          <button class="bs-card__fav" aria-label="Favoris" onclick="event.preventDefault();">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10Z" stroke-linejoin="round"></path></svg>
+          </button>
+          <img src="assets/product-pate-tartiner.png" alt="Coffret Dégustation">
+        </div>
+        <h3 class="bs-card__name">Coffret Quercy</h3>
+        <p class="bs-card__sub">Châtaigne, noisette, huile — le trio</p>
+        <div class="bs-card__foot">
+          <span class="bs-card__price">19,90€</span>
+          <button class="bs-card__add" onclick="event.stopPropagation();window.Castaneas.addToCartUI({id:'coffret-quercy',name:'Coffret Quercy',price:19.90,image:'assets/product-pate-tartiner.png',variant:'3×150g',weight:'3×150g'},this);">Ajouter
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5v14" stroke-linecap="round"></path></svg>
+          </button>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- HISTOIRE -->
+  <section id="histoire" class="histoire-section">
+    <div class="histoire-card">
+      <div class="histoire-card__media">
+        <img id="hp-hist-img" src="assets/product-noisettes-crues.png" alt="Verger Castaneas, récolte d'automne">
+        <div class="histoire-card__sticker">
+          <strong id="hp-hist-sticker-label">Lauzerte · Quercy</strong>
+          <span id="hp-hist-sticker-sub">44.25°N · 1.13°E · Tarn-et-Garonne (82)</span>
+        </div>
+      </div>
+      <div class="histoire-card__body">
+        <div id="hp-hist-eyebrow" class="histoire-card__eyebrow">Notre histoire</div>
+        <h2 id="hp-hist-title" class="histoire-card__title">Deux vergers de famille,<br><em>devenus une maison.</em></h2>
+        <p id="hp-hist-para1">Tout a commencé sur les coteaux de Lauzerte. D'un côté, les vieux châtaigniers du causse ; de l'autre, les noisetiers que notre grand-père avait plantés au retour de la guerre. Chaque automne, on ramassait les fruits à genoux, et on les confisait le soir dans le chaudron de cuivre.</p>
+        <p id="hp-hist-para2">Aujourd'hui, on suit la même recette, dans le même chaudron. On a juste ajouté des étiquettes — pour pouvoir la partager.</p>
+        <a id="hp-hist-cta" href="#" class="histoire-card__cta">
+          Lire le récit complet
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"></path></svg>
+        </a>
+        <div class="histoire-card__signature">
+          <span id="hp-hist-sig-name" class="histoire-card__signature-name">Lucie &amp; Marc</span>
+          <span id="hp-hist-sig-role" class="histoire-card__signature-role">Les fondateurs</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VALEURS -->
+  <section class="valeurs">
+    <div class="section-head" style="margin-bottom:0;">
+      <div id="hp-val-eyebrow" class="section-head__eyebrow">Trois ingrédients, aucun secret</div>
+      <h2 id="hp-val-title" class="section-head__title">Du verger au pot,<br>et <em>rien à cacher.</em></h2>
+    </div>
+
+    <div class="valeurs-grid">
+      <div class="valeur">
+        <div class="valeur__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3 C8 7 6 11 8 15 C9 17 12 19 12 19 C12 19 15 17 16 15 C18 11 16 7 12 3 Z" stroke-linejoin="round"></path><path d="M12 10 L12 17" stroke-linecap="round"></path></svg>
+        </div>
+        <h3 id="hp-val1-title" class="valeur__title">Cueillies à la main</h3>
+        <p id="hp-val1-desc" class="valeur__desc">Châtaignes et noisettes ramassées une à une dans nos vergers du Quercy, à pleine maturité.</p>
+      </div>
+      <div class="valeur">
+        <div class="valeur__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 8h14l-1 12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 8Z"></path><path d="M9 8V6a3 3 0 0 1 6 0v2" stroke-linecap="round"></path></svg>
+        </div>
+        <h3 id="hp-val2-title" class="valeur__title">Cuites en cuivre</h3>
+        <p id="hp-val2-desc" class="valeur__desc">Dans le chaudron de famille, sans presse, à feu doux — le soir même de la récolte.</p>
+      </div>
+      <div class="valeur">
+        <div class="valeur__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"></circle><path d="M8 12l3 3 5-6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        </div>
+        <h3 id="hp-val3-title" class="valeur__title">Trois ingrédients</h3>
+        <p id="hp-val3-desc" class="valeur__desc">Fruit, sucre roux, vanille. Sans gluten, sans huile de palme, sans conservateur.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section class="cta-wrap">
+    <div class="cta-eyebrow">Le carnet de la maison</div>
+    <h2 class="cta-title">Une lettre par saison,<br><em>jamais une de plus.</em></h2>
+    <p class="cta-sub">Les nouvelles des vergers, les recettes de l'automne en Quercy et nos coffrets en édition limitée.</p>
+    <form class="cta-form" id="newsletter-form" onsubmit="handleNewsletter(event)">
+      <input type="email" placeholder="votre@email.com" required>
+      <button type="submit" class="btn btn--dark">S'inscrire</button>
+    </form>
+    <div class="newsletter-success" id="newsletter-success">
+      <div class="newsletter-success-icon">✓</div>
+      Merci ! Vous recevrez notre prochaine lettre de saison.
+    </div>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand"><img src="assets/castaneas-logo.svg" alt="Castaneas" class="footer-brand-logo"></div>
+        <p>Crèmes de châtaigne et pâtes de noisette faites à la main en Tarn-et-Garonne, en petites quantités, depuis 2018. Cuisson cuivre, sucre roux, vanille de Madagascar.</p>
+      </div>
+      <div>
+        <h4>Boutique</h4>
+        <ul>
+          <li><a href="creme-de-chataigne.html">Crèmes de châtaigne</a></li>
+          <li><a href="coffrets.html">Coffrets</a></li>
+          <li><a href="#">Éditions limitées</a></li>
+          <li><a href="#">Carte cadeau</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>La maison</h4>
+        <ul>
+          <li><a href="#histoire">Notre histoire</a></li>
+          <li><a href="#">Le verger</a></li>
+          <li><a href="#">Recettes</a></li>
+          <li><a href="#">Journal</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Aide</h4>
+        <ul>
+          <li><a href="#">Livraison &amp; retours</a></li>
+          <li><a href="#">Nous contacter</a></li>
+          <li><a href="#">Conservation</a></li>
+          <li><a href="cgv.html">CGV</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 Castaneas · Lauzerte, Tarn-et-Garonne (82)</div>
+      <div>Fait à la main, par petites fournées 🌰</div>
+    </div>
+  </div>
+</footer>
+
+
+
+<!-- CART DRAWER -->
+<div class="cart-backdrop" data-cart-close></div>
+<aside class="cart-drawer" role="dialog" aria-label="Votre panier">
+  <div class="cart-head">
+    <h3>Votre panier</h3>
+    <button class="cart-close" data-cart-close aria-label="Fermer le panier">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="cart-body" data-cart-body></div>
+  <div class="cart-foot" data-cart-foot>
+    <div class="cart-total-row">
+      <span>Sous-total</span>
+      <span data-cart-total>0,00€</span>
+    </div>
+    <p class="cart-shipping-note">🚚 Livraison offerte dès 40€ d'achat</p>
+    <a href="panier.html" class="cart-checkout-btn">
+      Passer commande
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"/></svg>
+    </a>
+  </div>
+</aside>
+
+<script src="site-data.js"></script>
+<script src="cart.js"></script>
+<script>
+/* Apply homepage config from admin (castaneas_homepage_v1) */
+(function () {
+  'use strict';
+  var cfg = null;
+  try { cfg = JSON.parse(localStorage.getItem('castaneas_homepage_v1') || 'null'); } catch(e) {}
+
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function setText(id, val) {
+    if (!val) return;
+    var el = document.getElementById(id); if (el) el.textContent = val;
+  }
+  function setAttr(id, attr, val) {
+    if (!val) return;
+    var el = document.getElementById(id); if (el) el.setAttribute(attr, val);
+  }
+  function setHTML(id, html) {
+    var el = document.getElementById(id); if (el) el.innerHTML = html;
+  }
+
+  /* HERO */
+  if (cfg && cfg.hero) {
+    var h = cfg.hero;
+    setAttr('hp-hero-img', 'src', h.image);
+    setText('hp-hero-eyebrow', h.eyebrow);
+    if (h.title || h.titleEm) {
+      setHTML('hp-hero-title', esc(h.title || '') + (h.titleEm ? '<br><em>' + esc(h.titleEm) + '</em>' : ''));
+    }
+    setText('hp-hero-subtitle', h.subtitle);
+    if (h.btn1Text || h.btn1Href) {
+      var b1 = document.getElementById('hp-hero-btn1');
+      if (b1) {
+        if (h.btn1Text) {
+          for (var n1 = b1.firstChild; n1; n1 = n1.nextSibling) {
+            if (n1.nodeType === 3) { n1.nodeValue = h.btn1Text + ' '; break; }
+          }
+        }
+        if (h.btn1Href) b1.href = h.btn1Href;
+      }
+    }
+    if (h.btn2Text || h.btn2Href) {
+      var b2 = document.getElementById('hp-hero-btn2');
+      if (b2) { if (h.btn2Text) b2.textContent = h.btn2Text; if (h.btn2Href) b2.href = h.btn2Href; }
+    }
+  }
+
+  /* CATS SECTION HEAD */
+  if (cfg && cfg.catsSection) {
+    var cs = cfg.catsSection;
+    setText('hp-cats-eyebrow', cs.eyebrow);
+    if (cs.title || cs.titleEm) {
+      setHTML('hp-cats-title', esc(cs.title || '') + (cs.titleEm ? '<br><em>' + esc(cs.titleEm) + '</em>' : ''));
+    }
+  }
+
+  /* CATS GRID — rebuild from catsHighlight IDs */
+  var catsIds = cfg && cfg.catsHighlight && cfg.catsHighlight.length ? cfg.catsHighlight : [];
+  if (catsIds.length && typeof SiteData !== 'undefined') {
+    var grid = document.getElementById('hp-cats-grid');
+    if (grid) {
+      var bgMap = ['bg-sage','bg-cream','bg-cocoa'];
+      var arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"></path></svg>';
+      var catHtml = catsIds.map(function(catId, i) {
+        var cat = SiteData.categories.find(function(c) { return c.id === catId; });
+        if (!cat) return '';
+        var href = SiteData.getCategoryHref ? SiteData.getCategoryHref(cat) : '#';
+        var img = cat.banner || 'assets/product-pate-tartiner.png';
+        var cnt = SiteData.getProductsByCategory ? SiteData.getProductsByCategory(cat.id).length : 0;
+        return '<a href="' + esc(href) + '" class="cat-card ' + bgMap[i % bgMap.length] + '">'
+          + '<img class="cat-card__img" src="' + esc(img) + '" alt="" onerror="this.onerror=null;this.src=\'assets/product-pate-tartiner.png\'">'
+          + '<div class="cat-card__fade"></div>'
+          + '<div class="cat-card__label">'
+          + '<div class="cat-card__eyebrow">' + cnt + ' r\u00e9f\u00e9rence' + (cnt > 1 ? 's' : '') + '</div>'
+          + '<h3 class="cat-card__title">' + esc(cat.name) + '</h3>'
+          + '<span class="cat-card__arrow">Voir la collection ' + arrowSvg + '</span>'
+          + '</div></a>';
+      }).filter(Boolean).join('');
+      if (catHtml) grid.innerHTML = catHtml;
+    }
+  }
+
+  /* BESTSELLERS SECTION HEAD */
+  if (cfg && cfg.bsSection) {
+    var bs = cfg.bsSection;
+    setText('hp-bs-eyebrow', bs.eyebrow);
+    if (bs.title || bs.titleEm) {
+      setHTML('hp-bs-title', esc(bs.title || '') + (bs.titleEm ? ' <em>' + esc(bs.titleEm) + '</em>' : ''));
+    }
+    setText('hp-bs-lede', bs.lede);
+  }
+
+  /* BS GRID — rebuild from productsHighlight IDs */
+  var prodIds = cfg && cfg.productsHighlight && cfg.productsHighlight.length ? cfg.productsHighlight : [];
+  if (prodIds.length && typeof SiteData !== 'undefined') {
+    var bsGrid = document.getElementById('hp-bs-grid');
+    if (bsGrid) {
+      var favSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10Z" stroke-linejoin="round"></path></svg>';
+      var addSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5v14" stroke-linecap="round"></path></svg>';
+      var pHtml = prodIds.map(function(prodId) {
+        var p = SiteData.products.find(function(x) { return x.id === prodId; });
+        if (!p) return '';
+        var img = p.image || 'assets/product-pate-tartiner.png';
+        var addData = JSON.stringify({id:p.id,name:p.name,price:p.price,image:img,variant:p.weight,weight:p.weight}).replace(/'/g,'&#39;');
+        return '<a href="Fiche Produit.html#' + esc(p.id) + '" class="bs-card">'
+          + '<div class="bs-card__media">'
+          + (p.badge ? '<span class="bs-card__badge">' + esc(p.badge) + '</span>' : '')
+          + '<button class="bs-card__fav" aria-label="Favoris" onclick="event.preventDefault();">' + favSvg + '</button>'
+          + '<img src="' + esc(img) + '" alt="' + esc(p.name) + '" onerror="this.onerror=null;this.src=\'assets/product-pate-tartiner.png\'">'
+          + '</div>'
+          + '<h3 class="bs-card__name">' + esc(p.name) + '</h3>'
+          + '<p class="bs-card__sub">' + esc(p.weight || '') + '</p>'
+          + '<div class="bs-card__foot">'
+          + '<span class="bs-card__price">' + p.price.toFixed(2).replace('.', ',') + '\u20ac</span>'
+          + '<button class="bs-card__add" onclick="event.stopPropagation();window.Castaneas&&window.Castaneas.addToCartUI(' + addData + ',this);">Ajouter ' + addSvg + '</button>'
+          + '</div></a>';
+      }).filter(Boolean).join('');
+      if (pHtml) bsGrid.innerHTML = pHtml;
+    }
+  }
+
+  /* HISTOIRE */
+  if (cfg && cfg.histoire) {
+    var hi = cfg.histoire;
+    setAttr('hp-hist-img', 'src', hi.image);
+    setText('hp-hist-sticker-label', hi.stickerLabel);
+    setText('hp-hist-sticker-sub', hi.stickerSub);
+    setText('hp-hist-eyebrow', hi.eyebrow);
+    if (hi.title || hi.titleEm) {
+      setHTML('hp-hist-title', esc(hi.title || '') + (hi.titleEm ? '<br><em>' + esc(hi.titleEm) + '</em>' : ''));
+    }
+    setText('hp-hist-para1', hi.para1);
+    setText('hp-hist-para2', hi.para2);
+    if (hi.ctaText || hi.ctaHref) {
+      var cta = document.getElementById('hp-hist-cta');
+      if (cta) {
+        if (hi.ctaText) {
+          for (var nc = cta.firstChild; nc; nc = nc.nextSibling) {
+            if (nc.nodeType === 3) { nc.nodeValue = hi.ctaText + ' '; break; }
+          }
+        }
+        if (hi.ctaHref) cta.href = hi.ctaHref;
+      }
+    }
+    setText('hp-hist-sig-name', hi.signatureName);
+    setText('hp-hist-sig-role', hi.signatureRole);
+  }
+
+  /* VALEURS */
+  if (cfg && cfg.valeurs) {
+    var v = cfg.valeurs;
+    setText('hp-val-eyebrow', v.eyebrow);
+    if (v.title || v.titleEm) {
+      setHTML('hp-val-title', esc(v.title || '') + (v.titleEm ? '<br><em>' + esc(v.titleEm) + '</em>' : ''));
+    }
+    if (v.items) {
+      v.items.forEach(function(item, i) {
+        setText('hp-val' + (i + 1) + '-title', item.title);
+        setText('hp-val' + (i + 1) + '-desc', item.desc);
+      });
+    }
+  }
+}());
+</script>
+<script>
+function handleNewsletter(e) {
+  e.preventDefault();
+  document.getElementById('newsletter-form').style.display = 'none';
+  document.getElementById('newsletter-success').classList.add('show');
+}
+</script>
+</body></html>

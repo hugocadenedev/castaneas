@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Créer un compte · Castaneas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  :root {
+    --serif: 'Fraunces', Georgia, serif;
+    --sans: 'Inter', -apple-system, Arial, sans-serif;
+  }
+  body { font-family: var(--sans); }
+  h1,h2,h3 { font-family: var(--serif); }
+</style>
+</head>
+<body>
+
+<div class="auth-page">
+  <div class="auth-card">
+    <a href="index.html" class="auth-logo">
+      <img src="assets/castaneas-logo.svg" alt="Castaneas" style="height:44px;width:auto;">
+    </a>
+
+    <h1 class="auth-title">Créer un compte</h1>
+    <p class="auth-subtitle">Rejoignez la communauté Castaneas</p>
+
+    <div class="auth-alert" id="auth-alert" style="display:none;"></div>
+
+    <form class="auth-form" id="register-form" novalidate>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="auth-field">
+          <label for="prenom">Prénom</label>
+          <input type="text" id="prenom" name="prenom" placeholder="Marie" autocomplete="given-name">
+          <span class="auth-error" id="err-prenom"></span>
+        </div>
+        <div class="auth-field">
+          <label for="nom">Nom</label>
+          <input type="text" id="nom" name="nom" placeholder="Dupont" autocomplete="family-name">
+          <span class="auth-error" id="err-nom"></span>
+        </div>
+      </div>
+      <div class="auth-field">
+        <label for="email">Adresse e-mail</label>
+        <input type="email" id="email" name="email" placeholder="vous@exemple.fr" autocomplete="email">
+        <span class="auth-error" id="err-email"></span>
+      </div>
+      <div class="auth-field">
+        <label for="password">Mot de passe</label>
+        <input type="password" id="password" name="password" placeholder="8 caractères minimum" autocomplete="new-password">
+        <span class="auth-error" id="err-password"></span>
+      </div>
+      <div class="auth-field">
+        <label for="confirm">Confirmer le mot de passe</label>
+        <input type="password" id="confirm" name="confirm" placeholder="Répétez votre mot de passe" autocomplete="new-password">
+        <span class="auth-error" id="err-confirm"></span>
+      </div>
+      <button type="submit" class="auth-submit" id="submit-btn">Créer mon compte</button>
+    </form>
+
+    <div class="auth-divider">
+      <span>Déjà un compte ?</span>
+      <a href="login.html">Se connecter</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const USERS_KEY = 'castaneas_users_v1';
+const SESSION_KEY = 'castaneas_session_v1';
+
+function getUsers() {
+  try { return JSON.parse(localStorage.getItem(USERS_KEY) || '[]'); }
+  catch { return []; }
+}
+function saveUsers(users) {
+  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+}
+
+function showError(fieldId, msg) {
+  const el = document.getElementById(fieldId);
+  el.textContent = msg;
+  el.classList.add('show');
+}
+function clearErrors() {
+  document.querySelectorAll('.auth-error').forEach(el => { el.textContent = ''; el.classList.remove('show'); });
+  const alert = document.getElementById('auth-alert');
+  alert.style.display = 'none';
+  alert.textContent = '';
+}
+function showAlert(msg) {
+  const alert = document.getElementById('auth-alert');
+  alert.textContent = msg;
+  alert.style.display = 'block';
+}
+
+document.getElementById('register-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  clearErrors();
+
+  const prenom = document.getElementById('prenom').value.trim();
+  const nom = document.getElementById('nom').value.trim();
+  const email = document.getElementById('email').value.trim().toLowerCase();
+  const password = document.getElementById('password').value;
+  const confirm = document.getElementById('confirm').value;
+  let valid = true;
+
+  if (!prenom) { showError('err-prenom', 'Prénom requis.'); valid = false; }
+  if (!nom) { showError('err-nom', 'Nom requis.'); valid = false; }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    showError('err-email', 'Veuillez entrer un e-mail valide.'); valid = false;
+  }
+  if (!password || password.length < 8) {
+    showError('err-password', 'Le mot de passe doit contenir au moins 8 caractères.'); valid = false;
+  }
+  if (password !== confirm) {
+    showError('err-confirm', 'Les mots de passe ne correspondent pas.'); valid = false;
+  }
+  if (!valid) return;
+
+  const users = getUsers();
+  if (users.find(u => u.email === email)) {
+    showAlert('Un compte existe déjà avec cet e-mail. Connectez-vous.');
+    return;
+  }
+
+  // Store with btoa encoding (demo only — not production-grade)
+  users.push({ prenom, nom, email, password: btoa(password), createdAt: Date.now() });
+  saveUsers(users);
+
+  // Auto-login
+  const session = { email, prenom, nom, ts: Date.now() };
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+
+  const btn = document.getElementById('submit-btn');
+  btn.textContent = '✓ Compte créé !';
+  btn.disabled = true;
+
+  setTimeout(() => { window.location.href = 'index.html'; }, 800);
+});
+</script>
+<script src="site-data.js"></script>
+</body>
+</html>

@@ -1,0 +1,1737 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Châtaigne vanillée · Castaneas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  /* =========================================================
+     TYPOGRAPHIE — identique V1
+     ========================================================= */
+  :root {
+    --serif: 'Fraunces', 'Cormorant Garamond', Georgia, serif;
+    --sans: 'Inter', -apple-system, "Helvetica Neue", Arial, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+    --hand: 'Caveat', cursive;
+  }
+  body { font-family: var(--sans); letter-spacing: -0.005em; }
+  h1, h2, h3, h4 { font-family: var(--serif); letter-spacing: -0.02em; }
+  em { font-style: italic; font-weight: 400; }
+
+  /* NAV (identique V1) */
+  .navbar.pill-nav { background: transparent; border-bottom: none; position: sticky; top: 14px; z-index: 50; }
+  .navbar.pill-nav .nav-inner {
+    max-width: 1340px;
+    margin: 16px auto 0;
+    background: #ffffff;
+    border-radius: 999px;
+    padding: 12px 16px 12px 28px;
+    box-shadow: 0 6px 24px -10px rgba(59, 31, 14, 0.18);
+  }
+  .navbar.pill-nav .brand { font-size: 26px; font-weight: 700; display: inline-flex; align-items: center; }
+  .navbar.pill-nav .nav-links { font-weight: 600; }
+  .navbar.pill-nav .nav-links a { color: var(--brown-deep); }
+  .navbar.pill-nav .nav-actions { background: transparent; border-radius: 0; padding: 0; gap: 8px; }
+  .navbar.pill-nav .icon-btn { width: 40px; height: 40px; background: #EDEFE5; border-radius: 999px; transition: background .15s; }
+  .navbar.pill-nav .icon-btn:hover { background: #dfe3d5; }
+  .cart-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px 8px 12px;
+    background: #EDEFE5; color: var(--brown-deep);
+    font-weight: 700; font-size: 13px;
+    border-radius: 999px; border: none; cursor: pointer;
+  }
+  .cart-pill svg { width: 18px; height: 18px; }
+  .promo-bar.pill { max-width: 1340px; margin: 14px auto 0; border-radius: 999px; padding: 11px 24px; font-size: 13px; font-weight: 600; }
+  .brand-logo { display: block; height: 34px; width: auto; }
+  .footer-brand-logo { display: block; height: 42px; width: auto; filter: brightness(0) invert(1); }
+
+  /* PAGE */
+  .product {
+    max-width: 1340px;
+    margin: 0 auto;
+    padding: 28px 16px 0;
+  }
+
+  /* BREADCRUMB */
+  .crumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 18px 0 22px;
+    padding: 0 4px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+  .crumb .sep { color: var(--muted); }
+  .crumb .current { color: var(--brown-deep); font-weight: 700; }
+
+  /* =========================================================
+     HERO — STICKY INFO + GALLERY (déclinaison V1)
+     - V1: gallery G + info D (déjà similaire), mais ici on
+       met l'info en sticky + on remplace thumbs latérales
+       par une bande de thumbs sous l'image principale.
+     ========================================================= */
+  .hero {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 28px;
+    margin-bottom: 80px;
+    align-items: start;
+  }
+
+  .gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .gallery__main {
+    position: relative;
+    background: var(--vieux-rose);
+    border-radius: 28px;
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+  }
+  .gallery__main img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .gallery__badge {
+    position: absolute;
+    top: 20px; left: 20px;
+    background: var(--accent-cocoa);
+    color: var(--cream-light);
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    z-index: 2;
+  }
+  .gallery__zoom {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(6px);
+    border: none;
+    color: var(--brown-deep);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: background .15s;
+  }
+  .gallery__zoom:hover { background: #fff; }
+  .gallery__zoom svg { width: 18px; height: 18px; }
+
+  .gallery__caption {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(6px);
+    padding: 10px 16px;
+    border-radius: 999px;
+    font-family: var(--hand);
+    font-size: 20px;
+    color: var(--accent-cocoa);
+    z-index: 2;
+  }
+
+  .gallery__thumbs {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+  }
+  .gallery__thumb {
+    aspect-ratio: 1 / 1;
+    border-radius: 18px;
+    overflow: hidden;
+    background: var(--terracotta);
+    border: 2px solid transparent;
+    cursor: pointer;
+    position: relative;
+    transition: border-color .15s;
+  }
+  .gallery__thumb.on { border-color: var(--brown-deep); }
+  .gallery__thumb img {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+
+  /* INFO PANEL (sticky) */
+  .info {
+    position: sticky;
+    top: 90px;
+    background: #fff;
+    border-radius: 28px;
+    padding: 36px 36px 32px;
+    box-shadow: 0 8px 24px -16px rgba(59,31,14,0.18);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .info__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .info__cat {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--brown-chest);
+    font-weight: 700;
+  }
+  .info__fav {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--cream-soft);
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--brown-chest);
+    cursor: pointer;
+    transition: color .15s;
+  }
+  .info__fav:hover { color: var(--corail); }
+  .info__fav svg { width: 18px; height: 18px; }
+
+  .info__title {
+    font-family: var(--serif);
+    font-size: clamp(34px, 3.6vw, 48px);
+    line-height: 1;
+    font-weight: 700;
+    color: var(--brown-deep);
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+  .info__title em { color: var(--brown-chest); font-weight: 600; }
+
+  .info__rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+  .info__rating .stars { color: var(--brown-chest); letter-spacing: 0.08em; }
+  .info__rating a { color: var(--brown-deep); border-bottom: 1px solid var(--line); padding-bottom: 1px; }
+
+  .info__desc {
+    font-size: 15px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+    font-weight: 500;
+  }
+
+  .info__price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    padding: 16px 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .info__price {
+    font-family: var(--serif);
+    font-size: 38px;
+    font-weight: 700;
+    color: var(--brown-deep);
+    letter-spacing: -0.01em;
+  }
+  .info__price-unit {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  /* Format selector — pill chips */
+  .opt-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .opt-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--brown-chest);
+    font-weight: 700;
+  }
+  .opt-label em {
+    font-family: var(--hand);
+    color: var(--brown-chest);
+    font-size: 17px;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .opt-pills {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .opt-pill {
+    background: var(--cream-soft);
+    border: 2px solid transparent;
+    border-radius: 16px;
+    padding: 12px 10px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    transition: all .15s;
+  }
+  .opt-pill strong {
+    font-family: var(--serif);
+    font-size: 19px;
+    color: var(--brown-deep);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .opt-pill span {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+  .opt-pill.on {
+    background: #fff;
+    border-color: var(--brown-deep);
+  }
+  .opt-pill.on strong { color: var(--brown-deep); }
+  .opt-pill:hover:not(.on) { background: var(--cream); }
+
+  /* Qty + Buy row */
+  .buy-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .qty {
+    display: inline-flex;
+    align-items: center;
+    background: var(--cream-soft);
+    border-radius: 999px;
+    padding: 4px;
+  }
+  .qty button {
+    width: 38px; height: 44px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--brown-deep);
+    font-size: 18px;
+    font-weight: 700;
+    border-radius: 999px;
+    transition: background .15s;
+  }
+  .qty button:hover { background: #fff; }
+  .qty input {
+    width: 32px;
+    border: none;
+    background: transparent;
+    text-align: center;
+    font-family: var(--serif);
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--brown-deep);
+    outline: none;
+  }
+  .buy-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: var(--accent-cocoa);
+    color: var(--cream-light);
+    padding: 14px 24px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .buy-cta:hover { background: var(--ink); }
+  .buy-cta svg { width: 16px; height: 16px; }
+
+  /* Reassurance pills */
+  .rea-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .rea {
+    background: var(--cream-soft);
+    border-radius: 14px;
+    padding: 14px 12px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .rea__icon {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--brown-chest);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 4px;
+  }
+  .rea__icon svg { width: 18px; height: 18px; }
+  .rea__t {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--brown-deep);
+  }
+  .rea__d {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+
+  /* =========================================================
+     COMPOSITION — 4 col mini cards (vs grosses cards V1)
+     ========================================================= */
+  .compo {
+    margin-bottom: 80px;
+  }
+  .section-head {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 28px;
+    margin-bottom: 32px;
+  }
+  .section-head__eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--brown-chest);
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-head__eyebrow::before {
+    content: "";
+    width: 22px; height: 1px;
+    background: var(--brown-chest);
+    opacity: 0.5;
+  }
+  .section-head__title {
+    font-family: var(--serif);
+    font-size: clamp(30px, 3.4vw, 44px);
+    line-height: 1.05;
+    font-weight: 700;
+    color: var(--brown-deep);
+    letter-spacing: -0.015em;
+    margin: 0;
+  }
+  .section-head__title em { color: var(--brown-chest); font-weight: 600; }
+  .section-head__sub {
+    font-family: var(--hand);
+    font-size: 22px;
+    color: var(--brown-chest);
+  }
+
+  .compo-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+  .ing {
+    background: #fff;
+    border-radius: 24px;
+    padding: 24px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  .ing__pct {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 56px;
+    line-height: 1;
+    color: var(--brown-chest);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+  .ing__pct sup {
+    font-size: 22px;
+    vertical-align: top;
+    margin-left: 2px;
+  }
+  .ing__name {
+    font-family: var(--serif);
+    font-size: 21px;
+    color: var(--brown-deep);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 4px 0 2px;
+  }
+  .ing__origin {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--brown-chest);
+    font-weight: 700;
+  }
+  .ing__desc {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    font-weight: 500;
+    margin-top: 4px;
+  }
+  .ing.is-rest { background: var(--sauge); }
+  .ing.is-rest .ing__pct { color: var(--brown-deep); }
+  .ing.is-rest .ing__origin { color: var(--brown-deep); }
+
+  /* =========================================================
+     UTILISATIONS — 4 cards usage (SECTION NOUVELLE)
+     ========================================================= */
+  .uses {
+    background: var(--sauge);
+    border-radius: 32px;
+    padding: 60px 48px;
+    margin-bottom: 80px;
+  }
+  .uses-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 36px;
+  }
+  .use {
+    background: #fff;
+    border-radius: 20px;
+    padding: 22px 20px;
+    text-align: center;
+  }
+  .use__emoji {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--cream-soft);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--brown-chest);
+    margin: 0 auto 14px;
+  }
+  .use__emoji svg { width: 28px; height: 28px; }
+  .use__title {
+    font-family: var(--serif);
+    font-size: 18px;
+    color: var(--brown-deep);
+    font-weight: 700;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+  }
+  .use__desc {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.4;
+    margin: 0;
+    font-weight: 500;
+  }
+
+  /* =========================================================
+     RECETTES — 2 cards (similaire V1 mais structure différente)
+     ========================================================= */
+  .recipes {
+    margin-bottom: 80px;
+  }
+  .recipes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  .recipe {
+    background: #fff;
+    border-radius: 24px;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+  }
+  .recipe__media {
+    position: relative;
+    background: var(--terracotta);
+    min-height: 240px;
+  }
+  .recipe__media img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%; object-fit: cover;
+  }
+  .recipe:nth-child(2) .recipe__media { background: var(--dore); }
+  .recipe__body {
+    padding: 26px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    justify-content: center;
+  }
+  .recipe__meta {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--brown-chest);
+    font-weight: 700;
+  }
+  .recipe__name {
+    font-family: var(--serif);
+    font-size: 26px;
+    color: var(--brown-deep);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .recipe__name em { color: var(--brown-chest); font-weight: 600; }
+  .recipe__desc {
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    margin: 0;
+    font-weight: 500;
+  }
+  .recipe__cta {
+    margin-top: 6px;
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent-cocoa);
+    border-bottom: 1px solid var(--accent-cocoa);
+    padding-bottom: 2px;
+  }
+
+  /* =========================================================
+     AVIS CLIENTS — 1 grosse + 3 plus petites (vs V1 grid)
+     ========================================================= */
+  .reviews {
+    margin-bottom: 80px;
+  }
+  .reviews-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 18px;
+    align-items: start;
+  }
+  .reviews-sum {
+    background: var(--accent-cocoa);
+    color: var(--cream);
+    border-radius: 28px;
+    padding: 36px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: sticky;
+    top: 90px;
+  }
+  .reviews-sum__num {
+    font-family: var(--serif);
+    font-size: 84px;
+    line-height: 1;
+    font-weight: 700;
+    color: var(--terracotta);
+    letter-spacing: -0.02em;
+  }
+  .reviews-sum__stars {
+    color: var(--terracotta);
+    font-size: 20px;
+    letter-spacing: 0.08em;
+  }
+  .reviews-sum__count {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(242,232,217,0.7);
+    font-weight: 700;
+  }
+  .reviews-sum__bars {
+    margin-top: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .reviews-sum__bar {
+    display: grid;
+    grid-template-columns: 28px 1fr 36px;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: rgba(242,232,217,0.78);
+    font-weight: 600;
+  }
+  .reviews-sum__bar .track {
+    height: 6px;
+    background: rgba(242,232,217,0.18);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .reviews-sum__bar .fill {
+    height: 100%;
+    background: var(--terracotta);
+    border-radius: 999px;
+  }
+  .reviews-sum__cta {
+    align-self: flex-start;
+    margin-top: 10px;
+    background: var(--terracotta);
+    color: var(--accent-cocoa);
+    padding: 12px 20px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 13px;
+    text-decoration: none;
+  }
+
+  .reviews-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .review {
+    background: #fff;
+    border-radius: 22px;
+    padding: 24px 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .review__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .review__stars {
+    color: var(--brown-chest);
+    font-size: 14px;
+    letter-spacing: 0.08em;
+  }
+  .review__date {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 700;
+  }
+  .review__title {
+    font-family: var(--serif);
+    font-size: 18px;
+    color: var(--brown-deep);
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .review__body {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+    margin: 0;
+    font-weight: 500;
+  }
+  .review__author {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--line);
+  }
+  .review__avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--terracotta);
+    color: var(--accent-cocoa);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .review:nth-child(2) .review__avatar { background: var(--dore); }
+  .review:nth-child(3) .review__avatar { background: var(--vieux-rose); }
+  .review:nth-child(4) .review__avatar { background: var(--sauge); }
+  .review__who strong {
+    display: block;
+    font-size: 13px;
+    color: var(--brown-deep);
+    font-weight: 700;
+  }
+  .review__who small {
+    font-size: 11px;
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+
+  /* =========================================================
+     SUGGESTIONS — 4 cards verticales (réutilise V1 style)
+     ========================================================= */
+  .suggest { margin-bottom: 80px; }
+  .suggest-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  .scard {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+  }
+  .scard__media {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border-radius: 22px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    background: var(--terracotta);
+  }
+  .scard__media img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform .4s;
+  }
+  .scard:hover .scard__media img { transform: scale(1.04); }
+  .scard__media.bg-rose { background: var(--vieux-rose); }
+  .scard__media.bg-sauge { background: var(--sauge); }
+  .scard__media.bg-dore { background: var(--dore); }
+  .scard__media.bg-cream { background: #F0E5D2; }
+  .scard__badge {
+    position: absolute;
+    top: 12px; left: 12px;
+    background: rgba(255,255,255,0.95);
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--brown-deep);
+  }
+  .scard__name {
+    font-family: var(--serif);
+    font-size: 19px;
+    color: var(--brown-deep);
+    font-weight: 700;
+    line-height: 1.15;
+    margin: 0 0 2px;
+    letter-spacing: -0.01em;
+  }
+  .scard__meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--brown-chest);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .scard__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 6px;
+  }
+  .scard__price {
+    font-family: var(--serif);
+    font-size: 18px;
+    color: var(--brown-deep);
+    font-weight: 700;
+  }
+  .scard__add {
+    background: var(--brown-chest);
+    color: #fff;
+    padding: 7px 12px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .scard__add svg { width: 11px; height: 11px; }
+
+  /* FOOTER */
+  .footer { background: transparent; margin-top: 0; padding: 0 16px 24px; }
+  .footer-inner {
+    max-width: 1340px;
+    margin: 0 auto;
+    background: var(--accent-cocoa);
+    color: var(--cream);
+    border-radius: 28px;
+    padding: 56px 48px 28px;
+    box-shadow: 0 12px 40px -16px rgba(59, 31, 14, 0.35);
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 1024px) {
+    .hero { grid-template-columns: 1fr; }
+    .info { position: static; }
+    .compo-grid { grid-template-columns: repeat(2, 1fr); }
+    .uses-grid { grid-template-columns: repeat(2, 1fr); }
+    .recipes-grid { grid-template-columns: 1fr; }
+    .suggest-grid { grid-template-columns: repeat(2, 1fr); }
+    .reviews-layout { grid-template-columns: 1fr; }
+    .reviews-sum { position: static; }
+  }
+  @media (max-width: 640px) {
+    .gallery__thumbs { grid-template-columns: repeat(4, 1fr); }
+    .recipe { grid-template-columns: 1fr; }
+    .reviews-list { grid-template-columns: 1fr; }
+    .suggest-grid { grid-template-columns: 1fr; }
+    .compo-grid { grid-template-columns: 1fr; }
+    .uses-grid { grid-template-columns: 1fr; }
+    .info { padding: 28px 26px; }
+    .rea { padding: 12px 8px; }
+    .rea__t { font-size: 11px; }
+    .uses { padding: 48px 24px; }
+  }
+  @media (max-width: 768px) {
+    .navbar.pill-nav { top: 0; }
+    .navbar.pill-nav .nav-inner { margin: 0 auto; border-radius: 0 0 22px 22px; padding: 10px 14px 10px 18px; }
+    .promo-bar.pill { margin: 0; border-radius: 0; }
+    .footer-inner { padding: 40px 24px 24px; border-radius: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- PROMO -->
+<div class="promo-bar pill">Livraison offerte dès 40€ d'achat — récolte 2025 disponible 🌰</div>
+
+<!-- NAV -->
+<header class="navbar pill-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand" aria-label="Castaneas"><img src="assets/castaneas-logo.svg" alt="Castaneas" class="brand-logo"></a>
+    <nav class="nav-links">
+      <a href="index.html">Accueil</a>
+      <a href="creme-de-chataigne.html" class="active">Crèmes de châtaigne</a>
+      <a href="#">Pâtes à tartiner</a>
+      <a href="#">Huiles</a>
+      <a href="recettes.html">Recettes</a>
+      <a href="index.html#histoire">Notre histoire</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="login.html" class="icon-btn" aria-label="Mon compte">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke-linecap="round"/></svg>
+      </a>
+      <button class="cart-pill" aria-label="Panier" data-cart-toggle>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 7h14l-1.5 11.5a2 2 0 0 1-2 1.5h-7a2 2 0 0 1-2-1.5L5 7Z"/><path d="M9 7V5a3 3 0 0 1 6 0v2" stroke-linecap="round"/></svg>
+        <span data-cart-count>0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="product">
+
+  <!-- BREADCRUMB -->
+  <nav class="crumb">
+    <a href="index.html">Accueil</a>
+    <span class="sep">›</span>
+    <a href="creme-de-chataigne.html">Crèmes de châtaigne</a>
+    <span class="sep">›</span>
+    <span class="current">Châtaigne vanillée · 150g</span>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+
+    <!-- GALLERY -->
+    <div class="gallery">
+      <div class="gallery__main">
+        <span class="gallery__badge">Bestseller · Coup de cœur</span>
+        <img src="assets/product-huile-noisettes.png" alt="Pot Castaneas — Châtaigne vanillée 150g">
+        <span class="gallery__caption">Pot Nº 24, fournée du 14 mars</span>
+        <button class="gallery__zoom" aria-label="Zoom">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5" stroke-linecap="round"/><path d="M11 8v6M8 11h6" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div class="gallery__thumbs">
+        <button class="gallery__thumb on"><img src="assets/product-huile-noisettes.png" alt=""></button>
+        <button class="gallery__thumb"><img src="assets/product-pate-tartiner.png" alt=""></button>
+        <button class="gallery__thumb"><img src="assets/product-noisettes-crues.png" alt=""></button>
+        <button class="gallery__thumb"><img src="assets/banniere-cremes.png" alt=""></button>
+        <button class="gallery__thumb"><img src="assets/product-pate-tartiner.png" alt=""></button>
+      </div>
+    </div>
+
+    <!-- INFO STICKY -->
+    <aside class="info">
+      <div class="info__header">
+        <span class="info__cat">Cahier nº 01 · Crèmes</span>
+        <button class="info__fav" aria-label="Favoris">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10Z" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+
+      <h1 class="info__title">Châtaigne<br><em>vanillée.</em></h1>
+
+      <div class="info__rating">
+        <span class="stars">★★★★★</span>
+        <span>4,9 · <a href="#avis">124 avis</a></span>
+      </div>
+
+      <p class="info__desc">Vanille Bourbon de Madagascar infusée à froid pendant 48h, gousse fendue à la main, châtaignes du Quercy confites au sucre roux. Une crème lente, qui ne presse rien.</p>
+
+      <div class="info__price-row">
+        <span class="info__price" id="prod-price">7,50€</span>
+        <span class="info__price-unit" id="prod-unit">Pot de 150g · 5,00€ / 100g</span>
+      </div>
+
+      <div class="opt-row">
+        <div class="opt-label">
+          Format
+          <em>3 contenances</em>
+        </div>
+        <div class="opt-pills">
+          <button class="opt-pill" data-weight="110" data-price="5.90" data-unit="110g · 5,36€ / 100g"><strong>110g</strong><span>Découverte</span></button>
+          <button class="opt-pill on" data-weight="150" data-price="7.50" data-unit="150g · 5,00€ / 100g"><strong>150g</strong><span>Classique</span></button>
+          <button class="opt-pill" data-weight="300" data-price="12.90" data-unit="300g · 4,30€ / 100g"><strong>300g</strong><span>Famille</span></button>
+        </div>
+      </div>
+
+      <div class="buy-row">
+        <div class="qty">
+          <button aria-label="moins" id="qty-dec">−</button>
+          <input type="text" id="qty-input" value="1" readonly>
+          <button aria-label="plus" id="qty-inc">+</button>
+        </div>
+        <button class="buy-cta" id="buy-cta">
+          Ajouter au panier · 7,50€
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7h14l-1.5 11.5a2 2 0 0 1-2 1.5h-7a2 2 0 0 1-2-1.5L5 7Z"/><path d="M9 7V5a3 3 0 0 1 6 0v2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+
+      <div class="rea-row">
+        <div class="rea">
+          <div class="rea__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 7h13l5 5v5h-2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
+          </div>
+          <div class="rea__t">48h</div>
+          <div class="rea__d">Livraison</div>
+        </div>
+        <div class="rea">
+          <div class="rea__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16v13H4z"/><path d="M8 7V4h8v3" stroke-linecap="round"/></svg>
+          </div>
+          <div class="rea__t">1€ rendu</div>
+          <div class="rea__d">Pot consigné</div>
+        </div>
+        <div class="rea">
+          <div class="rea__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3 C8 7 6 11 8 15 C9 17 12 19 12 19 C12 19 15 17 16 15 C18 11 16 7 12 3 Z" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="rea__t">Quercy 82</div>
+          <div class="rea__d">Origine</div>
+        </div>
+      </div>
+    </aside>
+  </section>
+
+  <!-- COMPOSITION -->
+  <section class="compo">
+    <div class="section-head">
+      <div>
+        <div class="section-head__eyebrow">Composition</div>
+        <h2 class="section-head__title">Trois ingrédients,<br><em>pas un de plus.</em></h2>
+      </div>
+      <div class="section-head__sub">— c'est tout, promis</div>
+    </div>
+
+    <div class="compo-grid">
+      <div class="ing">
+        <span class="ing__pct">72<sup>%</sup></span>
+        <div class="ing__origin">Lauzerte · Quercy</div>
+        <h3 class="ing__name">Châtaigne</h3>
+        <p class="ing__desc">Variété « Marigoule », ramassée à la main, cuite à l'eau, épluchée à la veillée.</p>
+      </div>
+      <div class="ing">
+        <span class="ing__pct">26<sup>%</sup></span>
+        <div class="ing__origin">Île de la Réunion</div>
+        <h3 class="ing__name">Sucre roux</h3>
+        <p class="ing__desc">Sucre de canne non raffiné, à la mélasse intacte. Cuisson lente.</p>
+      </div>
+      <div class="ing">
+        <span class="ing__pct">2<sup>%</sup></span>
+        <div class="ing__origin">Madagascar</div>
+        <h3 class="ing__name">Vanille Bourbon</h3>
+        <p class="ing__desc">Gousse fendue à la main, infusée à froid pendant 48h dans le sirop.</p>
+      </div>
+      <div class="ing is-rest">
+        <span class="ing__pct">0<sup>%</sup></span>
+        <div class="ing__origin">Sans rien d'autre</div>
+        <h3 class="ing__name">Tout le reste</h3>
+        <p class="ing__desc">Sans gluten · sans huile de palme · sans pectine · sans conservateur.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- UTILISATIONS -->
+  <section class="uses">
+    <div class="section-head" style="margin-bottom: 0;">
+      <div>
+        <div class="section-head__eyebrow" style="color: var(--accent-cocoa);">Comment le déguster</div>
+        <h2 class="section-head__title">Quatre <em>petites idées</em><br>pour le pot.</h2>
+      </div>
+      <div class="section-head__sub">— et la cuillère bien sûr</div>
+    </div>
+
+    <div class="uses-grid">
+      <div class="use">
+        <div class="use__emoji">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6">
+            <rect x="5" y="11" width="22" height="11" rx="2"/>
+            <path d="M9 11V8a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v3" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3 class="use__title">Sur tartine</h3>
+        <p class="use__desc">Pain au levain grillé, beurre demi-sel, une grosse cuillère.</p>
+      </div>
+      <div class="use">
+        <div class="use__emoji">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M8 12h16l-2 12a2 2 0 0 1-2 2H12a2 2 0 0 1-2-2L8 12Z"/>
+            <path d="M11 12V9a5 5 0 0 1 10 0v3" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3 class="use__title">En yaourt</h3>
+        <p class="use__desc">Deux cuillères dans un fromage blanc, miel et noisettes.</p>
+      </div>
+      <div class="use">
+        <div class="use__emoji">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6">
+            <circle cx="16" cy="16" r="10"/>
+            <path d="M11 18c2 2 8 2 10 0" stroke-linecap="round"/>
+            <circle cx="12" cy="13" r="1" fill="currentColor"/>
+            <circle cx="20" cy="13" r="1" fill="currentColor"/>
+          </svg>
+        </div>
+        <h3 class="use__title">En Mont-Blanc</h3>
+        <p class="use__desc">Vermicelles sur meringue + crème fouettée. Express.</p>
+      </div>
+      <div class="use">
+        <div class="use__emoji">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M9 6h14l-2 22H11L9 6Z"/>
+            <path d="M9 10h14" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3 class="use__title">À la cuillère</h3>
+        <p class="use__desc">Directement dans le pot. On ne juge pas.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECETTES -->
+  <section class="recipes">
+    <div class="section-head">
+      <div>
+        <div class="section-head__eyebrow">Recettes signées</div>
+        <h2 class="section-head__title">Deux recettes <em>pour ce pot.</em></h2>
+      </div>
+      <a href="#" style="font-size: 14px; font-weight: 700; color: var(--accent-cocoa); border-bottom: 1px solid var(--accent-cocoa); padding-bottom: 4px;">Toutes les recettes →</a>
+    </div>
+
+    <div class="recipes-grid">
+      <article class="recipe">
+        <div class="recipe__media">
+          <img src="assets/product-pate-tartiner.png" alt="">
+        </div>
+        <div class="recipe__body">
+          <span class="recipe__meta">5 min · sans cuisson</span>
+          <h3 class="recipe__name">Tartine d'<em>automne</em></h3>
+          <p class="recipe__desc">Pain au levain grillé, beurre demi-sel, une grosse cuillère de châtaigne vanillée.</p>
+          <a href="#" class="recipe__cta">
+            Lire la recette
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"/></svg>
+          </a>
+        </div>
+      </article>
+      <article class="recipe">
+        <div class="recipe__media">
+          <img src="assets/product-noisettes-crues.png" alt="">
+        </div>
+        <div class="recipe__body">
+          <span class="recipe__meta">25 min · 6 personnes</span>
+          <h3 class="recipe__name">Mont-Blanc <em>express</em></h3>
+          <p class="recipe__desc">Meringues, crème fouettée, vermicelles de châtaigne vanillée par-dessus.</p>
+          <a href="#" class="recipe__cta">
+            Lire la recette
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"/></svg>
+          </a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- AVIS -->
+  <section id="avis" class="reviews">
+    <div class="section-head">
+      <div>
+        <div class="section-head__eyebrow">Ce qu'on en dit</div>
+        <h2 class="section-head__title">124 avis vérifiés,<br><em>moyenne 4,9.</em></h2>
+      </div>
+    </div>
+
+    <div class="reviews-layout">
+      <aside class="reviews-sum">
+        <span class="reviews-sum__num">4,9</span>
+        <span class="reviews-sum__stars">★★★★★</span>
+        <span class="reviews-sum__count">Sur 124 avis vérifiés</span>
+        <div class="reviews-sum__bars">
+          <div class="reviews-sum__bar"><span>5★</span><div class="track"><div class="fill" style="width: 89%;"></div></div><span>89%</span></div>
+          <div class="reviews-sum__bar"><span>4★</span><div class="track"><div class="fill" style="width: 8%;"></div></div><span>8%</span></div>
+          <div class="reviews-sum__bar"><span>3★</span><div class="track"><div class="fill" style="width: 2%;"></div></div><span>2%</span></div>
+          <div class="reviews-sum__bar"><span>2★</span><div class="track"><div class="fill" style="width: 1%;"></div></div><span>1%</span></div>
+          <div class="reviews-sum__bar"><span>1★</span><div class="track"><div class="fill" style="width: 0%;"></div></div><span>0%</span></div>
+        </div>
+        <a href="#" class="reviews-sum__cta">Laisser un avis</a>
+      </aside>
+
+      <div class="reviews-list">
+        <article class="review">
+          <div class="review__top">
+            <span class="review__stars">★★★★★</span>
+            <span class="review__date">02 / 26</span>
+          </div>
+          <h4 class="review__title">La meilleure que j'ai mangée</h4>
+          <p class="review__body">« On sent vraiment la vanille, pas du tout écœurante. Le pot a fait trois jours à la maison — pas plus. »</p>
+          <div class="review__author">
+            <span class="review__avatar">M</span>
+            <div class="review__who">
+              <strong>Marine D.</strong>
+              <small>Toulouse · achat vérifié</small>
+            </div>
+          </div>
+        </article>
+        <article class="review">
+          <div class="review__top">
+            <span class="review__stars">★★★★★</span>
+            <span class="review__date">01 / 26</span>
+          </div>
+          <h4 class="review__title">Comme celle de ma grand-mère</h4>
+          <p class="review__body">« Un goût que je n'avais pas retrouvé depuis l'Aveyron. Le numéro de fournée, c'est un détail qui fait tout. »</p>
+          <div class="review__author">
+            <span class="review__avatar">J</span>
+            <div class="review__who">
+              <strong>Jean-Paul L.</strong>
+              <small>Bordeaux · achat vérifié</small>
+            </div>
+          </div>
+        </article>
+        <article class="review">
+          <div class="review__top">
+            <span class="review__stars">★★★★☆</span>
+            <span class="review__date">11 / 25</span>
+          </div>
+          <h4 class="review__title">Très bon, un peu cher</h4>
+          <p class="review__body">« La qualité est là, vraiment. Je trouve le pot un peu petit pour le prix, mais on en mange peu à la fois. »</p>
+          <div class="review__author">
+            <span class="review__avatar">C</span>
+            <div class="review__who">
+              <strong>Camille R.</strong>
+              <small>Paris · achat vérifié</small>
+            </div>
+          </div>
+        </article>
+        <article class="review">
+          <div class="review__top">
+            <span class="review__stars">★★★★★</span>
+            <span class="review__date">12 / 25</span>
+          </div>
+          <h4 class="review__title">Coffret offert, succès total</h4>
+          <p class="review__body">« Offert à ma mère pour Noël, elle a adoré les trois pots. L'emballage en bois est superbe et bien pensé. »</p>
+          <div class="review__author">
+            <span class="review__avatar">H</span>
+            <div class="review__who">
+              <strong>Hélène M.</strong>
+              <small>Cahors · achat vérifié</small>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- SUGGESTIONS -->
+  <section class="suggest">
+    <div class="section-head">
+      <div>
+        <div class="section-head__eyebrow">Pour aller plus loin</div>
+        <h2 class="section-head__title">À <em>déguster aussi.</em></h2>
+      </div>
+      <a href="creme-de-chataigne.html" style="font-size: 14px; font-weight: 700; color: var(--accent-cocoa); border-bottom: 1px solid var(--accent-cocoa); padding-bottom: 4px;">Toute la boutique →</a>
+    </div>
+
+    <div class="suggest-grid">
+      <a href="Fiche Produit.html" class="scard" onclick="event.stopPropagation();" >
+        <div class="scard__media">
+          <span class="scard__badge">Bestseller</span>
+          <img src="assets/product-pate-tartiner.png" alt="">
+        </div>
+        <div class="scard__meta">Crème · 150g</div>
+        <h3 class="scard__name">Crème de châtaigne</h3>
+        <div class="scard__foot">
+          <span class="scard__price">6,90€</span>
+          <button class="scard__add" onclick="event.stopPropagation();window.Castaneas.addToCartUI({id:'creme-nature-150',name:'Crème de châtaigne',price:6.90,image:'assets/product-pate-tartiner.png',variant:'150g',weight:'150g'},this);">+
+          </button>
+        </div>
+      </a>
+      <a href="Fiche Produit.html" class="scard">
+        <div class="scard__media bg-sauge">
+          <span class="scard__badge">Nouveau</span>
+          <img src="assets/product-noisettes-crues.png" alt="">
+        </div>
+        <div class="scard__meta">Pâte · 200g</div>
+        <h3 class="scard__name">Pâte de noisette</h3>
+        <div class="scard__foot">
+          <span class="scard__price">9,90€</span>
+          <button class="scard__add" onclick="event.stopPropagation();window.Castaneas.addToCartUI({id:'pate-noisette-200',name:'Pâte de noisette',price:9.90,image:'assets/product-noisettes-crues.png',variant:'200g',weight:'200g'},this);">+</button>
+        </div>
+      </a>
+      <a href="Fiche Produit.html" class="scard">
+        <div class="scard__media bg-dore">
+          <img src="assets/product-huile-noisettes.png" alt="">
+        </div>
+        <div class="scard__meta">Huile · 250ml</div>
+        <h3 class="scard__name">Huile de noisette</h3>
+        <div class="scard__foot">
+          <span class="scard__price">14,50€</span>
+          <button class="scard__add" onclick="event.stopPropagation();window.Castaneas.addToCartUI({id:'huile-noisette-250',name:'Huile de noisette',price:14.50,image:'assets/product-huile-noisettes.png',variant:'250ml',weight:'250ml'},this);">+</button>
+        </div>
+      </a>
+      <a href="Fiche Produit.html" class="scard">
+        <div class="scard__media bg-cream">
+          <span class="scard__badge">🎁 Coffret</span>
+          <img src="assets/product-pate-tartiner.png" alt="">
+        </div>
+        <div class="scard__meta">3 pots + boîte bois</div>
+        <h3 class="scard__name">Coffret Quercy</h3>
+        <div class="scard__foot">
+          <span class="scard__price">29,90€</span>
+          <button class="scard__add" onclick="event.stopPropagation();window.Castaneas.addToCartUI({id:'coffret-quercy',name:'Coffret Quercy',price:29.90,image:'assets/product-pate-tartiner.png',variant:'3×150g',weight:'3×150g'},this);">+</button>
+        </div>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand"><img src="assets/castaneas-logo.svg" alt="Castaneas" class="footer-brand-logo" style="margin-bottom:14px;"></div>
+        <p>Crèmes de châtaigne et pâtes de noisette faites à la main en Tarn-et-Garonne, en petites quantités, depuis 2018.</p>
+      </div>
+      <div>
+        <h4>Boutique</h4>
+        <ul>
+          <li><a href="creme-de-chataigne.html">Crèmes de châtaigne</a></li>
+          <li><a href="#">Pâtes de noisette</a></li>
+          <li><a href="#">Huiles &amp; farines</a></li>
+          <li><a href="#">Coffrets</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>La maison</h4>
+        <ul>
+          <li><a href="index.html#histoire">Notre histoire</a></li>
+          <li><a href="#">Le verger</a></li>
+          <li><a href="#">Recettes</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Aide</h4>
+        <ul>
+          <li><a href="#">Livraison &amp; retours</a></li>
+          <li><a href="#">Nous contacter</a></li>
+          <li><a href="#">Conservation</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 Castaneas · Lauzerte, Tarn-et-Garonne (82)</div>
+      <div>Fait à la main, par petites fournées 🌰</div>
+    </div>
+  </div>
+</footer>
+
+<!-- CART DRAWER -->
+<div class="cart-backdrop" data-cart-close></div>
+<aside class="cart-drawer" role="dialog" aria-label="Votre panier">
+  <div class="cart-head">
+    <h3>Votre panier</h3>
+    <button class="cart-close" data-cart-close aria-label="Fermer le panier">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="cart-body" data-cart-body></div>
+  <div class="cart-foot" data-cart-foot>
+    <div class="cart-total-row">
+      <span>Sous-total</span>
+      <span data-cart-total>0,00€</span>
+    </div>
+    <p class="cart-shipping-note">🚚 Livraison offerte dès 40€ d'achat</p>
+    <a href="panier.html" class="cart-checkout-btn">
+      Passer commande
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"/></svg>
+    </a>
+  </div>
+</aside>
+
+<!-- ZOOM LIGHTBOX -->
+<div id="zoom-overlay" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.88);display:none;align-items:center;justify-content:center;cursor:zoom-out;" onclick="closeZoom()">
+  <img id="zoom-img" src="" alt="" style="max-width:90vw;max-height:90vh;border-radius:16px;object-fit:contain;">
+</div>
+
+<script src="site-data.js"></script>
+<script src="cart.js"></script>
+<script>
+// ---- État global ----
+var _product = null;
+var _variants = [];
+var _selectedVariantId = null;
+var selectedPrice = 7.50;
+var qty = 1;
+
+// ========== CHARGEMENT DYNAMIQUE DEPUIS SITEDATA ==========
+(function () {
+  if (typeof SiteData === 'undefined') return;
+  // Lire l'ID produit depuis le hash (#id) ou le paramètre URL (?id=)
+  var pid = location.hash ? decodeURIComponent(location.hash.slice(1)) : null;
+  if (!pid) {
+    var params = new URLSearchParams(location.search);
+    pid = params.get('id');
+  }
+
+  var p = SiteData.products.find(function (x) { return x.id === pid; });
+  if (!p || p.status !== 'active') return;
+
+  _product = p;
+  _selectedVariantId = pid;
+  selectedPrice = p.price;
+
+  // Variantes = même nom + même catégorie
+  _variants = SiteData.getActiveProducts().filter(function (x) {
+    return x.name === p.name && x.category === p.category;
+  });
+
+  var cat = SiteData.getCategoryById(p.category);
+
+  // Titre de la page
+  document.title = p.name + (p.weight ? ' ' + p.weight : '') + ' · Castaneas';
+
+  // Breadcrumb
+  var crumb = document.querySelector('.crumb .current');
+  if (crumb) crumb.textContent = p.name + (p.weight ? ' · ' + p.weight : '');
+  var crumbCatLink = document.querySelector('.crumb a[href="creme-de-chataigne.html"]');
+  if (crumbCatLink && cat) {
+    crumbCatLink.textContent = cat.name;
+    crumbCatLink.href = SiteData.getCategoryHref(cat);
+  }
+
+  // Galerie — image principale
+  var mainImg = document.querySelector('.gallery__main img');
+  if (mainImg) { mainImg.src = p.image; mainImg.alt = p.name; }
+
+  // Galerie — badge
+  var galBadge = document.querySelector('.gallery__badge');
+  if (galBadge) { if (p.badge) galBadge.textContent = p.badge; else galBadge.style.display = 'none'; }
+
+  // Galerie — miniatures (image principale + images complémentaires)
+  var thumbsWrap = document.querySelector('.gallery__thumbs');
+  if (thumbsWrap) {
+    var allImgs = [p.image].concat(p.images && p.images.length ? p.images : []);
+    // dédoublonner
+    allImgs = allImgs.filter(function(src, idx) { return allImgs.indexOf(src) === idx; });
+    thumbsWrap.innerHTML = allImgs.map(function(src, idx) {
+      return '<button class="gallery__thumb' + (idx === 0 ? ' on' : '') + '">'
+        + '<img src="' + src + '" alt="" onerror="this.src=\'assets/product-pate-tartiner.png\'">'
+        + '</button>';
+    }).join('');
+  }
+
+  // Info catégorie
+  var infoCat = document.querySelector('.info__cat');
+  if (infoCat) infoCat.textContent = (cat ? cat.emoji + ' ' + cat.name : '');
+
+  // Info titre — dernier mot en <em>
+  var infoTitle = document.querySelector('.info__title');
+  if (infoTitle) {
+    var words = p.name.split(' ');
+    var last = words.length > 1 ? words.pop() : words[0];
+    var rest = words.join(' ');
+    infoTitle.innerHTML = (rest ? rest + '<br>' : '') + '<em>' + last + '.</em>';
+  }
+
+  // Info description
+  var infoDesc = document.querySelector('.info__desc');
+  if (infoDesc && p.desc) infoDesc.textContent = p.desc;
+
+  // Prix
+  document.getElementById('prod-price').textContent = p.price.toFixed(2).replace('.', ',') + '€';
+  document.getElementById('prod-unit').textContent = p.weight ? 'Pot de ' + p.weight : '';
+
+  // Format pills — construits depuis les variantes
+  var optPills = document.querySelector('.opt-pills');
+  if (optPills) {
+    if (_variants.length > 1) {
+      optPills.innerHTML = _variants.map(function (v) {
+        var on = v.id === pid ? ' on' : '';
+        return '<button class="opt-pill' + on + '" data-pid="' + v.id + '" data-price="' + v.price + '" data-unit="' + (v.weight || '') + '">'
+          + '<strong>' + (v.weight || v.id) + '</strong>'
+          + '<span>' + v.price.toFixed(2).replace('.', ',') + '€</span>'
+          + '</button>';
+      }).join('');
+      var lbl = document.querySelector('.opt-label em');
+      if (lbl) lbl.textContent = _variants.length + ' contenances';
+    } else {
+      optPills.innerHTML = '<button class="opt-pill on" data-pid="' + p.id + '" data-price="' + p.price + '" data-unit="' + (p.weight || '') + '">'
+        + '<strong>' + (p.weight || p.name) + '</strong>'
+        + '<span>' + p.price.toFixed(2).replace('.', ',') + '€</span>'
+        + '</button>';
+      var lbl2 = document.querySelector('.opt-label em');
+      if (lbl2) lbl2.textContent = '1 format';
+    }
+  }
+
+  // Suggestions — autres produits, même catégorie en priorité
+  var suggestGrid = document.querySelector('.suggest-grid');
+  if (suggestGrid) {
+    var others = SiteData.getActiveProducts().filter(function (x) { return x.id !== pid; });
+    others.sort(function (a, b) {
+      return (a.category === p.category ? 0 : 1) - (b.category === p.category ? 0 : 1);
+    });
+    var bgs = ['bg-terracotta', 'bg-rose', 'bg-sauge', 'bg-dore'];
+    suggestGrid.innerHTML = others.slice(0, 4).map(function (s, i) {
+      var scat = SiteData.getCategoryById(s.category);
+      var meta = (scat ? scat.name : '') + (s.weight ? ' · ' + s.weight : '');
+      var sbadge = s.badge ? '<span class="scard__badge">' + s.badge + '</span>' : '';
+      var addJson = JSON.stringify({ id: s.id, name: s.name, price: s.price, image: s.image, variant: s.weight, weight: s.weight }).replace(/'/g, '&#39;');
+      return '<a href="Fiche Produit.html#' + s.id + '" class="scard">'
+        + '<div class="scard__media ' + bgs[i % bgs.length] + '">' + sbadge
+        + '<img src="' + s.image + '" alt="' + s.name + '" onerror="this.src=\'assets/product-pate-tartiner.png\'">'
+        + '</div>'
+        + '<div class="scard__meta">' + meta + '</div>'
+        + '<h3 class="scard__name">' + s.name + '</h3>'
+        + '<div class="scard__foot">'
+        + '<span class="scard__price">' + s.price.toFixed(2).replace('.', ',') + '€</span>'
+        + '<button class="scard__add" data-add=\'' + addJson + '\' onclick="event.stopPropagation()">+</button>'
+        + '</div></a>';
+    }).join('');
+  }
+
+  // Composition — rendu dynamique depuis p.composition
+  var comp = p.composition;
+  if (comp) {
+    // Titre de section
+    var compTitle = document.querySelector('.compo .section-head__title');
+    if (compTitle && comp.heading) {
+      var parts = comp.heading.split(',');
+      if (parts.length >= 2) {
+        compTitle.innerHTML = parts[0] + ',<br><em>' + parts.slice(1).join(',').trim() + '</em>';
+      } else {
+        compTitle.innerHTML = '<em>' + comp.heading + '</em>';
+      }
+    }
+    // Grille des ingrédients
+    var compoGrid = document.querySelector('.compo-grid');
+    if (compoGrid && comp.ings && comp.ings.length) {
+      var ingsHTML = comp.ings.map(function (ing) {
+        return '<div class="ing">'
+          + '<span class="ing__pct">' + ing.pct + '<sup>%</sup></span>'
+          + '<div class="ing__origin">' + ing.origin + '</div>'
+          + '<h3 class="ing__name">' + ing.name + '</h3>'
+          + '<p class="ing__desc">' + ing.desc + '</p>'
+          + '</div>';
+      }).join('');
+      // Carte "Sans rien d'autre" toujours présente
+      ingsHTML += '<div class="ing is-rest">'
+        + '<span class="ing__pct">0<sup>%</sup></span>'
+        + '<div class="ing__origin">Sans rien d\'autre</div>'
+        + '<h3 class="ing__name">Tout le reste</h3>'
+        + '<p class="ing__desc">' + (comp.restDesc || '') + '</p>'
+        + '</div>';
+      compoGrid.innerHTML = ingsHTML;
+    }
+
+    // Section "Comment le déguster"
+    var uses = p.usages;
+    if (uses) {
+      var usesTitle = document.querySelector('.uses .section-head__title');
+      if (usesTitle && uses.heading) usesTitle.textContent = uses.heading;
+      var usesSub = document.querySelector('.uses .section-head__sub');
+      if (usesSub && uses.sub) usesSub.textContent = uses.sub;
+      var usesGrid = document.querySelector('.uses-grid');
+      if (usesGrid && uses.cards && uses.cards.length) {
+        var ICON_SVGS = {
+          tartine:  '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="11" width="22" height="11" rx="2"/><path d="M9 11V8a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v3" stroke-linecap="round"/></svg>',
+          yaourt:   '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 12h16l-2 12a2 2 0 0 1-2 2H12a2 2 0 0 1-2-2L8 12Z"/><path d="M11 12V9a5 5 0 0 1 10 0v3" stroke-linecap="round"/></svg>',
+          dessert:  '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="16" cy="16" r="10"/><path d="M11 18c2 2 8 2 10 0" stroke-linecap="round"/><circle cx="12" cy="13" r="1" fill="currentColor"/><circle cx="20" cy="13" r="1" fill="currentColor"/></svg>',
+          cuillere: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 6h14l-2 22H11L9 6Z"/><path d="M9 10h14" stroke-linecap="round"/></svg>',
+          gateau:   '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="16" width="22" height="11" rx="2"/><path d="M9 16v-3a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v3"/><path d="M11 10V8M16 10V8M21 10V8" stroke-linecap="round"/></svg>',
+          smoothie: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 10h12l-3 17H13L10 10Z"/><path d="M10 14h12M19 10V7" stroke-linecap="round"/></svg>',
+          bol:      '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 14a10 10 0 0 0 20 0H6Z"/><path d="M6 14h20M12 26h8" stroke-linecap="round"/></svg>',
+          aperitif: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 5h12L16 18v8"/><path d="M12 26h8" stroke-linecap="round"/><path d="M10 5l2 7M22 5l-2 7"/></svg>',
+        };
+        usesGrid.innerHTML = uses.cards.map(function (c) {
+          return '<div class="use">'
+            + '<div class="use__emoji">' + (ICON_SVGS[c.icon] || ICON_SVGS.cuillere) + '</div>'
+            + '<h3 class="use__title">' + c.title + '</h3>'
+            + '<p class="use__desc">' + c.desc + '</p>'
+            + '</div>';
+        }).join('');
+      }
+    }
+  }
+
+  // MAJ du bouton CTA avec le bon prix initial
+  updateBuyCta();
+})();
+
+// ========== GALERIE ==========
+(function () {
+  var mainImg = document.querySelector('.gallery__main img');
+  document.querySelectorAll('.gallery__thumb').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.gallery__thumb').forEach(function (b) { b.classList.remove('on'); });
+      btn.classList.add('on');
+      mainImg.src = btn.querySelector('img').src;
+      mainImg.alt = btn.querySelector('img').alt;
+    });
+  });
+  document.querySelector('.gallery__zoom').addEventListener('click', function () { openZoom(mainImg.src); });
+})();
+
+function openZoom(src) {
+  var overlay = document.getElementById('zoom-overlay');
+  document.getElementById('zoom-img').src = src;
+  overlay.style.display = 'flex';
+}
+function closeZoom() {
+  document.getElementById('zoom-overlay').style.display = 'none';
+}
+
+// ========== FORMAT PILLS ==========
+function updateBuyCta() {
+  var total = (selectedPrice * qty).toFixed(2).replace('.', ',');
+  document.getElementById('prod-price').textContent = selectedPrice.toFixed(2).replace('.', ',') + '€';
+  document.getElementById('buy-cta').innerHTML = 'Ajouter au panier · ' + total + '€ '
+    + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7h14l-1.5 11.5a2 2 0 0 1-2 1.5h-7a2 2 0 0 1-2-1.5L5 7Z"/><path d="M9 7V5a3 3 0 0 1 6 0v2" stroke-linecap="round"/></svg>';
+}
+
+document.querySelector('.opt-pills').addEventListener('click', function (e) {
+  var pill = e.target.closest('.opt-pill');
+  if (!pill) return;
+  document.querySelectorAll('.opt-pill').forEach(function (p) { p.classList.remove('on'); });
+  pill.classList.add('on');
+
+  if (pill.dataset.pid) {
+    // Variante dynamique
+    _selectedVariantId = pill.dataset.pid;
+    selectedPrice = parseFloat(pill.dataset.price);
+    var unit = pill.dataset.unit;
+    document.getElementById('prod-unit').textContent = unit ? 'Pot de ' + unit : '';
+    // MAJ image galerie vers la variante sélectionnée
+    var variant = _variants.find(function (v) { return v.id === _selectedVariantId; });
+    if (variant) {
+      var mainImg = document.querySelector('.gallery__main img');
+      if (mainImg) { mainImg.src = variant.image; mainImg.alt = variant.name; }
+    }
+  } else {
+    // Format statique (data-weight numérique)
+    var staticFormats = {
+      '110': { price: 5.90, unit: 'Pot de 110g · 5,36€ / 100g' },
+      '150': { price: 7.50, unit: 'Pot de 150g · 5,00€ / 100g' },
+      '300': { price: 12.90, unit: 'Pot de 300g · 4,30€ / 100g' },
+    };
+    var sf = staticFormats[pill.dataset.weight];
+    if (sf) { selectedPrice = sf.price; document.getElementById('prod-unit').textContent = sf.unit; }
+  }
+  updateBuyCta();
+});
+
+// ========== QUANTITÉ ==========
+document.getElementById('qty-dec').addEventListener('click', function () {
+  if (qty > 1) { qty--; document.getElementById('qty-input').value = qty; updateBuyCta(); }
+});
+document.getElementById('qty-inc').addEventListener('click', function () {
+  qty++; document.getElementById('qty-input').value = qty; updateBuyCta();
+});
+
+// ========== AJOUTER AU PANIER ==========
+document.getElementById('buy-cta').addEventListener('click', function () {
+  var cartProduct;
+  if (_product) {
+    var variant = _variants.find(function (v) { return v.id === _selectedVariantId; }) || _product;
+    cartProduct = { id: variant.id, name: variant.name, price: selectedPrice, image: variant.image, variant: variant.weight, weight: variant.weight };
+  } else {
+    // Fallback statique
+    cartProduct = { id: 'creme-vanillee-150', name: 'Châtaigne vanillée', price: selectedPrice, image: 'assets/product-huile-noisettes.png', variant: '150g', weight: '150g' };
+  }
+  // cart.js lit product.qty pour créer/incrémenter le bon montant
+  cartProduct.qty = qty;
+  window.Castaneas.addToCartUI(cartProduct, document.getElementById('buy-cta'));
+  qty = 1;
+  document.getElementById('qty-input').value = 1;
+  updateBuyCta();
+});
+
+// ========== FAVORI ==========
+var favBtn = document.querySelector('.info__fav');
+favBtn.addEventListener('click', function () {
+  favBtn.classList.toggle('active');
+  favBtn.querySelector('svg').setAttribute('fill', favBtn.classList.contains('active') ? 'currentColor' : 'none');
+  favBtn.style.color = favBtn.classList.contains('active') ? 'var(--corail)' : '';
+});
+</script>
+</body>
+</html>

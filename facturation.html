@@ -1,0 +1,545 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Livraison &amp; Facturation · Castaneas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  /* PILL NAV */
+  .navbar.pill-nav { background: transparent; border-bottom: none; position: sticky; top: 14px; z-index: 50; }
+  .navbar.pill-nav .nav-inner { max-width: 1340px; margin: 16px auto 0; background: #fff; border-radius: 999px; padding: 12px 16px 12px 28px; box-shadow: 0 6px 24px -10px rgba(59,31,14,.18); }
+  .navbar.pill-nav .brand { font-size: 26px; font-weight: 700; }
+  .navbar.pill-nav .nav-links { font-weight: 600; }
+  .navbar.pill-nav .nav-links a { color: var(--brown-deep); }
+  .navbar.pill-nav .nav-actions { background: transparent; border-radius: 0; padding: 0; gap: 8px; }
+  .navbar.pill-nav .icon-btn { width: 40px; height: 40px; background: #EDEFE5; border-radius: 999px; transition: background .15s; }
+  .navbar.pill-nav .icon-btn:hover { background: #dfe3d5; }
+  .cart-pill { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px 8px 12px; background: #EDEFE5; color: var(--brown-deep); font-weight: 700; font-size: 13px; border-radius: 999px; border: none; cursor: pointer; }
+  .cart-pill svg { width: 18px; height: 18px; }
+  .brand-logo { display: block; height: 34px; width: auto; }
+  .promo-bar.pill { max-width: 1340px; margin: 14px auto 0; border-radius: 999px; padding: 11px 24px; font-size: 13px; font-weight: 600; }
+
+  /* STEPS — step 2 active */
+  .steps { display: flex; align-items: center; justify-content: center; max-width: 560px; margin: 36px auto 40px; padding: 0 24px; }
+  .step-item { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--ink-soft); white-space: nowrap; }
+  .step-item.active { color: var(--brown-deep); }
+  .step-item.done { color: var(--brown-chest); }
+  .step-num { width: 28px; height: 28px; border-radius: 50%; background: var(--cream-soft); display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .step-item.active .step-num { background: var(--brown-deep); color: #fff; }
+  .step-item.done .step-num { background: var(--brown-chest); color: #fff; }
+  .step-sep { flex: 1; height: 1px; background: var(--cream-soft); margin: 0 14px; min-width: 24px; }
+
+  /* PAGE LAYOUT */
+  .checkout-page { max-width: 1060px; margin: 0 auto; padding: 0 24px 100px; }
+  .checkout-layout { display: grid; grid-template-columns: 1fr 340px; gap: 32px; align-items: start; }
+
+  /* SECTION HEADING */
+  .section-eyebrow { font-size: 11px; font-weight: 700; color: var(--ink-soft); letter-spacing: .12em; text-transform: uppercase; font-family: var(--mono); margin-bottom: 4px; }
+  .section-heading { font-family: var(--serif); font-size: 20px; color: var(--brown-deep); font-weight: 600; margin-bottom: 20px; }
+
+  /* CARD */
+  .card { background: #fff; border-radius: 20px; box-shadow: 0 2px 16px -4px rgba(59,31,14,.08); padding: 28px; margin-bottom: 20px; }
+
+  /* LOGIN BANNER */
+  .login-banner { display: flex; align-items: center; justify-content: space-between; gap: 16px; background: var(--cream-soft); border-radius: 14px; padding: 16px 20px; margin-bottom: 20px; flex-wrap: wrap; }
+  .login-banner__text { font-size: 14px; color: var(--ink-soft); line-height: 1.5; }
+  .login-banner__text strong { color: var(--brown-deep); display: block; font-size: 15px; margin-bottom: 2px; }
+  .login-banner__btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; background: var(--brown-deep); color: #fff; border-radius: 999px; font-size: 13px; font-weight: 700; text-decoration: none; white-space: nowrap; transition: background .15s; flex-shrink: 0; }
+  .login-banner__btn:hover { background: var(--brown-chest); }
+  .login-banner__btn svg { width: 15px; height: 15px; }
+
+  /* USER BANNER (logged in) */
+  .user-banner { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #eef7f2; border: 1.5px solid #c3e6d4; border-radius: 14px; padding: 14px 20px; margin-bottom: 20px; }
+  .user-banner__text { font-size: 14px; color: #1e5c3a; font-weight: 600; }
+  .user-banner__text span { font-weight: 400; color: #2d8c5a; font-size: 13px; }
+  .user-banner__out { font-size: 12px; color: var(--ink-soft); background: none; border: none; cursor: pointer; text-decoration: underline; padding: 0; transition: color .12s; }
+  .user-banner__out:hover { color: #c0392b; }
+
+  /* FORM GRID */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-grid .span2 { grid-column: 1 / -1; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label { font-size: 12px; font-weight: 700; color: var(--ink-soft); letter-spacing: .06em; text-transform: uppercase; font-family: var(--mono); }
+  .form-group label .req { color: var(--brown-chest); }
+  .form-control { border: 1.5px solid #e0ded7; border-radius: 10px; padding: 11px 14px; font-size: 14px; color: var(--brown-deep); background: #fdfcfb; outline: none; transition: border .15s, background .15s; width: 100%; box-sizing: border-box; font-family: var(--sans); }
+  .form-control:focus { border-color: var(--brown-chest); background: #fff; }
+  .form-control::placeholder { color: #bbb8b0; }
+  .form-control.error { border-color: #c0392b; }
+  .form-error { font-size: 12px; color: #c0392b; min-height: 16px; }
+
+  /* PAYMENT METHODS */
+  .pay-methods { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+  .pay-option { display: flex; align-items: center; gap: 14px; border: 1.5px solid #e0ded7; border-radius: 14px; padding: 16px 18px; cursor: pointer; transition: border .15s, background .15s; }
+  .pay-option:has(input:checked) { border-color: var(--brown-chest); background: #fdf8f5; }
+  .pay-option input[type="radio"] { accent-color: var(--brown-chest); width: 18px; height: 18px; flex-shrink: 0; cursor: pointer; }
+  .pay-option__body { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  .pay-option__label { font-size: 14px; font-weight: 600; color: var(--brown-deep); }
+  .pay-option__sub { font-size: 12px; color: var(--ink-soft); }
+  .pay-cards { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+  /* Card brand pictograms */
+  .card-badge { height: 24px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+
+  /* CGV */
+  .cgv-block { display: flex; align-items: flex-start; gap: 12px; background: var(--cream-soft); border-radius: 14px; padding: 16px 18px; margin-top: 4px; }
+  .cgv-block input[type="checkbox"] { accent-color: var(--brown-chest); width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; cursor: pointer; }
+  .cgv-block label { font-size: 13px; color: var(--ink-soft); line-height: 1.55; cursor: pointer; }
+  .cgv-block label a { color: var(--brown-deep); font-weight: 600; }
+  .cgv-error { font-size: 12px; color: #c0392b; margin-top: 6px; min-height: 16px; }
+
+  /* CONFIRM BTN */
+  .confirm-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 16px; background: var(--brown-deep); color: #fff; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; font-family: var(--serif); cursor: pointer; transition: background .15s; margin-top: 24px; }
+  .confirm-btn:hover { background: var(--brown-chest); }
+  .confirm-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .secure-note { display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 11.5px; color: var(--ink-soft); margin-top: 10px; }
+  .secure-note svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+  /* ORDER SUMMARY SIDEBAR */
+  .order-summary { background: #fff; border-radius: 20px; box-shadow: 0 2px 16px -4px rgba(59,31,14,.08); padding: 24px; position: sticky; top: 90px; }
+  .order-summary__title { font-family: var(--serif); font-size: 17px; color: var(--brown-deep); margin-bottom: 16px; font-weight: 600; }
+  .os-item { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .os-item__img { width: 48px; height: 48px; border-radius: 9px; background: var(--cream-soft) center/cover; flex-shrink: 0; position: relative; }
+  .os-item__badge { position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; border-radius: 50%; background: var(--brown-deep); color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .os-item__name { font-size: 13px; font-weight: 600; color: var(--brown-deep); line-height: 1.3; }
+  .os-item__meta { font-size: 11px; color: var(--ink-soft); margin-top: 2px; font-family: var(--mono); text-transform: uppercase; letter-spacing: .05em; }
+  .os-item__price { margin-left: auto; font-size: 14px; font-weight: 700; color: var(--brown-deep); flex-shrink: 0; }
+  .os-divider { border: none; border-top: 1px solid var(--cream-soft); margin: 14px 0; }
+  .os-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--ink-soft); margin-bottom: 8px; }
+  .os-row.discount { color: #2d8c5a; font-weight: 600; }
+  .os-row.free { color: #2d8c5a; font-weight: 600; }
+  .os-total { display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px; }
+  .os-total__label { font-size: 15px; font-weight: 700; color: var(--brown-deep); }
+  .os-total__val { font-size: 20px; font-weight: 700; font-family: var(--serif); color: var(--brown-deep); }
+  .os-back { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--ink-soft); text-decoration: none; margin-top: 16px; transition: color .12s; }
+  .os-back:hover { color: var(--brown-deep); }
+  .os-back svg { width: 14px; height: 14px; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .navbar.pill-nav { top: 0; }
+    .navbar.pill-nav .nav-inner { margin: 0 auto; border-radius: 0 0 22px 22px; padding: 10px 14px 10px 18px; }
+    .promo-bar.pill { margin: 0; border-radius: 0; }
+    .checkout-layout { grid-template-columns: 1fr; }
+    .order-summary { position: static; }
+    .checkout-page { padding: 0 16px 80px; }
+    .steps { padding: 0 16px; }
+    .step-label { display: none; }
+    .footer-inner { padding: 40px 24px 24px; border-radius: 22px; }
+  }
+  @media (max-width: 480px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid .span2 { grid-column: 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="promo-bar pill">Livraison offerte dès 40€ d'achat — récolte 2025 disponible 🌰</div>
+
+<header class="navbar pill-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand" aria-label="Castaneas"><img src="assets/castaneas-logo.svg" alt="Castaneas" class="brand-logo"></a>
+    <nav class="nav-links"></nav>
+    <div class="nav-actions">
+      <a href="login.html" class="icon-btn" aria-label="Mon compte">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke-linecap="round"/></svg>
+      </a>
+      <button class="cart-pill" aria-label="Panier" data-cart-toggle>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 7h14l-1.5 11.5a2 2 0 0 1-2 1.5h-7a2 2 0 0 1-2-1.5L5 7Z"/><path d="M9 7V5a3 3 0 0 1 6 0v2" stroke-linecap="round"/></svg>
+        <span data-cart-count>0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- STEPS -->
+<nav class="steps" aria-label="Étapes de commande">
+  <div class="step-item done">
+    <span class="step-num">✓</span>
+    <span class="step-label">Panier</span>
+  </div>
+  <div class="step-sep"></div>
+  <div class="step-item active">
+    <span class="step-num">2</span>
+    <span class="step-label">Livraison &amp; Facturation</span>
+  </div>
+  <div class="step-sep"></div>
+  <div class="step-item">
+    <span class="step-num">3</span>
+    <span class="step-label">Confirmation</span>
+  </div>
+</nav>
+
+<main class="checkout-page">
+  <div class="checkout-layout">
+
+    <!-- LEFT: formulaire -->
+    <div>
+
+      <!-- Bannière login / utilisateur connecté -->
+      <div id="login-banner" class="login-banner" style="display:none">
+        <div class="login-banner__text">
+          <strong>Déjà client ?</strong>
+          Connectez-vous pour préremplir automatiquement vos informations.
+        </div>
+        <a href="login.html?redirect=facturation.html" class="login-banner__btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke-linecap="round"/></svg>
+          Se connecter
+        </a>
+      </div>
+      <div id="user-banner" class="user-banner" style="display:none">
+        <div class="user-banner__text" id="user-name">
+          Bonjour ! <span></span>
+        </div>
+        <button class="user-banner__out" id="btn-logout">Pas vous ? Se déconnecter</button>
+      </div>
+
+      <!-- Coordonnées -->
+      <div class="card">
+        <div class="section-eyebrow">Étape 1</div>
+        <div class="section-heading">Coordonnées</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="f-prenom">Prénom <span class="req">*</span></label>
+            <input type="text" id="f-prenom" class="form-control" placeholder="Marie" autocomplete="given-name">
+            <div class="form-error" id="err-prenom"></div>
+          </div>
+          <div class="form-group">
+            <label for="f-nom">Nom <span class="req">*</span></label>
+            <input type="text" id="f-nom" class="form-control" placeholder="Dupont" autocomplete="family-name">
+            <div class="form-error" id="err-nom"></div>
+          </div>
+          <div class="form-group">
+            <label for="f-email">E-mail <span class="req">*</span></label>
+            <input type="email" id="f-email" class="form-control" placeholder="marie@exemple.fr" autocomplete="email">
+            <div class="form-error" id="err-email"></div>
+          </div>
+          <div class="form-group">
+            <label for="f-tel">Téléphone</label>
+            <input type="tel" id="f-tel" class="form-control" placeholder="06 12 34 56 78" autocomplete="tel">
+            <div class="form-error" id="err-tel"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Adresse de livraison -->
+      <div class="card">
+        <div class="section-eyebrow">Étape 2</div>
+        <div class="section-heading">Adresse de livraison</div>
+        <div class="form-grid">
+          <div class="form-group span2">
+            <label for="f-adresse">Adresse <span class="req">*</span></label>
+            <input type="text" id="f-adresse" class="form-control" placeholder="12 rue de la Châtaigne" autocomplete="address-line1">
+            <div class="form-error" id="err-adresse"></div>
+          </div>
+          <div class="form-group span2">
+            <label for="f-complement">Complément d'adresse</label>
+            <input type="text" id="f-complement" class="form-control" placeholder="Appartement, bâtiment, étage…" autocomplete="address-line2">
+          </div>
+          <div class="form-group">
+            <label for="f-cp">Code postal <span class="req">*</span></label>
+            <input type="text" id="f-cp" class="form-control" placeholder="82000" maxlength="5" inputmode="numeric" autocomplete="postal-code">
+            <div class="form-error" id="err-cp"></div>
+          </div>
+          <div class="form-group">
+            <label for="f-ville">Ville <span class="req">*</span></label>
+            <input type="text" id="f-ville" class="form-control" placeholder="Montauban" autocomplete="address-level2">
+            <div class="form-error" id="err-ville"></div>
+          </div>
+          <div class="form-group span2">
+            <label for="f-pays">Pays <span class="req">*</span></label>
+            <select id="f-pays" class="form-control" autocomplete="country">
+              <option value="FR" selected>France</option>
+              <option value="BE">Belgique</option>
+              <option value="CH">Suisse</option>
+              <option value="LU">Luxembourg</option>
+            </select>
+          </div>
+          <div class="form-group span2">
+            <label for="f-note">Note de livraison <span style="font-weight:400;text-transform:none;letter-spacing:0">(optionnel)</span></label>
+            <textarea id="f-note" class="form-control" rows="2" placeholder="Instructions particulières pour le livreur…" style="resize:vertical"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mode de paiement -->
+      <div class="card">
+        <div class="section-eyebrow">Étape 3</div>
+        <div class="section-heading">Mode de paiement</div>
+        <div class="pay-methods">
+
+          <!-- Carte bancaire -->
+          <label class="pay-option">
+            <input type="radio" name="payment" value="card" checked>
+            <div class="pay-option__body">
+              <div class="pay-option__label">Carte bancaire</div>
+              <div class="pay-option__sub">Paiement 100 % sécurisé</div>
+              <div class="pay-cards">
+                <!-- CB -->
+                <svg class="card-badge" width="38" height="24" viewBox="0 0 38 24" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="38" height="24" rx="4" fill="#006BA6"/>
+                  <text x="19" y="16" font-size="10" font-weight="700" font-family="Arial,sans-serif" fill="#fff" text-anchor="middle">CB</text>
+                </svg>
+                <!-- Visa -->
+                <svg class="card-badge" width="38" height="24" viewBox="0 0 38 24" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="38" height="24" rx="4" fill="#1A1F71"/>
+                  <text x="19" y="16" font-size="10" font-weight="700" font-family="Arial,sans-serif" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">VISA</text>
+                </svg>
+                <!-- Mastercard -->
+                <svg class="card-badge" width="38" height="24" viewBox="0 0 38 24" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="38" height="24" rx="4" fill="#252525"/>
+                  <circle cx="15" cy="12" r="7" fill="#EB001B"/>
+                  <circle cx="23" cy="12" r="7" fill="#F79E1B"/>
+                  <path d="M19 6.8a7 7 0 0 1 0 10.4A7 7 0 0 1 19 6.8z" fill="#FF5F00"/>
+                </svg>
+              </div>
+            </div>
+          </label>
+
+        </div>
+        <div class="form-error" id="err-payment" style="margin-top:8px"></div>
+      </div>
+
+      <!-- CGV -->
+      <div class="card" style="padding: 20px 24px;">
+        <div class="cgv-block">
+          <input type="checkbox" id="cgv-check">
+          <label for="cgv-check">
+            J'ai lu et j'accepte les <a href="cgv.html" target="_blank">conditions générales de vente</a> ainsi que la <a href="#">politique de confidentialité</a> de Castaneas.
+          </label>
+        </div>
+        <div class="cgv-error" id="err-cgv"></div>
+
+        <button class="confirm-btn" id="confirm-btn">
+          Confirmer et payer
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"/></svg>
+        </button>
+        <div class="secure-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4" stroke-linecap="round"/></svg>
+          Paiement 100 % sécurisé
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: récapitulatif commande -->
+    <aside class="order-summary">
+      <div class="order-summary__title">Votre commande</div>
+      <div id="os-items"></div>
+      <hr class="os-divider">
+      <div class="os-row">
+        <span>Sous-total</span>
+        <span id="os-subtotal">—</span>
+      </div>
+      <div class="os-row discount" id="os-promo-row" style="display:none">
+        <span id="os-promo-label">Code promo</span>
+        <span id="os-promo-val">—</span>
+      </div>
+      <div class="os-row" id="os-shipping-row">
+        <span>Expédition</span>
+        <span id="os-shipping-val">—</span>
+      </div>
+      <hr class="os-divider">
+      <div class="os-total">
+        <span class="os-total__label">Total TTC</span>
+        <span class="os-total__val" id="os-total">—</span>
+      </div>
+      <a href="panier.html" class="os-back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round"/></svg>
+        Modifier le panier
+      </a>
+    </aside>
+
+  </div>
+</main>
+
+<!-- CART DRAWER -->
+<div class="cart-backdrop" data-cart-close></div>
+<aside class="cart-drawer" role="dialog" aria-label="Votre panier">
+  <div class="cart-head">
+    <h3>Votre panier</h3>
+    <button class="cart-close" data-cart-close aria-label="Fermer le panier">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="cart-body" data-cart-body></div>
+  <div class="cart-foot" data-cart-foot>
+    <div class="cart-total-row">
+      <span>Sous-total</span>
+      <span data-cart-total>0,00€</span>
+    </div>
+    <p class="cart-shipping-note">🚚 Livraison offerte dès 40€ d'achat</p>
+    <a href="panier.html" class="cart-checkout-btn">
+      Voir le panier
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"/></svg>
+    </a>
+  </div>
+</aside>
+
+<script src="site-data.js"></script>
+<script src="cart.js"></script>
+<script>
+(function () {
+  const CART_KEY     = 'castaneas_cart_v1';
+  const CHECKOUT_KEY = 'castaneas_checkout_v1';
+  const SESSION_KEY  = 'castaneas_session_v1';
+  const USERS_KEY    = 'castaneas_users_v1';
+
+  function fmt(n) { return n.toFixed(2).replace('.', ',') + ' €'; }
+
+  // ── SESSION / LOGIN ──────────────────────────────────────
+  function getSession() {
+    try { return JSON.parse(sessionStorage.getItem(SESSION_KEY)); } catch { return null; }
+  }
+
+  function initAuthBanner() {
+    const session = getSession();
+    if (session && session.email) {
+      document.getElementById('user-banner').style.display  = 'flex';
+      document.getElementById('login-banner').style.display = 'none';
+      const nameEl = document.getElementById('user-name');
+      nameEl.innerHTML = 'Bonjour <strong>' + session.prenom + ' ' + session.nom + '</strong> <span>(' + session.email + ')</span>';
+      // Prefill form
+      if (session.prenom) document.getElementById('f-prenom').value = session.prenom;
+      if (session.nom)    document.getElementById('f-nom').value    = session.nom;
+      if (session.email)  document.getElementById('f-email').value  = session.email;
+    } else {
+      document.getElementById('login-banner').style.display = 'flex';
+      document.getElementById('user-banner').style.display  = 'none';
+    }
+  }
+
+  document.getElementById('btn-logout').onclick = function () {
+    sessionStorage.removeItem(SESSION_KEY);
+    document.getElementById('login-banner').style.display = 'flex';
+    document.getElementById('user-banner').style.display  = 'none';
+    document.getElementById('f-prenom').value = '';
+    document.getElementById('f-nom').value    = '';
+    document.getElementById('f-email').value  = '';
+  };
+
+  // ── ORDER SUMMARY ────────────────────────────────────────
+  function renderSummary() {
+    let items = [];
+    let checkout = null;
+    try { items    = JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch {}
+    try { checkout = JSON.parse(sessionStorage.getItem(CHECKOUT_KEY)); } catch {}
+
+    // Items
+    const osItems = document.getElementById('os-items');
+    osItems.innerHTML = items.map(i => `
+      <div class="os-item">
+        <div class="os-item__img" style="background-image:url('${i.image || ''}')">
+          <div class="os-item__badge">${i.qty}</div>
+        </div>
+        <div>
+          <div class="os-item__name">${i.name}</div>
+          <div class="os-item__meta">${[i.variant, i.weight || '250g'].filter(Boolean).join(' · ')}</div>
+        </div>
+        <div class="os-item__price">${fmt(i.qty * i.price)}</div>
+      </div>
+    `).join('');
+
+    if (!checkout) {
+      const sub = items.reduce((s, i) => s + i.qty * i.price, 0);
+      document.getElementById('os-subtotal').textContent   = fmt(sub);
+      document.getElementById('os-shipping-val').textContent = 'À calculer';
+      document.getElementById('os-total').textContent       = fmt(sub);
+      return;
+    }
+
+    document.getElementById('os-subtotal').textContent = fmt(checkout.subtotal || 0);
+
+    const promoRow = document.getElementById('os-promo-row');
+    if (checkout.promoCode && checkout.discount > 0) {
+      promoRow.style.display = 'flex';
+      document.getElementById('os-promo-label').textContent = 'Code ' + checkout.promoCode;
+      document.getElementById('os-promo-val').textContent   = '− ' + fmt(checkout.discount);
+    } else {
+      promoRow.style.display = 'none';
+    }
+
+    const shippingRow = document.getElementById('os-shipping-row');
+    if (checkout.shipping !== null && checkout.shipping !== undefined) {
+      shippingRow.classList.toggle('free', checkout.shipping === 0);
+      document.getElementById('os-shipping-val').textContent = checkout.shipping === 0 ? 'Offerte 🎉' : fmt(checkout.shipping);
+    } else {
+      document.getElementById('os-shipping-val').textContent = 'À calculer';
+    }
+
+    document.getElementById('os-total').textContent = checkout.total !== null ? fmt(checkout.total) : '—';
+  }
+
+  // ── VALIDATION ───────────────────────────────────────────
+  function setError(id, msg) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = msg;
+  }
+  function clearErrors() {
+    ['err-prenom','err-nom','err-email','err-tel','err-adresse','err-cp','err-ville','err-payment','err-cgv'].forEach(id => setError(id, ''));
+    document.querySelectorAll('.form-control.error').forEach(el => el.classList.remove('error'));
+  }
+  function markError(fieldId, errId, msg) {
+    const f = document.getElementById(fieldId);
+    if (f) f.classList.add('error');
+    setError(errId, msg);
+  }
+
+  document.getElementById('confirm-btn').addEventListener('click', function () {
+    clearErrors();
+    let valid = true;
+
+    const prenom  = document.getElementById('f-prenom').value.trim();
+    const nom     = document.getElementById('f-nom').value.trim();
+    const email   = document.getElementById('f-email').value.trim();
+    const adresse = document.getElementById('f-adresse').value.trim();
+    const cp      = document.getElementById('f-cp').value.trim();
+    const ville   = document.getElementById('f-ville').value.trim();
+    const payment = document.querySelector('input[name="payment"]:checked');
+    const cgv     = document.getElementById('cgv-check').checked;
+
+    if (!prenom)  { markError('f-prenom',  'err-prenom',  'Le prénom est requis.'); valid = false; }
+    if (!nom)     { markError('f-nom',     'err-nom',     'Le nom est requis.'); valid = false; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      markError('f-email', 'err-email', 'Entrez un e-mail valide.'); valid = false;
+    }
+    if (!adresse) { markError('f-adresse', 'err-adresse', "L'adresse est requise."); valid = false; }
+    if (!cp || !/^\d{4,5}$/.test(cp)) { markError('f-cp', 'err-cp', 'Code postal invalide.'); valid = false; }
+    if (!ville)   { markError('f-ville',   'err-ville',   'La ville est requise.'); valid = false; }
+    if (!payment) { setError('err-payment', 'Sélectionnez un mode de paiement.'); valid = false; }
+    if (!cgv)     { setError('err-cgv', 'Vous devez accepter les conditions générales.'); valid = false; }
+
+    if (!valid) {
+      document.querySelector('.error, [id^="err-"]:not(:empty)')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    // Save billing info for confirmation page
+    try {
+      sessionStorage.setItem('castaneas_billing_v1', JSON.stringify({
+        prenom, nom, email,
+        tel:        document.getElementById('f-tel').value.trim(),
+        adresse,
+        complement: document.getElementById('f-complement').value.trim(),
+        cp, ville,
+        pays:       document.getElementById('f-pays').value,
+        note:       document.getElementById('f-note').value.trim(),
+        payment:    payment.value,
+      }));
+    } catch (_) {}
+
+    window.location.href = 'confirmation.html';
+  });
+
+  // ── INIT ─────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    initAuthBanner();
+    renderSummary();
+  });
+})();
+</script>
+</body>
+</html>

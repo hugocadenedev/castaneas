@@ -1,0 +1,934 @@
+/* ============================================================
+   CASTANEAS — V2 "À TABLE"
+   Direction : conviviale, gourmande, recettes & tartines
+   Palette   : IDENTIQUE à la V1 (vert sauge, crème, or, terre cuite)
+   ============================================================ */
+
+:root {
+  /* Reprend EXACTEMENT la palette de la V1 */
+  --cream: #f5f1e6;
+  --cream-soft: #fbf8ee;
+  --cream-deep: #ebe4d0;
+  --ivory: #fffdf6;
+  --shell: #dcd4ba;
+  --blush: #e8ecd8;
+
+  --sage: #788c78;
+  --sage-deep: #5a6e5a;
+  --sage-light: #a8bca8;
+  --sage-soft: #c8dcc8;
+
+  --cocoa: #3a4a3a;
+  --cocoa-dark: #2a362a;
+  --hazel: #a0673a;
+  --hazel-deep: #7a4a25;
+  --hazel-light: #c89269;
+  --caramel: #c8b428;
+  --olive: #7a7a42;
+
+  --ink: #2a362a;
+  --muted: #6a7a6a;
+  --line: rgba(60, 74, 58, 0.14);
+
+  --accent: #c8b428;
+  --accent-deep: #a89820;
+  --accent-soft: #ece3a0;
+
+  --blue: #2878b4;
+  --red: #dc1428;
+
+  --serif: 'Fraunces', 'Cormorant Garamond', Georgia, serif;
+  --sans: 'Inter', -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+  --hand: 'Caveat', 'Patrick Hand', cursive;
+
+  --maxw: 1280px;
+  --pad: clamp(20px, 4vw, 56px);
+  --radius: 20px;
+  --radius-lg: 32px;
+  --radius-xl: 44px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  color: var(--ink);
+  background: var(--cream);
+  font-size: 16px; line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+.display { font-family: var(--serif); font-weight: 400; letter-spacing: -0.025em; line-height: 0.98; }
+.display-italic { font-family: var(--serif); font-style: italic; font-weight: 300; letter-spacing: -0.015em; }
+.eyebrow { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em; color: var(--hazel-deep); font-weight: 500; }
+.label-mono { font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em; color: var(--muted); }
+.hand { font-family: var(--hand); }
+
+.container { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--pad); }
+.section { padding: clamp(60px, 8vw, 112px) 0; }
+
+/* ============================================================
+   ANNOUNCE + NAV (réutilise styles V1)
+   ============================================================ */
+.announce { background: var(--hazel-deep); color: var(--cream-soft); text-align: center; padding: 11px 16px; font-size: 13px; overflow: hidden; }
+.announce-track { display: inline-flex; gap: 60px; animation: marquee 42s linear infinite; white-space: nowrap; }
+.announce-track span::before { content: '❀'; margin-right: 18px; color: var(--accent-soft); }
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+.nav { position: sticky; top: 0; z-index: 50; background: var(--cream-soft); border-bottom: 1px solid var(--line); }
+.nav-inner { max-width: var(--maxw); margin: 0 auto; padding: 18px var(--pad); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 24px; }
+.logo img { height: 44px; width: auto; }
+.nav-links { display: flex; gap: 36px; justify-content: center; font-size: 14px; font-weight: 500; }
+.nav-links a { position: relative; padding: 6px 0; }
+.nav-links a.active::after, .nav-links a:hover::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: -2px;
+  height: 2px; background: var(--sage); border-radius: 2px;
+}
+.nav-actions { display: flex; gap: 14px; justify-content: flex-end; align-items: center; }
+.nav-btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 99px; font-size: 13px; font-weight: 500; transition: all 0.18s; }
+.nav-btn:hover { background: var(--cream-deep); }
+.nav-btn.cart { background: var(--sage-deep); color: var(--cream-soft); box-shadow: 0 4px 14px rgba(60,90,60,0.25); }
+.nav-btn.cart:hover { background: var(--cocoa); transform: translateY(-1px); }
+.cart-count { background: var(--red); color: var(--cream-soft); min-width: 20px; height: 20px; border-radius: 99px; font-size: 11px; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; padding: 0 6px; transition: transform 0.3s cubic-bezier(.5,-.5,.3,1.5); }
+.cart-count.bump { transform: scale(1.35); }
+.version-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border: 1px solid var(--line); background: var(--blush); border-radius: 99px; font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--cocoa); }
+.version-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+.version-pill a { color: var(--hazel-deep); text-decoration: underline; text-underline-offset: 2px; }
+
+/* ============================================================
+   BUTTONS (V1)
+   ============================================================ */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 24px; border-radius: 99px; font-weight: 500; font-size: 14px; transition: all 0.2s; white-space: nowrap; }
+.btn-primary { background: var(--sage-deep); color: var(--cream-soft); box-shadow: 0 6px 18px rgba(60,90,60,0.25); }
+.btn-primary:hover { background: var(--cocoa); transform: translateY(-2px); }
+.btn-accent { background: var(--accent); color: var(--cocoa-dark); box-shadow: 0 6px 18px rgba(200,180,40,0.35); }
+.btn-accent:hover { background: var(--accent-deep); color: var(--cream-soft); transform: translateY(-2px); }
+.btn-ghost { background: var(--blush); color: var(--cocoa); border: 1px solid var(--line); }
+.btn-ghost:hover { background: var(--cream-deep); }
+
+/* ============================================================
+   ★ HERO V2 — "Sur la table"
+   La tartine est la vedette, le pot est secondaire
+   ============================================================ */
+.hero-table {
+  position: relative;
+  padding: clamp(40px, 6vw, 80px) 0 clamp(60px, 8vw, 100px);
+  overflow: hidden;
+}
+.hero-table::before {
+  content: ''; position: absolute; top: 80px; right: -200px;
+  width: 480px; height: 480px; border-radius: 50%;
+  background: radial-gradient(circle, var(--blush) 0%, transparent 70%);
+  z-index: 0;
+}
+.hero-table-grid {
+  display: grid; grid-template-columns: 1fr 1.1fr;
+  gap: clamp(40px, 6vw, 80px); align-items: center;
+  position: relative; z-index: 1;
+}
+.hero-table-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+.hero-table-meta .dot { color: var(--caramel); }
+
+.hero-table-title {
+  font-size: clamp(60px, 9vw, 130px);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+}
+.hero-table-title em { font-style: italic; font-weight: 300; color: var(--hazel); }
+
+.hero-table-sub {
+  font-family: var(--hand);
+  font-size: 32px;
+  color: var(--sage-deep);
+  margin: 18px 0 24px;
+  transform: rotate(-1.5deg);
+  display: inline-block;
+}
+
+.hero-table-lede {
+  font-size: 17px; line-height: 1.7; color: var(--cocoa);
+  max-width: 44ch; margin-bottom: 28px;
+}
+
+.hero-table-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.hero-table-stats {
+  display: flex; gap: 36px;
+  margin-top: 48px; padding-top: 28px;
+  border-top: 1px dashed var(--line);
+}
+.hero-table-stats .item strong { font-family: var(--serif); font-size: 36px; color: var(--cocoa); display: block; line-height: 1; }
+.hero-table-stats .item span { font-family: var(--mono); font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-top: 6px; display: block; }
+
+/* Hero media — composition libre, type carnet */
+.hero-table-media {
+  position: relative;
+  aspect-ratio: 1.05;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 16px;
+}
+.hero-table-img {
+  background-size: cover; background-position: center;
+  border-radius: var(--radius-lg);
+  position: relative;
+  box-shadow: 0 12px 40px rgba(60,74,58,0.14);
+}
+.hero-table-img.tartine {
+  grid-row: 1 / 3;
+  border-radius: var(--radius-xl);
+  transform: rotate(-1.5deg);
+}
+.hero-table-img.pot {
+  border-radius: 50%;
+  aspect-ratio: 1;
+  align-self: end;
+  transform: rotate(2deg);
+}
+.hero-table-img.detail {
+  border-radius: var(--radius-lg);
+  transform: rotate(-2deg);
+  align-self: start;
+}
+.hero-table-sticker {
+  position: absolute;
+  top: -20px; right: 30%;
+  width: 110px; height: 110px;
+  background: var(--accent);
+  color: var(--cocoa-dark);
+  border-radius: 50%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  font-family: var(--hand); font-size: 22px;
+  text-align: center; line-height: 1.1;
+  transform: rotate(-8deg);
+  z-index: 3;
+  box-shadow: 0 8px 22px rgba(200,180,40,0.35);
+  padding: 12px;
+}
+.hero-table-sticker em { font-family: var(--serif); font-style: italic; font-size: 16px; display: block; margin-top: 4px; opacity: 0.7; }
+
+.hero-tape-tag {
+  position: absolute;
+  bottom: 18px; left: 18px;
+  background: var(--cream-soft);
+  padding: 8px 14px;
+  border-radius: 99px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cocoa);
+  box-shadow: 0 4px 12px rgba(60,74,58,0.12);
+}
+
+/* ============================================================
+   ★ TARTINE DU JOUR — large band
+   ============================================================ */
+.tartine-day {
+  background: var(--blush);
+  padding: clamp(60px, 8vw, 100px) 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.tartine-day-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(40px, 6vw, 80px);
+  align-items: center;
+}
+.tartine-day-img {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(60,74,58,0.18);
+}
+.tartine-day-img::before {
+  content: ''; position: absolute; inset: -16px;
+  border: 1px dashed var(--sage); border-radius: 50%;
+  opacity: 0.4;
+}
+.tartine-day-num {
+  position: absolute; top: -16px; left: 30px;
+  background: var(--cream-soft);
+  border: 1px solid var(--line);
+  padding: 8px 16px;
+  border-radius: 99px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--hazel-deep);
+}
+.tartine-day h2 {
+  font-family: var(--serif);
+  font-size: clamp(40px, 5vw, 64px);
+  letter-spacing: -0.025em;
+  line-height: 1;
+}
+.tartine-day h2 em { font-style: italic; font-weight: 300; color: var(--hazel); }
+.tartine-day-recipe {
+  margin-top: 28px;
+  background: var(--cream-soft);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  border: 1px solid var(--line);
+}
+.tartine-day-recipe h4 {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sage-deep);
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+.tartine-day-recipe ol { list-style: none; counter-reset: r; }
+.tartine-day-recipe li {
+  counter-increment: r;
+  padding: 10px 0 10px 36px;
+  border-bottom: 1px dashed var(--line);
+  position: relative;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.tartine-day-recipe li:last-child { border-bottom: none; }
+.tartine-day-recipe li::before {
+  content: counter(r, decimal-leading-zero);
+  position: absolute; left: 0; top: 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--caramel);
+  letter-spacing: 0.1em;
+}
+.tartine-day-recipe li b { font-family: var(--serif); font-weight: 400; color: var(--cocoa); }
+.tartine-day-actions { margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+
+/* ============================================================
+   ★ MOMENTS RAIL — quand utiliser quel pot
+   ============================================================ */
+.moments {
+  padding: clamp(60px, 8vw, 100px) 0;
+}
+.moments-head {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-bottom: 48px; flex-wrap: wrap; gap: 24px;
+}
+.moments-head h2 {
+  font-family: var(--serif);
+  font-size: clamp(40px, 5.5vw, 72px);
+  line-height: 1;
+  letter-spacing: -0.025em;
+  max-width: 12ch;
+}
+.moments-head h2 em { font-style: italic; font-weight: 300; color: var(--hazel); }
+.moments-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+.moment {
+  background: var(--cream-soft);
+  border-radius: var(--radius-lg);
+  padding: 24px 22px;
+  display: flex; flex-direction: column; gap: 16px;
+  border: 1px solid var(--line);
+  transition: transform 0.3s, box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.moment:hover { transform: translateY(-6px); box-shadow: 0 14px 36px rgba(60,74,58,0.14); }
+.moment-time {
+  font-family: var(--hand);
+  font-size: 22px;
+  color: var(--sage-deep);
+  transform: rotate(-2deg);
+  align-self: flex-start;
+  background: var(--blush);
+  padding: 4px 12px;
+  border-radius: 99px;
+}
+.moment-img {
+  aspect-ratio: 1;
+  background-size: cover;
+  background-position: center;
+  border-radius: var(--radius);
+}
+.moment h3 {
+  font-family: var(--serif);
+  font-size: 26px;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.moment h3 em { font-style: italic; font-weight: 300; color: var(--hazel); }
+.moment p { font-size: 14px; color: var(--muted); line-height: 1.5; }
+.moment-pot {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sage-deep);
+  padding-top: 14px;
+  border-top: 1px dashed var(--line);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.moment-pot .arrow { transition: transform 0.2s; }
+.moment:hover .moment-pot .arrow { transform: translateX(4px); }
+
+/* ============================================================
+   ★ NOS POTS — version "carte" gourmande
+   ============================================================ */
+.pots {
+  padding: clamp(60px, 8vw, 100px) 0;
+  background: var(--cream-deep);
+  position: relative;
+}
+.pots-head {
+  text-align: center;
+  margin-bottom: 56px;
+}
+.pots-head h2 {
+  font-family: var(--serif);
+  font-size: clamp(44px, 6vw, 80px);
+  line-height: 0.96;
+  letter-spacing: -0.025em;
+  max-width: 18ch;
+  margin: 14px auto 0;
+}
+.pots-head h2 em { font-style: italic; font-weight: 300; color: var(--hazel); }
+.pots-head .hand-note {
+  font-family: var(--hand);
+  font-size: 26px;
+  color: var(--sage-deep);
+  margin-top: 16px;
+  display: inline-block;
+  transform: rotate(-1deg);
+}
+
+.pots-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+.pot-card {
+  background: var(--cream-soft);
+  border-radius: var(--radius-xl);
+  padding: 36px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: center;
+  border: 1px solid var(--line);
+  position: relative;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.pot-card:hover { transform: translateY(-4px); box-shadow: 0 18px 50px rgba(60,74,58,0.16); }
+.pot-card-img {
+  aspect-ratio: 1;
+  background-size: cover;
+  background-position: center;
+  border-radius: 50%;
+  position: relative;
+  box-shadow: 0 14px 36px rgba(60,74,58,0.16);
+}
+.pot-card-num {
+  position: absolute;
+  top: 12px; right: 12px;
+  background: var(--cream-soft);
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif); font-style: italic;
+  font-size: 22px; color: var(--hazel);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.pot-card h3 {
+  font-family: var(--serif);
+  font-size: clamp(28px, 3.2vw, 40px);
+  line-height: 0.96;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+.pot-card h3 em { font-style: italic; font-weight: 300; color: var(--hazel); }
+.pot-card .pot-pitch { font-family: var(--hand); font-size: 22px; color: var(--sage-deep); margin-bottom: 16px; }
+.pot-card p { font-size: 14px; color: var(--muted); line-height: 1.5; margin-bottom: 18px; }
+.pot-card .pot-pair {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--hazel-deep);
+  padding: 8px 0 14px;
+  border-top: 1px dashed var(--line);
+  margin-bottom: 18px;
+}
+.pot-card .pot-pair b { color: var(--cocoa); font-weight: 500; }
+.pot-card-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.pot-card-price { font-family: var(--serif); font-size: 28px; color: var(--cocoa); }
+.pot-card-price small { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); display: block; margin-top: 2px; font-weight: 400; }
+
+/* ============================================================
+   ★ LA FAMILLE (raccourci, garde l'âme V1 mais condensé)
+   ============================================================ */
+.family {
+  padding: clamp(60px, 8vw, 100px) 0;
+}
+.family-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: clamp(40px, 6vw, 80px);
+  align-items: center;
+}
+.family-photos {
+  position: relative;
+  aspect-ratio: 1;
+}
+.family-photos .ph {
+  position: absolute;
+  background-size: cover; background-position: center;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 36px rgba(60,74,58,0.16);
+  border: 8px solid var(--cream-soft);
+}
+.family-photos .ph-a { top: 0; left: 0; width: 65%; height: 70%; transform: rotate(-3deg); }
+.family-photos .ph-b { bottom: 0; right: 0; width: 55%; height: 60%; transform: rotate(2deg); }
+.family-photos .ph-tape {
+  position: absolute; top: 14%; right: 8%;
+  background: var(--accent);
+  color: var(--cocoa-dark);
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-family: var(--hand); font-size: 22px;
+  transform: rotate(6deg);
+  z-index: 3;
+  box-shadow: 0 6px 18px rgba(200,180,40,0.35);
+}
+.family-photos .ph-tape em { font-family: var(--serif); font-style: italic; font-size: 16px; display: block; opacity: 0.75; }
+.family h2 {
+  font-family: var(--serif);
+  font-size: clamp(40px, 5vw, 64px);
+  line-height: 0.96;
+  letter-spacing: -0.025em;
+}
+.family h2 em { font-style: italic; font-weight: 300; color: var(--hazel); }
+.family p { margin-top: 18px; font-size: 16px; line-height: 1.7; color: var(--cocoa); max-width: 44ch; }
+.family-sign { font-family: var(--hand); font-size: 32px; color: var(--sage-deep); margin-top: 28px; transform: rotate(-1deg); display: inline-block; }
+.family-sign-sub { display: block; font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-top: 8px; transform: rotate(0); }
+
+/* ============================================================
+   ★ AVIS DE TABLE — tartines préférées des clients
+   ============================================================ */
+.table-avis {
+  padding: clamp(60px, 8vw, 100px) 0;
+  background: var(--blush);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.table-avis-head { text-align: center; margin-bottom: 48px; }
+.table-avis-head h2 {
+  font-family: var(--serif);
+  font-size: clamp(36px, 5vw, 56px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.table-avis-head h2 em { font-style: italic; font-weight: 300; color: var(--hazel); }
+.table-avis-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.t-card {
+  background: var(--cream-soft);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  border: 1px solid var(--line);
+  position: relative;
+  display: flex; flex-direction: column; gap: 16px;
+}
+.t-card::before {
+  content: '"';
+  position: absolute;
+  top: -10px; left: 24px;
+  font-family: var(--serif); font-size: 96px;
+  color: var(--accent);
+  font-style: italic;
+  line-height: 1;
+}
+.t-card .stars { color: var(--accent); font-size: 14px; letter-spacing: 0.04em; }
+.t-card .quote { font-family: var(--serif); font-style: italic; font-weight: 300; font-size: 18px; line-height: 1.4; color: var(--cocoa); }
+.t-card .pref {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--hazel-deep);
+  padding: 8px 0;
+  border-top: 1px dashed var(--line);
+}
+.t-card .pref b { color: var(--sage-deep); font-weight: 500; }
+.t-card-author { display: flex; gap: 12px; align-items: center; }
+.t-card-author .av {
+  width: 42px; height: 42px; border-radius: 50%;
+  background-size: cover; background-position: center;
+}
+.t-card-author strong { font-size: 14px; }
+.t-card-author span { display: block; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+
+/* ============================================================
+   FOOTER (réutilise V1)
+   ============================================================ */
+.footer { background: var(--cocoa); color: var(--cream-soft); padding: 80px var(--pad) 32px; margin-top: 0; border-top-left-radius: var(--radius-xl); border-top-right-radius: var(--radius-xl); position: relative; }
+.footer::before { content: ''; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 80px; height: 6px; background: var(--caramel); border-radius: 99px; }
+.footer::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--blue) 0%, var(--blue) 33%, var(--cream-soft) 33%, var(--cream-soft) 66%, var(--red) 66%, var(--red) 100%); opacity: 0.6; }
+.footer-inner { max-width: var(--maxw); margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 56px; }
+.footer h4 { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em; color: var(--caramel); margin-bottom: 18px; font-weight: 500; }
+.footer ul { list-style: none; }
+.footer li { margin-bottom: 10px; font-size: 14px; color: var(--shell); }
+.footer li a:hover { color: var(--ivory); }
+.footer-brand img { height: 60px; width: auto; filter: invert(1) brightness(1.05); }
+.footer-brand p { margin-top: 18px; font-size: 14px; color: var(--shell); max-width: 340px; line-height: 1.6; }
+.footer-bottom { max-width: var(--maxw); margin: 72px auto 0; padding-top: 28px; border-top: 1px solid rgba(251,245,234,0.14); display: flex; justify-content: space-between; font-size: 12px; color: var(--shell); font-family: var(--mono); letter-spacing: 0.05em; }
+
+/* ============================================================
+   CART DRAWER (réutilise V1)
+   ============================================================ */
+.cart-backdrop { position: fixed; inset: 0; background: rgba(42,26,17,0.35); backdrop-filter: blur(4px); opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 100; }
+.cart-backdrop.open { opacity: 1; pointer-events: auto; }
+.cart-drawer { position: fixed; top: 0; right: 0; height: 100vh; width: min(440px, 94vw); background: var(--cream-soft); z-index: 101; transform: translateX(100%); transition: transform 0.4s cubic-bezier(.3,0,.2,1); display: flex; flex-direction: column; box-shadow: -20px 0 60px rgba(42,26,17,0.2); }
+.cart-drawer.open { transform: translateX(0); }
+.cart-head { padding: 26px 28px 20px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
+.cart-head h3 { font-family: var(--serif); font-size: 24px; font-weight: 400; }
+.cart-close { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.cart-close:hover { background: var(--cream-deep); }
+.cart-body { flex: 1; overflow-y: auto; padding: 20px 28px; }
+.cart-empty { text-align: center; padding: 80px 20px; color: var(--muted); }
+.cart-empty-icon { width: 72px; height: 72px; margin: 0 auto 20px; border-radius: 50%; background: var(--cream-deep); display: flex; align-items: center; justify-content: center; font-size: 28px; }
+.cart-item { display: grid; grid-template-columns: 72px 1fr auto; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--line); align-items: center; }
+.cart-item-img { width: 72px; height: 72px; border-radius: 10px; background-size: cover; background-position: center; }
+.cart-item-name { font-weight: 500; font-size: 14px; margin-bottom: 4px; }
+.cart-item-meta { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+.cart-item-price { font-family: var(--serif); font-size: 17px; }
+.qty-ctrl { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 99px; overflow: hidden; margin-top: 6px; }
+.qty-ctrl button { width: 26px; height: 26px; font-size: 14px; }
+.qty-ctrl .val { min-width: 26px; text-align: center; font-size: 13px; font-family: var(--mono); }
+.cart-foot { padding: 20px 28px 28px; border-top: 1px solid var(--line); background: var(--cream); }
+.cart-total { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px; }
+.cart-total-label { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+.cart-total-val { font-family: var(--serif); font-size: 28px; }
+.fly-dot { position: fixed; width: 32px; height: 32px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, var(--hazel-light), var(--hazel-deep)); pointer-events: none; z-index: 99; box-shadow: 0 4px 12px rgba(58,36,24,0.4); }
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--cocoa); color: var(--cream-soft); padding: 14px 22px; border-radius: 99px; font-size: 14px; z-index: 110; transition: transform 0.35s; display: flex; gap: 10px; }
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast-check { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); display: inline-flex; align-items: center; justify-content: center; font-size: 13px; color: white; }
+
+/* ============================================================
+   ★ BOUTIQUE V2 — magazine gourmand
+   ============================================================ */
+.shop2-hero {
+  padding: clamp(60px, 8vw, 100px) 0 clamp(40px, 5vw, 60px);
+  text-align: center;
+  position: relative;
+}
+.shop2-hero h1 {
+  font-family: var(--serif);
+  font-size: clamp(56px, 9vw, 130px);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  max-width: 14ch;
+  margin: 0 auto;
+}
+.shop2-hero h1 em { font-style: italic; font-weight: 300; color: var(--hazel); }
+.shop2-hero .hand-note { font-family: var(--hand); font-size: 28px; color: var(--sage-deep); display: inline-block; margin-top: 16px; transform: rotate(-1deg); }
+.shop2-hero .lede { max-width: 52ch; margin: 24px auto 0; font-size: 17px; line-height: 1.6; color: var(--cocoa); }
+
+.shop2-filters {
+  display: flex; gap: 10px; justify-content: center;
+  flex-wrap: wrap;
+  margin: 48px 0 8px;
+}
+.shop2-chip {
+  padding: 10px 18px;
+  border: 1px solid var(--line);
+  background: var(--cream-soft);
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: all 0.18s;
+}
+.shop2-chip:hover { background: var(--cream-deep); }
+.shop2-chip span { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.shop2-chip.active { background: var(--sage-deep); color: var(--cream-soft); border-color: var(--sage-deep); }
+.shop2-chip.active span { color: var(--accent-soft); }
+
+.shop2-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  padding: 32px 0 60px;
+}
+.shop2-card {
+  background: var(--cream-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  display: flex; flex-direction: column; gap: 16px;
+  position: relative;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.shop2-card:hover { transform: translateY(-6px); box-shadow: 0 18px 40px rgba(60,74,58,0.14); }
+.shop2-card-media {
+  aspect-ratio: 1;
+  background-size: cover;
+  background-position: center;
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+}
+.shop2-card-num {
+  position: absolute; top: 18px; left: 22px;
+  background: var(--cream-soft);
+  padding: 6px 12px;
+  border-radius: 99px;
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--hazel-deep);
+  z-index: 2;
+}
+.shop2-card-badge {
+  position: absolute; top: 18px; right: 22px;
+  background: var(--accent);
+  color: var(--cocoa-dark);
+  padding: 6px 12px;
+  border-radius: 99px;
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  font-weight: 500;
+  z-index: 2;
+}
+.shop2-card-badge.dark { background: var(--cocoa); color: var(--cream-soft); }
+.shop2-card h3 { font-family: var(--serif); font-size: 26px; letter-spacing: -0.02em; line-height: 1; }
+.shop2-card h3 em { font-style: italic; font-weight: 300; color: var(--hazel); }
+.shop2-card .pitch { font-family: var(--hand); font-size: 22px; color: var(--sage-deep); transform: rotate(-1deg); display: inline-block; }
+.shop2-card .meta { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.shop2-card-foot {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 14px; border-top: 1px dashed var(--line); gap: 10px;
+}
+.shop2-card-price { font-family: var(--serif); font-size: 26px; color: var(--cocoa); }
+.shop2-card-add {
+  background: var(--sage-deep); color: var(--cream-soft);
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.18s;
+  box-shadow: 0 4px 12px rgba(60,90,60,0.25);
+}
+.shop2-card-add:hover { background: var(--cocoa); transform: scale(1.08); }
+
+/* ============================================================
+   ★ PRODUIT V2 — focus sur la convivialité
+   ============================================================ */
+.crumbs2 {
+  padding: 18px 0;
+  display: flex; gap: 10px; align-items: center;
+  font-family: var(--mono); font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.12em; text-transform: uppercase;
+}
+.crumbs2 a:hover { color: var(--cocoa); }
+.crumbs2 .current { color: var(--cocoa); }
+
+.prod2 {
+  padding: 16px 0 60px;
+}
+.prod2-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: clamp(40px, 6vw, 80px);
+  align-items: start;
+}
+.prod2-media {
+  position: sticky; top: 100px;
+  display: grid; grid-template-columns: 80px 1fr; gap: 16px;
+}
+.prod2-thumbs { display: flex; flex-direction: column; gap: 10px; }
+.prod2-thumb {
+  width: 70px; height: 70px;
+  border-radius: 50%;
+  background-size: cover; background-position: center;
+  border: 2px solid transparent;
+  transition: all 0.18s;
+  cursor: pointer;
+  opacity: 0.6;
+}
+.prod2-thumb:hover { opacity: 1; }
+.prod2-thumb.active { border-color: var(--sage); opacity: 1; }
+.prod2-main {
+  aspect-ratio: 1;
+  background-size: cover; background-position: center;
+  border-radius: var(--radius-xl);
+  position: relative;
+  box-shadow: 0 18px 50px rgba(60,74,58,0.18);
+}
+.prod2-main-num {
+  position: absolute; top: 24px; left: 24px;
+  background: var(--cream-soft);
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif); font-style: italic;
+  font-size: 28px; color: var(--hazel);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}
+.prod2-main-tag {
+  position: absolute; bottom: 22px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--cream-soft);
+  padding: 8px 18px;
+  border-radius: 99px;
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--cocoa);
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.prod2-info { padding-top: 20px; }
+.prod2-rating { display: flex; gap: 16px; align-items: center; }
+.prod2-rating .stars { color: var(--accent); font-size: 14px; }
+.prod2-rating .chip { background: var(--blush); padding: 4px 12px; border-radius: 99px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--hazel-deep); }
+.prod2-title { font-family: var(--serif); font-size: clamp(48px, 6vw, 80px); line-height: 0.95; letter-spacing: -0.025em; margin-top: 16px; }
+.prod2-title em { font-style: italic; font-weight: 300; color: var(--hazel); }
+.prod2-pitch { font-family: var(--hand); font-size: 30px; color: var(--sage-deep); margin: 14px 0; transform: rotate(-1deg); display: inline-block; }
+.prod2-desc { font-size: 16px; line-height: 1.7; color: var(--cocoa); max-width: 46ch; margin-bottom: 28px; }
+
+.prod2-block { margin-bottom: 28px; }
+.prod2-block h4 { font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--sage-deep); margin-bottom: 14px; font-weight: 500; }
+
+.prod2-sizes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.prod2-size { position: relative; cursor: pointer; }
+.prod2-size input { position: absolute; opacity: 0; pointer-events: none; }
+.prod2-size .card {
+  background: var(--cream-soft);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+  text-align: center;
+  transition: all 0.18s;
+  position: relative;
+}
+.prod2-size .card:hover { border-color: var(--sage-light); }
+.prod2-size input:checked + .card { background: var(--cocoa); color: var(--cream-soft); border-color: var(--cocoa); }
+.prod2-size .name { font-family: var(--serif); font-size: 22px; line-height: 1; }
+.prod2-size .meta { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
+.prod2-size input:checked + .card .meta { color: var(--accent-soft); }
+.prod2-size .price { font-family: var(--serif); font-size: 18px; margin-top: 8px; }
+.prod2-size .save { position: absolute; top: 8px; right: 8px; background: var(--accent); color: var(--cocoa-dark); font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; padding: 3px 8px; border-radius: 99px; }
+
+.prod2-buy { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: stretch; }
+.prod2-qty {
+  display: inline-flex; align-items: center;
+  border: 1.5px solid var(--line);
+  border-radius: 99px;
+  padding: 4px;
+  background: var(--cream-soft);
+}
+.prod2-qty button { width: 36px; height: 36px; font-size: 18px; border-radius: 50%; }
+.prod2-qty button:hover { background: var(--cream-deep); }
+.prod2-qty .val { min-width: 32px; text-align: center; font-family: var(--mono); }
+.prod2-cta {
+  background: var(--accent); color: var(--cocoa-dark);
+  border-radius: 99px; padding: 16px 28px;
+  font-weight: 500; font-size: 14px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  box-shadow: 0 6px 18px rgba(200,180,40,0.35);
+  transition: all 0.2s;
+}
+.prod2-cta:hover { background: var(--accent-deep); color: var(--cream-soft); transform: translateY(-2px); }
+
+.prod2-trust {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  margin-top: 28px; padding-top: 24px; border-top: 1px dashed var(--line);
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--muted);
+}
+.prod2-trust strong { color: var(--cocoa); display: block; font-weight: 500; margin-bottom: 4px; }
+
+/* ★ Idées de tartines (le ★) */
+.idees {
+  padding: clamp(60px, 8vw, 100px) 0;
+  background: var(--blush);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.idees-head { text-align: center; margin-bottom: 48px; }
+.idees-head h2 { font-family: var(--serif); font-size: clamp(40px, 5.5vw, 64px); line-height: 0.96; letter-spacing: -0.025em; }
+.idees-head h2 em { font-style: italic; font-weight: 300; color: var(--hazel); }
+.idees-head .hand-note { font-family: var(--hand); font-size: 26px; color: var(--sage-deep); margin-top: 12px; display: inline-block; transform: rotate(-1deg); }
+.idees-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.idee {
+  background: var(--cream-soft);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  border: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: 14px;
+  position: relative;
+}
+.idee-num {
+  width: 44px; height: 44px;
+  background: var(--accent);
+  color: var(--cocoa-dark);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif); font-style: italic;
+  font-size: 22px;
+  position: absolute; top: -16px; left: 24px;
+  box-shadow: 0 6px 16px rgba(200,180,40,0.35);
+}
+.idee-img { aspect-ratio: 1.4; background-size: cover; background-position: center; border-radius: var(--radius); margin-top: 8px; }
+.idee h3 { font-family: var(--serif); font-size: 22px; letter-spacing: -0.01em; line-height: 1.1; }
+.idee h3 em { font-style: italic; font-weight: 300; color: var(--hazel); }
+.idee p { font-size: 14px; color: var(--muted); line-height: 1.5; }
+.idee-meta { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--sage-deep); padding-top: 12px; border-top: 1px dashed var(--line); display: flex; gap: 16px; }
+
+/* Composition encart simple */
+.compo-simple {
+  padding: clamp(60px, 8vw, 100px) 0;
+}
+.compo-simple-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: clamp(40px, 6vw, 80px); align-items: start; }
+.compo-simple h2 { font-family: var(--serif); font-size: clamp(36px, 5vw, 56px); line-height: 0.96; letter-spacing: -0.025em; }
+.compo-simple h2 em { font-style: italic; font-weight: 300; color: var(--hazel); }
+.compo-simple .lede { font-family: var(--hand); font-size: 24px; color: var(--sage-deep); margin: 14px 0 22px; transform: rotate(-1deg); display: inline-block; }
+.compo-simple p { color: var(--muted); font-size: 15px; line-height: 1.6; max-width: 36ch; }
+.ingr-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.ingr-card {
+  background: var(--cream-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.ingr-card .pct { font-family: var(--serif); font-style: italic; font-size: 44px; color: var(--hazel); line-height: 1; }
+.ingr-card strong { font-family: var(--serif); font-weight: 400; font-size: 22px; }
+.ingr-card span { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+
+/* responsive */
+@media (max-width: 980px) {
+  .nav-links { display: none; }
+  .nav-inner { grid-template-columns: auto 1fr; }
+  .hero-table-grid, .tartine-day-grid, .pots-grid, .family-grid, .prod2-grid, .compo-simple-grid { grid-template-columns: 1fr; }
+  .moments-grid, .table-avis-grid, .shop2-grid, .idees-grid { grid-template-columns: 1fr 1fr; }
+  .footer-inner { grid-template-columns: 1fr 1fr; }
+  .prod2-media { position: static; grid-template-columns: 1fr; }
+  .prod2-thumbs { flex-direction: row; order: 2; }
+  .prod2-thumb { width: 60px; height: 60px; }
+  .hero-table-stats { flex-wrap: wrap; gap: 24px; }
+}
+@media (max-width: 640px) {
+  .moments-grid, .table-avis-grid, .shop2-grid, .idees-grid { grid-template-columns: 1fr; }
+  .pot-card { grid-template-columns: 1fr; }
+  .hero-table-title { font-size: clamp(48px, 12vw, 72px); }
+  .prod2-sizes { grid-template-columns: 1fr; }
+}
