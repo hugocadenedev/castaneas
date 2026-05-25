@@ -1041,7 +1041,7 @@ img { display: block; max-width: 100%; }
 }
 
 @media (max-width: 768px) {
-  .mobile-cats { display: flex; }
+  .mobile-cats { display: flex; flex-wrap: nowrap; overflow-x: auto; }
 }
 
 @media (max-width: 480px) {
