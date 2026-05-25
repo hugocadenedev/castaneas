@@ -701,6 +701,10 @@
   }
   @media (max-width: 768px) {
     .home-hero { aspect-ratio: 3/4; }
+    .home-hero__content { padding: 24px; }
+    .home-hero__title { font-size: clamp(32px, 9.5vw, 54px); line-height: 1.06; }
+    .home-hero__subtitle { font-size: 15px; margin-bottom: 24px; }
+    .home-hero__eyebrow { margin-bottom: 14px; font-size: 10px; }
     /* pill-nav padding tweak — nav-links hidden via styles.css */
     .navbar.pill-nav { top: 0; }
     .navbar.pill-nav .nav-inner { margin: 0 auto; border-radius: 0 0 22px 22px; padding: 10px 14px 10px 18px; }
@@ -740,6 +744,12 @@
     </div>
   </div>
 </header>
+<nav class="mobile-cats" aria-label="Catégories">
+  <a href="creme-de-chataigne.html" class="mobile-cats__pill">🌰 Crèmes de châtaigne</a>
+  <a href="pates-tartiner.html" class="mobile-cats__pill">🧈 Pâtes à tartiner</a>
+  <a href="huiles.html" class="mobile-cats__pill">🫙 Huiles</a>
+  <a href="coffrets.html" class="mobile-cats__pill">🎁 Coffrets</a>
+</nav>
 
 <main class="home">
 

@@ -37,7 +37,13 @@ window.renderShell = function (activePage) {
         </button>
       </div>
     </div>
-  </header>`;
+  </header>
+  <nav class="mobile-cats" aria-label="Catégories">
+    <a href="creme-de-chataigne.html" class="mobile-cats__pill ${activePage === 'cremes' ? 'active' : ''}">🌰 Crèmes de châtaigne</a>
+    <a href="pates-tartiner.html" class="mobile-cats__pill ${activePage === 'pates' ? 'active' : ''}">🧈 Pâtes à tartiner</a>
+    <a href="huiles.html" class="mobile-cats__pill ${activePage === 'huiles' ? 'active' : ''}">🫙 Huiles</a>
+    <a href="coffrets.html" class="mobile-cats__pill ${activePage === 'coffrets' ? 'active' : ''}">🎁 Coffrets</a>
+  </nav>`;
 
   const drawer = `
   <div class="cart-backdrop" data-cart-close></div>

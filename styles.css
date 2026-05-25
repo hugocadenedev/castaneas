@@ -1003,6 +1003,47 @@ img { display: block; max-width: 100%; }
   .page { padding: 0 16px 64px; }
 }
 
+/* =========================================================
+   MOBILE CATEGORY STRIP
+   ========================================================= */
+.mobile-cats {
+  display: none;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  flex-wrap: nowrap;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--line);
+}
+.mobile-cats::-webkit-scrollbar { display: none; }
+
+.mobile-cats__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  padding: 7px 14px;
+  border-radius: var(--r-pill);
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--cream-soft);
+  color: var(--ink-soft);
+  transition: background .15s, color .15s;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.mobile-cats__pill:hover,
+.mobile-cats__pill.active {
+  background: var(--brown-deep);
+  color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .mobile-cats { display: flex; }
+}
+
 @media (max-width: 480px) {
   .footer-grid { grid-template-columns: 1fr; }
   .confirm-card { padding: 40px 24px; }
