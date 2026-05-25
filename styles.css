@@ -1011,8 +1011,7 @@ img { display: block; max-width: 100%; }
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  flex-wrap: nowrap;
-  gap: 8px;
+  white-space: nowrap;
   padding: 10px 16px;
   background: #ffffff;
   border-bottom: 1px solid var(--line);
@@ -1032,8 +1031,9 @@ img { display: block; max-width: 100%; }
   color: var(--ink-soft);
   transition: background .15s, color .15s;
   text-decoration: none;
-  flex-shrink: 0;
+  margin-right: 8px;
 }
+.mobile-cats__pill:last-child { margin-right: 0; }
 .mobile-cats__pill:hover,
 .mobile-cats__pill.active {
   background: var(--brown-deep);
@@ -1041,7 +1041,7 @@ img { display: block; max-width: 100%; }
 }
 
 @media (max-width: 768px) {
-  .mobile-cats { display: flex; flex-wrap: nowrap; overflow-x: auto; }
+  .mobile-cats { display: block; }
 }
 
 @media (max-width: 480px) {
