@@ -1008,13 +1008,6 @@ img { display: block; max-width: 100%; }
    ========================================================= */
 .mobile-cats {
   display: none;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  white-space: nowrap;
-  padding: 10px 16px;
-  background: #ffffff;
-  border-bottom: 1px solid var(--line);
 }
 .mobile-cats::-webkit-scrollbar { display: none; }
 
@@ -1031,9 +1024,7 @@ img { display: block; max-width: 100%; }
   color: var(--ink-soft);
   transition: background .15s, color .15s;
   text-decoration: none;
-  margin-right: 8px;
 }
-.mobile-cats__pill:last-child { margin-right: 0; }
 .mobile-cats__pill:hover,
 .mobile-cats__pill.active {
   background: var(--brown-deep);
@@ -1041,7 +1032,19 @@ img { display: block; max-width: 100%; }
 }
 
 @media (max-width: 768px) {
-  .mobile-cats { display: block; }
+  .mobile-cats {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #ffffff;
+    border-bottom: 1px solid var(--line);
+  }
 }
 
 @media (max-width: 480px) {
