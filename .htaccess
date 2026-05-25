@@ -11,7 +11,7 @@
 <Files "back-office.html">
     AuthType Basic
     AuthName "Administration Castaneas"
-    AuthUserFile /home/HOSTINGER_USERNAME/domains/VOTRE_DOMAINE/public_html/.htpasswd
+    AuthUserFile "expr:%{DOCUMENT_ROOT}/.htpasswd"
     Require valid-user
 </Files>
 
