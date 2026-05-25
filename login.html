@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+ï»¿<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Connexion · Castaneas</title>
+<title>Connexion Â· Castaneas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -26,7 +26,7 @@
     </a>
 
     <h1 class="auth-title">Bienvenue</h1>
-    <p class="auth-subtitle">Connectez-vous à votre compte Castaneas</p>
+    <p class="auth-subtitle">Connectez-vous Ã  votre compte Castaneas</p>
 
     <div class="auth-alert" id="auth-alert" style="display:none;"></div>
 
@@ -38,7 +38,7 @@
       </div>
       <div class="auth-field">
         <label for="password">Mot de passe</label>
-        <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password">
+        <input type="password" id="password" name="password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" autocomplete="current-password">
         <span class="auth-error" id="err-password"></span>
       </div>
       <button type="submit" class="auth-submit" id="submit-btn">Se connecter</button>
@@ -46,7 +46,7 @@
 
     <div class="auth-divider">
       <span>Pas encore de compte ?</span>
-      <a href="register.html">Créer un compte</a>
+      <a href="register.html">CrÃ©er un compte</a>
     </div>
   </div>
 </div>
@@ -90,7 +90,7 @@ document.getElementById('login-form').addEventListener('submit', function(e) {
     valid = false;
   }
   if (!password || password.length < 6) {
-    showError('err-password', 'Mot de passe requis (6 caractères min).');
+    showError('err-password', 'Mot de passe requis (6 caractÃ¨res min).');
     valid = false;
   }
   if (!valid) return;
@@ -99,11 +99,11 @@ document.getElementById('login-form').addEventListener('submit', function(e) {
   const user = users.find(u => u.email === email);
 
   if (!user) {
-    showAlert('Aucun compte trouvé avec cet e-mail. Créez un compte pour commencer.');
+    showAlert('Aucun compte trouvÃ© avec cet e-mail. CrÃ©ez un compte pour commencer.');
     return;
   }
 
-  // Simple hash comparison (btoa for demo — not production-grade)
+  // Simple hash comparison (btoa for demo â€” not production-grade)
   if (user.password !== btoa(password)) {
     showAlert('E-mail ou mot de passe incorrect.');
     return;
@@ -114,7 +114,7 @@ document.getElementById('login-form').addEventListener('submit', function(e) {
   sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
 
   const btn = document.getElementById('submit-btn');
-  btn.textContent = '? Connecté !';
+  btn.textContent = 'âœ“ ConnectÃ© !';
   btn.disabled = true;
 
   setTimeout(() => {
