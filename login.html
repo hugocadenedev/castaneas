@@ -60,6 +60,12 @@ function getUsers() {
   catch { return []; }
 }
 
+async function hashPassword(password, email) {
+  const data = new TextEncoder().encode(password + ':' + email + ':castaneas');
+  const buf = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 function showError(fieldId, msg) {
   const el = document.getElementById(fieldId);
   el.textContent = msg;
@@ -77,7 +83,7 @@ function showAlert(msg) {
   alert.style.display = 'block';
 }
 
-document.getElementById('login-form').addEventListener('submit', function(e) {
+document.getElementById('login-form').addEventListener('submit', async function(e) {
   e.preventDefault();
   clearErrors();
 
@@ -103,8 +109,7 @@ document.getElementById('login-form').addEventListener('submit', function(e) {
     return;
   }
 
-  // Simple hash comparison (btoa for demo — not production-grade)
-  if (user.password !== btoa(password)) {
+  if (user.password !== await hashPassword(password, user.email)) {
     showAlert('E-mail ou mot de passe incorrect.');
     return;
   }
@@ -118,7 +123,8 @@ document.getElementById('login-form').addEventListener('submit', function(e) {
   btn.disabled = true;
 
   setTimeout(() => {
-    const redirect = new URLSearchParams(location.search).get('redirect') || 'index.html';
+    const raw = new URLSearchParams(location.search).get('redirect') || 'index.html';
+    const redirect = /^https?:\/\/|^\/\/|^\\/.test(raw) ? 'index.html' : raw;
     window.location.href = redirect;
   }, 700);
 });

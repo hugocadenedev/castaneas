@@ -1390,6 +1390,13 @@ let editingRecipe = null;
 let selectedExtraImages = [];
 let recipeSteps = [];
 
+/* ---------- Hash admin password (Web Crypto SHA-256) ---------- */
+async function hashAdmin(pass) {
+  const data = new TextEncoder().encode(pass + ':castaneas_admin');
+  const buf = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 /* ---------- Init ---------- */
 function init() {
   // Load or seed
@@ -1400,8 +1407,10 @@ function init() {
   state.imageCatalogExtra  = load(KEYS.imagesExtra) || [...DEFAULT_IMAGE_CATALOG];
   state.recipes = load(KEYS.recipes) || JSON.parse(JSON.stringify(DEFAULT_RECIPES));
 
-  const creds = load(KEYS.admin) || { user: 'admin', pass: btoa('castaneas2026') };
-  if (!localStorage.getItem(KEYS.admin)) save(KEYS.admin, creds);
+  const creds = load(KEYS.admin);
+  if (!creds) {
+    document.getElementById('guard-error').textContent = 'Première connexion — choisissez vos identifiants et enregistrez-les.';
+  }
 
   // Check session
   const session = sessionStorage.getItem('castaneas_admin_session');
@@ -1411,20 +1420,30 @@ function init() {
 }
 
 /* ---------- Guard ---------- */
-document.getElementById('guard-form').addEventListener('submit', function(e) {
+document.getElementById('guard-form').addEventListener('submit', async function(e) {
   e.preventDefault();
-  const creds = load(KEYS.admin) || { user: 'admin', pass: btoa('castaneas2026') };
+  const creds = load(KEYS.admin);
   const user = document.getElementById('guard-user').value.trim();
   const pass = document.getElementById('guard-pass').value;
-  if (user === creds.user && btoa(pass) === creds.pass) {
-    sessionStorage.setItem('castaneas_admin_session', 'ok');
-    document.getElementById('sidebar-name').textContent = user.charAt(0).toUpperCase() + user.slice(1);
-    document.getElementById('sidebar-avatar').textContent = user.charAt(0).toUpperCase();
-    document.getElementById('setting-user').value = user;
-    showApp();
-  } else {
+  const hashed = await hashAdmin(pass);
+
+  if (!creds) {
+    // Première connexion : enregistrer les identifiants
+    if (!user || pass.length < 8) {
+      document.getElementById('guard-error').textContent = 'Choisissez un nom d\'utilisateur et un mot de passe (8 caractères min).';
+      return;
+    }
+    save(KEYS.admin, { user, pass: hashed });
+  } else if (user !== creds.user || hashed !== creds.pass) {
     document.getElementById('guard-error').textContent = 'Identifiant ou mot de passe incorrect.';
+    return;
   }
+
+  sessionStorage.setItem('castaneas_admin_session', 'ok');
+  document.getElementById('sidebar-name').textContent = user.charAt(0).toUpperCase() + user.slice(1);
+  document.getElementById('sidebar-avatar').textContent = user.charAt(0).toUpperCase();
+  document.getElementById('setting-user').value = user;
+  showApp();
 });
 
 function showApp() {
@@ -2166,12 +2185,12 @@ function downloadHTML(html, filename) {
 }
 
 /* ---------- Settings ---------- */
-function saveSettings(e) {
+async function saveSettings(e) {
   e.preventDefault();
   const user = document.getElementById('setting-user').value.trim();
   const pass = document.getElementById('setting-pass').value;
-  const current = load(KEYS.admin) || { user: 'admin', pass: btoa('castaneas2026') };
-  const updated = { user: user || current.user, pass: pass ? btoa(pass) : current.pass };
+  const current = load(KEYS.admin) || { user: '', pass: '' };
+  const updated = { user: user || current.user, pass: pass ? await hashAdmin(pass) : current.pass };
   save(KEYS.admin, updated);
   document.getElementById('setting-pass').value = '';
   toast('Paramètres enregistrés ✓', 'success');

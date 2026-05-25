@@ -1,0 +1,52 @@
+# ============================================================
+#  CASTANEAS — .htaccess
+# ============================================================
+
+# ── 1. Protection du back-office ──────────────────────────
+# IMPORTANT : mettez à jour AuthUserFile avec le chemin absolu
+# sur votre serveur Hostinger (visible dans le Gestionnaire de fichiers
+# > clic droit > Propriétés ou dans l'onglet "Informations" de hPanel).
+# Format habituel Hostinger : /home/uNNNNNN/domains/castaneas.fr/public_html/.htpasswd
+# ─────────────────────────────────────────────────────────
+<Files "back-office.html">
+    AuthType Basic
+    AuthName "Administration Castaneas"
+    AuthUserFile /home/HOSTINGER_USERNAME/domains/VOTRE_DOMAINE/public_html/.htpasswd
+    Require valid-user
+</Files>
+
+# ── 2. Bloquer l'accès direct au fichier .htpasswd ────────
+<Files ".htpasswd">
+    Require all denied
+</Files>
+
+# ── 3. Headers de sécurité ────────────────────────────────
+<IfModule mod_headers.c>
+    # Empêche le clickjacking
+    Header always set X-Frame-Options "SAMEORIGIN"
+    # Empêche le MIME-sniffing
+    Header always set X-Content-Type-Options "nosniff"
+    # Désactive le referrer sur les liens externes
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    # Content Security Policy (permissif pour un site statique avec Google Fonts)
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';"
+</IfModule>
+
+# ── 4. Forcer HTTPS ───────────────────────────────────────
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# ── 5. Cache statique pour les assets ─────────────────────
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 year"
+</IfModule>

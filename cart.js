@@ -6,6 +6,15 @@
     items: JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'),
   };
 
+  function esc(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
   function save() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state.items));
   }
@@ -63,14 +72,14 @@
     if (foot) foot.style.display = 'block';
     body.innerHTML = state.items.map(i => `
       <div class="cart-item">
-        <div class="cart-item-img" style="background-image:url('${i.image}')"></div>
+        <div class="cart-item-img" style="background-image:url('${esc(i.image)}')"></div>
         <div>
-          <div class="cart-item-name">${i.name}</div>
-          <div class="cart-item-meta">${i.variant || ''} · ${i.weight || '250g'}</div>
+          <div class="cart-item-name">${esc(i.name)}</div>
+          <div class="cart-item-meta">${esc(i.variant || '')} · ${esc(i.weight || '250g')}</div>
           <div class="qty-ctrl">
-            <button data-qty="dec" data-id="${i.id}" data-variant="${i.variant || ''}">−</button>
-            <span class="val">${i.qty}</span>
-            <button data-qty="inc" data-id="${i.id}" data-variant="${i.variant || ''}">+</button>
+            <button data-qty="dec" data-id="${esc(i.id)}" data-variant="${esc(i.variant || '')}">−</button>
+            <span class="val">${esc(i.qty)}</span>
+            <button data-qty="inc" data-id="${esc(i.id)}" data-variant="${esc(i.variant || '')}">+</button>
           </div>
         </div>
         <div class="cart-item-price">${(i.qty * i.price).toFixed(2)}€</div>
