@@ -1,5 +1,5 @@
 /* ============================================================
-   CASTANEAS — categorie-page.js v2 (server-sync)
+   CASTANEAS — categorie-page.js v3 (sync via data.php)
    Rendu dynamique des pages catégorie boutique.
    Lit window.CAT_SLUG, trouve la catégorie dans SiteData,
    affiche les produits. Référencé par *.html de catégorie.
@@ -9,8 +9,6 @@
 
   var slug = window.CAT_SLUG;
   if (!slug || typeof SiteData === 'undefined') return;
-
-  (SiteData.ready || Promise.resolve()).then(function () {
 
   /* -- Trouver la catégorie -- */
   var cat = SiteData.categories.find(function (c) { return c.slug === slug; });
@@ -175,7 +173,5 @@
     cards.forEach(function (c) { grid.appendChild(c); });
     countEl.textContent = cards.length + ' produit' + (cards.length !== 1 ? 's' : '');
   };
-
-  }); // end SiteData.ready
 
 })();

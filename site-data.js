@@ -113,9 +113,13 @@
     });
   }
 
+  /* ---------- Données serveur injectées par data.php (priorité max) ---------- */
+  var _srv = window.CASTANEAS_DATA || {};
+
   /* ---------- API publique ---------- */
   var SiteData = {
     categories: (function () {
+      if (_srv.categories && _srv.categories.length > 0) return sanitizeCategories(_srv.categories);
       var raw = loadStorage(KEYS.categories);
       var clean = sanitizeCategories(raw);
       if (clean && clean !== raw) {
@@ -123,8 +127,8 @@
       }
       return clean || DEFAULT_CATS;
     }()),
-    products:   loadStorage(KEYS.products)   || DEFAULT_PRODUCTS,
-    recipes:    loadStorage(KEYS.recipes)    || DEFAULT_RECIPES,
+    products: (_srv.products && _srv.products.length > 0) ? _srv.products : (loadStorage(KEYS.products) || DEFAULT_PRODUCTS),
+    recipes:  (_srv.recipes  && _srv.recipes.length  > 0) ? _srv.recipes  : (loadStorage(KEYS.recipes)  || DEFAULT_RECIPES),
 
     /** Toutes les catégories visibles dans le header */
     getHeaderCategories: function () {
@@ -212,33 +216,8 @@
 
   window.SiteData = SiteData;
 
-  /* ---------- Chargement serveur (persistance cross-navigateur) ---------- */
-  SiteData.ready = (function () {
-    var serverFiles = {
-      products:   '/data/products.json',
-      categories: '/data/categories.json',
-      recipes:    '/data/recipes.json',
-    };
-    var localMap = {
-      products:   KEYS.products,
-      categories: KEYS.categories,
-      recipes:    KEYS.recipes,
-    };
-    var fetches = Object.keys(serverFiles).map(function (key) {
-      return fetch(serverFiles[key], { cache: 'no-store' })
-        .then(function (r) { return r.ok ? r.json() : null; })
-        .catch(function () { return null; })
-        .then(function (data) {
-          if (data !== null && (Array.isArray(data) ? data.length > 0 : true)) {
-            SiteData[key] = data;
-            try { localStorage.setItem(localMap[key], JSON.stringify(data)); } catch (e) {}
-          }
-        });
-    });
-    return Promise.all(fetches).then(function () {
-      window.dispatchEvent(new CustomEvent('sitedataready'));
-    });
-  }());
+  /* SiteData.ready : compatibilité avec ancien code — déjà résolu (données sync via data.php) */
+  SiteData.ready = Promise.resolve();
 
   /* ---------- Injection automatique de la nav ---------- */
   document.addEventListener('DOMContentLoaded', function () { injectNav(); });
