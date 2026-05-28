@@ -2,25 +2,7 @@
 #  CASTANEAS — .htaccess
 # ============================================================
 
-# ── 1. Protection du back-office ──────────────────────────
-# IMPORTANT : mettez à jour AuthUserFile avec le chemin absolu
-# sur votre serveur Hostinger (visible dans le Gestionnaire de fichiers
-# > clic droit > Propriétés ou dans l'onglet "Informations" de hPanel).
-# Format habituel Hostinger : /home/uNNNNNN/domains/castaneas.fr/public_html/.htpasswd
-# ─────────────────────────────────────────────────────────
-<Files "back-office.html">
-    AuthType Basic
-    AuthName "Administration Castaneas"
-    AuthUserFile /home/u362859991/domains/tan-aardvark-409923.hostingersite.com/public_html/.htpasswd
-    Require valid-user
-</Files>
-
-# ── 2. Bloquer l'accès direct au fichier .htpasswd ────────
-<Files ".htpasswd">
-    Require all denied
-</Files>
-
-# ── 3. Headers de sécurité ────────────────────────────────
+# ── 1. Headers de sécurité ────────────────────────────────
 <IfModule mod_headers.c>
     # Empêche le clickjacking
     Header always set X-Frame-Options "SAMEORIGIN"
