@@ -1,5 +1,5 @@
 /* ============================================================
-   CASTANEAS — categorie-page.js
+   CASTANEAS — categorie-page.js v2 (server-sync)
    Rendu dynamique des pages catégorie boutique.
    Lit window.CAT_SLUG, trouve la catégorie dans SiteData,
    affiche les produits. Référencé par *.html de catégorie.

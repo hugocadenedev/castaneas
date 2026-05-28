@@ -1,5 +1,5 @@
 ﻿/* ============================================================
-   CASTANEAS — site-data.js
+   CASTANEAS — site-data.js v2 (server-sync)
    Pont entre le back-office (admin.html) et les pages du site.
    • Lit les données depuis localStorage (écrites par admin.html)
    • Fournit window.SiteData avec produits, catégories, helpers
