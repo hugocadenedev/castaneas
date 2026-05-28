@@ -2648,7 +2648,11 @@ function serverSync(serverKey, val) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-Admin-Token': SERVER_TOKEN },
     body: JSON.stringify(val),
-  }).catch(function () { /* réseau indispo – données sauvées en localStorage */ });
+  }).then(function (r) {
+    if (!r.ok) toast('⚠️ Sync serveur échouée (' + r.status + ')', 'error');
+  }).catch(function () {
+    toast('⚠️ Sync serveur impossible – vérifiez la connexion', 'error');
+  });
 }
 
 /* ---------- Boot ---------- */
