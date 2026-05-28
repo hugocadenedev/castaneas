@@ -986,6 +986,15 @@ tbody tr:last-child td { border-bottom: none; }
           </select>
         </div>
 
+        <!-- INTEGRATIONS -->
+        <div class="form-field span2" style="border-top:1px solid var(--line);padding-top:18px;margin-top:4px;">
+          <label style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;">Intégrations</label>
+        </div>
+        <div class="form-field span2">
+          <label>Référence Sucrine <small style="font-weight:400;color:var(--muted)">— catalogueItemPriceId (optionnel)</small></label>
+          <input type="text" id="p-sucrine-id" placeholder="ex : cip_abc123xyz">
+        </div>
+
         <!-- COMPOSITION -->
         <div class="form-field span2" style="border-top:1px solid var(--line);padding-top:18px;margin-top:4px;">
           <label style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;">Composition — section publique</label>
@@ -1302,6 +1311,16 @@ const KEYS = {
   homepage: 'castaneas_homepage_v1',
 };
 
+/* ---------- Server sync ---------- */
+const SERVER_TOKEN = 'cas_srv_9e4f2b8d3a7c1065';
+const SERVER_KEYS = {
+  [KEYS.products]:   'products',
+  [KEYS.categories]: 'categories',
+  [KEYS.orders]:     'orders',
+  [KEYS.recipes]:    'recipes',
+  [KEYS.homepage]:   'homepage',
+};
+
 /* ---------- Default data (pre-seeded) ---------- */
 const DEFAULT_CATS = [
   { id: 'cat-cremes', name: 'Crèmes de châtaigne', slug: 'cremes', desc: 'Nos crèmes de châtaigne artisanales', emoji: '🌰', color: '#F2E8D9', header: true, status: 'active' },
@@ -1398,7 +1417,10 @@ async function hashAdmin(pass) {
 }
 
 /* ---------- Init ---------- */
-function init() {
+async function init() {
+  // Récupère les données du serveur avant tout (fallback localStorage si hors ligne)
+  await serverLoadAll();
+
   // Load or seed
   state.categories  = load(KEYS.categories) || JSON.parse(JSON.stringify(DEFAULT_CATS));
   state.products     = load(KEYS.products)   || JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
@@ -1417,6 +1439,33 @@ function init() {
   if (session === 'ok') {
     showApp();
   }
+}
+
+async function serverLoadAll() {
+  const keys = [
+    { s: 'products',   l: KEYS.products },
+    { s: 'categories', l: KEYS.categories },
+    { s: 'orders',     l: KEYS.orders },
+    { s: 'recipes',    l: KEYS.recipes },
+    { s: 'homepage',   l: KEYS.homepage },
+  ];
+  const timeout = new Promise(r => setTimeout(r, 4000));
+  try {
+    await Promise.race([
+      Promise.all(keys.map(async ({ s, l }) => {
+        try {
+          const r = await fetch('/save.php?key=' + s, {
+            headers: { 'X-Admin-Token': SERVER_TOKEN },
+          });
+          if (r.ok) {
+            const data = await r.json();
+            if (data !== null) localStorage.setItem(l, JSON.stringify(data));
+          }
+        } catch (e) { /* réseau indispo — on utilise le localStorage */ }
+      })),
+      timeout,
+    ]);
+  } catch (e) { /* ignore */ }
 }
 
 /* ---------- Guard ---------- */
@@ -1750,6 +1799,7 @@ function openProductModal(id = null) {
     selectedExtraImages = p.images ? [...p.images] : [];
     document.getElementById('p-badge').value = p.badge || '';
     document.getElementById('p-status').value = p.status;
+    document.getElementById('p-sucrine-id').value = p.sucrineId || '';
     renderImagePickers();
     // Composition
     const comp = p.composition || {};
@@ -1799,6 +1849,7 @@ function saveProduct(e) {
     images:      [...selectedExtraImages],
     badge:       document.getElementById('p-badge').value.trim(),
     status:      document.getElementById('p-status').value,
+    sucrineId:   document.getElementById('p-sucrine-id').value.trim() || null,
     composition: {
       heading:  document.getElementById('p-comp-heading').value.trim(),
       ings:     [0, 1, 2].map(i => ({
@@ -2587,7 +2638,18 @@ function saveHomepage(e) {
 
 /* ---------- Storage helpers ---------- */
 function load(key) { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } }
-function save(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+function save(key, val) {
+  localStorage.setItem(key, JSON.stringify(val));
+  const serverKey = SERVER_KEYS[key];
+  if (serverKey) serverSync(serverKey, val);
+}
+function serverSync(serverKey, val) {
+  fetch('/save.php?key=' + serverKey, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Admin-Token': SERVER_TOKEN },
+    body: JSON.stringify(val),
+  }).catch(function () { /* réseau indispo – données sauvées en localStorage */ });
+}
 
 /* ---------- Boot ---------- */
 init();

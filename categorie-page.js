@@ -10,6 +10,8 @@
   var slug = window.CAT_SLUG;
   if (!slug || typeof SiteData === 'undefined') return;
 
+  (SiteData.ready || Promise.resolve()).then(function () {
+
   /* -- Trouver la catégorie -- */
   var cat = SiteData.categories.find(function (c) { return c.slug === slug; });
   if (!cat) {
@@ -173,5 +175,7 @@
     cards.forEach(function (c) { grid.appendChild(c); });
     countEl.textContent = cards.length + ' produit' + (cards.length !== 1 ? 's' : '');
   };
+
+  }); // end SiteData.ready
 
 })();
