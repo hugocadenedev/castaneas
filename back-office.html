@@ -417,6 +417,7 @@ tbody tr:last-child td { border-bottom: none; }
   padding: 3px 10px; border-radius: var(--r-pill);
 }
 .page-live-badge::before { content: ''; width: 7px; height: 7px; background: var(--green); border-radius: 50%; }
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
@@ -492,6 +493,13 @@ tbody tr:last-child td { border-bottom: none; }
       <div class="nav-item" data-panel="settings" onclick="switchPanel(this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         Paramètres
+      </div>
+      <div style="margin:8px 12px 0;">
+        <button onclick="forceSyncToServer()" id="btn-force-sync" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--corail);color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;">
+          <svg id="sync-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:14px;height:14px;flex-shrink:0"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+          <span id="sync-label">Forcer sync serveur</span>
+        </button>
+        <div id="sync-status" style="font-size:10px;color:var(--muted);padding:4px 4px 0;display:none;"></div>
       </div>
     </nav>
     <div class="sidebar-footer">
@@ -1353,6 +1361,54 @@ async function hashAdmin(pass) {
 }
 
 /* ---------- Init ---------- */
+async function forceSyncToServer() {
+  const btn   = document.getElementById('btn-force-sync');
+  const label = document.getElementById('sync-label');
+  const icon  = document.getElementById('sync-icon');
+  const status = document.getElementById('sync-status');
+
+  btn.disabled = true;
+  label.textContent = 'Synchronisation…';
+  icon.style.animation = 'spin 1s linear infinite';
+  status.style.display = 'none';
+
+  const pushKeys = [
+    { s: 'products',   l: KEYS.products },
+    { s: 'categories', l: KEYS.categories },
+    { s: 'recipes',    l: KEYS.recipes },
+    { s: 'orders',     l: KEYS.orders },
+    { s: 'homepage',   l: KEYS.homepage },
+  ];
+
+  const results = [];
+  for (const { s, l } of pushKeys) {
+    const local = localStorage.getItem(l);
+    const body  = local !== null ? local : JSON.stringify([]);
+    try {
+      const r = await fetch('/save.php?key=' + s, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Admin-Token': SERVER_TOKEN },
+        body,
+      });
+      results.push(r.ok ? `✓ ${s}` : `✗ ${s} (${r.status})`);
+    } catch (e) {
+      results.push(`✗ ${s} (réseau)`);
+    }
+  }
+
+  const allOk = results.every(r => r.startsWith('✓'));
+  btn.disabled = false;
+  icon.style.animation = '';
+  label.textContent = allOk ? 'Sync réussie ✓' : 'Erreurs — voir détails';
+  status.style.display = 'block';
+  status.style.color = allOk ? 'var(--vert)' : 'var(--corail)';
+  status.textContent = results.join(' · ');
+  setTimeout(() => { label.textContent = 'Forcer sync serveur'; status.style.display = 'none'; }, 5000);
+
+  if (allOk) toast('Données synchronisées vers le serveur ✓', 'success');
+  else toast('⚠️ Sync partielle — voir sidebar', 'error');
+}
+
 async function init() {
   // Récupère les données du serveur avant tout (fallback localStorage si hors ligne)
   await serverLoadAll();
