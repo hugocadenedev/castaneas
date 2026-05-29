@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Livraison &amp; Facturation � Castaneas</title>
+<title>Livraison &amp; Facturation · Castaneas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -23,7 +23,7 @@
   .brand-logo { display: block; height: 34px; width: auto; }
   .promo-bar.pill { max-width: 1340px; margin: 14px auto 0; border-radius: 999px; padding: 11px 24px; font-size: 13px; font-weight: 600; }
 
-  /* STEPS � step 2 active */
+  /* STEPS — step 2 active */
   .steps { display: flex; align-items: center; justify-content: center; max-width: 560px; margin: 36px auto 40px; padding: 0 24px; }
   .step-item { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--ink-soft); white-space: nowrap; }
   .step-item.active { color: var(--brown-deep); }
@@ -137,7 +137,7 @@
 </head>
 <body>
 
-<div class="promo-bar pill">Livraison offerte d�s 40� d'achat � r�colte 2025 disponible ??</div>
+<div class="promo-bar pill">Livraison offerte dès 40€ d'achat — récolte 2025 disponible 🌰</div>
 
 <header class="navbar pill-nav">
   <div class="nav-inner">
@@ -156,9 +156,9 @@
 </header>
 
 <!-- STEPS -->
-<nav class="steps" aria-label="�tapes de commande">
+<nav class="steps" aria-label="Étapes de commande">
   <div class="step-item done">
-    <span class="step-num">?</span>
+    <span class="step-num">✓</span>
     <span class="step-label">Panier</span>
   </div>
   <div class="step-sep"></div>
@@ -179,11 +179,11 @@
     <!-- LEFT: formulaire -->
     <div>
 
-      <!-- Banni�re login / utilisateur connect� -->
+      <!-- Bannière login / utilisateur connecté -->
       <div id="login-banner" class="login-banner" style="display:none">
         <div class="login-banner__text">
-          <strong>D�j� client ?</strong>
-          Connectez-vous pour pr�remplir automatiquement vos informations.
+          <strong>Déjà client ?</strong>
+          Connectez-vous pour préremplir automatiquement vos informations.
         </div>
         <a href="login.html?redirect=facturation.html" class="login-banner__btn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke-linecap="round"/></svg>
@@ -194,16 +194,16 @@
         <div class="user-banner__text" id="user-name">
           Bonjour ! <span></span>
         </div>
-        <button class="user-banner__out" id="btn-logout">Pas vous ? Se d�connecter</button>
+        <button class="user-banner__out" id="btn-logout">Pas vous ? Se déconnecter</button>
       </div>
 
-      <!-- Coordonn�es -->
+      <!-- Coordonnées -->
       <div class="card">
-        <div class="section-eyebrow">�tape 1</div>
-        <div class="section-heading">Coordonn�es</div>
+        <div class="section-eyebrow">Étape 1</div>
+        <div class="section-heading">Coordonnées</div>
         <div class="form-grid">
           <div class="form-group">
-            <label for="f-prenom">Pr�nom <span class="req">*</span></label>
+            <label for="f-prenom">Prénom <span class="req">*</span></label>
             <input type="text" id="f-prenom" class="form-control" placeholder="Marie" autocomplete="given-name">
             <div class="form-error" id="err-prenom"></div>
           </div>
@@ -218,7 +218,7 @@
             <div class="form-error" id="err-email"></div>
           </div>
           <div class="form-group">
-            <label for="f-tel">T�l�phone</label>
+            <label for="f-tel">Téléphone</label>
             <input type="tel" id="f-tel" class="form-control" placeholder="06 12 34 56 78" autocomplete="tel">
             <div class="form-error" id="err-tel"></div>
           </div>
@@ -227,17 +227,17 @@
 
       <!-- Adresse de livraison -->
       <div class="card">
-        <div class="section-eyebrow">�tape 2</div>
+        <div class="section-eyebrow">Étape 2</div>
         <div class="section-heading">Adresse de livraison</div>
         <div class="form-grid">
           <div class="form-group span2">
             <label for="f-adresse">Adresse <span class="req">*</span></label>
-            <input type="text" id="f-adresse" class="form-control" placeholder="12 rue de la Ch�taigne" autocomplete="address-line1">
+            <input type="text" id="f-adresse" class="form-control" placeholder="12 rue de la Châtaigne" autocomplete="address-line1">
             <div class="form-error" id="err-adresse"></div>
           </div>
           <div class="form-group span2">
-            <label for="f-complement">Compl�ment d'adresse</label>
-            <input type="text" id="f-complement" class="form-control" placeholder="Appartement, b�timent, �tage�" autocomplete="address-line2">
+            <label for="f-complement">Complément d'adresse</label>
+            <input type="text" id="f-complement" class="form-control" placeholder="Appartement, bâtiment, étage…" autocomplete="address-line2">
           </div>
           <div class="form-group">
             <label for="f-cp">Code postal <span class="req">*</span></label>
@@ -260,14 +260,14 @@
           </div>
           <div class="form-group span2">
             <label for="f-note">Note de livraison <span style="font-weight:400;text-transform:none;letter-spacing:0">(optionnel)</span></label>
-            <textarea id="f-note" class="form-control" rows="2" placeholder="Instructions particuli�res pour le livreur�" style="resize:vertical"></textarea>
+            <textarea id="f-note" class="form-control" rows="2" placeholder="Instructions particulières pour le livreur…" style="resize:vertical"></textarea>
           </div>
         </div>
       </div>
 
       <!-- Mode de paiement -->
       <div class="card">
-        <div class="section-eyebrow">�tape 3</div>
+        <div class="section-eyebrow">Étape 3</div>
         <div class="section-heading">Mode de paiement</div>
         <div class="pay-methods">
 
@@ -276,7 +276,7 @@
             <input type="radio" name="payment" value="card" checked>
             <div class="pay-option__body">
               <div class="pay-option__label">Carte bancaire</div>
-              <div class="pay-option__sub">Paiement 100 % s�curis�</div>
+              <div class="pay-option__sub">Paiement 100 % sécurisé</div>
               <div class="pay-cards">
                 <!-- CB -->
                 <svg class="card-badge" width="38" height="24" viewBox="0 0 38 24" xmlns="http://www.w3.org/2000/svg">
@@ -308,7 +308,7 @@
         <div class="cgv-block">
           <input type="checkbox" id="cgv-check">
           <label for="cgv-check">
-            J'ai lu et j'accepte les <a href="cgv.html" target="_blank">conditions g�n�rales de vente</a> ainsi que la <a href="#">politique de confidentialit�</a> de Castaneas.
+            J'ai lu et j'accepte les <a href="cgv.html" target="_blank">conditions générales de vente</a> ainsi que la <a href="#">politique de confidentialité</a> de Castaneas.
           </label>
         </div>
         <div class="cgv-error" id="err-cgv"></div>
@@ -319,33 +319,33 @@
         </button>
         <div class="secure-note">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4" stroke-linecap="round"/></svg>
-          Paiement 100 % s�curis�
+          Paiement 100 % sécurisé
         </div>
       </div>
 
     </div>
 
-    <!-- RIGHT: r�capitulatif commande -->
+    <!-- RIGHT: récapitulatif commande -->
     <aside class="order-summary">
       <div class="order-summary__title">Votre commande</div>
       <div id="os-items"></div>
       <hr class="os-divider">
       <div class="os-row">
         <span>Sous-total</span>
-        <span id="os-subtotal">�</span>
+        <span id="os-subtotal">—</span>
       </div>
       <div class="os-row discount" id="os-promo-row" style="display:none">
         <span id="os-promo-label">Code promo</span>
-        <span id="os-promo-val">�</span>
+        <span id="os-promo-val">—</span>
       </div>
       <div class="os-row" id="os-shipping-row">
-        <span>Exp�dition</span>
-        <span id="os-shipping-val">�</span>
+        <span>Expédition</span>
+        <span id="os-shipping-val">—</span>
       </div>
       <hr class="os-divider">
       <div class="os-total">
         <span class="os-total__label">Total TTC</span>
-        <span class="os-total__val" id="os-total">�</span>
+        <span class="os-total__val" id="os-total">—</span>
       </div>
       <a href="panier.html" class="os-back">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round"/></svg>
@@ -369,9 +369,9 @@
   <div class="cart-foot" data-cart-foot>
     <div class="cart-total-row">
       <span>Sous-total</span>
-      <span data-cart-total>0,00�</span>
+      <span data-cart-total>0,00€</span>
     </div>
-    <p class="cart-shipping-note">?? Livraison offerte d�s 40� d'achat</p>
+    <p class="cart-shipping-note">🚚 Livraison offerte dès 40€ d'achat</p>
     <a href="panier.html" class="cart-checkout-btn">
       Voir le panier
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"/></svg>
@@ -388,9 +388,9 @@
   const SESSION_KEY  = 'castaneas_session_v1';
   const USERS_KEY    = 'castaneas_users_v1';
 
-  function fmt(n) { return n.toFixed(2).replace('.', ',') + ' �'; }
+  function fmt(n) { return n.toFixed(2).replace('.', ',') + ' €'; }
 
-  // -- SESSION / LOGIN --------------------------------------
+  // ── SESSION / LOGIN ──────────────────────────────────────
   function getSession() {
     try { return JSON.parse(sessionStorage.getItem(SESSION_KEY)); } catch { return null; }
   }
@@ -421,7 +421,7 @@
     document.getElementById('f-email').value  = '';
   };
 
-  // -- ORDER SUMMARY ----------------------------------------
+  // ── ORDER SUMMARY ────────────────────────────────────────
   function renderSummary() {
     let items = [];
     let checkout = null;
@@ -437,7 +437,7 @@
         </div>
         <div>
           <div class="os-item__name">${i.name}</div>
-          <div class="os-item__meta">${[i.variant, i.weight || '250g'].filter(Boolean).join(' � ')}</div>
+          <div class="os-item__meta">${[i.variant, i.weight || '250g'].filter(Boolean).join(' · ')}</div>
         </div>
         <div class="os-item__price">${fmt(i.qty * i.price)}</div>
       </div>
@@ -446,7 +446,7 @@
     if (!checkout) {
       const sub = items.reduce((s, i) => s + i.qty * i.price, 0);
       document.getElementById('os-subtotal').textContent   = fmt(sub);
-      document.getElementById('os-shipping-val').textContent = '� calculer';
+      document.getElementById('os-shipping-val').textContent = 'À calculer';
       document.getElementById('os-total').textContent       = fmt(sub);
       return;
     }
@@ -457,7 +457,7 @@
     if (checkout.promoCode && checkout.discount > 0) {
       promoRow.style.display = 'flex';
       document.getElementById('os-promo-label').textContent = 'Code ' + checkout.promoCode;
-      document.getElementById('os-promo-val').textContent   = '- ' + fmt(checkout.discount);
+      document.getElementById('os-promo-val').textContent   = '− ' + fmt(checkout.discount);
     } else {
       promoRow.style.display = 'none';
     }
@@ -465,15 +465,15 @@
     const shippingRow = document.getElementById('os-shipping-row');
     if (checkout.shipping !== null && checkout.shipping !== undefined) {
       shippingRow.classList.toggle('free', checkout.shipping === 0);
-      document.getElementById('os-shipping-val').textContent = checkout.shipping === 0 ? 'Offerte ??' : fmt(checkout.shipping);
+      document.getElementById('os-shipping-val').textContent = checkout.shipping === 0 ? 'Offerte 🎉' : fmt(checkout.shipping);
     } else {
-      document.getElementById('os-shipping-val').textContent = '� calculer';
+      document.getElementById('os-shipping-val').textContent = 'À calculer';
     }
 
-    document.getElementById('os-total').textContent = checkout.total !== null ? fmt(checkout.total) : '�';
+    document.getElementById('os-total').textContent = checkout.total !== null ? fmt(checkout.total) : '—';
   }
 
-  // -- VALIDATION -------------------------------------------
+  // ── VALIDATION ───────────────────────────────────────────
   function setError(id, msg) {
     const el = document.getElementById(id);
     if (el) el.textContent = msg;
@@ -501,7 +501,7 @@
     const payment = document.querySelector('input[name="payment"]:checked');
     const cgv     = document.getElementById('cgv-check').checked;
 
-    if (!prenom)  { markError('f-prenom',  'err-prenom',  'Le pr�nom est requis.'); valid = false; }
+    if (!prenom)  { markError('f-prenom',  'err-prenom',  'Le prénom est requis.'); valid = false; }
     if (!nom)     { markError('f-nom',     'err-nom',     'Le nom est requis.'); valid = false; }
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       markError('f-email', 'err-email', 'Entrez un e-mail valide.'); valid = false;
@@ -509,8 +509,8 @@
     if (!adresse) { markError('f-adresse', 'err-adresse', "L'adresse est requise."); valid = false; }
     if (!cp || !/^\d{4,5}$/.test(cp)) { markError('f-cp', 'err-cp', 'Code postal invalide.'); valid = false; }
     if (!ville)   { markError('f-ville',   'err-ville',   'La ville est requise.'); valid = false; }
-    if (!payment) { setError('err-payment', 'S�lectionnez un mode de paiement.'); valid = false; }
-    if (!cgv)     { setError('err-cgv', 'Vous devez accepter les conditions g�n�rales.'); valid = false; }
+    if (!payment) { setError('err-payment', 'Sélectionnez un mode de paiement.'); valid = false; }
+    if (!cgv)     { setError('err-cgv', 'Vous devez accepter les conditions générales.'); valid = false; }
 
     if (!valid) {
       document.querySelector('.error, [id^="err-"]:not(:empty)')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -534,7 +534,7 @@
     window.location.href = 'confirmation.html';
   });
 
-  // -- INIT -------------------------------------------------
+  // ── INIT ─────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
     initAuthBanner();
     renderSummary();

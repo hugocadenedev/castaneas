@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Votre panier � Castaneas</title>
+<title>Votre panier · Castaneas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -121,7 +121,7 @@
     .step-label { display: none; }
     .footer-inner { padding: 40px 24px 24px; border-radius: 22px; }
 
-    /* Cart items � 2 lignes : [img | nom+qty] puis [prix | supprimer] */
+    /* Cart items — 2 lignes : [img | nom+qty] puis [prix | supprimer] */
     .c-item {
       grid-template-columns: 60px 1fr;
       grid-template-rows: auto auto;
@@ -145,7 +145,7 @@
     .c-item__name { font-size: 14px; }
     .c-item__qty { margin-top: 8px; }
 
-    /* Code promo et r�sum� */
+    /* Code promo et résumé */
     .promo-block { border-radius: 14px; padding: 16px; }
     .card-header { padding: 14px 16px; }
     .cart-summary { padding: 20px 16px; }
@@ -156,7 +156,7 @@
 </head>
 <body>
 
-<div class="promo-bar pill">Livraison offerte d�s 40� d'achat � r�colte 2025 disponible ??</div>
+<div class="promo-bar pill">Livraison offerte dès 40€ d'achat — récolte 2025 disponible 🌰</div>
 
 <header class="navbar pill-nav">
   <div class="nav-inner">
@@ -173,15 +173,15 @@
     </div>
   </div>
 </header>
-<nav class="mobile-cats" aria-label="Cat�gories">
-  <a href="creme-de-chataigne.html" class="mobile-cats__pill">?? Cr�mes de ch�taigne</a>
-  <a href="pates-tartiner.html" class="mobile-cats__pill">?? P�tes � tartiner</a>
-  <a href="huiles.html" class="mobile-cats__pill">?? Huiles</a>
-  <a href="coffrets.html" class="mobile-cats__pill">?? Coffrets</a>
+<nav class="mobile-cats" aria-label="Catégories">
+  <a href="creme-de-chataigne.html" class="mobile-cats__pill">🌰 Crèmes de châtaigne</a>
+  <a href="pates-tartiner.html" class="mobile-cats__pill">🧈 Pâtes à tartiner</a>
+  <a href="huiles.html" class="mobile-cats__pill">🫙 Huiles</a>
+  <a href="coffrets.html" class="mobile-cats__pill">🎁 Coffrets</a>
 </nav>
 
 <!-- STEPS -->
-<nav class="steps" aria-label="�tapes de commande">
+<nav class="steps" aria-label="Étapes de commande">
   <div class="step-item active">
     <span class="step-num">1</span>
     <span class="step-label">Panier</span>
@@ -217,22 +217,22 @@
       </div>
     </div>
 
-    <!-- RIGHT : r�capitulatif -->
+    <!-- RIGHT : récapitulatif -->
     <aside class="cart-summary" id="cart-summary" style="display:none">
-      <div class="summary-title">R�capitulatif</div>
+      <div class="summary-title">Récapitulatif</div>
 
       <div class="s-row">
         <span>Sous-total</span>
-        <span id="s-subtotal">�</span>
+        <span id="s-subtotal">—</span>
       </div>
       <div class="s-row discount" id="s-promo-row" style="display:none">
         <span id="s-promo-label">Code promo</span>
-        <span id="s-promo-val">�</span>
+        <span id="s-promo-val">—</span>
       </div>
 
-      <!-- Exp�dition -->
+      <!-- Expédition -->
       <div class="shipping-zone">
-        <div class="shipping-zone__label">Exp�dition</div>
+        <div class="shipping-zone__label">Expédition</div>
         <div class="shipping-zip">
           <input type="text" id="zip-input" placeholder="Code postal" maxlength="5" inputmode="numeric" pattern="[0-9]{5}">
           <button id="zip-calc">Calculer les frais</button>
@@ -241,15 +241,15 @@
       </div>
 
       <div class="s-row" id="s-shipping-row" style="display:none">
-        <span>Exp�dition</span>
-        <span id="s-shipping-val">�</span>
+        <span>Expédition</span>
+        <span id="s-shipping-val">—</span>
       </div>
 
       <hr class="s-divider">
 
       <div class="s-total">
         <span class="s-total-label">Total TTC</span>
-        <span class="s-total-val" id="s-total">�</span>
+        <span class="s-total-val" id="s-total">—</span>
       </div>
       <div class="s-total-sub" id="s-total-sub">Calculez d'abord les frais de livraison</div>
 
@@ -259,7 +259,7 @@
       </a>
       <div class="secure-note">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4" stroke-linecap="round"/></svg>
-        Paiement 100 % s�curis�
+        Paiement 100 % sécurisé
       </div>
     </aside>
   </div>
@@ -278,9 +278,9 @@
   <div class="cart-foot" data-cart-foot>
     <div class="cart-total-row">
       <span>Sous-total</span>
-      <span data-cart-total>0,00�</span>
+      <span data-cart-total>0,00€</span>
     </div>
-    <p class="cart-shipping-note">?? Livraison offerte d�s 40� d'achat</p>
+    <p class="cart-shipping-note">🚚 Livraison offerte dès 40€ d'achat</p>
     <a href="panier.html" class="cart-checkout-btn">
       Voir le panier
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"/></svg>
@@ -296,7 +296,7 @@
   const CHECKOUT_KEY = 'castaneas_checkout_v1';
   const PROMO_CODES  = {
     'CASTANEAS10': { type: 'percent', value: 10, label: '-10 %' },
-    'BIENVENUE5':  { type: 'fixed',   value: 5,  label: '-5,00 �' },
+    'BIENVENUE5':  { type: 'fixed',   value: 5,  label: '-5,00 €' },
     'NOEL2025':    { type: 'percent', value: 15, label: '-15 %' },
   };
 
@@ -320,10 +320,10 @@
   }
 
   function fmt(n) {
-    return n.toFixed(2).replace('.', ',') + ' �';
+    return n.toFixed(2).replace('.', ',') + ' €';
   }
 
-  // -- RENDER ITEMS -----------------------------------------
+  // ── RENDER ITEMS ─────────────────────────────────────────
   function renderItems() {
     const card  = document.getElementById('cart-items-card');
     const count = items.reduce((n, i) => n + i.qty, 0);
@@ -335,9 +335,9 @@
       document.getElementById('cart-summary').style.display   = 'none';
       card.innerHTML = `
         <div class="cart-empty">
-          <div class="cart-empty__icon">??</div>
+          <div class="cart-empty__icon">🌰</div>
           <div class="cart-empty__title">Votre panier est vide</div>
-          <div class="cart-empty__sub">D�couvrez nos cr�mes artisanales du Quercy</div>
+          <div class="cart-empty__sub">Découvrez nos crèmes artisanales du Quercy</div>
           <a href="creme-de-chataigne.html" class="btn-outline">Parcourir la boutique</a>
         </div>`;
       return;
@@ -353,9 +353,9 @@
           <div class="c-item__img" style="background-image:url('${i.image || ''}')"></div>
           <div>
             <div class="c-item__name">${i.name}</div>
-            <div class="c-item__meta">${[i.variant, i.weight || '250g'].filter(Boolean).join(' � ')}</div>
+            <div class="c-item__meta">${[i.variant, i.weight || '250g'].filter(Boolean).join(' · ')}</div>
             <div class="c-item__qty">
-              <button data-dec data-id="${i.id}" data-variant="${i.variant || ''}">-</button>
+              <button data-dec data-id="${i.id}" data-variant="${i.variant || ''}">−</button>
               <span class="val">${i.qty}</span>
               <button data-inc data-id="${i.id}" data-variant="${i.variant || ''}">+</button>
             </div>
@@ -387,7 +387,7 @@
     });
   }
 
-  // -- SUMMARY ----------------------------------------------
+  // ── SUMMARY ──────────────────────────────────────────────
   function updateSummary() {
     if (items.length === 0) return;
     const sub      = subtotal();
@@ -401,7 +401,7 @@
     if (promoCode && discount > 0) {
       promoRow.style.display = 'flex';
       document.getElementById('s-promo-label').textContent = 'Code ' + promoCode + ' (' + PROMO_CODES[promoCode].label + ')';
-      document.getElementById('s-promo-val').textContent   = '- ' + fmt(discount);
+      document.getElementById('s-promo-val').textContent   = '− ' + fmt(discount);
     } else {
       promoRow.style.display = 'none';
     }
@@ -412,7 +412,7 @@
       shippingRow.style.display = 'flex';
       const sVal = document.getElementById('s-shipping-val');
       if (shipping === 0) {
-        sVal.textContent = 'Offerte ??';
+        sVal.textContent = 'Offerte 🎉';
         shippingRow.classList.add('free');
       } else {
         sVal.textContent = fmt(shipping);
@@ -424,7 +424,7 @@
       btn.removeAttribute('aria-disabled');
     } else {
       shippingRow.style.display = 'none';
-      document.getElementById('s-total').textContent     = '� calculer';
+      document.getElementById('s-total').textContent     = 'À calculer';
       document.getElementById('s-total-sub').textContent = 'Calculez d\'abord les frais de livraison';
       btn.setAttribute('disabled', '');
       btn.setAttribute('aria-disabled', 'true');
@@ -438,7 +438,7 @@
     } catch (_) {}
   }
 
-  // -- PROMO ------------------------------------------------
+  // ── PROMO ────────────────────────────────────────────────
   function applyPromo() {
     const input = document.getElementById('promo-input');
     const fb    = document.getElementById('promo-feedback');
@@ -446,19 +446,19 @@
     if (!code) { fb.className = 'promo-feedback err'; fb.textContent = 'Entrez un code promo.'; return; }
     if (!PROMO_CODES[code]) {
       fb.className = 'promo-feedback err';
-      fb.textContent = 'Code invalide ou expir�.';
+      fb.textContent = 'Code invalide ou expiré.';
       promoCode = null;
     } else {
       promoCode = code;
       fb.className = 'promo-feedback ok';
-      fb.textContent = '? Code appliqu� � ' + PROMO_CODES[code].label + ' sur votre commande !';
+      fb.textContent = '✓ Code appliqué — ' + PROMO_CODES[code].label + ' sur votre commande !';
     }
     updateSummary();
   }
   document.getElementById('promo-apply').onclick = applyPromo;
   document.getElementById('promo-input').addEventListener('keydown', e => { if (e.key === 'Enter') applyPromo(); });
 
-  // -- SHIPPING ---------------------------------------------
+  // ── SHIPPING ─────────────────────────────────────────────
   function calcShipping() {
     const zip      = document.getElementById('zip-input').value.trim();
     const resultEl = document.getElementById('shipping-result');
@@ -467,19 +467,19 @@
       resultEl.textContent = 'Entrez un code postal valide (5 chiffres).';
       return;
     }
-    // Placeholder � API transporteur � int�grer
+    // Placeholder — API transporteur à intégrer
     const afterPromo = subtotal() - calcDiscount(subtotal());
     shippingCost = afterPromo >= 40 ? 0 : 4.90;
     resultEl.style.color = shippingCost === 0 ? '#2d8c5a' : 'var(--ink-soft)';
     resultEl.textContent = shippingCost === 0
-      ? '?? Livraison offerte pour votre commande !'
-      : 'Frais de port estim�s : ' + fmt(shippingCost) + ' (Colissimo)';
+      ? '🎉 Livraison offerte pour votre commande !'
+      : 'Frais de port estimés : ' + fmt(shippingCost) + ' (Colissimo)';
     updateSummary();
   }
   document.getElementById('zip-calc').onclick = calcShipping;
   document.getElementById('zip-input').addEventListener('keydown', e => { if (e.key === 'Enter') calcShipping(); });
 
-  // -- INIT -------------------------------------------------
+  // ── INIT ─────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
     loadCart();
     renderItems();
