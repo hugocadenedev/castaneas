@@ -987,6 +987,10 @@ tbody tr:last-child td { border-bottom: none; }
           <input type="text" id="p-badge" placeholder="Bestseller · Nouveau · -20%…">
         </div>
         <div class="form-field">
+          <label>Étiquette fournée <small style="font-weight:400;color:var(--muted)">— sous la photo</small></label>
+          <input type="text" id="p-caption" placeholder="Pot Nº 24, fournée du 14 mars">
+        </div>
+        <div class="form-field">
           <label>Statut</label>
           <select id="p-status">
             <option value="active">Publié</option>
@@ -1801,6 +1805,7 @@ function openProductModal(id = null) {
     document.getElementById('p-image').value = p.image || '';
     selectedExtraImages = p.images ? [...p.images] : [];
     document.getElementById('p-badge').value = p.badge || '';
+    document.getElementById('p-caption').value = p.caption || '';
     document.getElementById('p-status').value = p.status;
     document.getElementById('p-sucrine-id').value = p.sucrineId || '';
     renderImagePickers();
@@ -1851,6 +1856,7 @@ function saveProduct(e) {
     image:       document.getElementById('p-image').value.trim() || 'assets/product-pate-tartiner.png',
     images:      [...selectedExtraImages],
     badge:       document.getElementById('p-badge').value.trim(),
+    caption:     document.getElementById('p-caption').value.trim(),
     status:      document.getElementById('p-status').value,
     sucrineId:   document.getElementById('p-sucrine-id').value.trim() || null,
     composition: {

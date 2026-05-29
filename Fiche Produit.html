@@ -192,10 +192,12 @@
     cursor: pointer;
     position: relative;
     transition: border-color .15s;
+    padding: 0;
+    display: block;
   }
   .gallery__thumb.on { border-color: var(--brown-deep); }
   .gallery__thumb img {
-    width: 100%; height: 100%; object-fit: cover;
+    width: 100%; height: 100%; object-fit: cover; display: block;
   }
 
   /* INFO PANEL (sticky) */
@@ -1198,45 +1200,15 @@
   </section>
 
   <!-- RECETTES -->
-  <section class="recipes">
+  <section id="recipes-section" class="recipes">
     <div class="section-head">
       <div>
         <div class="section-head__eyebrow">Recettes signées</div>
-        <h2 class="section-head__title">Deux recettes <em>pour ce pot.</em></h2>
+        <h2 id="recipes-title" class="section-head__title">Deux recettes <em>pour ce pot.</em></h2>
       </div>
-      <a href="#" style="font-size: 14px; font-weight: 700; color: var(--accent-cocoa); border-bottom: 1px solid var(--accent-cocoa); padding-bottom: 4px;">Toutes les recettes →</a>
+      <a href="recettes.html" style="font-size: 14px; font-weight: 700; color: var(--accent-cocoa); border-bottom: 1px solid var(--accent-cocoa); padding-bottom: 4px;">Toutes les recettes →</a>
     </div>
-
-    <div class="recipes-grid">
-      <article class="recipe">
-        <div class="recipe__media">
-          <img src="assets/product-pate-tartiner.png" alt="">
-        </div>
-        <div class="recipe__body">
-          <span class="recipe__meta">5 min · sans cuisson</span>
-          <h3 class="recipe__name">Tartine d'<em>automne</em></h3>
-          <p class="recipe__desc">Pain au levain grillé, beurre demi-sel, une grosse cuillère de châtaigne vanillée.</p>
-          <a href="#" class="recipe__cta">
-            Lire la recette
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"/></svg>
-          </a>
-        </div>
-      </article>
-      <article class="recipe">
-        <div class="recipe__media">
-          <img src="assets/product-noisettes-crues.png" alt="">
-        </div>
-        <div class="recipe__body">
-          <span class="recipe__meta">25 min · 6 personnes</span>
-          <h3 class="recipe__name">Mont-Blanc <em>express</em></h3>
-          <p class="recipe__desc">Meringues, crème fouettée, vermicelles de châtaigne vanillée par-dessus.</p>
-          <a href="#" class="recipe__cta">
-            Lire la recette
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"/></svg>
-          </a>
-        </div>
-      </article>
-    </div>
+    <div id="recipes-grid" class="recipes-grid"></div>
   </section>
 
   <!-- AVIS -->
@@ -1514,6 +1486,8 @@ var qty = 1;
   // Galerie — badge
   var galBadge = document.querySelector('.gallery__badge');
   if (galBadge) { if (p.badge) galBadge.textContent = p.badge; else galBadge.style.display = 'none'; }
+  var galCaption = document.querySelector('.gallery__caption');
+  if (galCaption) { if (p.caption) galCaption.textContent = p.caption; else galCaption.style.display = 'none'; }
 
   // Galerie — miniatures (image principale + images complémentaires)
   var thumbsWrap = document.querySelector('.gallery__thumbs');
@@ -1657,6 +1631,42 @@ var qty = 1;
             + '<h3 class="use__title">' + c.title + '</h3>'
             + '<p class="use__desc">' + c.desc + '</p>'
             + '</div>';
+        }).join('');
+      }
+    }
+  }
+
+  // Section Recettes liées au produit
+  var recipesSec = document.getElementById('recipes-section');
+  if (recipesSec) {
+    var linkedRecipes = (SiteData.recipes || []).filter(function(r) {
+      return r.status === 'published' && Array.isArray(r.products) && r.products.indexOf(pid) !== -1;
+    });
+    if (linkedRecipes.length === 0) {
+      recipesSec.style.display = 'none';
+    } else {
+      var recTitle = document.getElementById('recipes-title');
+      if (recTitle) {
+        var n = Math.min(linkedRecipes.length, 2);
+        var word = n === 1 ? 'Une recette' : (n + ' recettes');
+        recTitle.innerHTML = word + ' <em>pour ce pot.</em>';
+      }
+      var recGrid = document.getElementById('recipes-grid');
+      if (recGrid) {
+        var ctaSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"/></svg>';
+        recGrid.innerHTML = linkedRecipes.slice(0, 2).map(function(r) {
+          var meta = [r.time, r.servings].filter(Boolean).join(' · ');
+          var name = r.titleEm ? r.title + ' <em>' + r.titleEm + '</em>' : r.title;
+          var link = 'recette.html?id=' + r.id;
+          var img = r.image || 'assets/product-pate-tartiner.png';
+          return '<article class="recipe">'
+            + '<div class="recipe__media"><img src="' + img + '" alt="" onerror="this.src=\'assets/product-pate-tartiner.png\'"></div>'
+            + '<div class="recipe__body">'
+            + (meta ? '<span class="recipe__meta">' + meta + '</span>' : '')
+            + '<h3 class="recipe__name">' + name + '</h3>'
+            + (r.desc ? '<p class="recipe__desc">' + r.desc + '</p>' : '')
+            + '<a href="' + link + '" class="recipe__cta">Lire la recette ' + ctaSvg + '</a>'
+            + '</div></article>';
         }).join('');
       }
     }
