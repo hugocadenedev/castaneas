@@ -1,16 +1,16 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <base href="/">
-<title>Administration Â· Castaneas</title>
+<title>Administration · Castaneas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
-   CASTANEAS ADMIN â€” Design system alignÃ© sur la charte
+   CASTANEAS ADMIN — Design system aligné sur la charte
    ============================================================ */
 :root {
   --cream:        #F2E8D9;
@@ -427,7 +427,7 @@ tbody tr:last-child td { border-bottom: none; }
   <div class="guard-card">
     <img src="assets/castaneas-logo.svg" alt="Castaneas" class="guard-logo">
     <h1 class="guard-title">Administration</h1>
-    <p class="guard-sub">AccÃ¨s rÃ©servÃ© Ã  l'Ã©quipe Castaneas</p>
+    <p class="guard-sub">Accès réservé à l'équipe Castaneas</p>
     <form id="guard-form">
       <div class="guard-field">
         <label>Identifiant</label>
@@ -435,9 +435,9 @@ tbody tr:last-child td { border-bottom: none; }
       </div>
       <div class="guard-field">
         <label>Mot de passe</label>
-        <input type="password" id="guard-pass" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" autocomplete="current-password">
+        <input type="password" id="guard-pass" placeholder="••••••••" autocomplete="current-password">
       </div>
-      <button type="submit" class="guard-btn">AccÃ©der au back-office</button>
+      <button type="submit" class="guard-btn">Accéder au back-office</button>
       <p class="guard-error" id="guard-error"></p>
     </form>
   </div>
@@ -466,7 +466,7 @@ tbody tr:last-child td { border-bottom: none; }
       </div>
       <div class="nav-item" data-panel="categories" onclick="switchPanel(this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-        CatÃ©gories
+        Catégories
         <span id="cats-badge" style="margin-left:auto;font-size:11px;font-weight:800;background:var(--cream-soft);padding:2px 8px;border-radius:999px;"></span>
       </div>
       <p class="sidebar-section">Boutique</p>
@@ -487,12 +487,12 @@ tbody tr:last-child td { border-bottom: none; }
       </div>
       <div class="nav-item" data-panel="pages" onclick="switchPanel(this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        Pages gÃ©nÃ©rÃ©es
+        Pages générées
       </div>
-      <p class="sidebar-section">ParamÃ¨tres</p>
+      <p class="sidebar-section">Paramètres</p>
       <div class="nav-item" data-panel="settings" onclick="switchPanel(this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        ParamÃ¨tres
+        Paramètres
       </div>
       <div style="margin:8px 12px 0;">
         <button onclick="forceSyncToServer()" id="btn-force-sync" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--corail);color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;">
@@ -508,7 +508,7 @@ tbody tr:last-child td { border-bottom: none; }
         <div class="sidebar-footer-name" id="sidebar-name">Admin</div>
         <div class="sidebar-footer-role">Administrateur</div>
       </div>
-      <button class="sidebar-logout" onclick="logout()" title="DÃ©connexion">
+      <button class="sidebar-logout" onclick="logout()" title="Déconnexion">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
       </button>
     </div>
@@ -543,7 +543,7 @@ tbody tr:last-child td { border-bottom: none; }
             <div class="stat-icon green" style="float:right">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
             </div>
-            <div class="stat-label">CatÃ©gories</div>
+            <div class="stat-label">Catégories</div>
             <div class="stat-value" id="stat-cats">0</div>
             <div class="stat-delta" id="stat-cats-sub"></div>
           </div>
@@ -553,25 +553,25 @@ tbody tr:last-child td { border-bottom: none; }
             </div>
             <div class="stat-label">Commandes</div>
             <div class="stat-value" id="stat-orders">0</div>
-            <div class="stat-delta">simulÃ©es</div>
+            <div class="stat-delta">simulées</div>
           </div>
           <div class="stat-card">
             <div class="stat-icon red" style="float:right">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
             </div>
             <div class="stat-label">Chiffre d'affaires</div>
-            <div class="stat-value" id="stat-revenue">0â‚¬</div>
-            <div class="stat-delta">simulÃ©</div>
+            <div class="stat-value" id="stat-revenue">0€</div>
+            <div class="stat-delta">simulé</div>
           </div>
         </div>
 
         <!-- Recent activity -->
         <div class="section-header">
-          <h2 class="section-title">ActivitÃ© rÃ©cente</h2>
+          <h2 class="section-title">Activité récente</h2>
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>RÃ©fÃ©rence</th><th>Produits</th><th>Client</th><th>Total</th><th>Statut</th></tr></thead>
+            <thead><tr><th>Référence</th><th>Produits</th><th>Client</th><th>Total</th><th>Statut</th></tr></thead>
             <tbody id="dashboard-orders-tbody"></tbody>
           </table>
         </div>
@@ -583,7 +583,7 @@ tbody tr:last-child td { border-bottom: none; }
           <h2 class="section-title">Produits</h2>
           <div class="search-box">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" placeholder="Rechercher un produitâ€¦" oninput="filterProducts(this.value)">
+            <input type="text" placeholder="Rechercher un produit…" oninput="filterProducts(this.value)">
           </div>
           <button class="btn btn-primary" onclick="openProductModal()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -592,7 +592,7 @@ tbody tr:last-child td { border-bottom: none; }
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Image</th><th>Nom</th><th>CatÃ©gorie</th><th>Prix</th><th>Stock</th><th>Statut</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Image</th><th>Nom</th><th>Catégorie</th><th>Prix</th><th>Stock</th><th>Statut</th><th>Actions</th></tr></thead>
             <tbody id="products-tbody"></tbody>
           </table>
         </div>
@@ -601,10 +601,10 @@ tbody tr:last-child td { border-bottom: none; }
       <!-- ========== CATEGORIES ========== -->
       <div class="panel" id="panel-categories">
         <div class="section-header">
-          <h2 class="section-title">CatÃ©gories</h2>
+          <h2 class="section-title">Catégories</h2>
           <button class="btn btn-primary" onclick="openCatModal()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Nouvelle catÃ©gorie
+            Nouvelle catégorie
           </button>
         </div>
         <div class="cat-grid" id="cat-grid"></div>
@@ -616,7 +616,7 @@ tbody tr:last-child td { border-bottom: none; }
           <h2 class="section-title">Commandes</h2>
           <div class="search-box">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" placeholder="Rechercher par rÃ©fÃ©renceâ€¦" oninput="filterOrders(this.value)">
+            <input type="text" placeholder="Rechercher par référence…" oninput="filterOrders(this.value)">
           </div>
           <button class="btn btn-secondary btn-sm" onclick="generateFakeOrder()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -625,7 +625,7 @@ tbody tr:last-child td { border-bottom: none; }
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>RÃ©fÃ©rence</th><th>Date</th><th>Client</th><th>Total</th><th>Statut</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Référence</th><th>Date</th><th>Client</th><th>Total</th><th>Statut</th><th>Actions</th></tr></thead>
             <tbody id="orders-tbody"></tbody>
           </table>
         </div>
@@ -642,7 +642,7 @@ tbody tr:last-child td { border-bottom: none; }
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Image</th><th>Titre</th><th>DurÃ©e</th><th>Personnes</th><th>Produits liÃ©s</th><th>Statut</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Image</th><th>Titre</th><th>Durée</th><th>Personnes</th><th>Produits liés</th><th>Statut</th><th>Actions</th></tr></thead>
             <tbody id="recipes-tbody"></tbody>
           </table>
         </div>
@@ -655,7 +655,7 @@ tbody tr:last-child td { border-bottom: none; }
 
           <!-- HERO -->
           <div class="table-wrap" style="padding:24px 28px;margin-bottom:20px;">
-            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">ğŸŒ„</span> Hero â€” banniÃ¨re principale</h3>
+            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">??</span> Hero — bannière principale</h3>
             <div class="form-grid">
               <div class="form-field span2">
                 <label>Image de fond (hero)</label>
@@ -673,58 +673,58 @@ tbody tr:last-child td { border-bottom: none; }
                   <img class="banner-drop-zone__img" id="hp-hero-img-preview" src="" alt="">
                   <button type="button" class="banner-drop-zone__remove" id="hp-hero-img-remove" onclick="event.stopPropagation();removeHpImg('hero')">&times;</button>
                 </div>
-                <small>Dimensions recommandÃ©esÂ : 1440Â Ã—Â 600Â px â€” lâ€™image est compressÃ©e automatiquement.</small>
+                <small>Dimensions recommandées : 1440 × 600 px — l’image est compressée automatiquement.</small>
               </div>
               <div class="form-field span2">
                 <label>Accroche (ligne au-dessus du titre)</label>
-                <input type="text" id="hp-hero-eyebrow" placeholder="Maison Castaneas Â· Quercy Â· Tarn-et-Garonne">
+                <input type="text" id="hp-hero-eyebrow" placeholder="Maison Castaneas · Quercy · Tarn-et-Garonne">
               </div>
               <div class="form-field">
-                <label>Titre â€” partie normale</label>
-                <input type="text" id="hp-hero-title" placeholder="ChÃ¢taignes et noisettes,">
+                <label>Titre — partie normale</label>
+                <input type="text" id="hp-hero-title" placeholder="Châtaignes et noisettes,">
               </div>
               <div class="form-field">
-                <label>Titre â€” partie <em>italique</em></label>
-                <input type="text" id="hp-hero-title-em" placeholder="faites Ã  la main.">
+                <label>Titre — partie <em>italique</em></label>
+                <input type="text" id="hp-hero-title-em" placeholder="faites à la main.">
               </div>
               <div class="form-field span2">
                 <label>Sous-titre</label>
-                <textarea id="hp-hero-subtitle" rows="2" placeholder="CrÃ¨mes, pÃ¢tes Ã  tartiner et huilesâ€¦"></textarea>
+                <textarea id="hp-hero-subtitle" rows="2" placeholder="Crèmes, pâtes à tartiner et huiles…"></textarea>
               </div>
               <div class="form-field">
-                <label>Bouton principal â€” texte</label>
-                <input type="text" id="hp-hero-btn1-text" placeholder="DÃ©couvrir la boutique">
+                <label>Bouton principal — texte</label>
+                <input type="text" id="hp-hero-btn1-text" placeholder="Découvrir la boutique">
               </div>
               <div class="form-field">
-                <label>Bouton principal â€” lien</label>
+                <label>Bouton principal — lien</label>
                 <input type="text" id="hp-hero-btn1-href" placeholder="creme-de-chataigne.html">
               </div>
               <div class="form-field">
-                <label>Bouton secondaire â€” texte</label>
+                <label>Bouton secondaire — texte</label>
                 <input type="text" id="hp-hero-btn2-text" placeholder="Notre histoire">
               </div>
               <div class="form-field">
-                <label>Bouton secondaire â€” lien</label>
+                <label>Bouton secondaire — lien</label>
                 <input type="text" id="hp-hero-btn2-href" placeholder="#histoire">
               </div>
             </div>
           </div>
 
-          <!-- CATÃ‰GORIES -->
+          <!-- CATÉGORIES -->
           <div class="table-wrap" style="padding:24px 28px;margin-bottom:20px;">
-            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">ğŸ—‚ï¸</span> CatÃ©gories mises en avant</h3>
+            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">???</span> Catégories mises en avant</h3>
             <div class="form-grid">
               <div class="form-field">
                 <label>Accroche</label>
                 <input type="text" id="hp-cats-eyebrow" placeholder="Nos collections">
               </div>
               <div class="form-field">
-                <label>Titre â€” partie normale</label>
+                <label>Titre — partie normale</label>
                 <input type="text" id="hp-cats-title" placeholder="Deux fruits du verger,">
               </div>
               <div class="form-field">
-                <label>Titre â€” partie italique</label>
-                <input type="text" id="hp-cats-title-em" placeholder="un mÃªme chaudron de cuivre.">
+                <label>Titre — partie italique</label>
+                <input type="text" id="hp-cats-title-em" placeholder="un même chaudron de cuivre.">
               </div>
             </div>
             <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
@@ -736,23 +736,23 @@ tbody tr:last-child td { border-bottom: none; }
 
           <!-- PRODUITS -->
           <div class="table-wrap" style="padding:24px 28px;margin-bottom:20px;">
-            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">â­</span> Produits mis en avant</h3>
+            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">?</span> Produits mis en avant</h3>
             <div class="form-grid">
               <div class="form-field">
                 <label>Accroche</label>
                 <input type="text" id="hp-bs-eyebrow" placeholder="Nos incontournables">
               </div>
               <div class="form-field">
-                <label>Titre â€” partie normale</label>
+                <label>Titre — partie normale</label>
                 <input type="text" id="hp-bs-title" placeholder="Ce que">
               </div>
               <div class="form-field">
-                <label>Titre â€” partie italique</label>
-                <input type="text" id="hp-bs-title-em" placeholder="vous prÃ©fÃ©rez.">
+                <label>Titre — partie italique</label>
+                <input type="text" id="hp-bs-title-em" placeholder="vous préférez.">
               </div>
               <div class="form-field span2">
                 <label>Lede (texte sous le titre)</label>
-                <input type="text" id="hp-bs-lede" placeholder="Une sÃ©lection des pots les plus commandÃ©sâ€¦">
+                <input type="text" id="hp-bs-lede" placeholder="Une sélection des pots les plus commandés…">
               </div>
             </div>
             <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;">
@@ -765,7 +765,7 @@ tbody tr:last-child td { border-bottom: none; }
 
           <!-- NOTRE HISTOIRE -->
           <div class="table-wrap" style="padding:24px 28px;margin-bottom:20px;">
-            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">ğŸ“–</span> Section "Notre histoire"</h3>
+            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">??</span> Section "Notre histoire"</h3>
             <div class="form-grid">
               <div class="form-field span2">
                 <label>Image</label>
@@ -783,50 +783,50 @@ tbody tr:last-child td { border-bottom: none; }
                   <img class="banner-drop-zone__img" id="hp-hist-img-preview" src="" alt="">
                   <button type="button" class="banner-drop-zone__remove" id="hp-hist-img-remove" onclick="event.stopPropagation();removeHpImg('hist')">&times;</button>
                 </div>
-                <small>Dimensions recommandÃ©esÂ : 600Â Ã—Â 480Â px â€” lâ€™image est compressÃ©e automatiquement.</small>
+                <small>Dimensions recommandées : 600 × 480 px — l’image est compressée automatiquement.</small>
               </div>
               <div class="form-field">
                 <label>Accroche</label>
                 <input type="text" id="hp-hist-eyebrow" placeholder="Notre histoire">
               </div>
               <div class="form-field">
-                <label>Titre â€” partie normale</label>
+                <label>Titre — partie normale</label>
                 <input type="text" id="hp-hist-title" placeholder="Deux vergers de famille,">
               </div>
               <div class="form-field">
-                <label>Titre â€” partie italique</label>
+                <label>Titre — partie italique</label>
                 <input type="text" id="hp-hist-title-em" placeholder="devenus une maison.">
               </div>
               <div class="form-field span2">
                 <label>Paragraphe 1</label>
-                <textarea id="hp-hist-para1" rows="3" placeholder="Tout a commencÃ©â€¦"></textarea>
+                <textarea id="hp-hist-para1" rows="3" placeholder="Tout a commencé…"></textarea>
               </div>
               <div class="form-field span2">
                 <label>Paragraphe 2</label>
-                <textarea id="hp-hist-para2" rows="3" placeholder="Aujourd'huiâ€¦"></textarea>
+                <textarea id="hp-hist-para2" rows="3" placeholder="Aujourd'hui…"></textarea>
               </div>
               <div class="form-field">
-                <label>Bouton CTA â€” texte</label>
-                <input type="text" id="hp-hist-cta-text" placeholder="Lire le rÃ©cit complet">
+                <label>Bouton CTA — texte</label>
+                <input type="text" id="hp-hist-cta-text" placeholder="Lire le récit complet">
               </div>
               <div class="form-field">
-                <label>Bouton CTA â€” lien</label>
+                <label>Bouton CTA — lien</label>
                 <input type="text" id="hp-hist-cta-href" placeholder="#">
               </div>
               <div class="form-field">
-                <label>Sticker â€” titre</label>
-                <input type="text" id="hp-hist-sticker-label" placeholder="Albias Â· Quercy">
+                <label>Sticker — titre</label>
+                <input type="text" id="hp-hist-sticker-label" placeholder="Albias · Quercy">
               </div>
               <div class="form-field">
-                <label>Sticker â€” sous-texte</label>
-                <input type="text" id="hp-hist-sticker-sub" placeholder="44.25Â°N Â· 1.13Â°E Â· Tarn-et-Garonne (82)">
+                <label>Sticker — sous-texte</label>
+                <input type="text" id="hp-hist-sticker-sub" placeholder="44.25°N · 1.13°E · Tarn-et-Garonne (82)">
               </div>
               <div class="form-field">
-                <label>Signature â€” nom</label>
+                <label>Signature — nom</label>
                 <input type="text" id="hp-hist-sig-name" placeholder="Lucie &amp; Marc">
               </div>
               <div class="form-field">
-                <label>Signature â€” rÃ´le</label>
+                <label>Signature — rôle</label>
                 <input type="text" id="hp-hist-sig-role" placeholder="Les fondateurs">
               </div>
             </div>
@@ -834,36 +834,36 @@ tbody tr:last-child td { border-bottom: none; }
 
           <!-- VALEURS -->
           <div class="table-wrap" style="padding:24px 28px;margin-bottom:20px;">
-            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">âœ¨</span> Section "Nos valeurs"</h3>
+            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">?</span> Section "Nos valeurs"</h3>
             <div class="form-grid">
               <div class="form-field">
                 <label>Accroche</label>
-                <input type="text" id="hp-val-eyebrow" placeholder="Trois ingrÃ©dients, aucun secret">
+                <input type="text" id="hp-val-eyebrow" placeholder="Trois ingrédients, aucun secret">
               </div>
               <div class="form-field">
-                <label>Titre â€” partie normale</label>
+                <label>Titre — partie normale</label>
                 <input type="text" id="hp-val-title" placeholder="Du verger au pot,">
               </div>
               <div class="form-field">
-                <label>Titre â€” partie italique</label>
-                <input type="text" id="hp-val-title-em" placeholder="et rien Ã  cacher.">
+                <label>Titre — partie italique</label>
+                <input type="text" id="hp-val-title-em" placeholder="et rien à cacher.">
               </div>
             </div>
             <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;">
               <div>
                 <p style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:10px;">Valeur 1</p>
-                <div class="form-field" style="margin-bottom:10px;"><label>Titre</label><input type="text" id="hp-val1-title" placeholder="Cueillies Ã  la main"></div>
-                <div class="form-field"><label>Description</label><textarea id="hp-val1-desc" rows="3" placeholder="ChÃ¢taignes et noisettesâ€¦"></textarea></div>
+                <div class="form-field" style="margin-bottom:10px;"><label>Titre</label><input type="text" id="hp-val1-title" placeholder="Cueillies à la main"></div>
+                <div class="form-field"><label>Description</label><textarea id="hp-val1-desc" rows="3" placeholder="Châtaignes et noisettes…"></textarea></div>
               </div>
               <div>
                 <p style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:10px;">Valeur 2</p>
                 <div class="form-field" style="margin-bottom:10px;"><label>Titre</label><input type="text" id="hp-val2-title" placeholder="Cuites en cuivre"></div>
-                <div class="form-field"><label>Description</label><textarea id="hp-val2-desc" rows="3" placeholder="Dans le chaudron de familleâ€¦"></textarea></div>
+                <div class="form-field"><label>Description</label><textarea id="hp-val2-desc" rows="3" placeholder="Dans le chaudron de famille…"></textarea></div>
               </div>
               <div>
                 <p style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:10px;">Valeur 3</p>
-                <div class="form-field" style="margin-bottom:10px;"><label>Titre</label><input type="text" id="hp-val3-title" placeholder="Trois ingrÃ©dients"></div>
-                <div class="form-field"><label>Description</label><textarea id="hp-val3-desc" rows="3" placeholder="Fruit, sucre roux, vanilleâ€¦"></textarea></div>
+                <div class="form-field" style="margin-bottom:10px;"><label>Titre</label><input type="text" id="hp-val3-title" placeholder="Trois ingrédients"></div>
+                <div class="form-field"><label>Description</label><textarea id="hp-val3-desc" rows="3" placeholder="Fruit, sucre roux, vanille…"></textarea></div>
               </div>
             </div>
           </div>
@@ -879,23 +879,23 @@ tbody tr:last-child td { border-bottom: none; }
 
       <div class="panel" id="panel-pages">
         <div class="section-header">
-          <h2 class="section-title">Pages gÃ©nÃ©rÃ©es automatiquement</h2>
+          <h2 class="section-title">Pages générées automatiquement</h2>
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Page</th><th>Slug</th><th>CatÃ©gorie</th><th>Produits</th><th>Lien header</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Page</th><th>Slug</th><th>Catégorie</th><th>Produits</th><th>Lien header</th><th>Actions</th></tr></thead>
             <tbody id="pages-tbody"></tbody>
           </table>
         </div>
         <div style="margin-top:20px;padding:16px 20px;background:#fff;border-radius:var(--r-lg);border:1.5px solid var(--line);font-size:13px;color:var(--muted);">
-          ğŸ’¡ Chaque catÃ©gorie crÃ©e automatiquement une page HTML dÃ©diÃ©e et un lien dans la barre de navigation. Supprimez une catÃ©gorie pour retirer la page et le lien.
+          ?? Chaque catégorie crée automatiquement une page HTML dédiée et un lien dans la barre de navigation. Supprimez une catégorie pour retirer la page et le lien.
         </div>
       </div>
 
       <!-- ========== SETTINGS ========== -->
       <div class="panel" id="panel-settings">
         <div class="section-header">
-          <h2 class="section-title">ParamÃ¨tres</h2>
+          <h2 class="section-title">Paramètres</h2>
         </div>
         <div style="display:grid;gap:20px;max-width:600px;">
           <div class="table-wrap" style="padding:24px 28px;">
@@ -915,9 +915,9 @@ tbody tr:last-child td { border-bottom: none; }
             </form>
           </div>
           <div class="table-wrap" style="padding:24px 28px;">
-            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:8px;">DonnÃ©es du site</h3>
-            <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Toutes les donnÃ©es (produits, catÃ©gories, commandes) sont stockÃ©es dans le localStorage du navigateur.</p>
-            <button class="btn btn-danger" onclick="confirmReset()">RÃ©initialiser toutes les donnÃ©es</button>
+            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:8px;">Données du site</h3>
+            <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Toutes les données (produits, catégories, commandes) sont stockées dans le localStorage du navigateur.</p>
+            <button class="btn btn-danger" onclick="confirmReset()">Réinitialiser toutes les données</button>
           </div>
         </div>
       </div>
@@ -940,14 +940,14 @@ tbody tr:last-child td { border-bottom: none; }
         <input type="hidden" id="p-id">
         <div class="form-field span2">
           <label>Nom du produit *</label>
-          <input type="text" id="p-name" placeholder="CrÃ¨me de chÃ¢taigne vanillÃ©e" required>
+          <input type="text" id="p-name" placeholder="Crème de châtaigne vanillée" required>
         </div>
         <div class="form-field">
-          <label>CatÃ©gorie *</label>
+          <label>Catégorie *</label>
           <select id="p-category" required></select>
         </div>
         <div class="form-field">
-          <label>Prix (â‚¬) *</label>
+          <label>Prix (€) *</label>
           <input type="number" id="p-price" step="0.01" min="0" placeholder="7.50" required>
         </div>
         <div class="form-field">
@@ -964,18 +964,18 @@ tbody tr:last-child td { border-bottom: none; }
         </div>
         <div class="form-field span2">
           <label>Description</label>
-          <textarea id="p-desc" placeholder="Description courte du produitâ€¦"></textarea>
+          <textarea id="p-desc" placeholder="Description courte du produit…"></textarea>
         </div>
         <div class="form-field span2">
           <label>Images du produit</label>
           <input type="hidden" id="p-image">
-          <div class="img-sub-label">Image principale <span>â€” un seul choix</span></div>
+          <div class="img-sub-label">Image principale <span>— un seul choix</span></div>
           <div class="img-preview-wrap" id="img-picker-main"></div>
           <div class="img-add-row">
             <input type="text" id="p-img-add-main" placeholder="Ajouter : assets/photo.jpg">
             <button type="button" onclick="addImgToCatalog(true)">+ Ajouter</button>
           </div>
-          <div class="img-sub-label" style="margin-top:18px;">Images complÃ©mentaires <span>â€” sÃ©lection multiple, galerie produit</span></div>
+          <div class="img-sub-label" style="margin-top:18px;">Images complémentaires <span>— sélection multiple, galerie produit</span></div>
           <div class="img-preview-wrap" id="img-picker-extra"></div>
           <div class="img-add-row">
             <input type="text" id="p-img-add-extra" placeholder="Ajouter : assets/photo.jpg">
@@ -984,35 +984,35 @@ tbody tr:last-child td { border-bottom: none; }
         </div>
         <div class="form-field">
           <label>Badge promo</label>
-          <input type="text" id="p-badge" placeholder="Bestseller Â· Nouveau Â· âˆ’20%â€¦">
+          <input type="text" id="p-badge" placeholder="Bestseller · Nouveau · -20%…">
         </div>
         <div class="form-field">
           <label>Statut</label>
           <select id="p-status">
-            <option value="active">PubliÃ©</option>
+            <option value="active">Publié</option>
             <option value="draft">Brouillon</option>
           </select>
         </div>
 
         <!-- INTEGRATIONS -->
         <div class="form-field span2" style="border-top:1px solid var(--line);padding-top:18px;margin-top:4px;">
-          <label style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;">IntÃ©grations</label>
+          <label style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;">Intégrations</label>
         </div>
         <div class="form-field span2">
-          <label>RÃ©fÃ©rence Sucrine <small style="font-weight:400;color:var(--muted)">â€” catalogueItemPriceId (optionnel)</small></label>
+          <label>Référence Sucrine <small style="font-weight:400;color:var(--muted)">— catalogueItemPriceId (optionnel)</small></label>
           <input type="text" id="p-sucrine-id" placeholder="ex : cip_abc123xyz">
         </div>
 
         <!-- COMPOSITION -->
         <div class="form-field span2" style="border-top:1px solid var(--line);padding-top:18px;margin-top:4px;">
-          <label style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;">Composition â€” section publique</label>
+          <label style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;">Composition — section publique</label>
         </div>
         <div class="form-field span2">
           <label>Titre de section</label>
-          <input type="text" id="p-comp-heading" placeholder="Trois ingrÃ©dients, pas un de plus.">
+          <input type="text" id="p-comp-heading" placeholder="Trois ingrédients, pas un de plus.">
         </div>
         <div class="form-field span2">
-          <label>IngrÃ©dients principaux</label>
+          <label>Ingrédients principaux</label>
           <div class="comp-ing-header comp-ing-row">
             <span style="text-align:center">%</span>
             <span>Origine</span>
@@ -1021,100 +1021,100 @@ tbody tr:last-child td { border-bottom: none; }
           </div>
           <div class="comp-ing-row">
             <input type="number" id="p-ing-0-pct" placeholder="72" min="0" max="100">
-            <input type="text" id="p-ing-0-origin" placeholder="Albias Â· Quercy">
-            <input type="text" id="p-ing-0-name" placeholder="ChÃ¢taigne">
-            <input type="text" id="p-ing-0-desc" placeholder="Descriptionâ€¦">
+            <input type="text" id="p-ing-0-origin" placeholder="Albias · Quercy">
+            <input type="text" id="p-ing-0-name" placeholder="Châtaigne">
+            <input type="text" id="p-ing-0-desc" placeholder="Description…">
           </div>
           <div class="comp-ing-row">
             <input type="number" id="p-ing-1-pct" placeholder="26" min="0" max="100">
-            <input type="text" id="p-ing-1-origin" placeholder="Ãle de la RÃ©union">
+            <input type="text" id="p-ing-1-origin" placeholder="Île de la Réunion">
             <input type="text" id="p-ing-1-name" placeholder="Sucre roux">
-            <input type="text" id="p-ing-1-desc" placeholder="Descriptionâ€¦">
+            <input type="text" id="p-ing-1-desc" placeholder="Description…">
           </div>
           <div class="comp-ing-row">
             <input type="number" id="p-ing-2-pct" placeholder="2" min="0" max="100">
             <input type="text" id="p-ing-2-origin" placeholder="Madagascar">
             <input type="text" id="p-ing-2-name" placeholder="Vanille Bourbon">
-            <input type="text" id="p-ing-2-desc" placeholder="Descriptionâ€¦">
+            <input type="text" id="p-ing-2-desc" placeholder="Description…">
           </div>
         </div>
         <div class="form-field span2">
-          <label>Carte Â« Sans rien d'autre Â» <small style="font-weight:400;color:var(--muted)">â€” texte libre</small></label>
-          <input type="text" id="p-comp-rest" placeholder="Sans gluten Â· sans huile de palme Â· sans pectine Â· sans conservateur.">
+          <label>Carte « Sans rien d'autre » <small style="font-weight:400;color:var(--muted)">— texte libre</small></label>
+          <input type="text" id="p-comp-rest" placeholder="Sans gluten · sans huile de palme · sans pectine · sans conservateur.">
         </div>
 
         <!-- UTILISATIONS -->
         <div class="form-field span2" style="border-top:1px solid var(--line);padding-top:18px;margin-top:4px;">
-          <label style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;">Utilisations â€” section Â« Comment le dÃ©guster Â»</label>
+          <label style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;">Utilisations — section « Comment le déguster »</label>
         </div>
         <div class="form-field">
           <label>Titre de section</label>
-          <input type="text" id="p-uses-heading" placeholder="Quatre petites idÃ©es pour le pot.">
+          <input type="text" id="p-uses-heading" placeholder="Quatre petites idées pour le pot.">
         </div>
         <div class="form-field">
-          <label>Sous-titre <small style="font-weight:400;color:var(--muted)">â€” affichÃ© Ã  droite</small></label>
-          <input type="text" id="p-uses-sub" placeholder="â€” et la cuillÃ¨re bien sÃ»r">
+          <label>Sous-titre <small style="font-weight:400;color:var(--muted)">— affiché à droite</small></label>
+          <input type="text" id="p-uses-sub" placeholder="— et la cuillère bien sûr">
         </div>
         <div class="form-field span2">
-          <label>4 idÃ©es de dÃ©gustation</label>
+          <label>4 idées de dégustation</label>
           <div class="uses-card-row" style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">
-            <span>IcÃ´ne</span><span>Titre</span><span>Description</span>
+            <span>Icône</span><span>Titre</span><span>Description</span>
           </div>
           <div class="uses-card-row">
             <select id="p-use-0-icon">
-              <option value="tartine">ğŸ Tartine</option>
-              <option value="yaourt">ğŸ¥› Yaourt</option>
-              <option value="dessert">ğŸ˜Š Dessert</option>
-              <option value="cuillere">ğŸ¥„ CuillÃ¨re / Pot</option>
-              <option value="gateau">ğŸ‚ GÃ¢teau</option>
-              <option value="smoothie">ğŸ¥¤ Smoothie</option>
-              <option value="bol">ğŸœ Bol</option>
-              <option value="aperitif">ğŸ· ApÃ©ritif</option>
+              <option value="tartine">?? Tartine</option>
+              <option value="yaourt">?? Yaourt</option>
+              <option value="dessert">?? Dessert</option>
+              <option value="cuillere">?? Cuillère / Pot</option>
+              <option value="gateau">?? Gâteau</option>
+              <option value="smoothie">?? Smoothie</option>
+              <option value="bol">?? Bol</option>
+              <option value="aperitif">?? Apéritif</option>
             </select>
             <input type="text" id="p-use-0-title" placeholder="Sur tartine">
-            <input type="text" id="p-use-0-desc" placeholder="Pain au levain grillÃ©â€¦">
+            <input type="text" id="p-use-0-desc" placeholder="Pain au levain grillé…">
           </div>
           <div class="uses-card-row">
             <select id="p-use-1-icon">
-              <option value="tartine">ğŸ Tartine</option>
-              <option value="yaourt">ğŸ¥› Yaourt</option>
-              <option value="dessert">ğŸ˜Š Dessert</option>
-              <option value="cuillere">ğŸ¥„ CuillÃ¨re / Pot</option>
-              <option value="gateau">ğŸ‚ GÃ¢teau</option>
-              <option value="smoothie">ğŸ¥¤ Smoothie</option>
-              <option value="bol">ğŸœ Bol</option>
-              <option value="aperitif">ğŸ· ApÃ©ritif</option>
+              <option value="tartine">?? Tartine</option>
+              <option value="yaourt">?? Yaourt</option>
+              <option value="dessert">?? Dessert</option>
+              <option value="cuillere">?? Cuillère / Pot</option>
+              <option value="gateau">?? Gâteau</option>
+              <option value="smoothie">?? Smoothie</option>
+              <option value="bol">?? Bol</option>
+              <option value="aperitif">?? Apéritif</option>
             </select>
             <input type="text" id="p-use-1-title" placeholder="En yaourt">
-            <input type="text" id="p-use-1-desc" placeholder="Deux cuillÃ¨res dans un fromage blancâ€¦">
+            <input type="text" id="p-use-1-desc" placeholder="Deux cuillères dans un fromage blanc…">
           </div>
           <div class="uses-card-row">
             <select id="p-use-2-icon">
-              <option value="tartine">ğŸ Tartine</option>
-              <option value="yaourt">ğŸ¥› Yaourt</option>
-              <option value="dessert">ğŸ˜Š Dessert</option>
-              <option value="cuillere">ğŸ¥„ CuillÃ¨re / Pot</option>
-              <option value="gateau">ğŸ‚ GÃ¢teau</option>
-              <option value="smoothie">ğŸ¥¤ Smoothie</option>
-              <option value="bol">ğŸœ Bol</option>
-              <option value="aperitif">ğŸ· ApÃ©ritif</option>
+              <option value="tartine">?? Tartine</option>
+              <option value="yaourt">?? Yaourt</option>
+              <option value="dessert">?? Dessert</option>
+              <option value="cuillere">?? Cuillère / Pot</option>
+              <option value="gateau">?? Gâteau</option>
+              <option value="smoothie">?? Smoothie</option>
+              <option value="bol">?? Bol</option>
+              <option value="aperitif">?? Apéritif</option>
             </select>
             <input type="text" id="p-use-2-title" placeholder="En Mont-Blanc">
-            <input type="text" id="p-use-2-desc" placeholder="Vermicelles sur meringueâ€¦">
+            <input type="text" id="p-use-2-desc" placeholder="Vermicelles sur meringue…">
           </div>
           <div class="uses-card-row">
             <select id="p-use-3-icon">
-              <option value="tartine">ğŸ Tartine</option>
-              <option value="yaourt">ğŸ¥› Yaourt</option>
-              <option value="dessert">ğŸ˜Š Dessert</option>
-              <option value="cuillere">ğŸ¥„ CuillÃ¨re / Pot</option>
-              <option value="gateau">ğŸ‚ GÃ¢teau</option>
-              <option value="smoothie">ğŸ¥¤ Smoothie</option>
-              <option value="bol">ğŸœ Bol</option>
-              <option value="aperitif">ğŸ· ApÃ©ritif</option>
+              <option value="tartine">?? Tartine</option>
+              <option value="yaourt">?? Yaourt</option>
+              <option value="dessert">?? Dessert</option>
+              <option value="cuillere">?? Cuillère / Pot</option>
+              <option value="gateau">?? Gâteau</option>
+              <option value="smoothie">?? Smoothie</option>
+              <option value="bol">?? Bol</option>
+              <option value="aperitif">?? Apéritif</option>
             </select>
-            <input type="text" id="p-use-3-title" placeholder="Ã€ la cuillÃ¨re">
-            <input type="text" id="p-use-3-desc" placeholder="Directement dans le potâ€¦">
+            <input type="text" id="p-use-3-title" placeholder="À la cuillère">
+            <input type="text" id="p-use-3-desc" placeholder="Directement dans le pot…">
           </div>
         </div>
       </form>
@@ -1129,11 +1129,11 @@ tbody tr:last-child td { border-bottom: none; }
   </div>
 </div>
 
-<!-- ========== MODAL CATÃ‰GORIE ========== -->
+<!-- ========== MODAL CATÉGORIE ========== -->
 <div class="modal-overlay" id="modal-cat">
   <div class="modal" style="max-width:520px;">
     <div class="modal-head">
-      <h2 id="modal-cat-title">Nouvelle catÃ©gorie</h2>
+      <h2 id="modal-cat-title">Nouvelle catégorie</h2>
       <button class="modal-close" onclick="closeModal('modal-cat')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/></svg>
       </button>
@@ -1142,40 +1142,40 @@ tbody tr:last-child td { border-bottom: none; }
       <form class="form-grid full" id="cat-form" onsubmit="saveCat(event)">
         <input type="hidden" id="c-id">
         <div class="form-field">
-          <label>Nom de la catÃ©gorie *</label>
-          <input type="text" id="c-name" placeholder="CrÃ¨mes de chÃ¢taigne" required oninput="autoSlug()">
+          <label>Nom de la catégorie *</label>
+          <input type="text" id="c-name" placeholder="Crèmes de châtaigne" required oninput="autoSlug()">
         </div>
         <div class="form-field">
           <label>Slug (URL) *</label>
           <input type="text" id="c-slug" placeholder="cremes-chataigne" required>
-          <small>UtilisÃ© dans l'URL et le nom de fichier HTML</small>
+          <small>Utilisé dans l'URL et le nom de fichier HTML</small>
         </div>
         <div class="form-field">
           <label>Description</label>
-          <textarea id="c-desc" placeholder="Notre gamme de crÃ¨mes artisanalesâ€¦"></textarea>
+          <textarea id="c-desc" placeholder="Notre gamme de crèmes artisanales…"></textarea>
         </div>
         <div class="form-field">
-          <label>Emoji / icÃ´ne</label>
+          <label>Emoji / icône</label>
           <div class="emoji-row" id="emoji-row">
-            <button type="button" class="emoji-btn selected" data-emoji="ğŸŒ°" onclick="pickEmoji(this)">ğŸŒ°</button>
-            <button type="button" class="emoji-btn" data-emoji="ğŸ«™" onclick="pickEmoji(this)">ğŸ«™</button>
-            <button type="button" class="emoji-btn" data-emoji="ğŸ" onclick="pickEmoji(this)">ğŸ</button>
-            <button type="button" class="emoji-btn" data-emoji="ğŸŒ¿" onclick="pickEmoji(this)">ğŸŒ¿</button>
-            <button type="button" class="emoji-btn" data-emoji="ğŸƒ" onclick="pickEmoji(this)">ğŸƒ</button>
-            <button type="button" class="emoji-btn" data-emoji="ğŸ§ˆ" onclick="pickEmoji(this)">ğŸ§ˆ</button>
-            <button type="button" class="emoji-btn" data-emoji="ğŸ¯" onclick="pickEmoji(this)">ğŸ¯</button>
-            <button type="button" class="emoji-btn" data-emoji="âœ¨" onclick="pickEmoji(this)">âœ¨</button>
+            <button type="button" class="emoji-btn selected" data-emoji="??" onclick="pickEmoji(this)">??</button>
+            <button type="button" class="emoji-btn" data-emoji="??" onclick="pickEmoji(this)">??</button>
+            <button type="button" class="emoji-btn" data-emoji="??" onclick="pickEmoji(this)">??</button>
+            <button type="button" class="emoji-btn" data-emoji="??" onclick="pickEmoji(this)">??</button>
+            <button type="button" class="emoji-btn" data-emoji="??" onclick="pickEmoji(this)">??</button>
+            <button type="button" class="emoji-btn" data-emoji="??" onclick="pickEmoji(this)">??</button>
+            <button type="button" class="emoji-btn" data-emoji="??" onclick="pickEmoji(this)">??</button>
+            <button type="button" class="emoji-btn" data-emoji="?" onclick="pickEmoji(this)">?</button>
           </div>
-          <input type="hidden" id="c-emoji" value="ğŸŒ°">
+          <input type="hidden" id="c-emoji" value="??">
         </div>
         <div class="form-field">
-          <label>Couleur de la banniÃ¨re</label>
+          <label>Couleur de la bannière</label>
           <div class="color-row" id="color-row">
-            <div class="color-swatch selected" style="background:#F2E8D9;" data-color="#F2E8D9" onclick="pickColor(this)" title="CrÃ¨me"></div>
+            <div class="color-swatch selected" style="background:#F2E8D9;" data-color="#F2E8D9" onclick="pickColor(this)" title="Crème"></div>
             <div class="color-swatch" style="background:#E8C9A0;" data-color="#E8C9A0" onclick="pickColor(this)" title="Terracotta"></div>
             <div class="color-swatch" style="background:#E8C4B8;" data-color="#E8C4B8" onclick="pickColor(this)" title="Vieux rose"></div>
             <div class="color-swatch" style="background:#C8D5B9;" data-color="#C8D5B9" onclick="pickColor(this)" title="Sauge"></div>
-            <div class="color-swatch" style="background:#E5D5A8;" data-color="#E5D5A8" onclick="pickColor(this)" title="DorÃ©"></div>
+            <div class="color-swatch" style="background:#E5D5A8;" data-color="#E5D5A8" onclick="pickColor(this)" title="Doré"></div>
             <div class="color-swatch" style="background:#D4C5E2;" data-color="#D4C5E2" onclick="pickColor(this)" title="Lavande"></div>
             <div class="color-swatch" style="background:#B8D4D0;" data-color="#B8D4D0" onclick="pickColor(this)" title="Aqua"></div>
             <div class="color-swatch" style="background:#5C7560;" data-color="#5C7560" onclick="pickColor(this)" title="Vert"></div>
@@ -1198,13 +1198,13 @@ tbody tr:last-child td { border-bottom: none; }
             <img class="banner-drop-zone__img" id="c-banner-img-preview" src="" alt="">
             <button type="button" class="banner-drop-zone__remove" id="cat-banner-remove" onclick="removeCatBanner(event)">&times;</button>
           </div>
-          <small>Dimensions recommandÃ©es&nbsp;: 1180 Ã— 420&nbsp;px &mdash; l&rsquo;image est compressÃ©e automatiquement.</small>
+          <small>Dimensions recommandées&nbsp;: 1180 × 420&nbsp;px &mdash; l&rsquo;image est compressée automatiquement.</small>
         </div>
         <div class="form-field">
           <label>Afficher dans le header</label>
           <select id="c-header">
-            <option value="1">Oui â€” lien visible dans la navigation</option>
-            <option value="0">Non â€” page crÃ©Ã©e mais lien masquÃ©</option>
+            <option value="1">Oui — lien visible dans la navigation</option>
+            <option value="0">Non — page créée mais lien masqué</option>
           </select>
         </div>
         <div class="form-field">
@@ -1220,7 +1220,7 @@ tbody tr:last-child td { border-bottom: none; }
       <button class="btn btn-secondary" onclick="closeModal('modal-cat')">Annuler</button>
       <button class="btn btn-primary" onclick="document.getElementById('cat-form').requestSubmit()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-        CrÃ©er la catÃ©gorie
+        Créer la catégorie
       </button>
     </div>
   </div>
@@ -1247,7 +1247,7 @@ tbody tr:last-child td { border-bottom: none; }
           <input type="text" id="r-title-em" placeholder="d'automne">
         </div>
         <div class="form-field">
-          <label>DurÃ©e</label>
+          <label>Durée</label>
           <input type="text" id="r-time" placeholder="5 min">
         </div>
         <div class="form-field">
@@ -1255,35 +1255,35 @@ tbody tr:last-child td { border-bottom: none; }
           <input type="text" id="r-servings" placeholder="4 personnes ou Sans cuisson">
         </div>
         <div class="form-field span2">
-          <label>Accroche <small style="font-weight:400;color:var(--muted)">â€” 1 phrase courte</small></label>
-          <input type="text" id="r-intro" placeholder="Le classique revisitÃ©. Simple, direct, inratable.">
+          <label>Accroche <small style="font-weight:400;color:var(--muted)">— 1 phrase courte</small></label>
+          <input type="text" id="r-intro" placeholder="Le classique revisité. Simple, direct, inratable.">
         </div>
         <div class="form-field span2">
-          <label>Description courte <small style="font-weight:400;color:var(--muted)">â€” pour la carte listing</small></label>
-          <textarea id="r-desc" rows="2" placeholder="Pain au levain grillÃ©, beurre demi-selâ€¦"></textarea>
+          <label>Description courte <small style="font-weight:400;color:var(--muted)">— pour la carte listing</small></label>
+          <textarea id="r-desc" rows="2" placeholder="Pain au levain grillé, beurre demi-sel…"></textarea>
         </div>
         <div class="form-field span2" style="border-top:1px solid var(--line);padding-top:16px;margin-top:4px;">
           <label>Image de la recette</label>
           <input type="hidden" id="r-image">
           <div id="recipe-img-picker" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
           <div class="img-add-row" style="margin-top:8px;">
-            <input type="text" id="r-img-add" placeholder="Chemin vers l'image (assets/â€¦)">
+            <input type="text" id="r-img-add" placeholder="Chemin vers l'image (assets/…)">
             <button type="button" class="btn btn-secondary btn-sm" onclick="addRecipeImg()">Ajouter</button>
           </div>
         </div>
         <div class="form-field span2" style="border-top:1px solid var(--line);padding-top:16px;margin-top:4px;">
-          <label>Produits associÃ©s <small style="font-weight:400;color:var(--muted)">â€” cochez pour afficher dans la recette</small></label>
+          <label>Produits associés <small style="font-weight:400;color:var(--muted)">— cochez pour afficher dans la recette</small></label>
           <div id="recipe-products-picker" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
         </div>
         <div class="form-field span2" style="border-top:1px solid var(--line);padding-top:16px;margin-top:4px;">
-          <label>Ã‰tapes de prÃ©paration</label>
+          <label>Étapes de préparation</label>
           <div id="recipe-steps-list" style="display:flex;flex-direction:column;gap:8px;margin-top:8px;"></div>
-          <button type="button" class="btn btn-secondary btn-sm" style="margin-top:8px;" onclick="addRecipeStep()">+ Ajouter une Ã©tape</button>
+          <button type="button" class="btn btn-secondary btn-sm" style="margin-top:8px;" onclick="addRecipeStep()">+ Ajouter une étape</button>
         </div>
         <div class="form-field">
           <label>Statut</label>
           <select id="r-status">
-            <option value="published">PubliÃ©</option>
+            <option value="published">Publié</option>
             <option value="draft">Brouillon</option>
           </select>
         </div>
@@ -1304,7 +1304,7 @@ tbody tr:last-child td { border-bottom: none; }
 
 <script>
 /* ============================================================
-   CASTANEAS ADMIN â€” JS Engine
+   CASTANEAS ADMIN — JS Engine
    ============================================================ */
 
 /* ---------- Storage keys ---------- */
@@ -1330,7 +1330,7 @@ const SERVER_KEYS = {
 };
 
 /* ---------- Default data ---------- */
-// Aucune donnÃ©e produit/catÃ©gorie/recette hardcodÃ©e.
+// Aucune donnée produit/catégorie/recette hardcodée.
 // Source unique : serveur (save.php / data.php) avec fallback localStorage.
 
 /* ---------- State ---------- */
@@ -1368,7 +1368,7 @@ async function forceSyncToServer() {
   const status = document.getElementById('sync-status');
 
   btn.disabled = true;
-  label.textContent = 'Synchronisationâ€¦';
+  label.textContent = 'Synchronisation…';
   icon.style.animation = 'spin 1s linear infinite';
   status.style.display = 'none';
 
@@ -1390,40 +1390,40 @@ async function forceSyncToServer() {
         headers: { 'Content-Type': 'application/json', 'X-Admin-Token': SERVER_TOKEN },
         body,
       });
-      results.push(r.ok ? `âœ“ ${s}` : `âœ— ${s} (${r.status})`);
+      results.push(r.ok ? `? ${s}` : `? ${s} (${r.status})`);
     } catch (e) {
-      results.push(`âœ— ${s} (rÃ©seau)`);
+      results.push(`? ${s} (réseau)`);
     }
   }
 
-  const allOk = results.every(r => r.startsWith('âœ“'));
+  const allOk = results.every(r => r.startsWith('?'));
   btn.disabled = false;
   icon.style.animation = '';
-  label.textContent = allOk ? 'Sync rÃ©ussie âœ“' : 'Erreurs â€” voir dÃ©tails';
+  label.textContent = allOk ? 'Sync réussie ?' : 'Erreurs — voir détails';
   status.style.display = 'block';
   status.style.color = allOk ? 'var(--vert)' : 'var(--corail)';
-  status.textContent = results.join(' Â· ');
+  status.textContent = results.join(' · ');
   setTimeout(() => { label.textContent = 'Forcer sync serveur'; status.style.display = 'none'; }, 5000);
 
   if (allOk) {
-    // VÃ©rifie ce que le serveur a vraiment aprÃ¨s la sync
+    // Vérifie ce que le serveur a vraiment après la sync
     try {
       const checks = await Promise.all(['products','categories','recipes'].map(async s => {
         const r = await fetch('/save.php?key=' + s, { headers: { 'X-Admin-Token': SERVER_TOKEN } });
         if (!r.ok) return `${s}:?`;
         const d = await r.json();
-        const count = Array.isArray(d) ? d.length : (d ? 'âœ“' : '0');
+        const count = Array.isArray(d) ? d.length : (d ? '?' : '0');
         return `${s}:${count}`;
       }));
-      toast('Serveur mis Ã  jour âœ“ â€” ' + checks.join(' Â· '), 'success');
+      toast('Serveur mis à jour ? — ' + checks.join(' · '), 'success');
     } catch(e) {
-      toast('DonnÃ©es synchronisÃ©es vers le serveur âœ“', 'success');
+      toast('Données synchronisées vers le serveur ?', 'success');
     }
-  } else toast('âš ï¸ Sync partielle â€” voir sidebar', 'error');
+  } else toast('?? Sync partielle — voir sidebar', 'error');
 }
 
 async function init() {
-  // RÃ©cupÃ¨re les donnÃ©es du serveur avant tout (fallback localStorage si hors ligne)
+  // Récupère les données du serveur avant tout (fallback localStorage si hors ligne)
   await serverLoadAll();
 
   // Load from server (already synced by serverLoadAll) or localStorage
@@ -1436,7 +1436,7 @@ async function init() {
 
   const creds = load(KEYS.admin);
   if (!creds) {
-    document.getElementById('guard-error').textContent = 'PremiÃ¨re connexion â€” choisissez vos identifiants et enregistrez-les.';
+    document.getElementById('guard-error').textContent = 'Première connexion — choisissez vos identifiants et enregistrez-les.';
   }
 
   // Check session
@@ -1447,14 +1447,14 @@ async function init() {
 }
 
 async function serverLoadAll() {
-  // ClÃ©s pour lesquelles le localStorage de l'admin fait autoritÃ© (produits, catÃ©gories, recettes, homepage)
+  // Clés pour lesquelles le localStorage de l'admin fait autorité (produits, catégories, recettes, homepage)
   const pushKeys = [
     { s: 'products',   l: KEYS.products },
     { s: 'categories', l: KEYS.categories },
     { s: 'recipes',    l: KEYS.recipes },
     { s: 'homepage',   l: KEYS.homepage },
   ];
-  // ClÃ©s pour lesquelles le serveur fait autoritÃ© (commandes : peuvent venir de n'importe quel PC)
+  // Clés pour lesquelles le serveur fait autorité (commandes : peuvent venir de n'importe quel PC)
   const pullKeys = [
     { s: 'orders', l: KEYS.orders },
   ];
@@ -1463,19 +1463,19 @@ async function serverLoadAll() {
   try {
     await Promise.race([
       Promise.all([
-        // Produits / catÃ©gories / recettes / homepage : localStorage â†’ serveur si dispo, sinon pull
+        // Produits / catégories / recettes / homepage : localStorage ? serveur si dispo, sinon pull
         ...pushKeys.map(async ({ s, l }) => {
           try {
             const local = localStorage.getItem(l);
             if (local !== null) {
-              // L'admin a des donnÃ©es en local â†’ elles font autoritÃ© â†’ pousse vers le serveur
+              // L'admin a des données en local ? elles font autorité ? pousse vers le serveur
               await fetch('/save.php?key=' + s, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-Admin-Token': SERVER_TOKEN },
                 body: local,
               });
             } else {
-              // localStorage vide (nouveau PC / navigation privÃ©e) â†’ tire du serveur
+              // localStorage vide (nouveau PC / navigation privée) ? tire du serveur
               const r = await fetch('/save.php?key=' + s, {
                 headers: { 'X-Admin-Token': SERVER_TOKEN },
               });
@@ -1484,9 +1484,9 @@ async function serverLoadAll() {
                 if (data !== null) localStorage.setItem(l, JSON.stringify(data));
               }
             }
-          } catch (e) { /* rÃ©seau indispo */ }
+          } catch (e) { /* réseau indispo */ }
         }),
-        // Commandes : le serveur fait toujours autoritÃ©
+        // Commandes : le serveur fait toujours autorité
         ...pullKeys.map(async ({ s, l }) => {
           try {
             const r = await fetch('/save.php?key=' + s, {
@@ -1496,7 +1496,7 @@ async function serverLoadAll() {
               const data = await r.json();
               if (data !== null) localStorage.setItem(l, JSON.stringify(data));
             }
-          } catch (e) { /* rÃ©seau indispo */ }
+          } catch (e) { /* réseau indispo */ }
         }),
       ]),
       timeout,
@@ -1513,9 +1513,9 @@ document.getElementById('guard-form').addEventListener('submit', async function(
   const hashed = await hashAdmin(pass);
 
   if (!creds) {
-    // PremiÃ¨re connexion : enregistrer les identifiants
+    // Première connexion : enregistrer les identifiants
     if (!user || pass.length < 8) {
-      document.getElementById('guard-error').textContent = 'Choisissez un nom d\'utilisateur et un mot de passe (8 caractÃ¨res min).';
+      document.getElementById('guard-error').textContent = 'Choisissez un nom d\'utilisateur et un mot de passe (8 caractères min).';
       return;
     }
     save(KEYS.admin, { user, pass: hashed });
@@ -1548,12 +1548,12 @@ function logout() {
 const panelMeta = {
   dashboard:  { title: 'Vue d\'ensemble',        actions: '' },
   products:   { title: 'Produits',               actions: '<button class="btn btn-primary" onclick="openProductModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nouveau produit</button>' },
-  categories: { title: 'CatÃ©gories',             actions: '<button class="btn btn-primary" onclick="openCatModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nouvelle catÃ©gorie</button>' },
+  categories: { title: 'Catégories',             actions: '<button class="btn btn-primary" onclick="openCatModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nouvelle catégorie</button>' },
   orders:     { title: 'Commandes',              actions: '' },
   recipes:    { title: 'Recettes',               actions: '<button class="btn btn-primary" onclick="openRecipeModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nouvelle recette</button>' },
   homepage:   { title: 'Page d\'accueil',        actions: '' },
-  pages:      { title: 'Pages gÃ©nÃ©rÃ©es',         actions: '' },
-  settings:   { title: 'ParamÃ¨tres',             actions: '' },
+  pages:      { title: 'Pages générées',         actions: '' },
+  settings:   { title: 'Paramètres',             actions: '' },
 };
 
 function switchPanel(el) {
@@ -1593,12 +1593,12 @@ function updateBadges() {
 /* ---------- Dashboard ---------- */
 function renderDashboard() {
   document.getElementById('stat-products').textContent = state.products.length;
-  document.getElementById('stat-products-cats').textContent = state.categories.filter(c => c.status === 'active').length + ' catÃ©gories actives';
+  document.getElementById('stat-products-cats').textContent = state.categories.filter(c => c.status === 'active').length + ' catégories actives';
   document.getElementById('stat-cats').textContent = state.categories.length;
   document.getElementById('stat-cats-sub').textContent = state.categories.filter(c => c.header).length + ' dans le header';
   document.getElementById('stat-orders').textContent = state.orders.length;
   const rev = state.orders.reduce((a, o) => a + o.total, 0);
-  document.getElementById('stat-revenue').textContent = rev.toFixed(2).replace('.', ',') + 'â‚¬';
+  document.getElementById('stat-revenue').textContent = rev.toFixed(2).replace('.', ',') + '€';
 
   const tbody = document.getElementById('dashboard-orders-tbody');
   if (!state.orders.length) {
@@ -1608,9 +1608,9 @@ function renderDashboard() {
   tbody.innerHTML = [...state.orders].reverse().slice(0, 5).map(o => `
     <tr>
       <td><span style="font-weight:700;font-family:monospace;">${o.id}</span></td>
-      <td>${o.items.map(i => i.name + ' Ã—' + i.qty).join(', ')}</td>
+      <td>${o.items.map(i => i.name + ' ×' + i.qty).join(', ')}</td>
       <td>${o.customer}</td>
-      <td class="td-price">${o.total.toFixed(2).replace('.', ',')}â‚¬</td>
+      <td class="td-price">${o.total.toFixed(2).replace('.', ',')}€</td>
       <td>${statusBadge(o.status)}</td>
     </tr>
   `).join('');
@@ -1623,7 +1623,7 @@ function renderProducts(filter = '') {
   if (filter) list = list.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
 
   if (!list.length) {
-    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg><h3>Aucun produit</h3><p>CrÃ©ez votre premier produit</p><button class="btn btn-primary" onclick="openProductModal()">+ Nouveau produit</button></div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg><h3>Aucun produit</h3><p>Créez votre premier produit</p><button class="btn btn-primary" onclick="openProductModal()">+ Nouveau produit</button></div></td></tr>';
     return;
   }
   tbody.innerHTML = list.map(p => {
@@ -1633,12 +1633,12 @@ function renderProducts(filter = '') {
       <td><img class="td-img" src="${p.image || 'assets/product-pate-tartiner.png'}" alt="" onerror="this.onerror=null;this.src='assets/product-pate-tartiner.png'"></td>
       <td>
         <div class="td-name">${p.name}</div>
-        <div class="td-sub">${p.weight || ''} ${p.badge ? 'Â· <span style="color:var(--corail)">' + p.badge + '</span>' : ''}</div>
+        <div class="td-sub">${p.weight || ''} ${p.badge ? '· <span style="color:var(--corail)">' + p.badge + '</span>' : ''}</div>
       </td>
-      <td>${cat ? '<span class="badge badge-gray">' + cat.emoji + ' ' + cat.name + '</span>' : '<span class="badge badge-gray">â€”</span>'}</td>
-      <td class="td-price">${p.price.toFixed(2).replace('.', ',')}â‚¬</td>
+      <td>${cat ? '<span class="badge badge-gray">' + cat.emoji + ' ' + cat.name + '</span>' : '<span class="badge badge-gray">—</span>'}</td>
+      <td class="td-price">${p.price.toFixed(2).replace('.', ',')}€</td>
       <td>${stockBadge}</td>
-      <td>${p.status === 'active' ? '<span class="badge badge-green">PubliÃ©</span>' : '<span class="badge badge-gray">Brouillon</span>'}</td>
+      <td>${p.status === 'active' ? '<span class="badge badge-green">Publié</span>' : '<span class="badge badge-gray">Brouillon</span>'}</td>
       <td><div class="td-actions">
         <button class="btn-icon" onclick="editProduct('${p.id}')" title="Modifier">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -1657,7 +1657,7 @@ function filterProducts(v) { renderProducts(v); }
 function renderCategories() {
   const grid = document.getElementById('cat-grid');
   if (!state.categories.length) {
-    grid.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><h3>Aucune catÃ©gorie</h3><p>CrÃ©ez votre premiÃ¨re catÃ©gorie pour gÃ©nÃ©rer une page</p><button class="btn btn-primary" onclick="openCatModal()">+ Nouvelle catÃ©gorie</button></div>';
+    grid.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><h3>Aucune catégorie</h3><p>Créez votre première catégorie pour générer une page</p><button class="btn btn-primary" onclick="openCatModal()">+ Nouvelle catégorie</button></div>';
     return;
   }
   grid.innerHTML = state.categories.map(c => {
@@ -1669,7 +1669,7 @@ function renderCategories() {
       </div>
       <div class="cat-card-body">
         <h3 class="cat-card-title">${c.name}</h3>
-        <p class="cat-card-meta">${count} produit${count > 1 ? 's' : ''} Â· ${c.header ? 'Visible dans le header' : 'Hors navigation'}</p>
+        <p class="cat-card-meta">${count} produit${count > 1 ? 's' : ''} · ${c.header ? 'Visible dans le header' : 'Hors navigation'}</p>
         <span class="cat-card-slug">${c.slug}.html</span>
         <div class="cat-card-actions">
           <button class="btn btn-green btn-sm" onclick="editCat('${c.id}')">
@@ -1678,7 +1678,7 @@ function renderCategories() {
           </button>
           <button class="btn btn-secondary btn-sm" onclick="previewCatPage('${c.id}')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            AperÃ§u
+            Aperçu
           </button>
           <button class="btn btn-danger btn-sm" onclick="deleteCat('${c.id}')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
@@ -1707,14 +1707,14 @@ function renderOrders(filter = '') {
         <div style="font-weight:700;">${o.customer}</div>
         <div style="font-size:12px;color:var(--muted);">${o.email}</div>
       </td>
-      <td class="td-price">${o.total.toFixed(2).replace('.', ',')}â‚¬</td>
+      <td class="td-price">${o.total.toFixed(2).replace('.', ',')}€</td>
       <td>
         <select onchange="updateOrderStatus('${o.id}', this.value)" onclick="event.stopPropagation()" style="font-size:12px;font-weight:700;padding:4px 8px;border-radius:999px;border:none;background:transparent;cursor:pointer;">
-          <option value="pending" ${o.status==='pending'?'selected':''}>â³ En attente</option>
-          <option value="processing" ${o.status==='processing'?'selected':''}>ğŸ”„ En prÃ©paration</option>
-          <option value="shipped" ${o.status==='shipped'?'selected':''}>ğŸ“¦ ExpÃ©diÃ©e</option>
-          <option value="delivered" ${o.status==='delivered'?'selected':''}>âœ… LivrÃ©e</option>
-          <option value="cancelled" ${o.status==='cancelled'?'selected':''}>âŒ AnnulÃ©e</option>
+          <option value="pending" ${o.status==='pending'?'selected':''}>? En attente</option>
+          <option value="processing" ${o.status==='processing'?'selected':''}>?? En préparation</option>
+          <option value="shipped" ${o.status==='shipped'?'selected':''}>?? Expédiée</option>
+          <option value="delivered" ${o.status==='delivered'?'selected':''}>? Livrée</option>
+          <option value="cancelled" ${o.status==='cancelled'?'selected':''}>? Annulée</option>
         </select>
       </td>
       <td><div class="td-actions">
@@ -1727,8 +1727,8 @@ function renderOrders(filter = '') {
       <td colspan="6"><div class="order-expand-inner">
         ${o.items.map(i => `<div class="order-item">
           <img src="${i.image}" alt="" onerror="this.onerror=null;this.src='assets/product-pate-tartiner.png'">
-          <div><div class="order-item-name">${i.name}</div><div class="order-item-meta">QtÃ© : ${i.qty}</div></div>
-          <div class="order-item-price">${(i.price * i.qty).toFixed(2).replace('.', ',')}â‚¬</div>
+          <div><div class="order-item-name">${i.name}</div><div class="order-item-meta">Qté : ${i.qty}</div></div>
+          <div class="order-item-price">${(i.price * i.qty).toFixed(2).replace('.', ',')}€</div>
         </div>`).join('')}
       </div></td>
     </tr>
@@ -1747,13 +1747,13 @@ function filterOrders(v) { renderOrders(v); }
 function deleteOrder(id) {
   if (!confirm('Supprimer cette commande ?')) return;
   state.orders = state.orders.filter(o => o.id !== id);
-  save(KEYS.orders, state.orders); renderOrders(); renderDashboard(); updateBadges(); toast('Commande supprimÃ©e');
+  save(KEYS.orders, state.orders); renderOrders(); renderDashboard(); updateBadges(); toast('Commande supprimée');
 }
 
 function generateFakeOrder() {
   const names = ['Alice Bernard','Luc Moreau','Clara Petit','Hugo Roux','Emma Simon','Paul Girard'];
   const products = state.products.filter(p => p.status === 'active');
-  if (!products.length) { toast('CrÃ©ez des produits d\'abord', 'error'); return; }
+  if (!products.length) { toast('Créez des produits d\'abord', 'error'); return; }
   const n = Math.floor(Math.random() * 2) + 1;
   const items = [];
   for (let i = 0; i < n; i++) {
@@ -1773,11 +1773,11 @@ function generateFakeOrder() {
   state.orders.push(order);
   save(KEYS.orders, state.orders);
   renderOrders(); renderDashboard(); updateBadges();
-  toast('Commande simulÃ©e ajoutÃ©e âœ“', 'success');
+  toast('Commande simulée ajoutée ?', 'success');
 }
 
 function statusBadge(status) {
-  const map = { pending: '<span class="badge badge-orange">â³ En attente</span>', processing: '<span class="badge badge-gray">ğŸ”„ En prÃ©p.</span>', shipped: '<span class="badge badge-green">ğŸ“¦ ExpÃ©diÃ©e</span>', delivered: '<span class="badge badge-green">âœ… LivrÃ©e</span>', cancelled: '<span class="badge badge-red">âŒ AnnulÃ©e</span>' };
+  const map = { pending: '<span class="badge badge-orange">? En attente</span>', processing: '<span class="badge badge-gray">?? En prép.</span>', shipped: '<span class="badge badge-green">?? Expédiée</span>', delivered: '<span class="badge badge-green">? Livrée</span>', cancelled: '<span class="badge badge-red">? Annulée</span>' };
   return map[status] || status;
 }
 
@@ -1785,7 +1785,7 @@ function statusBadge(status) {
 function renderPages() {
   const tbody = document.getElementById('pages-tbody');
   if (!state.categories.length) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted);">Aucune catÃ©gorie crÃ©Ã©e</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted);">Aucune catégorie créée</td></tr>';
     return;
   }
   tbody.innerHTML = state.categories.map(c => {
@@ -1795,14 +1795,14 @@ function renderPages() {
       <td><span style="font-family:monospace;font-size:12px;">${c.slug}.html</span></td>
       <td><span class="badge badge-gray">${c.slug}</span></td>
       <td>${count} produit${count > 1 ? 's' : ''}</td>
-      <td>${c.header ? '<span class="page-live-badge">Visible</span>' : '<span class="badge badge-gray">MasquÃ©</span>'}</td>
+      <td>${c.header ? '<span class="page-live-badge">Visible</span>' : '<span class="badge badge-gray">Masqué</span>'}</td>
       <td><div class="td-actions">
         <button class="btn btn-green btn-sm" onclick="generateCatPage('${c.id}')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          GÃ©nÃ©rer HTML
+          Générer HTML
         </button>
         <button class="btn btn-secondary btn-sm" onclick="previewCatPage('${c.id}')">
-          AperÃ§u
+          Aperçu
         </button>
       </div></td>
     </tr>`;
@@ -1912,16 +1912,16 @@ function saveProduct(e) {
   save(KEYS.products, state.products);
   closeModal('modal-product');
   renderProducts(); renderDashboard(); updateBadges();
-  toast((editingProduct ? 'Produit mis Ã  jour' : 'Produit crÃ©Ã©') + ' âœ“', 'success');
+  toast((editingProduct ? 'Produit mis à jour' : 'Produit créé') + ' ?', 'success');
   generateAllCatPages();
 }
 
 function deleteProduct(id) {
-  if (!confirm('Supprimer ce produit dÃ©finitivement ?')) return;
+  if (!confirm('Supprimer ce produit définitivement ?')) return;
   state.products = state.products.filter(p => p.id !== id);
   save(KEYS.products, state.products);
   renderProducts(); renderDashboard(); updateBadges();
-  toast('Produit supprimÃ©');
+  toast('Produit supprimé');
   generateAllCatPages();
 }
 
@@ -1937,7 +1937,7 @@ function renderImagePickers() {
     const clickFn = isMain ? 'pickImgMain(this)' : 'pickImgExtra(this)';
     const esc = src.replace(/"/g, '&quot;').replace(/'/g, "\\'");
     const flag = isMain ? 'true' : 'false';
-    return `<div class="img-slot"><img class="img-preview${cls}" data-src="${src}" src="${src}" alt="" onerror="this.onerror=null;this.src='assets/product-pate-tartiner.png'" onclick="${clickFn}"><button type="button" class="img-remove" onclick="removeImgFromCatalog('${esc}',${flag},event)">Ã—</button></div>`;
+    return `<div class="img-slot"><img class="img-preview${cls}" data-src="${src}" src="${src}" alt="" onerror="this.onerror=null;this.src='assets/product-pate-tartiner.png'" onclick="${clickFn}"><button type="button" class="img-remove" onclick="removeImgFromCatalog('${esc}',${flag},event)">×</button></div>`;
   };
   mainPicker.innerHTML  = state.imageCatalogMain.map(s  => makeSlot(s, true)).join('');
   extraPicker.innerHTML = state.imageCatalogExtra.map(s => makeSlot(s, false)).join('');
@@ -1987,16 +1987,16 @@ function openCatModal(id = null) {
   document.getElementById('cat-form').reset();
   document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
   document.querySelectorAll('.color-swatch').forEach(b => b.classList.remove('selected'));
-  document.querySelector('.emoji-btn[data-emoji="ğŸŒ°"]').classList.add('selected');
+  document.querySelector('.emoji-btn[data-emoji="??"]').classList.add('selected');
   document.querySelector('.color-swatch[data-color="#F2E8D9"]').classList.add('selected');
-  document.getElementById('c-emoji').value = 'ğŸŒ°';
+  document.getElementById('c-emoji').value = '??';
   document.getElementById('c-color').value = '#F2E8D9';
   document.getElementById('c-banner').value = '';
 
   if (id) {
     const c = state.categories.find(x => x.id === id);
     if (!c) return;
-    document.getElementById('modal-cat-title').textContent = 'Modifier la catÃ©gorie';
+    document.getElementById('modal-cat-title').textContent = 'Modifier la catégorie';
     document.getElementById('c-id').value = c.id;
     document.getElementById('c-name').value = c.name;
     document.getElementById('c-slug').value = c.slug;
@@ -2013,7 +2013,7 @@ function openCatModal(id = null) {
       b.classList.toggle('selected', b.dataset.color === c.color);
     });
   } else {
-    document.getElementById('modal-cat-title').textContent = 'Nouvelle catÃ©gorie';
+    document.getElementById('modal-cat-title').textContent = 'Nouvelle catégorie';
   }
   renderCatBannerPicker();
   openModal('modal-cat');
@@ -2116,7 +2116,7 @@ function saveCat(e) {
   save(KEYS.categories, state.categories);
   closeModal('modal-cat');
   renderCategories(); updateBadges();
-  toast((editingCat ? 'CatÃ©gorie mise Ã  jour' : 'CatÃ©gorie crÃ©Ã©e + page gÃ©nÃ©rÃ©e') + ' âœ“', 'success');
+  toast((editingCat ? 'Catégorie mise à jour' : 'Catégorie créée + page générée') + ' ?', 'success');
   generateAllCatPages();
   updateAllNavBars();
 }
@@ -2125,11 +2125,11 @@ function deleteCat(id) {
   const cat = state.categories.find(c => c.id === id);
   if (!cat) return;
   const count = state.products.filter(p => p.category === id).length;
-  if (!confirm(`Supprimer la catÃ©gorie "${cat.name}" ?\n\n${count > 0 ? count + ' produit(s) seront sans catÃ©gorie.\n\n' : ''}Cette action supprimera aussi la page ${cat.slug}.html du header.`)) return;
+  if (!confirm(`Supprimer la catégorie "${cat.name}" ?\n\n${count > 0 ? count + ' produit(s) seront sans catégorie.\n\n' : ''}Cette action supprimera aussi la page ${cat.slug}.html du header.`)) return;
   state.categories = state.categories.filter(c => c.id !== id);
   save(KEYS.categories, state.categories);
   renderCategories(); renderProducts(); updateBadges();
-  toast('CatÃ©gorie supprimÃ©e + navigation mise Ã  jour');
+  toast('Catégorie supprimée + navigation mise à jour');
   generateAllCatPages();
   updateAllNavBars();
 }
@@ -2141,11 +2141,11 @@ function generateCatPage(catId) {
   const products = state.products.filter(p => p.category === catId && p.status === 'active');
   const html = buildCatPageHTML(cat, products);
   downloadHTML(html, cat.slug + '.html');
-  toast(`Page ${cat.slug}.html tÃ©lÃ©chargÃ©e âœ“`, 'success');
+  toast(`Page ${cat.slug}.html téléchargée ?`, 'success');
 }
 
 function generateAllCatPages() {
-  // Auto-generates and "stores" the nav definition â€” actual download is on demand
+  // Auto-generates and "stores" the nav definition — actual download is on demand
   // Also updates localStorage so front-end pages can read dynamic nav
   const nav = state.categories.filter(c => c.status === 'active' && c.header).map(c => ({
     name: c.name, slug: c.slug, emoji: c.emoji
@@ -2176,7 +2176,7 @@ function buildCatPageHTML(cat, products) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>${cat.name} Â· Castaneas</title>
+<title>${cat.name} · Castaneas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -2185,7 +2185,7 @@ function buildCatPageHTML(cat, products) {
 </head>
 <body>
 
-<div class="promo-bar pill">Livraison offerte dÃ¨s 40â‚¬ d'achat â€” rÃ©colte 2025 disponible ğŸŒ°</div>
+<div class="promo-bar pill">Livraison offerte dès 40€ d'achat — récolte 2025 disponible ??</div>
 
 <header class="navbar pill-nav">
   <div class="nav-inner">
@@ -2207,7 +2207,7 @@ function buildCatPageHTML(cat, products) {
 
 <nav class="breadcrumb" aria-label="Fil d'ariane">
   <a href="index.html">Accueil</a>
-  <span class="sep">â€º</span>
+  <span class="sep">›</span>
   <span class="current" id="bc-name">${cat.name}</span>
 </nav>
 
@@ -2217,11 +2217,11 @@ function buildCatPageHTML(cat, products) {
     <div class="cat-banner__content">
       <div class="cat-banner__eyebrow">La collection</div>
       <h1 class="cat-banner__title" id="cat-title">${cat.name}</h1>
-      <p class="cat-banner__desc" id="cat-desc">${cat.desc || 'FabriquÃ© Ã  la main, en petites quantitÃ©s'}</p>
+      <p class="cat-banner__desc" id="cat-desc">${cat.desc || 'Fabriqué à la main, en petites quantités'}</p>
     </div>
   </div>
   <div class="cat-toolbar">
-    <div><strong id="result-count">â€”</strong> Â· rÃ©colte d'automne</div>
+    <div><strong id="result-count">—</strong> · récolte d'automne</div>
     <button class="sort-select" type="button" id="sort-btn" onclick="toggleSort()">
       <span id="sort-label">Trier par prix</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -2235,13 +2235,13 @@ function buildCatPageHTML(cat, products) {
     <div class="footer-grid">
       <div>
         <div class="footer-brand"><img src="assets/castaneas-logo.svg" alt="Castaneas" class="footer-brand-logo"></div>
-        <p>CrÃ¨mes de chÃ¢taigne et pÃ¢tes de noisette faites Ã  la main en Tarn-et-Garonne, en petites quantitÃ©s, depuis 2018.</p>
+        <p>Crèmes de châtaigne et pâtes de noisette faites à la main en Tarn-et-Garonne, en petites quantités, depuis 2018.</p>
       </div>
-      <div><h4>Boutique</h4><ul><li><a href="creme-de-chataigne.html">CrÃ¨mes de chÃ¢taigne</a></li><li><a href="coffrets.html">Coffrets</a></li></ul></div>
+      <div><h4>Boutique</h4><ul><li><a href="creme-de-chataigne.html">Crèmes de châtaigne</a></li><li><a href="coffrets.html">Coffrets</a></li></ul></div>
       <div><h4>La maison</h4><ul><li><a href="index.html#histoire">Notre histoire</a></li><li><a href="recettes.html">Recettes</a></li></ul></div>
       <div><h4>Aide</h4><ul><li><a href="#">Livraison &amp; retours</a></li><li><a href="#">Nous contacter</a></li><li><a href="cgv.html">CGV</a></li></ul></div>
     </div>
-    <div class="footer-bottom"><div>Â© 2026 Castaneas Â· Albias, Tarn-et-Garonne (82)</div><div>Fait Ã  la main, par petites fournÃ©es ğŸŒ°</div></div>
+    <div class="footer-bottom"><div>© 2026 Castaneas · Albias, Tarn-et-Garonne (82)</div><div>Fait à la main, par petites fournées ??</div></div>
   </div>
 </footer>
 
@@ -2250,8 +2250,8 @@ function buildCatPageHTML(cat, products) {
   <div class="cart-head"><h3>Votre panier</h3><button class="cart-close" data-cart-close aria-label="Fermer le panier"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/></svg></button></div>
   <div class="cart-body" data-cart-body></div>
   <div class="cart-foot" data-cart-foot>
-    <div class="cart-total-row"><span>Sous-total</span><span data-cart-total>0,00â‚¬</span></div>
-    <p class="cart-shipping-note">ğŸšš Livraison offerte dÃ¨s 40â‚¬ d'achat</p>
+    <div class="cart-total-row"><span>Sous-total</span><span data-cart-total>0,00€</span></div>
+    <p class="cart-shipping-note">?? Livraison offerte dès 40€ d'achat</p>
     <a href="confirmation.html" class="cart-checkout-btn">Passer commande<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"/></svg></a>
   </div>
 </aside>
@@ -2280,11 +2280,11 @@ async function saveSettings(e) {
   const updated = { user: user || current.user, pass: pass ? await hashAdmin(pass) : current.pass };
   save(KEYS.admin, updated);
   document.getElementById('setting-pass').value = '';
-  toast('ParamÃ¨tres enregistrÃ©s âœ“', 'success');
+  toast('Paramètres enregistrés ?', 'success');
 }
 
 function confirmReset() {
-  if (!confirm('RÃ©initialiser TOUTES les donnÃ©es ? Cette action est irrÃ©versible.')) return;
+  if (!confirm('Réinitialiser TOUTES les données ? Cette action est irréversible.')) return;
   [KEYS.products, KEYS.categories, KEYS.orders].forEach(k => localStorage.removeItem(k));
   location.reload();
 }
@@ -2311,7 +2311,7 @@ function renderRecipes() {
   const tbody = document.getElementById('recipes-tbody');
   if (!tbody) return;
   if (!state.recipes.length) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted);">Aucune recette â€” crÃ©ez la premiÃ¨re !</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted);">Aucune recette — créez la première !</td></tr>';
     return;
   }
   tbody.innerHTML = state.recipes.map(r => {
@@ -2320,13 +2320,13 @@ function renderRecipes() {
       return p ? `<span style="background:var(--cream-soft);padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700;">${p.name}</span>` : '';
     }).join(' ');
     const statusLabel = r.status === 'published'
-      ? '<span class="badge badge-green">PubliÃ©</span>'
+      ? '<span class="badge badge-green">Publié</span>'
       : '<span class="badge badge-gray">Brouillon</span>';
     return `<tr>
       <td><img src="${r.image || 'assets/product-pate-tartiner.png'}" onerror="this.onerror=null;this.src='assets/product-pate-tartiner.png'" style="width:52px;height:52px;object-fit:cover;border-radius:10px;"></td>
       <td style="font-weight:700;">${r.title}${r.titleEm ? ' <em>' + r.titleEm + '</em>' : ''}</td>
-      <td>${r.time || 'â€”'}</td>
-      <td>${r.servings || 'â€”'}</td>
+      <td>${r.time || '—'}</td>
+      <td>${r.servings || '—'}</td>
       <td style="display:flex;flex-wrap:wrap;gap:4px;">${prods || '<span style="color:var(--muted)">Aucun</span>'}</td>
       <td>${statusLabel}</td>
       <td>
@@ -2423,14 +2423,14 @@ function renderRecipeProductsPicker(selected) {
 function renderRecipeSteps() {
   const list = document.getElementById('recipe-steps-list');
   if (!recipeSteps.length) {
-    list.innerHTML = '<em style="color:var(--muted);font-size:13px;">Aucune Ã©tape. Cliquez sur Â« + Ajouter une Ã©tape Â».</em>';
+    list.innerHTML = '<em style="color:var(--muted);font-size:13px;">Aucune étape. Cliquez sur « + Ajouter une étape ».</em>';
     return;
   }
   list.innerHTML = recipeSteps.map((s, i) => `
     <div style="display:grid;grid-template-columns:36px 1fr 36px;gap:8px;align-items:center;">
       <span style="background:var(--accent-cocoa);color:#fff;border-radius:50%;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;justify-self:center;">${i + 1}</span>
-      <input type="text" value="${s.text.replace(/"/g, '&quot;')}" oninput="recipeSteps[${i}].text=this.value" style="margin:0;" placeholder="DÃ©crivez cette Ã©tapeâ€¦">
-      <button type="button" onclick="removeRecipeStep(${i})" style="background:none;border:none;color:var(--corail);cursor:pointer;font-size:18px;font-weight:700;padding:0;line-height:1;">Ã—</button>
+      <input type="text" value="${s.text.replace(/"/g, '&quot;')}" oninput="recipeSteps[${i}].text=this.value" style="margin:0;" placeholder="Décrivez cette étape…">
+      <button type="button" onclick="removeRecipeStep(${i})" style="background:none;border:none;color:var(--corail);cursor:pointer;font-size:18px;font-weight:700;padding:0;line-height:1;">×</button>
     </div>`).join('');
 }
 
@@ -2468,15 +2468,15 @@ function saveRecipe(e) {
   save(KEYS.recipes, state.recipes);
   closeModal('modal-recipe');
   renderRecipes(); updateBadges();
-  toast((editingRecipe ? 'Recette mise Ã  jour' : 'Recette crÃ©Ã©e') + ' âœ“', 'success');
+  toast((editingRecipe ? 'Recette mise à jour' : 'Recette créée') + ' ?', 'success');
 }
 
 function deleteRecipe(id) {
-  if (!confirm('Supprimer cette recette dÃ©finitivement ?')) return;
+  if (!confirm('Supprimer cette recette définitivement ?')) return;
   state.recipes = state.recipes.filter(r => r.id !== id);
   save(KEYS.recipes, state.recipes);
   renderRecipes(); updateBadges();
-  toast('Recette supprimÃ©e');
+  toast('Recette supprimée');
 }
 
 /* ---------- Homepage image pickers ---------- */
@@ -2534,7 +2534,7 @@ function hpSetVal(id, val) {
 }
 
 function renderHomepage() {
-  const catOpts = '<option value="">â€” Aucune â€”</option>'
+  const catOpts = '<option value="">— Aucune —</option>'
     + state.categories.filter(c => c.status === 'active').map(c =>
         `<option value="${c.id}">${c.emoji ? c.emoji + ' ' : ''}${c.name}</option>`
       ).join('');
@@ -2543,9 +2543,9 @@ function renderHomepage() {
     if (el) el.innerHTML = catOpts;
   });
 
-  const prodOpts = '<option value="">â€” Aucun â€”</option>'
+  const prodOpts = '<option value="">— Aucun —</option>'
     + state.products.filter(p => p.status === 'active').map(p =>
-        `<option value="${p.id}">${p.name}${p.weight ? ' Â· ' + p.weight : ''}</option>`
+        `<option value="${p.id}">${p.name}${p.weight ? ' · ' + p.weight : ''}</option>`
       ).join('');
   ['hp-prod-1', 'hp-prod-2', 'hp-prod-3', 'hp-prod-4'].forEach(id => {
     const el = document.getElementById(id);
@@ -2557,11 +2557,11 @@ function renderHomepage() {
   const h = cfg.hero || {};
   hpSetVal('hp-hero-image', h.image || '');
   renderHpImgPicker('hero');
-  hpSetVal('hp-hero-eyebrow',  h.eyebrow  ?? 'Maison Castaneas Â· Quercy Â· Tarn-et-Garonne');
-  hpSetVal('hp-hero-title',    h.title    ?? 'ChÃ¢taignes et noisettes,');
-  hpSetVal('hp-hero-title-em', h.titleEm  ?? 'faites Ã  la main.');
-  hpSetVal('hp-hero-subtitle', h.subtitle ?? 'CrÃ¨mes, pÃ¢tes Ã  tartiner et huiles, cuisinÃ©es en petites fournÃ©es Ã  Albias depuis 2018.');
-  hpSetVal('hp-hero-btn1-text',h.btn1Text ?? 'DÃ©couvrir la boutique');
+  hpSetVal('hp-hero-eyebrow',  h.eyebrow  ?? 'Maison Castaneas · Quercy · Tarn-et-Garonne');
+  hpSetVal('hp-hero-title',    h.title    ?? 'Châtaignes et noisettes,');
+  hpSetVal('hp-hero-title-em', h.titleEm  ?? 'faites à la main.');
+  hpSetVal('hp-hero-subtitle', h.subtitle ?? 'Crèmes, pâtes à tartiner et huiles, cuisinées en petites fournées à Albias depuis 2018.');
+  hpSetVal('hp-hero-btn1-text',h.btn1Text ?? 'Découvrir la boutique');
   hpSetVal('hp-hero-btn1-href',h.btn1Href ?? 'creme-de-chataigne.html');
   hpSetVal('hp-hero-btn2-text',h.btn2Text ?? 'Notre histoire');
   hpSetVal('hp-hero-btn2-href',h.btn2Href ?? '#histoire');
@@ -2569,7 +2569,7 @@ function renderHomepage() {
   const cs = cfg.catsSection || {};
   hpSetVal('hp-cats-eyebrow',  cs.eyebrow ?? 'Nos collections');
   hpSetVal('hp-cats-title',    cs.title   ?? 'Deux fruits du verger,');
-  hpSetVal('hp-cats-title-em', cs.titleEm ?? 'un mÃªme chaudron de cuivre.');
+  hpSetVal('hp-cats-title-em', cs.titleEm ?? 'un même chaudron de cuivre.');
   const ch = cfg.catsHighlight || [];
   ['hp-cat-1','hp-cat-2','hp-cat-3'].forEach((id, i) => {
     const el = document.getElementById(id);
@@ -2579,8 +2579,8 @@ function renderHomepage() {
   const bs = cfg.bsSection || {};
   hpSetVal('hp-bs-eyebrow',  bs.eyebrow ?? 'Nos incontournables');
   hpSetVal('hp-bs-title',    bs.title   ?? 'Ce que');
-  hpSetVal('hp-bs-title-em', bs.titleEm ?? 'vous prÃ©fÃ©rez.');
-  hpSetVal('hp-bs-lede',     bs.lede    ?? 'Une sÃ©lection des pots les plus commandÃ©s cette saison â€” prÃ©parÃ©s Ã  la ferme, en Tarn-et-Garonne.');
+  hpSetVal('hp-bs-title-em', bs.titleEm ?? 'vous préférez.');
+  hpSetVal('hp-bs-lede',     bs.lede    ?? 'Une sélection des pots les plus commandés cette saison — préparés à la ferme, en Tarn-et-Garonne.');
   const ph = cfg.productsHighlight || [];
   ['hp-prod-1','hp-prod-2','hp-prod-3','hp-prod-4'].forEach((id, i) => {
     const el = document.getElementById(id);
@@ -2595,23 +2595,23 @@ function renderHomepage() {
   hpSetVal('hp-hist-title-em',     hi.titleEm       ?? 'devenus une maison.');
   hpSetVal('hp-hist-para1',        hi.para1         ?? '');
   hpSetVal('hp-hist-para2',        hi.para2         ?? '');
-  hpSetVal('hp-hist-cta-text',     hi.ctaText       ?? 'Lire le rÃ©cit complet');
+  hpSetVal('hp-hist-cta-text',     hi.ctaText       ?? 'Lire le récit complet');
   hpSetVal('hp-hist-cta-href',     hi.ctaHref       ?? '#');
-  hpSetVal('hp-hist-sticker-label',hi.stickerLabel  ?? 'Albias Â· Quercy');
-  hpSetVal('hp-hist-sticker-sub',  hi.stickerSub    ?? '44.25Â°N Â· 1.13Â°E Â· Tarn-et-Garonne (82)');
+  hpSetVal('hp-hist-sticker-label',hi.stickerLabel  ?? 'Albias · Quercy');
+  hpSetVal('hp-hist-sticker-sub',  hi.stickerSub    ?? '44.25°N · 1.13°E · Tarn-et-Garonne (82)');
   hpSetVal('hp-hist-sig-name',     hi.signatureName ?? 'Lucie & Marc');
   hpSetVal('hp-hist-sig-role',     hi.signatureRole ?? 'Les fondateurs');
 
   const v = cfg.valeurs || {};
-  hpSetVal('hp-val-eyebrow',  v.eyebrow ?? 'Trois ingrÃ©dients, aucun secret');
+  hpSetVal('hp-val-eyebrow',  v.eyebrow ?? 'Trois ingrédients, aucun secret');
   hpSetVal('hp-val-title',    v.title   ?? 'Du verger au pot,');
-  hpSetVal('hp-val-title-em', v.titleEm ?? 'et rien Ã  cacher.');
+  hpSetVal('hp-val-title-em', v.titleEm ?? 'et rien à cacher.');
   const items = v.items || [];
-  hpSetVal('hp-val1-title', items[0]?.title ?? 'Cueillies Ã  la main');
-  hpSetVal('hp-val1-desc',  items[0]?.desc  ?? 'ChÃ¢taignes et noisettes ramassÃ©es une Ã  une dans nos vergers du Quercy, Ã  pleine maturitÃ©.');
+  hpSetVal('hp-val1-title', items[0]?.title ?? 'Cueillies à la main');
+  hpSetVal('hp-val1-desc',  items[0]?.desc  ?? 'Châtaignes et noisettes ramassées une à une dans nos vergers du Quercy, à pleine maturité.');
   hpSetVal('hp-val2-title', items[1]?.title ?? 'Cuites en cuivre');
-  hpSetVal('hp-val2-desc',  items[1]?.desc  ?? 'Dans le chaudron de famille, sans presse, Ã  feu doux â€” le soir mÃªme de la rÃ©colte.');
-  hpSetVal('hp-val3-title', items[2]?.title ?? 'Trois ingrÃ©dients');
+  hpSetVal('hp-val2-desc',  items[1]?.desc  ?? 'Dans le chaudron de famille, sans presse, à feu doux — le soir même de la récolte.');
+  hpSetVal('hp-val3-title', items[2]?.title ?? 'Trois ingrédients');
   hpSetVal('hp-val3-desc',  items[2]?.desc  ?? 'Fruit, sucre roux, vanille. Sans gluten, sans huile de palme, sans conservateur.');
 }
 
@@ -2669,7 +2669,7 @@ function saveHomepage(e) {
     },
   };
   save(KEYS.homepage, cfg);
-  toast('Page d\'accueil mise Ã  jour âœ“', 'success');
+  toast('Page d\'accueil mise à jour ?', 'success');
 }
 
 /* ---------- Storage helpers ---------- */
@@ -2685,9 +2685,9 @@ function serverSync(serverKey, val) {
     headers: { 'Content-Type': 'application/json', 'X-Admin-Token': SERVER_TOKEN },
     body: JSON.stringify(val),
   }).then(function (r) {
-    if (!r.ok) toast('âš ï¸ Sync serveur Ã©chouÃ©e (' + r.status + ')', 'error');
+    if (!r.ok) toast('?? Sync serveur échouée (' + r.status + ')', 'error');
   }).catch(function () {
-    toast('âš ï¸ Sync serveur impossible â€“ vÃ©rifiez la connexion', 'error');
+    toast('?? Sync serveur impossible – vérifiez la connexion', 'error');
   });
 }
 

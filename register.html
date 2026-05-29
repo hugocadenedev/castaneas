@@ -1,9 +1,9 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CrÃ©er un compte Â· Castaneas</title>
+<title>Créer un compte · Castaneas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -25,15 +25,15 @@
       <img src="assets/castaneas-logo.svg" alt="Castaneas" style="height:44px;width:auto;">
     </a>
 
-    <h1 class="auth-title">CrÃ©er un compte</h1>
-    <p class="auth-subtitle">Rejoignez la communautÃ© Castaneas</p>
+    <h1 class="auth-title">Créer un compte</h1>
+    <p class="auth-subtitle">Rejoignez la communauté Castaneas</p>
 
     <div class="auth-alert" id="auth-alert" style="display:none;"></div>
 
     <form class="auth-form" id="register-form" novalidate>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
         <div class="auth-field">
-          <label for="prenom">PrÃ©nom</label>
+          <label for="prenom">Prénom</label>
           <input type="text" id="prenom" name="prenom" placeholder="Marie" autocomplete="given-name">
           <span class="auth-error" id="err-prenom"></span>
         </div>
@@ -50,19 +50,19 @@
       </div>
       <div class="auth-field">
         <label for="password">Mot de passe</label>
-        <input type="password" id="password" name="password" placeholder="8 caractÃ¨res minimum" autocomplete="new-password">
+        <input type="password" id="password" name="password" placeholder="8 caractères minimum" autocomplete="new-password">
         <span class="auth-error" id="err-password"></span>
       </div>
       <div class="auth-field">
         <label for="confirm">Confirmer le mot de passe</label>
-        <input type="password" id="confirm" name="confirm" placeholder="RÃ©pÃ©tez votre mot de passe" autocomplete="new-password">
+        <input type="password" id="confirm" name="confirm" placeholder="Répétez votre mot de passe" autocomplete="new-password">
         <span class="auth-error" id="err-confirm"></span>
       </div>
-      <button type="submit" class="auth-submit" id="submit-btn">CrÃ©er mon compte</button>
+      <button type="submit" class="auth-submit" id="submit-btn">Créer mon compte</button>
     </form>
 
     <div class="auth-divider">
-      <span>DÃ©jÃ  un compte ?</span>
+      <span>Déjà un compte ?</span>
       <a href="login.html">Se connecter</a>
     </div>
   </div>
@@ -114,13 +114,13 @@ document.getElementById('register-form').addEventListener('submit', async functi
   const confirm = document.getElementById('confirm').value;
   let valid = true;
 
-  if (!prenom) { showError('err-prenom', 'PrÃ©nom requis.'); valid = false; }
+  if (!prenom) { showError('err-prenom', 'Prénom requis.'); valid = false; }
   if (!nom) { showError('err-nom', 'Nom requis.'); valid = false; }
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     showError('err-email', 'Veuillez entrer un e-mail valide.'); valid = false;
   }
   if (!password || password.length < 8) {
-    showError('err-password', 'Le mot de passe doit contenir au moins 8 caractÃ¨res.'); valid = false;
+    showError('err-password', 'Le mot de passe doit contenir au moins 8 caractères.'); valid = false;
   }
   if (password !== confirm) {
     showError('err-confirm', 'Les mots de passe ne correspondent pas.'); valid = false;
@@ -129,7 +129,7 @@ document.getElementById('register-form').addEventListener('submit', async functi
 
   const users = getUsers();
   if (users.find(u => u.email === email)) {
-    showAlert('Un compte existe dÃ©jÃ  avec cet e-mail. Connectez-vous.');
+    showAlert('Un compte existe déjà avec cet e-mail. Connectez-vous.');
     return;
   }
 
@@ -141,12 +141,12 @@ document.getElementById('register-form').addEventListener('submit', async functi
   sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
 
   const btn = document.getElementById('submit-btn');
-  btn.textContent = 'âœ“ Compte crÃ©Ã© !';
+  btn.textContent = '? Compte créé !';
   btn.disabled = true;
 
   setTimeout(() => { window.location.href = 'index.html'; }, 800);
 });
 </script>
-<script src="data.php"></script><script src="site-data.js"></script>
+<script src="data.php?v=2"></script><script src="site-data.js?v=2"></script>
 </body>
 </html>
