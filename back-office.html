@@ -1405,8 +1405,21 @@ async function forceSyncToServer() {
   status.textContent = results.join(' · ');
   setTimeout(() => { label.textContent = 'Forcer sync serveur'; status.style.display = 'none'; }, 5000);
 
-  if (allOk) toast('Données synchronisées vers le serveur ✓', 'success');
-  else toast('⚠️ Sync partielle — voir sidebar', 'error');
+  if (allOk) {
+    // Vérifie ce que le serveur a vraiment après la sync
+    try {
+      const checks = await Promise.all(['products','categories','recipes'].map(async s => {
+        const r = await fetch('/save.php?key=' + s, { headers: { 'X-Admin-Token': SERVER_TOKEN } });
+        if (!r.ok) return `${s}:?`;
+        const d = await r.json();
+        const count = Array.isArray(d) ? d.length : (d ? '✓' : '0');
+        return `${s}:${count}`;
+      }));
+      toast('Serveur mis à jour ✓ — ' + checks.join(' · '), 'success');
+    } catch(e) {
+      toast('Données synchronisées vers le serveur ✓', 'success');
+    }
+  } else toast('⚠️ Sync partielle — voir sidebar', 'error');
 }
 
 async function init() {
