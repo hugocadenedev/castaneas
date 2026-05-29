@@ -1378,40 +1378,58 @@ async function init() {
 }
 
 async function serverLoadAll() {
-  const keys = [
+  // Clés pour lesquelles le localStorage de l'admin fait autorité (produits, catégories, recettes, homepage)
+  const pushKeys = [
     { s: 'products',   l: KEYS.products },
     { s: 'categories', l: KEYS.categories },
-    { s: 'orders',     l: KEYS.orders },
     { s: 'recipes',    l: KEYS.recipes },
     { s: 'homepage',   l: KEYS.homepage },
   ];
-  const timeout = new Promise(r => setTimeout(r, 4000));
+  // Clés pour lesquelles le serveur fait autorité (commandes : peuvent venir de n'importe quel PC)
+  const pullKeys = [
+    { s: 'orders', l: KEYS.orders },
+  ];
+
+  const timeout = new Promise(r => setTimeout(r, 5000));
   try {
     await Promise.race([
-      Promise.all(keys.map(async ({ s, l }) => {
-        try {
-          const r = await fetch('/save.php?key=' + s, {
-            headers: { 'X-Admin-Token': SERVER_TOKEN },
-          });
-          if (r.ok) {
-            const data = await r.json();
-            if (data !== null) {
-              // Le serveur a des données → met à jour le localStorage
-              localStorage.setItem(l, JSON.stringify(data));
+      Promise.all([
+        // Produits / catégories / recettes / homepage : localStorage → serveur si dispo, sinon pull
+        ...pushKeys.map(async ({ s, l }) => {
+          try {
+            const local = localStorage.getItem(l);
+            if (local !== null) {
+              // L'admin a des données en local → elles font autorité → pousse vers le serveur
+              await fetch('/save.php?key=' + s, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Admin-Token': SERVER_TOKEN },
+                body: local,
+              });
             } else {
-              // Le serveur n'a pas encore ce fichier → pousse le localStorage vers le serveur
-              const local = localStorage.getItem(l);
-              if (local !== null) {
-                await fetch('/save.php?key=' + s, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json', 'X-Admin-Token': SERVER_TOKEN },
-                  body: local,
-                });
+              // localStorage vide (nouveau PC / navigation privée) → tire du serveur
+              const r = await fetch('/save.php?key=' + s, {
+                headers: { 'X-Admin-Token': SERVER_TOKEN },
+              });
+              if (r.ok) {
+                const data = await r.json();
+                if (data !== null) localStorage.setItem(l, JSON.stringify(data));
               }
             }
-          }
-        } catch (e) { /* réseau indispo — on utilise le localStorage */ }
-      })),
+          } catch (e) { /* réseau indispo */ }
+        }),
+        // Commandes : le serveur fait toujours autorité
+        ...pullKeys.map(async ({ s, l }) => {
+          try {
+            const r = await fetch('/save.php?key=' + s, {
+              headers: { 'X-Admin-Token': SERVER_TOKEN },
+            });
+            if (r.ok) {
+              const data = await r.json();
+              if (data !== null) localStorage.setItem(l, JSON.stringify(data));
+            }
+          } catch (e) { /* réseau indispo */ }
+        }),
+      ]),
       timeout,
     ]);
   } catch (e) { /* ignore */ }
