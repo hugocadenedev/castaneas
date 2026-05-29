@@ -2038,9 +2038,11 @@ function openCatModal(id = null) {
   document.getElementById('cat-form').reset();
   document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
   document.querySelectorAll('.color-swatch').forEach(b => b.classList.remove('selected'));
-  document.querySelector('.emoji-btn[data-emoji="??"]').classList.add('selected');
+  const firstEmojiBtn = document.querySelector('.emoji-btn');
+  const defaultEmoji = firstEmojiBtn ? firstEmojiBtn.dataset.emoji : '🌰';
+  if (firstEmojiBtn) firstEmojiBtn.classList.add('selected');
   document.querySelector('.color-swatch[data-color="#F2E8D9"]').classList.add('selected');
-  document.getElementById('c-emoji').value = '??';
+  document.getElementById('c-emoji').value = defaultEmoji;
   document.getElementById('c-color').value = '#F2E8D9';
   document.getElementById('c-banner').value = '';
 
