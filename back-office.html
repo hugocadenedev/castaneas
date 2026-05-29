@@ -655,7 +655,7 @@ tbody tr:last-child td { border-bottom: none; }
 
           <!-- HERO -->
           <div class="table-wrap" style="padding:24px 28px;margin-bottom:20px;">
-            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">??</span> Hero — bannière principale</h3>
+            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">🌄</span> Hero — bannière principale</h3>
             <div class="form-grid">
               <div class="form-field span2">
                 <label>Image de fond (hero)</label>
@@ -712,7 +712,7 @@ tbody tr:last-child td { border-bottom: none; }
 
           <!-- CATÉGORIES -->
           <div class="table-wrap" style="padding:24px 28px;margin-bottom:20px;">
-            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">???</span> Catégories mises en avant</h3>
+            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">🗂️</span> Catégories mises en avant</h3>
             <div class="form-grid">
               <div class="form-field">
                 <label>Accroche</label>
@@ -736,7 +736,7 @@ tbody tr:last-child td { border-bottom: none; }
 
           <!-- PRODUITS -->
           <div class="table-wrap" style="padding:24px 28px;margin-bottom:20px;">
-            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">?</span> Produits mis en avant</h3>
+            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">⭐</span> Produits mis en avant</h3>
             <div class="form-grid">
               <div class="form-field">
                 <label>Accroche</label>
@@ -765,7 +765,7 @@ tbody tr:last-child td { border-bottom: none; }
 
           <!-- NOTRE HISTOIRE -->
           <div class="table-wrap" style="padding:24px 28px;margin-bottom:20px;">
-            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">??</span> Section "Notre histoire"</h3>
+            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">📖</span> Section "Notre histoire"</h3>
             <div class="form-grid">
               <div class="form-field span2">
                 <label>Image</label>
@@ -834,7 +834,7 @@ tbody tr:last-child td { border-bottom: none; }
 
           <!-- VALEURS -->
           <div class="table-wrap" style="padding:24px 28px;margin-bottom:20px;">
-            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">?</span> Section "Nos valeurs"</h3>
+            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">✨</span> Section "Nos valeurs"</h3>
             <div class="form-grid">
               <div class="form-field">
                 <label>Accroche</label>
@@ -888,7 +888,7 @@ tbody tr:last-child td { border-bottom: none; }
           </table>
         </div>
         <div style="margin-top:20px;padding:16px 20px;background:#fff;border-radius:var(--r-lg);border:1.5px solid var(--line);font-size:13px;color:var(--muted);">
-          ?? Chaque catégorie crée automatiquement une page HTML dédiée et un lien dans la barre de navigation. Supprimez une catégorie pour retirer la page et le lien.
+          💡 Chaque catégorie crée automatiquement une page HTML dédiée et un lien dans la barre de navigation. Supprimez une catégorie pour retirer la page et le lien.
         </div>
       </div>
 
@@ -972,14 +972,14 @@ tbody tr:last-child td { border-bottom: none; }
           <div class="img-sub-label">Image principale <span>— un seul choix</span></div>
           <div class="img-preview-wrap" id="img-picker-main"></div>
           <div class="img-add-row">
-            <input type="text" id="p-img-add-main" placeholder="Ajouter : assets/photo.jpg">
-            <button type="button" onclick="addImgToCatalog(true)">+ Ajouter</button>
+            <input type="file" id="p-img-upload-main" accept="image/*" style="display:none" onchange="uploadImage(true, this)">
+            <button type="button" id="p-img-upload-main-btn" onclick="document.getElementById('p-img-upload-main').click()">⬆ Téléverser une photo</button>
           </div>
           <div class="img-sub-label" style="margin-top:18px;">Images complémentaires <span>— sélection multiple, galerie produit</span></div>
           <div class="img-preview-wrap" id="img-picker-extra"></div>
           <div class="img-add-row">
-            <input type="text" id="p-img-add-extra" placeholder="Ajouter : assets/photo.jpg">
-            <button type="button" onclick="addImgToCatalog(false)">+ Ajouter</button>
+            <input type="file" id="p-img-upload-extra" accept="image/*" style="display:none" onchange="uploadImage(false, this)">
+            <button type="button" id="p-img-upload-extra-btn" onclick="document.getElementById('p-img-upload-extra').click()">⬆ Téléverser une photo</button>
           </div>
         </div>
         <div class="form-field">
@@ -1062,56 +1062,56 @@ tbody tr:last-child td { border-bottom: none; }
           </div>
           <div class="uses-card-row">
             <select id="p-use-0-icon">
-              <option value="tartine">?? Tartine</option>
-              <option value="yaourt">?? Yaourt</option>
-              <option value="dessert">?? Dessert</option>
-              <option value="cuillere">?? Cuillère / Pot</option>
-              <option value="gateau">?? Gâteau</option>
-              <option value="smoothie">?? Smoothie</option>
-              <option value="bol">?? Bol</option>
-              <option value="aperitif">?? Apéritif</option>
+              <option value="tartine">🍞 Tartine</option>
+              <option value="yaourt">🥛 Yaourt</option>
+              <option value="dessert">😊 Dessert</option>
+              <option value="cuillere">🥄 Cuillère / Pot</option>
+              <option value="gateau">🎂 Gâteau</option>
+              <option value="smoothie">🥤 Smoothie</option>
+              <option value="bol">🍜 Bol</option>
+              <option value="aperitif">🍷 Apéritif</option>
             </select>
             <input type="text" id="p-use-0-title" placeholder="Sur tartine">
             <input type="text" id="p-use-0-desc" placeholder="Pain au levain grillé…">
           </div>
           <div class="uses-card-row">
             <select id="p-use-1-icon">
-              <option value="tartine">?? Tartine</option>
-              <option value="yaourt">?? Yaourt</option>
-              <option value="dessert">?? Dessert</option>
-              <option value="cuillere">?? Cuillère / Pot</option>
-              <option value="gateau">?? Gâteau</option>
-              <option value="smoothie">?? Smoothie</option>
-              <option value="bol">?? Bol</option>
-              <option value="aperitif">?? Apéritif</option>
+              <option value="tartine">🍞 Tartine</option>
+              <option value="yaourt">🥛 Yaourt</option>
+              <option value="dessert">😊 Dessert</option>
+              <option value="cuillere">🥄 Cuillère / Pot</option>
+              <option value="gateau">🎂 Gâteau</option>
+              <option value="smoothie">🥤 Smoothie</option>
+              <option value="bol">🍜 Bol</option>
+              <option value="aperitif">🍷 Apéritif</option>
             </select>
             <input type="text" id="p-use-1-title" placeholder="En yaourt">
             <input type="text" id="p-use-1-desc" placeholder="Deux cuillères dans un fromage blanc…">
           </div>
           <div class="uses-card-row">
             <select id="p-use-2-icon">
-              <option value="tartine">?? Tartine</option>
-              <option value="yaourt">?? Yaourt</option>
-              <option value="dessert">?? Dessert</option>
-              <option value="cuillere">?? Cuillère / Pot</option>
-              <option value="gateau">?? Gâteau</option>
-              <option value="smoothie">?? Smoothie</option>
-              <option value="bol">?? Bol</option>
-              <option value="aperitif">?? Apéritif</option>
+              <option value="tartine">🍞 Tartine</option>
+              <option value="yaourt">🥛 Yaourt</option>
+              <option value="dessert">😊 Dessert</option>
+              <option value="cuillere">🥄 Cuillère / Pot</option>
+              <option value="gateau">🎂 Gâteau</option>
+              <option value="smoothie">🥤 Smoothie</option>
+              <option value="bol">🍜 Bol</option>
+              <option value="aperitif">🍷 Apéritif</option>
             </select>
             <input type="text" id="p-use-2-title" placeholder="En Mont-Blanc">
             <input type="text" id="p-use-2-desc" placeholder="Vermicelles sur meringue…">
           </div>
           <div class="uses-card-row">
             <select id="p-use-3-icon">
-              <option value="tartine">?? Tartine</option>
-              <option value="yaourt">?? Yaourt</option>
-              <option value="dessert">?? Dessert</option>
-              <option value="cuillere">?? Cuillère / Pot</option>
-              <option value="gateau">?? Gâteau</option>
-              <option value="smoothie">?? Smoothie</option>
-              <option value="bol">?? Bol</option>
-              <option value="aperitif">?? Apéritif</option>
+              <option value="tartine">🍞 Tartine</option>
+              <option value="yaourt">🥛 Yaourt</option>
+              <option value="dessert">😊 Dessert</option>
+              <option value="cuillere">🥄 Cuillère / Pot</option>
+              <option value="gateau">🎂 Gâteau</option>
+              <option value="smoothie">🥤 Smoothie</option>
+              <option value="bol">🍜 Bol</option>
+              <option value="aperitif">🍷 Apéritif</option>
             </select>
             <input type="text" id="p-use-3-title" placeholder="À la cuillère">
             <input type="text" id="p-use-3-desc" placeholder="Directement dans le pot…">
@@ -1157,16 +1157,16 @@ tbody tr:last-child td { border-bottom: none; }
         <div class="form-field">
           <label>Emoji / icône</label>
           <div class="emoji-row" id="emoji-row">
-            <button type="button" class="emoji-btn selected" data-emoji="??" onclick="pickEmoji(this)">??</button>
-            <button type="button" class="emoji-btn" data-emoji="??" onclick="pickEmoji(this)">??</button>
-            <button type="button" class="emoji-btn" data-emoji="??" onclick="pickEmoji(this)">??</button>
-            <button type="button" class="emoji-btn" data-emoji="??" onclick="pickEmoji(this)">??</button>
-            <button type="button" class="emoji-btn" data-emoji="??" onclick="pickEmoji(this)">??</button>
-            <button type="button" class="emoji-btn" data-emoji="??" onclick="pickEmoji(this)">??</button>
-            <button type="button" class="emoji-btn" data-emoji="??" onclick="pickEmoji(this)">??</button>
-            <button type="button" class="emoji-btn" data-emoji="?" onclick="pickEmoji(this)">?</button>
+            <button type="button" class="emoji-btn selected" data-emoji="🌰" onclick="pickEmoji(this)">🌰</button>
+            <button type="button" class="emoji-btn" data-emoji="🫙" onclick="pickEmoji(this)">🫙</button>
+            <button type="button" class="emoji-btn" data-emoji="🎁" onclick="pickEmoji(this)">🎁</button>
+            <button type="button" class="emoji-btn" data-emoji="🌿" onclick="pickEmoji(this)">🌿</button>
+            <button type="button" class="emoji-btn" data-emoji="🍃" onclick="pickEmoji(this)">🍃</button>
+            <button type="button" class="emoji-btn" data-emoji="🧈" onclick="pickEmoji(this)">🧈</button>
+            <button type="button" class="emoji-btn" data-emoji="🍯" onclick="pickEmoji(this)">🍯</button>
+            <button type="button" class="emoji-btn" data-emoji="✨" onclick="pickEmoji(this)">✨</button>
           </div>
-          <input type="hidden" id="c-emoji" value="??">
+          <input type="hidden" id="c-emoji" value="🌰">
         </div>
         <div class="form-field">
           <label>Couleur de la bannière</label>
@@ -1267,8 +1267,8 @@ tbody tr:last-child td { border-bottom: none; }
           <input type="hidden" id="r-image">
           <div id="recipe-img-picker" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
           <div class="img-add-row" style="margin-top:8px;">
-            <input type="text" id="r-img-add" placeholder="Chemin vers l'image (assets/…)">
-            <button type="button" class="btn btn-secondary btn-sm" onclick="addRecipeImg()">Ajouter</button>
+            <input type="file" id="r-img-upload" accept="image/*" style="display:none" onchange="uploadRecipeImage(this)">
+            <button type="button" id="r-img-upload-btn" class="btn btn-secondary btn-sm" onclick="document.getElementById('r-img-upload').click()">⬆ Téléverser une photo</button>
           </div>
         </div>
         <div class="form-field span2" style="border-top:1px solid var(--line);padding-top:16px;margin-top:4px;">
@@ -1334,18 +1334,7 @@ const SERVER_KEYS = {
 // Source unique : serveur (save.php / data.php) avec fallback localStorage.
 
 /* ---------- State ---------- */
-const DEFAULT_IMAGE_CATALOG = [
-  'assets/product-pate-tartiner.png',
-  'assets/product-huile-noisettes.png',
-  'assets/product-noisettes-crues.png',
-  'assets/banniere-cremes.png',
-  'assets/pate-a-tartiner-220g.webp',
-  'assets/story-atelier.jpg',
-  'uploads/Gemini_Generated_Image_3qtwht3qtwht3qtw.png',
-  'uploads/Gemini_Generated_Image_k3rcack3rcack3rc.png',
-  'uploads/Gemini_Generated_Image_p5f05ep5f05ep5f0.png',
-  'uploads/Gemini_Generated_Image_v6kb56v6kb56v6kb.png',
-];
+const DEFAULT_IMAGE_CATALOG = [];
 let state = { products: [], categories: [], orders: [], imageCatalogMain: [], imageCatalogExtra: [], recipes: [] };
 let editingProduct = null;
 let editingCat = null;
@@ -1978,6 +1967,68 @@ function pickImgExtra(el) {
   } else {
     selectedExtraImages.push(src);
     el.classList.add('selected-extra');
+  }
+}
+
+async function uploadImage(isMain, inputEl) {
+  const file = inputEl.files[0];
+  if (!file) return;
+  inputEl.value = '';
+  const btnId = isMain ? 'p-img-upload-main-btn' : 'p-img-upload-extra-btn';
+  const btn = document.getElementById(btnId);
+  btn.disabled = true;
+  btn.textContent = 'Envoi…';
+  try {
+    const fd = new FormData();
+    fd.append('file', file);
+    const res = await fetch('/upload.php', { method: 'POST', headers: { 'X-Admin-Token': SERVER_TOKEN }, body: fd });
+    const data = await res.json();
+    if (!res.ok || data.error) throw new Error(data.error || 'Erreur serveur');
+    const catalog = isMain ? state.imageCatalogMain : state.imageCatalogExtra;
+    if (!catalog.includes(data.url)) {
+      catalog.push(data.url);
+      save(isMain ? KEYS.imagesMain : KEYS.imagesExtra, catalog);
+    }
+    if (isMain) {
+      document.getElementById('p-image').value = data.url;
+    } else {
+      if (!selectedExtraImages.includes(data.url)) selectedExtraImages.push(data.url);
+    }
+    renderImagePickers();
+    toast('Photo ajoutée ✓', 'success');
+  } catch(err) {
+    toast('Erreur upload : ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '⬆ Téléverser une photo';
+  }
+}
+
+async function uploadRecipeImage(inputEl) {
+  const file = inputEl.files[0];
+  if (!file) return;
+  inputEl.value = '';
+  const btn = document.getElementById('r-img-upload-btn');
+  btn.disabled = true;
+  btn.textContent = 'Envoi…';
+  try {
+    const fd = new FormData();
+    fd.append('file', file);
+    const res = await fetch('/upload.php', { method: 'POST', headers: { 'X-Admin-Token': SERVER_TOKEN }, body: fd });
+    const data = await res.json();
+    if (!res.ok || data.error) throw new Error(data.error || 'Erreur serveur');
+    if (!state.imageCatalogMain.includes(data.url)) {
+      state.imageCatalogMain.push(data.url);
+      save(KEYS.imagesMain, state.imageCatalogMain);
+    }
+    document.getElementById('r-image').value = data.url;
+    renderRecipeImgPicker();
+    toast('Photo ajoutée ✓', 'success');
+  } catch(err) {
+    toast('Erreur upload : ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '⬆ Téléverser une photo';
   }
 }
 
