@@ -306,7 +306,8 @@
 <script src="cart.js"></script>
 <script>
 (function () {
-  var recipeId = location.hash.replace('#', '') || '';
+  var params = new URLSearchParams(location.search);
+  var recipeId = params.get('id') || location.hash.replace('#', '') || '';
   var main = document.getElementById('main-content');
 
   if (!recipeId) {
