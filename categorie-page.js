@@ -50,10 +50,10 @@
 
   /* -- Onglets de catégorie (filter-bar) -- */
   var SLUG_TO_PAGE = {
-    'cremes':         'creme-de-chataigne.html',
-    'pates-tartiner': 'pates-tartiner.html',
-    'huiles':         'huiles.html',
-    'coffrets':       'coffrets.html'
+    'cremes':         'categorie/cremes',
+    'pates-tartiner': 'categorie/pates-tartiner',
+    'huiles':         'categorie/huiles',
+    'coffrets':       'categorie/coffrets'
   };
 
   /* -- Données produits -- */

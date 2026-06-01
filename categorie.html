@@ -78,8 +78,8 @@
       <div>
         <h4>Boutique</h4>
         <ul>
-          <li><a href="creme-de-chataigne.html">Crèmes de châtaigne</a></li>
-          <li><a href="coffrets.html">Coffrets</a></li>
+          <li><a href="categorie/cremes">Crèmes de châtaigne</a></li>
+          <li><a href="categorie/coffrets">Coffrets</a></li>
         </ul>
       </div>
       <div>
@@ -129,9 +129,10 @@
 </aside>
 
 <script>
-  // Lit le slug depuis le hash #slug dans l'URL (le serveur ne le supprime pas)
+  // Lit le slug depuis le paramètre ?cat= dans l'URL (SEO-friendly, indexable par Google)
   (function () {
-    var slug = window.location.hash.replace(/^#/, '') || '';
+    var params = new URLSearchParams(window.location.search);
+    var slug = params.get('cat') || '';
     window.CAT_SLUG = slug;
   }());
 </script>

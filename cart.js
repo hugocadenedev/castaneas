@@ -63,7 +63,7 @@
           <div class="cart-empty-icon">🌰</div>
           <p style="font-family: var(--serif); font-size: 20px; color: var(--brown-deep); margin-bottom:6px;">Votre panier est vide</p>
           <p style="font-size: 13px; color: var(--muted);">Découvrez nos crèmes artisanales du Quercy</p>
-          <a href="creme-de-chataigne.html" class="cart-checkout-btn" style="margin-top: 22px; text-decoration:none;">Parcourir la boutique</a>
+          <a href="categorie/cremes" class="cart-checkout-btn" style="margin-top: 22px; text-decoration:none;">Parcourir la boutique</a>
         </div>`;
       if (foot) foot.style.display = 'none';
       return;

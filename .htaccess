@@ -22,11 +22,24 @@ Options -Indexes
     Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';"
 </IfModule>
 
-# ── 4. Forcer HTTPS ───────────────────────────────────────
+# ── 4. Forcer HTTPS + URLs propres catégorie ─────────────
 <IfModule mod_rewrite.c>
     RewriteEngine On
+
+    # Forcer HTTPS
     RewriteCond %{HTTPS} off
     RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # 301 — anciens slugs de catégorie vers nouvelles URLs SEO-friendly
+    RewriteRule ^creme-de-chataigne\.html$ /categorie/cremes [R=301,L]
+    RewriteRule ^pates-tartiner\.html$     /categorie/pates-tartiner [R=301,L]
+    RewriteRule ^huiles\.html$             /categorie/huiles [R=301,L]
+    RewriteRule ^coffrets\.html$           /categorie/coffrets [R=301,L]
+
+    # Route /categorie/<slug> → categorie.html?cat=<slug>
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^categorie/([^/]+)/?$ /categorie.html?cat=$1 [L,QSA]
 </IfModule>
 
 # ── 5. data.php : jamais mis en cache (données dynamiques) ──

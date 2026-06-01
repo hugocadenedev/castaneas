@@ -981,7 +981,7 @@
     <a href="index.html" class="brand" aria-label="Castaneas"><img src="assets/castaneas-logo.svg" alt="Castaneas" class="brand-logo"></a>
     <nav class="nav-links">
       <a href="index.html">Accueil</a>
-      <a href="creme-de-chataigne.html" class="active">Crèmes de châtaigne</a>
+      <a href="categorie/cremes" class="active">Crèmes de châtaigne</a>
       <a href="#">Pâtes à tartiner</a>
       <a href="#">Huiles</a>
       <a href="recettes.html">Recettes</a>
@@ -1005,7 +1005,7 @@
   <nav class="crumb">
     <a href="index.html">Accueil</a>
     <span class="sep">›</span>
-    <a href="creme-de-chataigne.html">Crèmes de châtaigne</a>
+    <a href="categorie/cremes">Crèmes de châtaigne</a>
     <span class="sep">›</span>
     <span class="current">Châtaigne vanillée · 150g</span>
   </nav>
@@ -1307,7 +1307,7 @@
         <div class="section-head__eyebrow">Pour aller plus loin</div>
         <h2 class="section-head__title">À <em>déguster aussi.</em></h2>
       </div>
-      <a href="creme-de-chataigne.html" style="font-size: 14px; font-weight: 700; color: var(--accent-cocoa); border-bottom: 1px solid var(--accent-cocoa); padding-bottom: 4px;">Toute la boutique →</a>
+      <a href="categorie/cremes" style="font-size: 14px; font-weight: 700; color: var(--accent-cocoa); border-bottom: 1px solid var(--accent-cocoa); padding-bottom: 4px;">Toute la boutique →</a>
     </div>
 
     <div class="suggest-grid">
@@ -1375,7 +1375,7 @@
       <div>
         <h4>Boutique</h4>
         <ul>
-          <li><a href="creme-de-chataigne.html">Crèmes de châtaigne</a></li>
+          <li><a href="categorie/cremes">Crèmes de châtaigne</a></li>
           <li><a href="#">Pâtes de noisette</a></li>
           <li><a href="#">Huiles &amp; farines</a></li>
           <li><a href="#">Coffrets</a></li>
@@ -1473,7 +1473,7 @@ var qty = 1;
   // Breadcrumb
   var crumb = document.querySelector('.crumb .current');
   if (crumb) crumb.textContent = p.name + (p.weight ? ' · ' + p.weight : '');
-  var crumbCatLink = document.querySelector('.crumb a[href="creme-de-chataigne.html"]');
+  var crumbCatLink = document.querySelector('.crumb a[href="categorie/cremes"]');
   if (crumbCatLink && cat) {
     crumbCatLink.textContent = cat.name;
     crumbCatLink.href = SiteData.getCategoryHref(cat);

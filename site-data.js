@@ -99,15 +99,10 @@
     },
 
     /**
-     * URL d'une catégorie.
-     * Utilise cat.href si défini, sinon cremes → creme-de-chataigne.html, autres → slug + .html.
+     * URL d'une catégorie — format SEO : /categorie/<slug>
      */
     getCategoryHref: function (cat) {
-      if (cat.href && !cat.href.startsWith('blob:') && !cat.href.startsWith('http')) return cat.href;
-      if (cat.slug === 'cremes') return 'creme-de-chataigne.html';
-      var staticSlugs = ['pates-tartiner', 'huiles', 'coffrets'];
-      if (staticSlugs.indexOf(cat.slug) !== -1) return cat.slug + '.html';
-      return 'categorie.html#' + encodeURIComponent(cat.slug);
+      return 'categorie/' + encodeURIComponent(cat.slug);
     },
 
     /**
@@ -161,7 +156,8 @@
     function isActive(href) {
       var h = href.toLowerCase();
       if (h === page) return true;
-      if (h === 'creme-de-chataigne.html' && page === 'castaneas.html') return true;
+      // Pour les URLs /categorie/<slug>, comparer le dernier segment
+      if (h.split('/').pop() === page) return true;
       return false;
     }
 
