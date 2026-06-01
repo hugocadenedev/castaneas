@@ -107,11 +107,12 @@
   .recipe-card__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   .recipe-card:nth-child(even) .recipe-card__media { background: var(--dore); }
   .recipe-card__body {
-    padding: 32px 30px;
+    padding: 28px 28px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
     justify-content: center;
+    overflow: hidden;
   }
   .recipe-card__meta {
     font-family: var(--mono);
@@ -137,13 +138,21 @@
     color: var(--brown-chest);
     margin: 0;
     line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
   .recipe-card__desc {
-    font-size: 14px;
+    font-size: 13.5px;
     color: var(--ink-soft);
     line-height: 1.55;
     margin: 0;
     font-weight: 500;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
   .recipe-card__cta {
     margin-top: 8px;
@@ -187,9 +196,16 @@
 
   @media (max-width: 900px) {
     .recipes-grid-big { grid-template-columns: 1fr; }
-    .recipe-card { grid-template-columns: 1fr; }
-    .recipe-card__media { min-height: 200px; }
+    .recipe-card { grid-template-columns: 320px 1fr; }
+    .recipe-card__media { min-height: 220px; }
     .recipes-hero { grid-template-columns: 1fr; padding: 48px 32px; }
+  }
+  @media (max-width: 680px) {
+    .recipe-card { grid-template-columns: 1fr; }
+    .recipe-card__media { min-height: 200px; max-height: 220px; }
+    .recipe-card__body { padding: 20px 20px; }
+    .recipe-card__name { font-size: 22px; }
+    .recipe-card__desc { -webkit-line-clamp: 2; }
   }
   @media (max-width: 600px) {
     .recipes-hero { padding: 40px 24px; margin: 24px 0 40px; }
@@ -324,7 +340,7 @@
   </div>
 </aside>
 
-<script src="data.php?v=2"></script><script src="site-data.js?v=2"></script>
+<script src="data.php?v=2"></script><script src="site-data.js?v=3"></script>
 <script src="cart.js"></script>
 <script>
 (function () {
