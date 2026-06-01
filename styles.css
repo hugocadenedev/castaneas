@@ -334,6 +334,10 @@ img { display: block; max-width: 100%; }
   color: var(--ink-soft);
   line-height: 1.5;
   margin-top: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .product-foot {
   display: flex;
