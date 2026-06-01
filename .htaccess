@@ -25,6 +25,7 @@ Options -Indexes
 # ── 4. Forcer HTTPS + URLs propres catégorie ─────────────
 <IfModule mod_rewrite.c>
     RewriteEngine On
+    RewriteBase /
 
     # Forcer HTTPS
     RewriteCond %{HTTPS} off
@@ -39,7 +40,7 @@ Options -Indexes
     # Route /categorie/<slug> → categorie.html?cat=<slug>
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^categorie/([^/]+)/?$ /categorie.html?cat=$1 [L,QSA]
+    RewriteRule ^categorie/([^/]+)/?$ categorie.html?cat=$1 [L,QSA]
 </IfModule>
 
 # ── 5. data.php : jamais mis en cache (données dynamiques) ──

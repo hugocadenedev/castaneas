@@ -102,7 +102,7 @@
      * URL d'une catégorie — format SEO : /categorie/<slug>
      */
     getCategoryHref: function (cat) {
-      return 'categorie/' + encodeURIComponent(cat.slug);
+      return '/categorie/' + encodeURIComponent(cat.slug);
     },
 
     /**
