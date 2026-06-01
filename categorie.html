@@ -130,10 +130,15 @@
 </aside>
 
 <script>
-  // Lit le slug depuis le paramètre ?cat= dans l'URL (SEO-friendly, indexable par Google)
+  // Lit le slug depuis le dernier segment du chemin URL (/categorie/<slug>)
+  // Le navigateur voit /categorie/huiles même si Apache rewrite en interne
   (function () {
-    var params = new URLSearchParams(window.location.search);
-    var slug = params.get('cat') || '';
+    var parts = window.location.pathname.replace(/\/$/, '').split('/');
+    var slug = parts[parts.length - 1] || '';
+    // Fallback : paramètre ?cat= (compatibilité locale)
+    if (!slug || slug === 'categorie.html') {
+      slug = new URLSearchParams(window.location.search).get('cat') || '';
+    }
     window.CAT_SLUG = slug;
   }());
 </script>
