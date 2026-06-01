@@ -143,7 +143,11 @@
   SiteData.ready = Promise.resolve();
 
   /* ---------- Injection automatique de la nav ---------- */
-  document.addEventListener('DOMContentLoaded', function () { injectNav(); });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { injectNav(); });
+  } else {
+    injectNav();
+  }
 
   function injectNav() {
     var navEl = document.querySelector('.nav-links');
