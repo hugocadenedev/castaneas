@@ -39,6 +39,7 @@ jobs:
             --parallel=2 \
             --exclude-glob .git* \
             --exclude-glob .github* \
+            --exclude-glob "db-config.local.php" \
             --exclude-glob node_modules \
             --exclude-glob "uploads/test-*.png" \
             --exclude-glob "data/*.json" \

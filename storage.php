@@ -28,11 +28,17 @@ function castaneas_db_config() {
         'charset' => getenv('CASTANEAS_DB_CHARSET') ?: 'utf8mb4',
     ];
 
-    $localConfig = __DIR__ . '/db-config.local.php';
-    if (is_file($localConfig)) {
-        $loaded = require $localConfig;
-        if (is_array($loaded)) {
-            $config = array_merge($config, $loaded);
+    $configFiles = [
+        dirname(__DIR__) . DIRECTORY_SEPARATOR . 'castaneas-config' . DIRECTORY_SEPARATOR . 'db-config.php',
+        __DIR__ . '/db-config.local.php',
+    ];
+
+    foreach ($configFiles as $configFile) {
+        if (is_file($configFile)) {
+            $loaded = require $configFile;
+            if (is_array($loaded)) {
+                $config = array_merge($config, $loaded);
+            }
         }
     }
 
@@ -184,7 +190,12 @@ function castaneas_storage_read_raw($key) {
         return $raw;
     }
 
-    return castaneas_json_read_raw($key);
+    $raw = castaneas_json_read_raw($key);
+    if ($raw !== null && castaneas_db()) {
+        castaneas_db_write_raw($key, $raw);
+    }
+
+    return $raw;
 }
 
 function castaneas_storage_write_raw($key, $rawJson) {
