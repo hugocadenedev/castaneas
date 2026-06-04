@@ -15,57 +15,23 @@ jobs:
 
       - name: Deploy via FTPS
         timeout-minutes: 10
-        env:
-          FTP_SERVER: ${{ secrets.FTP_SERVER }}
-          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
-          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-        run: |
-          set -euo pipefail
-
-          encode_remote_path() {
-            local value="$1"
-            value=${value//%/%25}
-            value=${value// /%20}
-            value=${value//#/%23}
-            value=${value//\?/%3F}
-            value=${value//\[/%5B}
-            value=${value//\]/%5D}
-            printf '%s' "$value"
-          }
-
-          upload_file() {
-            local file="$1"
-            local remote_path
-            remote_path=$(encode_remote_path "/public_html/$file")
-
-            echo "Uploading $file"
-
-            curl \
-              --fail \
-              --silent \
-              --show-error \
-              --ipv4 \
-              --ssl-reqd \
-              --insecure \
-              --ftp-pasv \
-              --disable-epsv \
-              --ftp-create-dirs \
-              --retry 5 \
-              --retry-all-errors \
-              --retry-delay 3 \
-              --connect-timeout 20 \
-              --max-time 180 \
-              --user "$FTP_USERNAME:$FTP_PASSWORD" \
-              --upload-file "$file" \
-                "ftps://$FTP_SERVER$remote_path"
-          }
-
-          while IFS= read -r file; do
-            case "$file" in
-              .git*|.github*|db-config.local.php|node_modules/*|uploads/*|data/*.json)
-                continue
-                ;;
-            esac
-
-            upload_file "$file"
-          done < <(git ls-files)
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: ./
+          server-dir: public_html/
+          security: loose
+          timeout: 120000
+          log-level: standard
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/.github/**
+            **/node_modules/**
+            db-config.local.php
+            uploads/**
+            data/*.json
