@@ -29,4 +29,4 @@ jobs:
             **/.git*/**
             **/node_modules/**
             uploads/test-*.png
-            data/**
+            data/*.json
