@@ -66,8 +66,9 @@
     if (!canonical) return [];
 
     var aliases = [canonical];
-    if (canonical === 'pates-a-tartiner') {
+    if (canonical === 'pates-a-tartiner' || canonical === 'pate-a-tartiner') {
       aliases.push('pates-tartiner', 'pate-a-tartiner');
+      aliases.push('pates-a-tartiner');
     }
 
     return aliases;
