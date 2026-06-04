@@ -27,7 +27,7 @@ jobs:
 
           lftp_exec() {
             local commands="$1"
-            lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "ftp://$FTP_SERVER" -e "set cmd:fail-exit true; set net:timeout 45; set net:max-retries 2; set net:reconnect-interval-base 5; set net:reconnect-interval-max 30; set ftp:ssl-force true; set ftp:ssl-protect-data true; set ssl:verify-certificate false; set ftp:passive-mode true; set ftp:prefer-epsv false; set xfer:clobber true; $commands; bye"
+            lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "ftp://$FTP_SERVER" -e "set cmd:fail-exit true; set net:timeout 45; set net:max-retries 10; set net:reconnect-interval-base 10; set net:reconnect-interval-max 60; set ftp:ssl-force true; set ftp:ssl-protect-data true; set ssl:verify-certificate false; set ftp:passive-mode true; set ftp:prefer-epsv false; set ftp:sync-mode off; set mirror:parallel-transfer-count 1; set xfer:clobber true; set xfer:use-temp-file false; $commands; bye"
           }
 
           detect_remote_base() {
@@ -81,7 +81,7 @@ jobs:
 
           echo "Mirroring $DEPLOY_DIR to $REMOTE_TARGET"
           if [ -n "$REMOTE_BASE" ]; then
-            lftp_exec "mkdir -p $REMOTE_TARGET; mirror -R --only-newer --verbose=1 --parallel=4 $DEPLOY_DIR $REMOTE_TARGET"
+            lftp_exec "mkdir -p $REMOTE_TARGET; mirror -R --only-newer --verbose=1 $DEPLOY_DIR $REMOTE_TARGET"
           else
-            lftp_exec "mirror -R --only-newer --verbose=1 --parallel=4 $DEPLOY_DIR $REMOTE_TARGET"
+            lftp_exec "mirror -R --only-newer --verbose=1 $DEPLOY_DIR $REMOTE_TARGET"
           fi
