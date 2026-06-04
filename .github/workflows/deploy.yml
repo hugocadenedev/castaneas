@@ -52,7 +52,7 @@ jobs:
             echo 'set xfer:timeout 120'
             echo 'set xfer:clobber true'
             echo "open -u $(quote_lftp "$FTP_USERNAME"),$(quote_lftp "$FTP_PASSWORD") -p 21 $(quote_lftp "$FTP_SERVER")"
-            echo 'mkdir -p /public_html'
+            echo 'mkdir -f -p /public_html'
 
             while IFS= read -r file; do
               case "$file" in
@@ -68,7 +68,7 @@ jobs:
                 remote_dir="/public_html/$remote_dir"
               fi
 
-              echo "mkdir -p $(quote_lftp "$remote_dir")"
+              echo "mkdir -f -p $(quote_lftp "$remote_dir")"
               echo "put -O $(quote_lftp "$remote_dir") $(quote_lftp "$file")"
             done < <(git ls-files)
 
