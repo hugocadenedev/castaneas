@@ -27,21 +27,7 @@ jobs:
 
           lftp_exec() {
             local commands="$1"
-            lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "ftp://$FTP_SERVER" <<EOF
-set cmd:fail-exit true
-set net:timeout 45
-set net:max-retries 2
-set net:reconnect-interval-base 5
-set net:reconnect-interval-max 30
-set ftp:ssl-force true
-set ftp:ssl-protect-data true
-set ssl:verify-certificate false
-set ftp:passive-mode true
-set ftp:prefer-epsv false
-set xfer:clobber true
-$commands
-bye
-EOF
+            lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "ftp://$FTP_SERVER" -e "set cmd:fail-exit true; set net:timeout 45; set net:max-retries 2; set net:reconnect-interval-base 5; set net:reconnect-interval-max 30; set ftp:ssl-force true; set ftp:ssl-protect-data true; set ssl:verify-certificate false; set ftp:passive-mode true; set ftp:prefer-epsv false; set xfer:clobber true; $commands; bye"
           }
 
           detect_remote_base() {
