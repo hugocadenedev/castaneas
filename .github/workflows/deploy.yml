@@ -8,6 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 12
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -16,6 +17,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y lftp
 
       - name: Deploy via FTPS
+        timeout-minutes: 10
         env:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
@@ -26,17 +28,23 @@ jobs:
           set ftp:ssl-force true
           set ftp:ssl-protect-data true
           set ftp:passive-mode true
+          set ftp:sync-mode true
           set ssl:verify-certificate no
           set net:timeout 20
+          set net:idle 20
           set net:max-retries 8
           set net:reconnect-interval-base 5
           set net:reconnect-interval-max 60
+          set xfer:timeout 120
           set xfer:clobber true
           open -u "$FTP_USERNAME","$FTP_PASSWORD" -p 21 "$FTP_SERVER"
           mirror -R ./ /public_html/ \
-            --verbose \
+            --verbose=3 \
             --delete \
-            --parallel=2 \
+            --parallel=1 \
+            --max-errors=1 \
+            --only-newer \
+            --no-perms \
             --exclude-glob .git* \
             --exclude-glob .github* \
             --exclude-glob "db-config.local.php" \
