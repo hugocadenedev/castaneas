@@ -22,9 +22,21 @@ jobs:
         run: |
           set -euo pipefail
 
+          encode_remote_path() {
+            local value="$1"
+            value=${value//%/%25}
+            value=${value// /%20}
+            value=${value//#/%23}
+            value=${value//\?/%3F}
+            value=${value//\[/%5B}
+            value=${value//\]/%5D}
+            printf '%s' "$value"
+          }
+
           upload_file() {
             local file="$1"
-            local remote_path="/public_html/$file"
+            local remote_path
+            remote_path=$(encode_remote_path "/public_html/$file")
 
             echo "Uploading $file"
 
