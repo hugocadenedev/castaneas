@@ -2259,27 +2259,28 @@ function renderImagePickers() {
   const extraPicker = document.getElementById('img-picker-extra');
   if (!mainPicker || !extraPicker) return;
   const currentMain = document.getElementById('p-image').value;
+  const currentExtras = [...new Set(selectedExtraImages.filter(src => src && src !== currentMain))];
   const makeSlot = (src, isMain) => {
     const cls = isMain
       ? (src === currentMain ? ' selected' : '')
-      : (selectedExtraImages.includes(src) ? ' selected-extra' : '');
+      : (currentExtras.includes(src) ? ' selected-extra' : '');
     const clickFn = isMain ? 'pickImgMain(this)' : 'pickImgExtra(this)';
     const esc = src.replace(/"/g, '&quot;').replace(/'/g, "\\'");
     const flag = isMain ? 'true' : 'false';
     return `<div class="img-slot"><img class="img-preview${cls}" data-src="${src}" src="${src}" alt="" onerror="this.onerror=null;this.src='assets/product-pate-tartiner.png'" onclick="${clickFn}"><button type="button" class="img-remove" onclick="removeImgFromCatalog('${esc}',${flag},event)">×</button></div>`;
   };
-  mainPicker.innerHTML  = state.imageCatalogMain.map(s  => makeSlot(s, true)).join('');
-  extraPicker.innerHTML = state.imageCatalogExtra.map(s => makeSlot(s, false)).join('');
+  mainPicker.innerHTML = currentMain
+    ? makeSlot(currentMain, true)
+    : '<div style="font-size:13px;color:var(--muted);padding:10px 2px;">Aucune image principale sélectionnée.</div>';
+  extraPicker.innerHTML = currentExtras.length
+    ? currentExtras.map(s => makeSlot(s, false)).join('')
+    : '<div style="font-size:13px;color:var(--muted);padding:10px 2px;">Aucune image complémentaire sélectionnée.</div>';
 }
 function removeImgFromCatalog(src, isMain, e) {
   e.stopPropagation();
   if (isMain) {
-    state.imageCatalogMain = state.imageCatalogMain.filter(s => s !== src);
-    save(KEYS.imagesMain, state.imageCatalogMain);
     if (document.getElementById('p-image').value === src) document.getElementById('p-image').value = '';
   } else {
-    state.imageCatalogExtra = state.imageCatalogExtra.filter(s => s !== src);
-    save(KEYS.imagesExtra, state.imageCatalogExtra);
     selectedExtraImages = selectedExtraImages.filter(s => s !== src);
   }
   renderImagePickers();
