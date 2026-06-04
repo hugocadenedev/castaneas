@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Châtaigne vanillée · Castaneas</title>
+<title>Produit · Castaneas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css?v=7">
+<script>document.documentElement.classList.add('product-page-pending');</script>
 <style>
   /* =========================================================
      TYPOGRAPHIE — identique V1
@@ -21,6 +22,7 @@
   body { font-family: var(--sans); letter-spacing: -0.005em; }
   h1, h2, h3, h4 { font-family: var(--serif); letter-spacing: -0.02em; }
   em { font-style: italic; font-weight: 400; }
+  .product-page-pending .product { visibility: hidden; }
 
   /* NAV (identique V1) */
   .navbar.pill-nav { background: transparent; border-bottom: none; position: sticky; top: 14px; z-index: 50; }
@@ -1724,7 +1726,14 @@ function updateSelectedVariant(pid) {
 
 // ========== CHARGEMENT DYNAMIQUE DEPUIS SITEDATA ==========
 (function () {
-  if (typeof SiteData === 'undefined') return;
+  function finishRender() {
+    document.documentElement.classList.remove('product-page-pending');
+  }
+
+  if (typeof SiteData === 'undefined') {
+    finishRender();
+    return;
+  }
   // Lire le produit depuis /produit/<slug>, puis fallback sur les anciens formats.
   var params = new URLSearchParams(location.search);
   var pathMatch = decodeURIComponent(location.pathname || '').match(/\/produit\/([^/?#]+)/);
@@ -1734,7 +1743,10 @@ function updateSelectedVariant(pid) {
 
   var p = SiteData.getProductBySlug ? SiteData.getProductBySlug(productRef) : null;
   if (!p) p = SiteData.getProductById(productRef);
-  if (!p || p.status !== 'active') return;
+  if (!p || p.status !== 'active') {
+    finishRender();
+    return;
+  }
 
   if (SiteData.getProductHref) {
     var canonicalHref = SiteData.getProductHref(p);
@@ -1952,6 +1964,7 @@ function updateSelectedVariant(pid) {
 
   // MAJ du bouton CTA avec le bon prix initial
   updateBuyCta();
+  finishRender();
 })();
 
 // ========== GALERIE ==========
