@@ -10,9 +10,11 @@ if ($path !== '/' && is_file($fullPath)) {
 
 $legacyRedirects = [
     '/creme-de-chataigne.html' => '/categorie/cremes',
-    '/pates-tartiner.html' => '/categorie/pates-tartiner',
+    '/pates-tartiner.html' => '/categorie/pates-a-tartiner',
     '/huiles.html' => '/categorie/huiles',
     '/coffrets.html' => '/categorie/coffrets',
+    '/categorie/pates-tartiner' => '/categorie/pates-a-tartiner',
+    '/categorie/pate-a-tartiner' => '/categorie/pates-a-tartiner',
 ];
 
 if (isset($legacyRedirects[$path])) {

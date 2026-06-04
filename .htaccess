@@ -33,9 +33,13 @@ Options -Indexes
 
     # 301 — anciens slugs de catégorie vers nouvelles URLs SEO-friendly
     RewriteRule ^creme-de-chataigne\.html$ /categorie/cremes [R=301,L]
-    RewriteRule ^pates-tartiner\.html$     /categorie/pates-tartiner [R=301,L]
+    RewriteRule ^pates-tartiner\.html$     /categorie/pates-a-tartiner [R=301,L]
     RewriteRule ^huiles\.html$             /categorie/huiles [R=301,L]
     RewriteRule ^coffrets\.html$           /categorie/coffrets [R=301,L]
+
+    # 301 — alias de slug catégorie vers le canonique
+    RewriteRule ^categorie/pates-tartiner/?$ /categorie/pates-a-tartiner [R=301,L]
+    RewriteRule ^categorie/pate-a-tartiner/?$ /categorie/pates-a-tartiner [R=301,L]
 
     # Route /categorie/<slug> → categorie.html?cat=<slug>
     RewriteCond %{REQUEST_FILENAME} !-f

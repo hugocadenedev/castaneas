@@ -61,6 +61,18 @@
       .replace(/-{2,}/g, '-');
   }
 
+  function getCategorySlugAliases(category) {
+    var canonical = slugify(category && (category.slug || category.name));
+    if (!canonical) return [];
+
+    var aliases = [canonical];
+    if (canonical === 'pates-a-tartiner') {
+      aliases.push('pates-tartiner', 'pate-a-tartiner');
+    }
+
+    return aliases;
+  }
+
   function withProductSlugs(products) {
     var used = {};
     return (products || []).map(function (product) {
@@ -212,6 +224,20 @@
       return this.categories.find(function (c) { return c.id === id; }) || null;
     },
 
+    /** Catégorie par slug, avec compatibilité sur anciens slugs */
+    getCategoryBySlug: function (slug) {
+      var cleanSlug = slugify(slug);
+      return this.categories.find(function (c) {
+        return getCategorySlugAliases(c).indexOf(cleanSlug) !== -1;
+      }) || null;
+    },
+
+    /** Slug SEO d'une catégorie */
+    getCategorySlug: function (catOrId) {
+      var category = typeof catOrId === 'string' ? this.getCategoryById(catOrId) : catOrId;
+      return slugify(category && (category.slug || category.name));
+    },
+
     /** Produit par ID */
     getProductById: function (id) {
       return this.products.find(function (p) { return p.id === id; }) || null;
@@ -266,7 +292,8 @@
      * URL d'une catégorie — format SEO : /categorie/<slug>
      */
     getCategoryHref: function (cat) {
-      return '/categorie/' + encodeURIComponent(cat.slug);
+      var slug = this.getCategorySlug(cat);
+      return slug ? '/categorie/' + encodeURIComponent(slug) : 'categorie.html';
     },
 
     /**

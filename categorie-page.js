@@ -18,12 +18,18 @@
   }
 
   /* -- Trouver la catégorie -- */
-  var cat = SiteData.categories.find(function (c) { return c.slug === slug; });
+  var cat = SiteData.getCategoryBySlug ? SiteData.getCategoryBySlug(slug) : SiteData.categories.find(function (c) { return c.slug === slug; });
   if (!cat) {
     document.getElementById('cat-title').textContent = 'Catégorie introuvable';
     document.getElementById('result-count').textContent = '0 produit';
     finishRender();
     return;
+  }
+
+  var canonicalHref = SiteData.getCategoryHref ? SiteData.getCategoryHref(cat) : ('/categorie/' + encodeURIComponent(cat.slug));
+  var canonicalSlug = canonicalHref.split('/').pop();
+  if (canonicalSlug && canonicalSlug !== slug && window.history && window.history.replaceState) {
+    window.history.replaceState(null, '', canonicalHref);
   }
 
   /* -- Mise à jour du titre et du breadcrumb -- */
@@ -38,6 +44,8 @@
   var SLUG_TO_BANNER = {
     'cremes':         'assets/banniere-cremes.png',
     'pates-tartiner': 'assets/story-atelier.jpg',
+    'pates-a-tartiner': 'assets/story-atelier.jpg',
+    'pate-a-tartiner': 'assets/story-atelier.jpg',
     'huiles':         'assets/story-chataigneraie.jpg',
     'coffrets':       'assets/story-atelier.jpg'
   };
@@ -60,6 +68,8 @@
   var SLUG_TO_PAGE = {
     'cremes':         'categorie/cremes',
     'pates-tartiner': 'categorie/pates-tartiner',
+    'pates-a-tartiner': 'categorie/pates-a-tartiner',
+    'pate-a-tartiner': 'categorie/pates-a-tartiner',
     'huiles':         'categorie/huiles',
     'coffrets':       'categorie/coffrets'
   };
