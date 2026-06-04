@@ -27,6 +27,13 @@ if (preg_match('#^/categorie/([^/]+)/?$#', $path, $matches)) {
     exit;
 }
 
+if (preg_match('#^/produit/([^/]+)/?$#', $path, $matches)) {
+    $_GET['slug'] = $matches[1];
+    $_SERVER['QUERY_STRING'] = http_build_query($_GET);
+    require __DIR__ . '/Fiche Produit.html';
+    exit;
+}
+
 if ($path === '/' || $path === '') {
     require __DIR__ . '/index.html';
     exit;

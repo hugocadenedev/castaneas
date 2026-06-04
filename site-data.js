@@ -51,6 +51,38 @@
     });
   }
 
+  function slugify(value) {
+    return String(value || '')
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/&/g, ' et ')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .replace(/-{2,}/g, '-');
+  }
+
+  function withProductSlugs(products) {
+    var used = {};
+    return (products || []).map(function (product) {
+      if (!product || !product.id) return product;
+
+      var baseSlug = slugify(product.slug)
+        || [slugify(product.name), slugify(product.weight)].filter(Boolean).join('-')
+        || slugify(product.id)
+        || 'produit';
+
+      var finalSlug = baseSlug;
+      var index = 2;
+      while (used[finalSlug] && used[finalSlug] !== product.id) {
+        finalSlug = baseSlug + '-' + index;
+        index += 1;
+      }
+      used[finalSlug] = product.id;
+
+      return Object.assign({}, product, { slug: finalSlug });
+    });
+  }
+
   /* ---------- Données serveur injectées par data.php (priorité max) ---------- */
   var _srv = window.CASTANEAS_DATA || {};
 
@@ -148,7 +180,10 @@
       }
       return clean || [];
     }()),
-    products: (_srv.products && _srv.products.length > 0) ? _srv.products : (loadStorage(KEYS.products) || []),
+    products: (function () {
+      var source = (_srv.products && _srv.products.length > 0) ? _srv.products : (loadStorage(KEYS.products) || []);
+      return withProductSlugs(source);
+    }()),
     recipes:  (_srv.recipes  && _srv.recipes.length  > 0) ? _srv.recipes  : (loadStorage(KEYS.recipes)  || []),
     homepage: (_srv.homepage && typeof _srv.homepage === 'object') ? _srv.homepage : (loadStorageObject(KEYS.homepage) || {}),
 
@@ -180,6 +215,25 @@
     /** Produit par ID */
     getProductById: function (id) {
       return this.products.find(function (p) { return p.id === id; }) || null;
+    },
+
+    /** Produit par slug */
+    getProductBySlug: function (slug) {
+      var cleanSlug = slugify(slug);
+      return this.products.find(function (p) { return p.slug === cleanSlug; }) || null;
+    },
+
+    /** Slug SEO d'un produit */
+    getProductSlug: function (productOrId) {
+      var product = typeof productOrId === 'string' ? this.getProductById(productOrId) : productOrId;
+      return product && product.slug ? product.slug : '';
+    },
+
+    /** URL d'un produit — format SEO : /produit/<slug> */
+    getProductHref: function (productOrId) {
+      var slug = this.getProductSlug(productOrId);
+      if (!slug) return 'Fiche Produit.html';
+      return '/produit/' + encodeURIComponent(slug);
     },
 
     getProductOffers: function (product) {
@@ -279,13 +333,13 @@
       return false;
     }
 
-    var html = '<a href="index.html"' + (isActive('index.html') ? ' class="active"' : '') + '>Accueil</a>';
+    var html = '<a href="/index.html"' + (isActive('/index.html') ? ' class="active"' : '') + '>Accueil</a>';
     cats.forEach(function (c) {
       var href = SiteData.getCategoryHref(c);
       html += '<a href="' + href + '"' + (isActive(href) ? ' class="active"' : '') + '>' + c.name + '</a>';
     });
-    html += '<a href="recettes.html"' + (isActive('recettes.html') ? ' class="active"' : '') + '>Recettes</a>';
-    html += '<a href="histoire.html"' + (isActive('histoire.html') ? ' class="active"' : '') + '>Notre histoire</a>';
+    html += '<a href="/recettes.html"' + (isActive('/recettes.html') ? ' class="active"' : '') + '>Recettes</a>';
+    html += '<a href="/histoire.html"' + (isActive('/histoire.html') ? ' class="active"' : '') + '>Notre histoire</a>';
 
     navEl.innerHTML = html;
 
@@ -314,7 +368,7 @@
       var brandEl = document.querySelector('.brand');
       var brandHtml = brandEl
         ? brandEl.outerHTML
-        : '<a href="index.html" class="brand">Castaneas</a>';
+        : '<a href="/index.html" class="brand">Castaneas</a>';
 
       overlay.innerHTML =
         '<div class="nav-mobile__panel">' +

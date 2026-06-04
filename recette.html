@@ -331,7 +331,7 @@
     var cat = SiteData.getCategoryById(p.category);
     var catName = cat ? cat.name : '';
     return '<div class="prod-card">'
-      + '<a href="Fiche Produit.html#' + p.id + '" style="text-decoration:none;color:inherit;display:block;">'
+      + '<a href="' + (SiteData.getProductHref ? SiteData.getProductHref(p) : ('Fiche Produit.html#' + p.id)) + '" style="text-decoration:none;color:inherit;display:block;">'
       +   '<div class="prod-card__media">'
       +     (p.badge ? '<span class="prod-card__badge">' + p.badge + '</span>' : '')
       +     '<img src="' + p.image + '" alt="' + p.name + '" onerror="this.onerror=null;this.src=\'assets/product-pate-tartiner.png\'">'

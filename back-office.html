@@ -2180,6 +2180,7 @@ document.getElementById('product-form')?.addEventListener('change', function (ev
 function saveProduct(e) {
   e.preventDefault();
   const id = editingProduct || 'prod-' + Date.now();
+  const existingProduct = state.products.find(p => p.id === id) || null;
   const kind = document.getElementById('p-kind').value;
   const quantityOffers = [0, 1, 2, 3].map(i => ({
     qty: parseInt(document.getElementById(`p-pack-${i}-qty`).value, 10) || 0,
@@ -2195,6 +2196,7 @@ function saveProduct(e) {
     : parseFloat(document.getElementById('p-price').value);
   const product = {
     id,
+    slug:        existingProduct?.slug || buildProductSlug(document.getElementById('p-name').value.trim(), document.getElementById('p-weight').value.trim(), id),
     name:        document.getElementById('p-name').value.trim(),
     category:    document.getElementById('p-category').value,
     kind,
@@ -2430,6 +2432,34 @@ function autoSlug() {
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   document.getElementById('c-slug').value = slug;
+}
+
+function slugifyValue(value) {
+  return String(value || '')
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/&/g, ' et ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .replace(/-{2,}/g, '-');
+}
+
+function buildProductSlug(name, weight, currentId) {
+  const base = [slugifyValue(name), slugifyValue(weight)].filter(Boolean).join('-')
+    || slugifyValue(currentId)
+    || 'produit';
+  const existing = new Set((state.products || [])
+    .filter(p => p && p.id !== currentId)
+    .map(p => slugifyValue(p.slug))
+    .filter(Boolean));
+
+  let slug = base;
+  let index = 2;
+  while (existing.has(slug)) {
+    slug = `${base}-${index}`;
+    index += 1;
+  }
+  return slug;
 }
 
 function pickEmoji(el) {

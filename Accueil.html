@@ -1115,7 +1115,8 @@
         if (!p) return '';
         var img = p.image || 'assets/product-pate-tartiner.png';
         var addData = JSON.stringify({id:p.id,name:p.name,price:p.price,image:img,variant:p.weight,weight:p.weight}).replace(/'/g,'&#39;');
-        return '<a href="Fiche Produit.html#' + esc(p.id) + '" class="bs-card">'
+        var href = SiteData.getProductHref ? SiteData.getProductHref(p) : ('Fiche Produit.html#' + esc(p.id));
+        return '<a href="' + esc(href) + '" class="bs-card">'
           + '<div class="bs-card__media">'
           + (p.badge ? '<span class="bs-card__badge">' + esc(p.badge) + '</span>' : '')
           + '<button class="bs-card__fav" aria-label="Favoris" onclick="event.preventDefault();">' + favSvg + '</button>'

@@ -761,7 +761,10 @@
       var addBtn = card.querySelector('[data-add]');
       var pid = '';
       if (addBtn) { try { pid = JSON.parse(addBtn.dataset.add).id; } catch (x) {} }
-      window.location.href = pid ? 'Fiche Produit.html#' + pid : 'Fiche Produit.html';
+      var product = pid && SiteData.getProductById ? SiteData.getProductById(pid) : null;
+      window.location.href = product && SiteData.getProductHref
+        ? SiteData.getProductHref(product)
+        : (pid ? 'Fiche Produit.html#' + pid : 'Fiche Produit.html');
     }
   });
 </script>
