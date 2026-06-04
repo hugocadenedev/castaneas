@@ -42,10 +42,10 @@ Options -Indexes
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^categorie/([^/]+)/?$ categorie.html?cat=$1 [L,QSA]
 
-    # Route /produit/<slug> → Fiche Produit.html?slug=<slug>
+    # Route /produit/<slug> → produit.php?slug=<slug>
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^produit/([^/]+)/?$ Fiche Produit.html?slug=$1 [L,QSA]
+    RewriteRule ^produit/([^/]+)/?$ produit.php?slug=$1 [L,QSA]
 </IfModule>
 
 # ── 5. data.php : jamais mis en cache (données dynamiques) ──
