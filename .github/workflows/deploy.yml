@@ -13,9 +13,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install lftp
-        run: sudo apt-get update && sudo apt-get install -y lftp
-
       - name: Deploy via FTPS
         timeout-minutes: 10
         env:
@@ -25,54 +22,37 @@ jobs:
         run: |
           set -euo pipefail
 
-          quote_lftp() {
-            local value="$1"
-            value=${value//\\/\\\\}
-            value=${value//\"/\\\"}
-            printf '"%s"' "$value"
+          upload_file() {
+            local file="$1"
+            local remote_path="/public_html/$file"
+
+            echo "Uploading $file"
+
+            curl \
+              --fail \
+              --silent \
+              --show-error \
+              --ssl-reqd \
+              --insecure \
+              --ftp-pasv \
+              --disable-epsv \
+              --ftp-create-dirs \
+              --retry 5 \
+              --retry-all-errors \
+              --retry-delay 3 \
+              --connect-timeout 20 \
+              --max-time 180 \
+              --user "$FTP_USERNAME:$FTP_PASSWORD" \
+              --upload-file "$file" \
+              "ftp://$FTP_SERVER$remote_path"
           }
 
-          {
-            echo 'set cmd:fail-exit true'
-            echo 'set cmd:trace true'
-            echo 'debug 3'
-            echo 'set ftp:ssl-force true'
-            echo 'set ftp:ssl-protect-data true'
-            echo 'set ftp:ssl-use-ccc true'
-            echo 'set ftp:passive-mode true'
-            echo 'set ftp:prefer-epsv false'
-            echo 'set ftp:ignore-pasv-address true'
-            echo 'set ftp:sync-mode true'
-            echo 'set ssl:verify-certificate no'
-            echo 'set net:timeout 20'
-            echo 'set net:idle 20'
-            echo 'set net:max-retries 8'
-            echo 'set net:reconnect-interval-base 5'
-            echo 'set net:reconnect-interval-max 60'
-            echo 'set xfer:timeout 120'
-            echo 'set xfer:clobber true'
-            echo "open -u $(quote_lftp "$FTP_USERNAME"),$(quote_lftp "$FTP_PASSWORD") -p 21 $(quote_lftp "$FTP_SERVER")"
-            echo 'mkdir -f -p /public_html'
+          while IFS= read -r file; do
+            case "$file" in
+              .git*|.github*|db-config.local.php|node_modules/*|uploads/*|data/*.json)
+                continue
+                ;;
+            esac
 
-            while IFS= read -r file; do
-              case "$file" in
-                .git*|.github*|db-config.local.php|node_modules/*|uploads/*|data/*.json)
-                  continue
-                  ;;
-              esac
-
-              remote_dir=$(dirname "$file")
-              if [ "$remote_dir" = "." ]; then
-                remote_dir='/public_html'
-              else
-                remote_dir="/public_html/$remote_dir"
-              fi
-
-              echo "mkdir -f -p $(quote_lftp "$remote_dir")"
-              echo "put -O $(quote_lftp "$remote_dir") $(quote_lftp "$file")"
-            done < <(git ls-files)
-
-            echo 'bye'
-          } > deploy.lftp
-
-          lftp -f deploy.lftp
+            upload_file "$file"
+          done < <(git ls-files)
