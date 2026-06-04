@@ -23,36 +23,56 @@ jobs:
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
         run: |
-          lftp <<EOF
-          set cmd:fail-exit true
-          set ftp:ssl-force true
-          set ftp:ssl-protect-data true
-          set ftp:ssl-use-ccc true
-          set ftp:passive-mode true
-          set ftp:prefer-epsv false
-          set ftp:ignore-pasv-address true
-          set ftp:sync-mode true
-          set ssl:verify-certificate no
-          set net:timeout 20
-          set net:idle 20
-          set net:max-retries 8
-          set net:reconnect-interval-base 5
-          set net:reconnect-interval-max 60
-          set xfer:timeout 120
-          set xfer:clobber true
-          open -u "$FTP_USERNAME","$FTP_PASSWORD" -p 21 "$FTP_SERVER"
-          mirror -R ./ /public_html/ \
-            --verbose=3 \
-            --parallel=1 \
-            --max-errors=1 \
-            --only-newer \
-            --continue \
-            --no-perms \
-            --exclude-glob .git* \
-            --exclude-glob .github* \
-            --exclude-glob "db-config.local.php" \
-            --exclude-glob node_modules \
-            --exclude-glob "uploads/**" \
-            --exclude-glob "data/*.json"
-          bye
-          EOF
+          set -euo pipefail
+
+          quote_lftp() {
+            local value="$1"
+            value=${value//\\/\\\\}
+            value=${value//\"/\\\"}
+            printf '"%s"' "$value"
+          }
+
+          {
+            echo 'set cmd:fail-exit true'
+            echo 'set cmd:trace true'
+            echo 'debug 3'
+            echo 'set ftp:ssl-force true'
+            echo 'set ftp:ssl-protect-data true'
+            echo 'set ftp:ssl-use-ccc true'
+            echo 'set ftp:passive-mode true'
+            echo 'set ftp:prefer-epsv false'
+            echo 'set ftp:ignore-pasv-address true'
+            echo 'set ftp:sync-mode true'
+            echo 'set ssl:verify-certificate no'
+            echo 'set net:timeout 20'
+            echo 'set net:idle 20'
+            echo 'set net:max-retries 8'
+            echo 'set net:reconnect-interval-base 5'
+            echo 'set net:reconnect-interval-max 60'
+            echo 'set xfer:timeout 120'
+            echo 'set xfer:clobber true'
+            echo "open -u $(quote_lftp "$FTP_USERNAME"),$(quote_lftp "$FTP_PASSWORD") -p 21 $(quote_lftp "$FTP_SERVER")"
+            echo 'mkdir -p /public_html'
+
+            while IFS= read -r file; do
+              case "$file" in
+                .git*|.github*|db-config.local.php|node_modules/*|uploads/*|data/*.json)
+                  continue
+                  ;;
+              esac
+
+              remote_dir=$(dirname "$file")
+              if [ "$remote_dir" = "." ]; then
+                remote_dir='/public_html'
+              else
+                remote_dir="/public_html/$remote_dir"
+              fi
+
+              echo "mkdir -p $(quote_lftp "$remote_dir")"
+              echo "put -O $(quote_lftp "$remote_dir") $(quote_lftp "$file")"
+            done < <(git ls-files)
+
+            echo 'bye'
+          } > deploy.lftp
+
+          lftp -f deploy.lftp
