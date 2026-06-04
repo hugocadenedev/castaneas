@@ -57,7 +57,7 @@ jobs:
               --max-time 180 \
               --user "$FTP_USERNAME:$FTP_PASSWORD" \
               --upload-file "$file" \
-                "ftp://$FTP_SERVER$remote_path"
+                "ftps://$FTP_SERVER$remote_path"
           }
 
           while IFS= read -r file; do
