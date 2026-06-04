@@ -33,11 +33,12 @@ jobs:
               --ftp-pasv \
               --disable-epsv \
               --ftp-create-dirs \
-              --retry 8 \
+                --retry 15 \
               --retry-all-errors \
-              --retry-delay 3 \
-              --connect-timeout 20 \
-              --max-time 180 \
+                --retry-delay 5 \
+                --retry-max-time 900 \
+                --connect-timeout 45 \
+                --max-time 420 \
               --user "$FTP_USERNAME:$FTP_PASSWORD" \
               "$@"
           }
@@ -80,17 +81,30 @@ jobs:
           upload_file() {
             local file="$1"
             local remote_path
+            local attempt
             if [ -n "$REMOTE_BASE" ]; then
               remote_path=$(encode_remote_path "$REMOTE_BASE/$file")
             else
               remote_path=$(encode_remote_path "$file")
             fi
 
-            echo "Uploading $file"
+            for attempt in 1 2 3; do
+              echo "Uploading $file (attempt $attempt/3)"
 
-            ftp_curl \
-              --upload-file "$file" \
-              "ftp://$FTP_SERVER/$remote_path"
+              if ftp_curl \
+                --upload-file "$file" \
+                "ftp://$FTP_SERVER/$remote_path"; then
+                return 0
+              fi
+
+              if [ "$attempt" -lt 3 ]; then
+                echo "Upload failed for $file, retrying after backoff"
+                sleep $((attempt * 10))
+              fi
+            done
+
+            echo "Upload failed for $file after 3 attempts"
+            return 1
           }
 
           while IFS= read -r file; do
