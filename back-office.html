@@ -941,42 +941,6 @@ tbody tr:last-child td { border-bottom: none; }
             </div>
           </div>
 
-          <!-- VALEURS -->
-          <div class="table-wrap" style="padding:24px 28px;margin-bottom:20px;">
-            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">✨</span> Section "Nos valeurs"</h3>
-            <div class="form-grid">
-              <div class="form-field">
-                <label>Accroche</label>
-                <input type="text" id="hp-val-eyebrow" placeholder="Trois ingrédients, aucun secret">
-              </div>
-              <div class="form-field">
-                <label>Titre — partie normale</label>
-                <input type="text" id="hp-val-title" placeholder="Du verger au pot,">
-              </div>
-              <div class="form-field">
-                <label>Titre — partie italique</label>
-                <input type="text" id="hp-val-title-em" placeholder="et rien à cacher.">
-              </div>
-            </div>
-            <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;">
-              <div>
-                <p style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:10px;">Valeur 1</p>
-                <div class="form-field" style="margin-bottom:10px;"><label>Titre</label><input type="text" id="hp-val1-title" placeholder="Cueillies à la main"></div>
-                <div class="form-field"><label>Description</label><textarea id="hp-val1-desc" rows="3" placeholder="Châtaignes et noisettes…"></textarea></div>
-              </div>
-              <div>
-                <p style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:10px;">Valeur 2</p>
-                <div class="form-field" style="margin-bottom:10px;"><label>Titre</label><input type="text" id="hp-val2-title" placeholder="Cuites en cuivre"></div>
-                <div class="form-field"><label>Description</label><textarea id="hp-val2-desc" rows="3" placeholder="Dans le chaudron de famille…"></textarea></div>
-              </div>
-              <div>
-                <p style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:10px;">Valeur 3</p>
-                <div class="form-field" style="margin-bottom:10px;"><label>Titre</label><input type="text" id="hp-val3-title" placeholder="Trois ingrédients"></div>
-                <div class="form-field"><label>Description</label><textarea id="hp-val3-desc" rows="3" placeholder="Fruit, sucre roux, vanille…"></textarea></div>
-              </div>
-            </div>
-          </div>
-
           <div style="display:flex;justify-content:flex-end;padding-bottom:32px;">
             <button type="submit" class="btn btn-primary" style="padding:13px 28px;font-size:14px;">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
@@ -3036,17 +3000,6 @@ function renderHomepage() {
   hpSetVal('hp-hist-sig-name',     hi.signatureName ?? 'Lucie & Marc');
   hpSetVal('hp-hist-sig-role',     hi.signatureRole ?? 'Les fondateurs');
 
-  const v = cfg.valeurs || {};
-  hpSetVal('hp-val-eyebrow',  v.eyebrow ?? 'Trois ingrédients, aucun secret');
-  hpSetVal('hp-val-title',    v.title   ?? 'Du verger au pot,');
-  hpSetVal('hp-val-title-em', v.titleEm ?? 'et rien à cacher.');
-  const items = v.items || [];
-  hpSetVal('hp-val1-title', items[0]?.title ?? 'Cueillies à la main');
-  hpSetVal('hp-val1-desc',  items[0]?.desc  ?? 'Châtaignes et noisettes ramassées une à une dans nos vergers du Quercy, à pleine maturité.');
-  hpSetVal('hp-val2-title', items[1]?.title ?? 'Cuites en cuivre');
-  hpSetVal('hp-val2-desc',  items[1]?.desc  ?? 'Dans le chaudron de famille, sans presse, à feu doux — le soir même de la récolte.');
-  hpSetVal('hp-val3-title', items[2]?.title ?? 'Trois ingrédients');
-  hpSetVal('hp-val3-desc',  items[2]?.desc  ?? 'Fruit, sucre roux, vanille. Sans gluten, sans huile de palme, sans conservateur.');
 }
 
 function saveHomepage(e) {
@@ -3092,16 +3045,6 @@ function saveHomepage(e) {
       stickerSub:    g('hp-hist-sticker-sub'),
       signatureName: g('hp-hist-sig-name'),
       signatureRole: g('hp-hist-sig-role'),
-    },
-    valeurs: {
-      eyebrow: g('hp-val-eyebrow'),
-      title:   g('hp-val-title'),
-      titleEm: g('hp-val-title-em'),
-      items: [
-        { title: g('hp-val1-title'), desc: g('hp-val1-desc') },
-        { title: g('hp-val2-title'), desc: g('hp-val2-desc') },
-        { title: g('hp-val3-title'), desc: g('hp-val3-desc') },
-      ],
     },
   };
   save(KEYS.homepage, cfg);
