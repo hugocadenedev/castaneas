@@ -23,10 +23,10 @@ jobs:
           protocol: ftps
           port: 21
           local-dir: ./
-          server-dir: /public_html/
+          server-dir: public_html/
           security: loose
           timeout: 120000
-          log-level: standard
+          log-level: verbose
           exclude: |
             **/.git*
             **/.git*/**
