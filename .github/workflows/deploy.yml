@@ -22,6 +22,26 @@ jobs:
         run: |
           set -euo pipefail
 
+          ftp_curl() {
+            curl \
+              --fail \
+              --silent \
+              --show-error \
+              --ipv4 \
+              --ssl-reqd \
+              --insecure \
+              --ftp-pasv \
+              --disable-epsv \
+              --ftp-create-dirs \
+              --retry 8 \
+              --retry-all-errors \
+              --retry-delay 3 \
+              --connect-timeout 20 \
+              --max-time 180 \
+              --user "$FTP_USERNAME:$FTP_PASSWORD" \
+              "$@"
+          }
+
           encode_remote_path() {
             local value="$1"
             value=${value//%/%25}
@@ -33,31 +53,44 @@ jobs:
             printf '%s' "$value"
           }
 
+          detect_remote_base() {
+            local candidate
+            local listing
+
+            for candidate in "" "public_html"; do
+              local probe_path="$candidate"
+              if listing=$(ftp_curl --list-only "ftp://$FTP_SERVER/$probe_path" 2>/dev/null); then
+                if printf '%s\n' "$listing" | grep -E '^(index\.html|Accueil\.html|Fiche Produit\.html|assets|styles\.css)$' >/dev/null; then
+                  printf '%s' "$candidate"
+                  return 0
+                fi
+              fi
+            done
+
+            printf ''
+          }
+
+          REMOTE_BASE=$(detect_remote_base)
+          if [ -n "$REMOTE_BASE" ]; then
+            echo "Detected remote base: $REMOTE_BASE"
+          else
+            echo "Detected remote base: FTP root"
+          fi
+
           upload_file() {
             local file="$1"
             local remote_path
-            remote_path=$(encode_remote_path "/$file")
+            if [ -n "$REMOTE_BASE" ]; then
+              remote_path=$(encode_remote_path "$REMOTE_BASE/$file")
+            else
+              remote_path=$(encode_remote_path "$file")
+            fi
 
             echo "Uploading $file"
 
-            curl \
-              --fail \
-              --silent \
-              --show-error \
-              --ipv4 \
-              --ssl-reqd \
-              --insecure \
-              --ftp-pasv \
-              --disable-epsv \
-              --ftp-create-dirs \
-              --retry 5 \
-              --retry-all-errors \
-              --retry-delay 3 \
-              --connect-timeout 20 \
-              --max-time 180 \
-              --user "$FTP_USERNAME:$FTP_PASSWORD" \
+            ftp_curl \
               --upload-file "$file" \
-                "ftps://$FTP_SERVER$remote_path"
+              "ftp://$FTP_SERVER/$remote_path"
           }
 
           while IFS= read -r file; do
