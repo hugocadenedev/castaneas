@@ -74,10 +74,14 @@ jobs:
             --exclude='storage/' \
             ./ "$DEPLOY_DIR/"
 
-          REMOTE_TARGET="/"
+          REMOTE_TARGET="."
           if [ -n "$REMOTE_BASE" ]; then
-            REMOTE_TARGET="/$REMOTE_BASE"
+            REMOTE_TARGET="$REMOTE_BASE"
           fi
 
           echo "Mirroring $DEPLOY_DIR to $REMOTE_TARGET"
-          lftp_exec "mkdir -p $REMOTE_TARGET && mirror -R --only-newer --verbose=1 --parallel=4 $DEPLOY_DIR $REMOTE_TARGET"
+          if [ -n "$REMOTE_BASE" ]; then
+            lftp_exec "mkdir -p $REMOTE_TARGET; mirror -R --only-newer --verbose=1 --parallel=4 $DEPLOY_DIR $REMOTE_TARGET"
+          else
+            lftp_exec "mirror -R --only-newer --verbose=1 --parallel=4 $DEPLOY_DIR $REMOTE_TARGET"
+          fi
