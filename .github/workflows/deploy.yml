@@ -36,7 +36,7 @@ jobs:
           upload_file() {
             local file="$1"
             local remote_path
-            remote_path=$(encode_remote_path "/public_html/$file")
+            remote_path=$(encode_remote_path "/$file")
 
             echo "Uploading $file"
 
