@@ -1,10 +1,10 @@
 <?php
 // ============================================================
 //  CASTANEAS — save.php
-//  API back-office : persiste les données dans /data/*.json
+//  API back-office : persiste les données JSON hors dossier déployé quand possible.
 //
-//  GET  /save.php?key=products          → lit   data/products.json
-//  POST /save.php?key=products  + body  → écrit data/products.json
+//  GET  /save.php?key=products          → lit   <data-dir>/products.json
+//  POST /save.php?key=products  + body  → écrit <data-dir>/products.json
 //
 //  ⚠️  Changez ADMIN_TOKEN avant de déployer (ou après).
 // ============================================================
@@ -12,12 +12,19 @@
 define('ADMIN_TOKEN', 'cas_srv_9e4f2b8d3a7c1065');
 
 function resolve_data_directory() {
+    $externalDir = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'castaneas-data';
+    $configDir = getenv('CASTANEAS_DATA_DIR');
     $candidates = [
+        $configDir ? rtrim($configDir, '/\\') : null,
+        $externalDir,
         __DIR__ . '/data',
         __DIR__ . '/uploads/data',
     ];
 
     foreach ($candidates as $dir) {
+        if (!$dir) {
+            continue;
+        }
         if (!is_dir($dir) && !@mkdir($dir, 0755, true) && !is_dir($dir)) {
             continue;
         }
