@@ -54,6 +54,23 @@ function castaneas_db_enabled() {
         && $config['user'] !== '';
 }
 
+function castaneas_db_config_sources() {
+    return [
+        dirname(__DIR__) . DIRECTORY_SEPARATOR . 'castaneas-config' . DIRECTORY_SEPARATOR . 'db-config.php',
+        __DIR__ . '/db-config.local.php',
+    ];
+}
+
+function castaneas_db_config_file_found() {
+    foreach (castaneas_db_config_sources() as $configFile) {
+        if (is_file($configFile)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 function castaneas_db() {
     static $pdo = false;
     if ($pdo !== false) {
@@ -204,4 +221,34 @@ function castaneas_storage_write_raw($key, $rawJson) {
     }
 
     return castaneas_json_write_raw($key, $rawJson);
+}
+
+function castaneas_storage_status() {
+    $config = castaneas_db_config();
+    $pdo = castaneas_db();
+    $tableExists = false;
+    $keys = [];
+
+    if ($pdo) {
+        castaneas_db_init_schema($pdo);
+        $tableExists = true;
+
+        try {
+            $stmt = $pdo->query('SELECT store_key, updated_at FROM content_store ORDER BY store_key ASC');
+            $keys = $stmt->fetchAll();
+        } catch (Throwable $e) {
+            $tableExists = false;
+        }
+    }
+
+    return [
+        'backend' => castaneas_storage_backend(),
+        'db_config_file_found' => castaneas_db_config_file_found(),
+        'db_env_configured' => ($config['host'] !== '' && $config['name'] !== '' && $config['user'] !== ''),
+        'pdo_mysql_loaded' => extension_loaded('pdo_mysql'),
+        'db_connected' => $pdo !== null,
+        'content_store_ready' => $tableExists,
+        'stored_keys' => $keys,
+        'json_dirs' => castaneas_json_directories(),
+    ];
 }
