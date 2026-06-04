@@ -2772,11 +2772,11 @@ function editRecipe(id) { openRecipeModal(id); }
 function renderRecipeImgPicker() {
   const picker = document.getElementById('recipe-img-picker');
   const currentImg = document.getElementById('r-image').value;
-  const catalog = [...new Set([currentImg, ...state.imageCatalogMain, ...state.imageCatalogExtra].filter(Boolean))];
-  picker.innerHTML = catalog.map(src => {
-    const sel = src === currentImg ? ' selected' : '';
-    return `<div class="img-slot"><img class="img-preview${sel}" data-src="${src}" src="${src}" style="width:72px;height:72px;object-fit:cover;border-radius:12px;cursor:pointer;border:2px solid ${sel ? 'var(--brown-deep)' : 'transparent'}" onerror="this.onerror=null;this.src='assets/product-pate-tartiner.png'" onclick="pickRecipeImg(this)"></div>`;
-  }).join('');
+  if (!currentImg) {
+    picker.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:10px 2px;">Aucune image sélectionnée pour cette recette.</div>';
+    return;
+  }
+  picker.innerHTML = `<div class="img-slot"><img class="img-preview selected" data-src="${currentImg}" src="${currentImg}" style="width:72px;height:72px;object-fit:cover;border-radius:12px;cursor:pointer;border:2px solid var(--brown-deep)" onerror="this.onerror=null;this.src='assets/product-pate-tartiner.png'" onclick="pickRecipeImg(this)"></div>`;
 }
 
 function pickRecipeImg(el) {
