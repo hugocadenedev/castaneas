@@ -8,13 +8,13 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 20
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Deploy via FTPS
-        timeout-minutes: 10
+        timeout-minutes: 15
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -26,7 +26,7 @@ jobs:
           server-dir: /public_html/
           state-name: .ftp-deploy-sync-state-v2.json
           security: loose
-          timeout: 120000
+          timeout: 300000
           log-level: verbose
           exclude: |
             **/.git*
