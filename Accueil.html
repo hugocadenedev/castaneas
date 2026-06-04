@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&amp;family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css?v=7">
+<script>document.documentElement.classList.add('homepage-config-pending');</script>
 <style>
   /* =========================================================
      TYPOGRAPHIE — alignée sur produit-v2 (Fraunces + Inter)
@@ -25,6 +26,7 @@
   .histoire-card__title em,
   .cta-title em,
   .editorial-text em { font-style: italic; font-weight: 400; }
+  .homepage-config-pending .home { visibility: hidden; }
 </style>
 <style>
   /* =========================================================
@@ -1015,8 +1017,16 @@
 (function () {
   'use strict';
   var cfg = null;
-  try { cfg = JSON.parse(localStorage.getItem('castaneas_homepage_v1') || 'null'); } catch(e) {}
+  if (window.SiteData && SiteData.homepage && typeof SiteData.homepage === 'object') {
+    cfg = SiteData.homepage;
+  } else if (window.CASTANEAS_DATA && window.CASTANEAS_DATA.homepage && typeof window.CASTANEAS_DATA.homepage === 'object') {
+    cfg = window.CASTANEAS_DATA.homepage;
+  } else {
+    try { cfg = JSON.parse(localStorage.getItem('castaneas_homepage_v1') || 'null'); } catch(e) {}
+  }
 
+
+  document.documentElement.classList.remove('homepage-config-pending');
   function esc(s) {
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }

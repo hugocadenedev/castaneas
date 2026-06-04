@@ -56,6 +56,13 @@ Options -Indexes
     Header always set Surrogate-Control "no-store"
 </FilesMatch>
 
+# ── 5bis. HTML : toujours revalider pour éviter les vieilles pages en prod ──
+<FilesMatch "\.(html?)$">
+    Header always set Cache-Control "no-cache, must-revalidate, max-age=0"
+    Header always set Pragma "no-cache"
+    Header always set Expires "0"
+</FilesMatch>
+
 # ── 6. Cache statique pour les assets ─────────────────────
 <IfModule mod_expires.c>
     ExpiresActive On
