@@ -1,5 +1,5 @@
 ﻿/* ============================================================
-   CASTANEAS — site-data.js v3 (server-only)
+  CASTANEAS — site-data.js v4 (server-only)
    Sources de données (par priorité) :
      1. window.CASTANEAS_DATA injecté par data.php (serveur)
      2. localStorage (back-office en ligne)
