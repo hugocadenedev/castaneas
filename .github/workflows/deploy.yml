@@ -30,3 +30,4 @@ jobs:
             **/node_modules/**
             uploads/test-*.png
             data/*.json
+            uploads/data/**

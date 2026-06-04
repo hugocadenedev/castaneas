@@ -10,16 +10,24 @@ header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Pragma: no-cache');
 header('Expires: 0');
 
-$dataDir = __DIR__ . '/data';
+$dataDirs = [
+    __DIR__ . '/data',
+    __DIR__ . '/uploads/data',
+];
 $output  = [];
 
 foreach (['products', 'categories', 'recipes', 'homepage'] as $key) {
-    $file = $dataDir . '/' . $key . '.json';
-    if (file_exists($file)) {
+    foreach ($dataDirs as $dataDir) {
+        $file = $dataDir . '/' . $key . '.json';
+        if (!file_exists($file)) {
+            continue;
+        }
+
         $raw  = file_get_contents($file);
         $data = json_decode($raw);
         if ($data !== null) {
             $output[$key] = $data;
+            break;
         }
     }
 }

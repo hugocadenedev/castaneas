@@ -11,6 +11,24 @@
 
 define('ADMIN_TOKEN', 'cas_srv_9e4f2b8d3a7c1065');
 
+function resolve_data_directory() {
+    $candidates = [
+        __DIR__ . '/data',
+        __DIR__ . '/uploads/data',
+    ];
+
+    foreach ($candidates as $dir) {
+        if (!is_dir($dir) && !@mkdir($dir, 0755, true) && !is_dir($dir)) {
+            continue;
+        }
+        if (is_writable($dir)) {
+            return $dir;
+        }
+    }
+
+    return null;
+}
+
 header('Content-Type: application/json; charset=utf-8');
 
 // ── Vérification du token ─────────────────────────────────
@@ -32,11 +50,13 @@ if (!in_array($key, $allowed, true)) {
 }
 
 // ── Répertoire de données ─────────────────────────────────
-$dataDir = __DIR__ . '/data/';
-if (!is_dir($dataDir)) {
-    mkdir($dataDir, 0755, true);
+$dataDir = resolve_data_directory();
+if ($dataDir === null) {
+    http_response_code(500);
+    echo json_encode(['error' => 'No writable data directory']);
+    exit;
 }
-$file   = $dataDir . $key . '.json';
+$file   = $dataDir . '/' . $key . '.json';
 $method = $_SERVER['REQUEST_METHOD'];
 
 // ── Lecture ───────────────────────────────────────────────
