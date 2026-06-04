@@ -27,10 +27,85 @@
     return state.items.reduce((s, i) => s + i.qty * i.price, 0);
   }
 
+  function money(value) {
+    return Number(value || 0).toFixed(2) + '€';
+  }
+
+  function uniqParts(parts) {
+    return parts.filter((part, index) => part && parts.indexOf(part) === index);
+  }
+
+  function getCartBoxItems(item) {
+    const source = Array.isArray(item.boxItems) && item.boxItems.length
+      ? { boxItems: item.boxItems }
+      : (typeof SiteData !== 'undefined' && SiteData.getProductById ? SiteData.getProductById(item.id) : null);
+
+    const rawItems = Array.isArray(source && source.boxItems) ? source.boxItems : [];
+    return rawItems
+      .filter(boxItem => boxItem && boxItem.productId && isFinite(boxItem.unitPrice))
+      .map(boxItem => {
+        const linked = typeof SiteData !== 'undefined' && SiteData.getProductById
+          ? SiteData.getProductById(boxItem.productId)
+          : null;
+        const metaParts = uniqParts([
+          linked && linked.weight ? linked.weight : '',
+          linked && linked.category && typeof SiteData !== 'undefined' && SiteData.getCategoryById
+            ? (SiteData.getCategoryById(linked.category) || {}).name || ''
+            : ''
+        ]);
+        return {
+          name: linked && linked.name ? linked.name : 'Produit du coffret',
+          image: linked && linked.image ? linked.image : 'assets/product-pate-tartiner.png',
+          meta: metaParts.join(' · '),
+          unitPrice: Number(boxItem.unitPrice || 0)
+        };
+      });
+  }
+
+  function renderCartBoxDetails(item) {
+    const boxItems = getCartBoxItems(item);
+    if (!boxItems.length) return '';
+
+    return `
+      <div class="cart-item-box">
+        <div class="cart-item-box__title">Composition du coffret</div>
+        <div class="cart-item-box__list">
+          ${boxItems.map(boxItem => `
+            <div class="cart-item-box__row">
+              <div class="cart-item-box__img" style="background-image:url('${esc(boxItem.image)}')"></div>
+              <div>
+                <div class="cart-item-box__name">${esc(boxItem.name)}</div>
+                <div class="cart-item-box__meta">${esc(boxItem.meta || 'Produit inclus')}</div>
+              </div>
+              <div class="cart-item-box__price">${money(boxItem.unitPrice)}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+  }
+
+  function enrichCartProduct(product) {
+    if (!product || !product.id || typeof SiteData === 'undefined' || !SiteData.getProductById) {
+      return product;
+    }
+    const source = SiteData.getProductById(product.id);
+    if (!source || !Array.isArray(source.boxItems) || !source.boxItems.length) {
+      return product;
+    }
+    return {
+      ...product,
+      boxItems: source.boxItems.map(item => ({
+        productId: item.productId,
+        unitPrice: Number(item.unitPrice || 0)
+      }))
+    };
+  }
+
   function add(product) {
-    const existing = state.items.find(i => i.id === product.id && i.variant === product.variant);
-    if (existing) existing.qty += product.qty || 1;
-    else state.items.push({ ...product, qty: product.qty || 1 });
+    const enriched = enrichCartProduct(product);
+    const existing = state.items.find(i => i.id === enriched.id && i.variant === enriched.variant);
+    if (existing) existing.qty += enriched.qty || 1;
+    else state.items.push({ ...enriched, qty: enriched.qty || 1 });
     save(); render();
   }
 
@@ -70,12 +145,15 @@
     }
 
     if (foot) foot.style.display = 'block';
-    body.innerHTML = state.items.map(i => `
+    body.innerHTML = state.items.map(i => {
+      const meta = uniqParts([i.variant || '', i.weight || '250g']).join(' · ');
+      return `
       <div class="cart-item">
         <div class="cart-item-img" style="background-image:url('${esc(i.image)}')"></div>
         <div>
           <div class="cart-item-name">${esc(i.name)}</div>
-          <div class="cart-item-meta">${esc(i.variant || '')} · ${esc(i.weight || '250g')}</div>
+          <div class="cart-item-meta">${esc(meta)}</div>
+          ${renderCartBoxDetails(i)}
           <div class="qty-ctrl">
             <button data-qty="dec" data-id="${esc(i.id)}" data-variant="${esc(i.variant || '')}">−</button>
             <span class="val">${esc(i.qty)}</span>
@@ -84,7 +162,7 @@
         </div>
         <div class="cart-item-price">${(i.qty * i.price).toFixed(2)}€</div>
       </div>
-    `).join('');
+    `; }).join('');
 
     document.querySelector('[data-cart-total]').textContent = total().toFixed(2) + '€';
 

@@ -257,7 +257,7 @@ h1,h2,h3,h4 { font-family: var(--serif); letter-spacing: -.02em; }
 
 /* ----- Footer ----- */
 .footer { background: transparent; margin-top: 0; padding: 0 16px 24px; }
-.footer-inner { max-width: 1340px; margin: 0 auto; background: var(--accent-cocoa); color: var(--cream); border-radius: 28px; padding: 56px 48px 28px; box-shadow: 0 12px 40px -16px rgba(59,31,14,.35); }
+.footer-inner { max-width: 1340px; margin: 0 auto; background: var(--shell-accent); color: var(--cream); border-radius: 28px; padding: 56px 48px 28px; box-shadow: 0 12px 40px -16px rgba(59,31,14,.35); }
 .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 40px; }
 .footer-grid p { font-size: 14px; line-height: 1.65; opacity: .75; margin-top: 12px; }
 .footer-grid h4 { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; opacity: .5; margin-bottom: 16px; font-family: var(--sans); font-weight: 700; }

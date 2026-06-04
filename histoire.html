@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notre histoire · Castaneas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=5">
+<style>
+  :root {
+    --serif: 'Fraunces', Georgia, serif;
+    --sans: 'Inter', -apple-system, Arial, sans-serif;
+    --hand: 'Caveat', cursive;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  body { font-family: var(--sans); letter-spacing: -.005em; }
+  h1,h2,h3,h4 { font-family: var(--serif); letter-spacing: -.02em; }
+
+  .navbar.pill-nav { background: transparent; border-bottom: none; position: sticky; top: 14px; z-index: 50; }
+  .navbar.pill-nav .nav-inner { max-width: 1340px; margin: 16px auto 0; background: #fff; border-radius: 999px; padding: 12px 16px 12px 28px; box-shadow: 0 6px 24px -10px rgba(59,31,14,.18); }
+  .navbar.pill-nav .brand { font-size: 26px; font-weight: 700; }
+  .navbar.pill-nav .nav-links { font-weight: 600; }
+  .navbar.pill-nav .nav-links a { color: var(--brown-deep); }
+  .navbar.pill-nav .nav-actions { background: transparent; border-radius: 0; padding: 0; gap: 8px; }
+  .navbar.pill-nav .icon-btn { width: 40px; height: 40px; background: #EDEFE5; border-radius: 999px; transition: background .15s; }
+  .navbar.pill-nav .icon-btn:hover { background: #dfe3d5; }
+  .cart-pill { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px 8px 12px; background: #EDEFE5; color: var(--brown-deep); font-weight: 700; font-size: 13px; border-radius: 999px; border: none; cursor: pointer; transition: background .15s; }
+  .cart-pill:hover { background: #dfe3d5; }
+  .cart-pill svg { width: 18px; height: 18px; }
+  .promo-bar.pill { max-width: 1340px; margin: 14px auto 0; border-radius: 999px; }
+  .brand-logo { display: block; height: 34px; width: auto; }
+  .footer-brand-logo { display: block; height: 42px; width: auto; filter: brightness(0) invert(1); }
+
+  .page { max-width: 1340px; margin: 0 auto; padding: 0 24px 100px; }
+  .story-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) 420px;
+    gap: 24px;
+    margin: 40px 0 56px;
+  }
+  .story-hero__panel {
+    background: linear-gradient(135deg, rgba(245,233,213,.95) 0%, rgba(239,225,202,.92) 100%);
+    border-radius: 34px;
+    padding: 56px;
+    position: relative;
+    overflow: hidden;
+  }
+  .story-hero__panel::after {
+    content: "";
+    position: absolute;
+    right: -80px;
+    bottom: -80px;
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.28);
+  }
+  .story-hero__eyebrow,
+  .section__eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .32em;
+    text-transform: uppercase;
+    color: var(--brown-chest);
+    font-weight: 700;
+    margin-bottom: 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .story-hero__eyebrow::before,
+  .section__eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--brown-chest);
+    opacity: .5;
+  }
+  .story-hero__title {
+    font-size: clamp(42px, 5vw, 72px);
+    line-height: 1.02;
+    color: var(--brown-deep);
+    margin: 0 0 20px;
+  }
+  .story-hero__title em { color: var(--green); font-weight: 600; }
+  .story-hero__lede {
+    font-size: 17px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    max-width: 720px;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+  }
+  .story-hero__aside {
+    display: grid;
+    gap: 18px;
+  }
+  .story-media {
+    border-radius: 30px;
+    overflow: hidden;
+    min-height: 320px;
+    position: relative;
+    background: var(--sauge);
+  }
+  .story-media img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .story-badge-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .story-badge {
+    background: #fff;
+    border-radius: 22px;
+    padding: 20px 18px;
+    box-shadow: 0 12px 28px -20px rgba(59,31,14,.28);
+  }
+  .story-badge__value {
+    display: block;
+    font-family: var(--serif);
+    font-size: 34px;
+    line-height: 1;
+    color: var(--brown-deep);
+    margin-bottom: 8px;
+  }
+  .story-badge__label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .18em;
+    color: var(--brown-chest);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .story-badge p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+  }
+
+  .story-section {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+    gap: 28px;
+    align-items: start;
+    margin-bottom: 28px;
+  }
+  .story-section__card,
+  .story-note,
+  .story-highlight,
+  .story-promise {
+    background: #fff;
+    border-radius: 30px;
+    padding: 34px 34px;
+    box-shadow: 0 10px 30px -22px rgba(59,31,14,.26);
+  }
+  .story-section__title,
+  .story-highlight__title,
+  .story-promise__title {
+    font-size: clamp(30px, 3vw, 44px);
+    line-height: 1.05;
+    color: var(--brown-deep);
+    margin: 0 0 18px;
+  }
+  .story-section__body p,
+  .story-highlight p,
+  .story-promise p {
+    margin: 0 0 16px;
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--ink-soft);
+  }
+  .story-section__body p:last-child,
+  .story-highlight p:last-child,
+  .story-promise p:last-child { margin-bottom: 0; }
+  .story-note {
+    background: linear-gradient(180deg, rgba(201,217,182,.9) 0%, rgba(233,240,222,.92) 100%);
+  }
+  .story-note__title {
+    font-size: 14px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    font-family: var(--mono);
+    color: var(--brown-chest);
+    font-weight: 700;
+    margin: 0 0 16px;
+  }
+  .story-note__list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .story-note__item {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 12px;
+    align-items: start;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--brown-deep);
+  }
+  .story-note__item span:first-child {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.72);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+  }
+
+  .story-split {
+    display: grid;
+    grid-template-columns: 420px minmax(0, 1fr);
+    gap: 28px;
+    align-items: stretch;
+    margin: 28px 0;
+  }
+  .story-split--reverse { grid-template-columns: minmax(0, 1fr) 420px; }
+  .story-split--reverse .story-media { order: 2; }
+  .story-split--reverse .story-highlight { order: 1; }
+
+  .story-kpis {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin: 18px 0 0;
+  }
+  .story-kpi {
+    border-radius: 24px;
+    background: #fff;
+    padding: 22px;
+    box-shadow: 0 10px 30px -22px rgba(59,31,14,.26);
+  }
+  .story-kpi__value {
+    display: block;
+    font-family: var(--serif);
+    font-size: 40px;
+    color: var(--brown-deep);
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+  .story-kpi__label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--brown-chest);
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .story-kpi p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+
+  .story-checklist {
+    display: grid;
+    gap: 10px;
+    margin: 20px 0;
+  }
+  .story-check {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 12px;
+    align-items: start;
+    font-size: 16px;
+    color: var(--brown-deep);
+    font-weight: 600;
+  }
+  .story-check span:first-child {
+    color: var(--green);
+    font-size: 18px;
+    line-height: 1.2;
+  }
+
+  .story-promise {
+    margin-top: 28px;
+    background: linear-gradient(135deg, rgba(92,117,96,.98) 0%, rgba(65,88,70,.98) 100%);
+    color: #fff;
+  }
+  .story-promise .section__eyebrow,
+  .story-promise .section__eyebrow::before { color: rgba(242,232,217,.82); background: rgba(242,232,217,.45); }
+  .story-promise__title,
+  .story-promise p { color: #fff; }
+  .story-promise__sign {
+    margin-top: 20px;
+    font-family: var(--hand);
+    font-size: 28px;
+    color: rgba(242,232,217,.92);
+  }
+
+  .footer { background: transparent; margin-top: 0; padding: 0 16px 24px; }
+  .footer-inner { max-width: 1340px; margin: 0 auto; background: var(--shell-accent); color: var(--cream); border-radius: 28px; padding: 56px 48px 28px; box-shadow: 0 12px 40px -16px rgba(59,31,14,.35); }
+
+  @media (max-width: 1100px) {
+    .story-hero,
+    .story-section,
+    .story-split,
+    .story-split--reverse { grid-template-columns: 1fr; }
+    .story-split--reverse .story-media,
+    .story-split--reverse .story-highlight { order: initial; }
+  }
+  @media (max-width: 900px) {
+    .story-badge-grid,
+    .story-kpis { grid-template-columns: 1fr; }
+    .story-hero__panel,
+    .story-section__card,
+    .story-note,
+    .story-highlight,
+    .story-promise { padding: 28px; }
+  }
+  @media (max-width: 768px) {
+    .navbar.pill-nav { top: 0; }
+    .navbar.pill-nav .nav-inner { margin: 0 auto; border-radius: 0 0 22px 22px; padding: 10px 14px 10px 18px; }
+    .promo-bar.pill { margin: 0; border-radius: 0; }
+    .page { padding: 0 16px 80px; }
+    .story-hero { margin-top: 24px; }
+    .footer-inner { padding: 40px 24px 24px; border-radius: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="promo-bar pill">Livraison offerte dès 40€ d'achat — récolte 2025 disponible 🌰</div>
+
+<header class="navbar pill-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand" aria-label="Castaneas"><img src="assets/Castaneas-logo (3).svg" alt="Castaneas" class="brand-logo"></a>
+    <nav class="nav-links"></nav>
+    <div class="nav-actions">
+      <a href="login.html" class="icon-btn" aria-label="Mon compte">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke-linecap="round"/></svg>
+      </a>
+      <button class="cart-pill" aria-label="Panier" data-cart-toggle>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 7h14l-1.5 11.5a2 2 0 0 1-2 1.5h-7a2 2 0 0 1-2-1.5L5 7Z"/><path d="M9 7V5a3 3 0 0 1 6 0v2" stroke-linecap="round"/></svg>
+        <span data-cart-count>0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<nav class="mobile-cats" aria-label="Catégories">
+  <a href="/categorie/cremes" class="mobile-cats__pill">🌰 Crèmes de châtaigne</a>
+  <a href="/categorie/pates-tartiner" class="mobile-cats__pill">🧈 Pâtes à tartiner</a>
+  <a href="/categorie/huiles" class="mobile-cats__pill">🫙 Huiles</a>
+  <a href="/categorie/coffrets" class="mobile-cats__pill">🎁 Coffrets</a>
+</nav>
+
+<main class="page">
+  <section class="story-hero">
+    <div class="story-hero__panel">
+      <div class="story-hero__eyebrow">La ferme Castaneas</div>
+      <h1 class="story-hero__title">Une histoire de famille,<br><em>de vergers... et de gourmandise</em></h1>
+      <p class="story-hero__lede">Chez Castaneas, nous cultivons bien plus que des noix, des noisettes et des châtaignes. Nous cultivons une passion familiale qui pousse au rythme des saisons depuis plus de 30 ans, au cœur du Tarn-et-Garonne. Et entre nous, quand on passe ses journées entourés de vergers, il est difficile de ne pas devenir un peu gourmands...</p>
+    </div>
+    <div class="story-hero__aside">
+      <div class="story-media"><img src="assets/story-chataigneraie.jpg" alt="Vergers Castaneas"></div>
+      <div class="story-badge-grid">
+        <div class="story-badge">
+          <span class="story-badge__value">30+</span>
+          <span class="story-badge__label">Années</span>
+          <p>Une histoire familiale qui grandit au rythme des saisons depuis les années 1990.</p>
+        </div>
+        <div class="story-badge">
+          <span class="story-badge__value">150</span>
+          <span class="story-badge__label">Hectares</span>
+          <p>Des vergers du Sud-Ouest cultivés avec bon sens, patience et respect des sols.</p>
+        </div>
+        <div class="story-badge">
+          <span class="story-badge__value">1</span>
+          <span class="story-badge__label">Famille</span>
+          <p>Alain, Chantal, Aurélien, Marion, Séverine et toute l'équipe derrière chaque récolte.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="story-section">
+    <div class="story-section__card">
+      <div class="section__eyebrow">Qui sommes-nous ?</div>
+      <h2 class="story-section__title">La famille Dégans,<br><em>ancrée dans ses vergers.</em></h2>
+      <div class="story-section__body">
+        <p>Nous sommes la famille Dégans. Une famille d'agriculteurs qui aime les bons produits, le travail bien fait et les saveurs authentiques.</p>
+        <p>L'aventure commence dans les années 1990 lorsque Alain et Chantal décident de planter leurs premiers châtaigniers. Puis arrivent les noyers, les noisetiers... et quelques années plus tard, une nouvelle génération prête à prendre la relève.</p>
+        <p>Aujourd'hui, Aurélien, Marion, Séverine et toute l'équipe poursuivent cette belle aventure familiale avec la même idée en tête : produire des fruits de qualité et les transformer en produits gourmands dont nous sommes fiers.</p>
+      </div>
+    </div>
+    <aside class="story-note">
+      <h3 class="story-note__title">Ce qui nous guide</h3>
+      <div class="story-note__list">
+        <div class="story-note__item"><span>1</span><div>Le goût des bons produits et des saveurs authentiques.</div></div>
+        <div class="story-note__item"><span>2</span><div>Le travail bien fait, du verger jusqu'à l'atelier.</div></div>
+        <div class="story-note__item"><span>3</span><div>La transmission d'un métier entre générations.</div></div>
+      </div>
+    </aside>
+  </section>
+
+  <section class="story-split">
+    <div class="story-media"><img src="assets/story-atelier.jpg" alt="Atelier Castaneas"></div>
+    <div class="story-highlight">
+      <div class="section__eyebrow">De nos vergers à votre table</div>
+      <h2 class="story-highlight__title">Cultiver, récolter,<br><em>transformer nous-mêmes.</em></h2>
+      <p>Chez Castaneas, nous avons choisi de rester proches de ce que nous faisons le mieux : cultiver et transformer nos propres récoltes.</p>
+      <p>Noix, noisettes et châtaignes sont cultivées sur nos terres puis transformées directement dans notre atelier. Résultat ? Des produits simples, sincères et gourmands qui racontent vraiment d'où ils viennent.</p>
+      <p>Pas besoin d'aller chercher bien loin quand le meilleur pousse déjà dans nos vergers.</p>
+    </div>
+  </section>
+
+  <section class="story-highlight" style="margin-bottom: 28px;">
+    <div class="section__eyebrow">Une agriculture de bon sens</div>
+    <h2 class="story-highlight__title">Prendre soin des sols,<br><em>des arbres et du vivant.</em></h2>
+    <p>Nos vergers s'étendent sur près de 150 hectares dans le Sud-Ouest. Nous travaillons chaque jour pour respecter nos sols, nos arbres et notre environnement.</p>
+    <p>Parce qu'une bonne noisette, une belle noix ou une châtaigne savoureuse commencent toujours par une terre bien cultivée. Et parce que la nature fait déjà beaucoup de choses très bien sans qu'on ait besoin de trop la déranger.</p>
+    <div class="story-kpis">
+      <div class="story-kpi">
+        <span class="story-kpi__value">150 ha</span>
+        <span class="story-kpi__label">Vergers</span>
+        <p>Des parcelles suivies au fil des saisons, avec une attention constante à l'équilibre naturel.</p>
+      </div>
+      <div class="story-kpi">
+        <span class="story-kpi__value">Sud-Ouest</span>
+        <span class="story-kpi__label">Terroir</span>
+        <p>Un ancrage local fort dans le Tarn-et-Garonne, au plus près de nos récoltes.</p>
+      </div>
+      <div class="story-kpi">
+        <span class="story-kpi__value">Bon sens</span>
+        <span class="story-kpi__label">Méthode</span>
+        <p>Des choix simples et cohérents pour produire mieux, sans en faire trop.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="story-split story-split--reverse">
+    <div class="story-media"><img src="assets/product-noisettes-crues.png" alt="Récoltes Castaneas"></div>
+    <div class="story-highlight">
+      <div class="section__eyebrow">Pourquoi Castaneas ?</div>
+      <h2 class="story-highlight__title">Partager le goût de nos récoltes,<br><em>autrement.</em></h2>
+      <p>Parce que nous voulions partager le goût de nos récoltes autrement. Créer des produits qui nous ressemblent :</p>
+      <div class="story-checklist">
+        <div class="story-check"><span>✔</span><div>Authentiques</div></div>
+        <div class="story-check"><span>✔</span><div>Gourmands</div></div>
+        <div class="story-check"><span>✔</span><div>Fabriqués à la ferme</div></div>
+        <div class="story-check"><span>✔</span><div>Direct producteur</div></div>
+        <div class="story-check"><span>✔</span><div>100 % passion familiale</div></div>
+      </div>
+      <p>Derrière chaque pot de pâte à tartiner, chaque bouteille d'huile ou chaque sachet de fruits secs, il y a des arbres, des récoltes, des saisons... et quelques réveils très matinaux.</p>
+    </div>
+  </section>
+
+  <section class="story-promise">
+    <div class="section__eyebrow">Notre promesse</div>
+    <h2 class="story-promise__title">Vous faire découvrir le vrai goût<br><em>de nos vergers.</em></h2>
+    <p>Sans artifices. Sans détour. Juste de bons produits cultivés avec passion par une famille qui aime son métier et qui est toujours heureuse de partager un peu de son terroir avec vous.</p>
+    <p>Bienvenue chez Castaneas.</p>
+    <div class="story-promise__sign">La famille Dégans</div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand"><img src="assets/Castaneas-logo (3).svg" alt="Castaneas" class="footer-brand-logo"></div>
+        <p>Crèmes de châtaigne et pâtes de noisette faites à la main en Tarn-et-Garonne, en petites quantités, depuis 2018.</p>
+      </div>
+      <div>
+        <h4>Boutique</h4>
+        <ul>
+          <li><a href="creme-de-chataigne.html">Crèmes de châtaigne</a></li>
+          <li><a href="coffrets.html">Coffrets</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>La maison</h4>
+        <ul>
+          <li><a href="histoire.html">Notre histoire</a></li>
+          <li><a href="recettes.html">Recettes</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Aide</h4>
+        <ul>
+          <li><a href="#">Livraison &amp; retours</a></li>
+          <li><a href="#">Nous contacter</a></li>
+          <li><a href="cgv.html">CGV</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 Castaneas · Albias, Tarn-et-Garonne (82)</div>
+      <div>Fait à la main, par petites fournées 🌰</div>
+    </div>
+  </div>
+</footer>
+
+<div class="cart-backdrop" data-cart-close></div>
+<aside class="cart-drawer" role="dialog" aria-label="Votre panier">
+  <div class="cart-head">
+    <h3>Votre panier</h3>
+    <button class="cart-close" data-cart-close aria-label="Fermer le panier">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="cart-body" data-cart-body></div>
+  <div class="cart-foot" data-cart-foot>
+    <div class="cart-total-row">
+      <span>Sous-total</span>
+      <span data-cart-total>0,00€</span>
+    </div>
+    <p class="cart-shipping-note">🚚 Livraison offerte dès 40€ d'achat</p>
+    <a href="panier.html" class="cart-checkout-btn">
+      Passer commande
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"/></svg>
+    </a>
+  </div>
+</aside>
+
+<script src="data.php?v=2"></script><script src="site-data.js?v=3"></script>
+<script src="cart.js"></script>
+</body>
+</html>

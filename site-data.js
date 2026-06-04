@@ -16,6 +16,7 @@
     orders:     'castaneas_admin_orders',
     cart:       'castaneas_cart_v1',
     recipes:    'castaneas_admin_recipes',
+    homepage:   'castaneas_homepage_v1'
   };
 
   /* ---------- Helpers de lecture ---------- */
@@ -25,6 +26,15 @@
       if (!v) return null;
       var parsed = JSON.parse(v);
       return (Array.isArray(parsed) && parsed.length > 0) ? parsed : null;
+    } catch (e) { return null; }
+  }
+
+  function loadStorageObject(key) {
+    try {
+      var v = localStorage.getItem(key);
+      if (!v) return null;
+      var parsed = JSON.parse(v);
+      return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : null;
     } catch (e) { return null; }
   }
 
@@ -44,6 +54,89 @@
   /* ---------- Données serveur injectées par data.php (priorité max) ---------- */
   var _srv = window.CASTANEAS_DATA || {};
 
+  function productBundleLabel(qty) {
+    var labels = {
+      1: 'À l\'unité',
+      2: 'Par deux',
+      3: 'Par trois',
+      4: 'Par quatre',
+      5: 'Par cinq',
+      6: 'Par six'
+    };
+    return labels[qty] || ('Par ' + qty);
+  }
+
+  function getProductOffers(product) {
+    if (!product) return [];
+
+    if (product.kind === 'coffret') {
+      var boxItems = Array.isArray(product.boxItems) ? product.boxItems.filter(function (item) {
+        return item && item.productId && isFinite(item.unitPrice);
+      }) : [];
+      var total = boxItems.reduce(function (sum, item) { return sum + Number(item.unitPrice || 0); }, 0);
+      var count = boxItems.length;
+      return [{
+        id: product.id + '__coffret',
+        label: product.weight || 'Coffret',
+        subtitle: count ? count + ' produit' + (count > 1 ? 's' : '') : 'Coffret',
+        quantity: count || 1,
+        unitPrice: count ? total / count : total,
+        totalPrice: total || Number(product.price || 0),
+        kind: 'coffret'
+      }];
+    }
+
+    var offers = [{
+      id: product.id + '__unit',
+      label: 'À l\'unité',
+      subtitle: product.weight ? '1 × ' + product.weight : '1 pièce',
+      quantity: 1,
+      unitPrice: Number(product.price || 0),
+      totalPrice: Number(product.price || 0),
+      kind: 'single'
+    }];
+
+    (product.quantityOffers || []).forEach(function (offer, index) {
+      var qty = parseInt(offer.qty, 10) || 0;
+      var unitPrice = Number(offer.unitPrice || 0);
+      if (qty <= 1 || !isFinite(unitPrice)) return;
+      offers.push({
+        id: product.id + '__pack_' + index,
+        label: offer.label || productBundleLabel(qty),
+        subtitle: product.weight ? qty + ' × ' + product.weight : qty + ' pièces',
+        quantity: qty,
+        unitPrice: unitPrice,
+        totalPrice: qty * unitPrice,
+        kind: 'pack'
+      });
+    });
+
+    return offers.sort(function (a, b) { return a.quantity - b.quantity; });
+  }
+
+  function getProductDefaultOffer(product) {
+    var offers = getProductOffers(product);
+    return offers[0] || null;
+  }
+
+  function getProductStartingPrice(product) {
+    var offers = getProductOffers(product);
+    if (!offers.length) return Number(product && product.price || 0);
+    return offers.reduce(function (min, offer) {
+      return offer.totalPrice < min ? offer.totalPrice : min;
+    }, offers[0].totalPrice);
+  }
+
+  function getDefaultPromoMessage() {
+    return 'Livraison offerte dès 40€ d\'achat — récolte 2025 disponible 🌰';
+  }
+
+  function getPromoMessage(homepage) {
+    return (homepage && typeof homepage.promoMessage === 'string' && homepage.promoMessage.trim())
+      ? homepage.promoMessage.trim()
+      : getDefaultPromoMessage();
+  }
+
   /* ---------- API publique ---------- */
   var SiteData = {
     categories: (function () {
@@ -57,6 +150,7 @@
     }()),
     products: (_srv.products && _srv.products.length > 0) ? _srv.products : (loadStorage(KEYS.products) || []),
     recipes:  (_srv.recipes  && _srv.recipes.length  > 0) ? _srv.recipes  : (loadStorage(KEYS.recipes)  || []),
+    homepage: (_srv.homepage && typeof _srv.homepage === 'object') ? _srv.homepage : (loadStorageObject(KEYS.homepage) || {}),
 
     /** Toutes les catégories visibles dans le header */
     getHeaderCategories: function () {
@@ -86,6 +180,22 @@
     /** Produit par ID */
     getProductById: function (id) {
       return this.products.find(function (p) { return p.id === id; }) || null;
+    },
+
+    getProductOffers: function (product) {
+      return getProductOffers(product);
+    },
+
+    getProductDefaultOffer: function (product) {
+      return getProductDefaultOffer(product);
+    },
+
+    getProductStartingPrice: function (product) {
+      return getProductStartingPrice(product);
+    },
+
+    getPromoMessage: function () {
+      return getPromoMessage(this.homepage);
     },
 
     /** Toutes les recettes publiées */
@@ -144,9 +254,13 @@
 
   /* ---------- Injection automatique de la nav ---------- */
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { injectNav(); });
+    document.addEventListener('DOMContentLoaded', function () {
+      injectNav();
+      injectPromoBar();
+    });
   } else {
     injectNav();
+    injectPromoBar();
   }
 
   function injectNav() {
@@ -171,7 +285,7 @@
       html += '<a href="' + href + '"' + (isActive(href) ? ' class="active"' : '') + '>' + c.name + '</a>';
     });
     html += '<a href="recettes.html"' + (isActive('recettes.html') ? ' class="active"' : '') + '>Recettes</a>';
-    html += '<a href="index.html#histoire">Notre histoire</a>';
+    html += '<a href="histoire.html"' + (isActive('histoire.html') ? ' class="active"' : '') + '>Notre histoire</a>';
 
     navEl.innerHTML = html;
 
@@ -243,6 +357,16 @@
         if (e.key === 'Escape' && overlay.classList.contains('open')) closeMenu();
       });
     }
+  }
+
+  function injectPromoBar() {
+    var promoEls = document.querySelectorAll('.promo-bar');
+    if (!promoEls.length) return;
+
+    var message = SiteData.getPromoMessage();
+    promoEls.forEach(function (el) {
+      el.textContent = message;
+    });
   }
 
 })();

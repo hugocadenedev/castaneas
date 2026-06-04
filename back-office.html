@@ -351,6 +351,104 @@ tbody tr:last-child td { border-bottom: none; }
 .banner-drop-zone__remove:hover { background: rgba(0,0,0,.78); }
 .comp-ing-row { display: grid; grid-template-columns: 56px 1fr 1fr 2fr; gap: 6px; margin-bottom: 6px; }
 .comp-ing-row input { margin: 0; }
+.comp-mode-panels { display: flex; flex-direction: column; gap: 10px; }
+.comp-mode-panel[hidden] { display: none !important; }
+.product-comp-preview {
+  margin-top: 10px;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1.5px solid var(--line);
+  background: linear-gradient(180deg, #f7efe4 0%, #f3e7d6 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.product-comp-preview__head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: end;
+}
+.product-comp-preview__eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--brown-chest);
+}
+.product-comp-preview__title {
+  margin: 6px 0 0;
+  font-family: var(--serif);
+  font-size: 30px;
+  line-height: 1.05;
+  color: var(--brown-deep);
+}
+.product-comp-preview__title em { color: var(--green); font-style: italic; font-weight: 500; }
+.product-comp-preview__sub {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--green);
+  white-space: nowrap;
+}
+.product-comp-preview__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.product-comp-preview__card {
+  min-height: 170px;
+  padding: 18px;
+  border-radius: 20px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.product-comp-preview__card.is-rest { background: #c9d9b6; }
+.product-comp-preview__pct {
+  font-family: var(--serif);
+  font-size: 46px;
+  line-height: 1;
+  color: var(--green);
+  font-style: italic;
+}
+.product-comp-preview__pct sup { font-size: 18px; }
+.product-comp-preview__card.is-info .product-comp-preview__pct,
+.product-comp-preview__card.is-rest .product-comp-preview__pct {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-style: normal;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+.product-comp-preview__label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--brown-chest);
+}
+.product-comp-preview__name {
+  margin: 4px 0 0;
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1.2;
+  color: var(--brown-deep);
+}
+.product-comp-preview__desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+.product-comp-preview__empty {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(255,255,255,.7);
+  font-size: 13px;
+  color: var(--muted);
+}
 .uses-card-row { display: grid; grid-template-columns: 150px 1fr 2fr; gap: 6px; margin-bottom: 6px; }
 .uses-card-row input, .uses-card-row select { margin: 0; }
 .comp-ing-header { margin-bottom: 4px; }
@@ -408,6 +506,13 @@ tbody tr:last-child td { border-bottom: none; }
   .stats-row { grid-template-columns: 1fr 1fr; }
   .form-grid { grid-template-columns: 1fr; }
   .form-field.span2 { grid-column: 1; }
+  .product-comp-preview__head { grid-template-columns: 1fr; }
+  .product-comp-preview__sub { white-space: normal; }
+  .product-comp-preview__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 640px) {
+  .product-comp-preview__grid { grid-template-columns: 1fr; }
 }
 
 /* ---- PAGE PREVIEW TAG ---- */
@@ -425,7 +530,7 @@ tbody tr:last-child td { border-bottom: none; }
 <!-- ===================== LOGIN GUARD ===================== -->
 <div id="admin-guard">
   <div class="guard-card">
-    <img src="assets/castaneas-logo.svg" alt="Castaneas" class="guard-logo">
+    <img src="assets/Castaneas-logo (3).svg" alt="Castaneas" class="guard-logo">
     <h1 class="guard-title">Administration</h1>
     <p class="guard-sub">Accès réservé à l'équipe Castaneas</p>
     <form id="guard-form">
@@ -449,7 +554,7 @@ tbody tr:last-child td { border-bottom: none; }
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-brand">
-      <img src="assets/castaneas-logo.svg" alt="Castaneas">
+      <img src="assets/Castaneas-logo (3).svg" alt="Castaneas">
       <span class="sidebar-brand-tag">Admin</span>
     </div>
     <nav class="sidebar-nav">
@@ -478,7 +583,7 @@ tbody tr:last-child td { border-bottom: none; }
       <p class="sidebar-section">Site</p>
       <div class="nav-item" data-panel="homepage" onclick="switchPanel(this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5Z"/><path d="M9 21V12h6v9"/></svg>
-        Page d'accueil
+        Site
       </div>
       <div class="nav-item" data-panel="recipes" onclick="switchPanel(this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3c-1.5 5-5 7.5-5 11a5 5 0 0 0 10 0c0-3.5-3.5-6-5-11Z"/><path d="M9 17.5c.7 1 1.8 1.5 3 1.5" stroke-linecap="round"/></svg>
@@ -493,13 +598,6 @@ tbody tr:last-child td { border-bottom: none; }
       <div class="nav-item" data-panel="settings" onclick="switchPanel(this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         Paramètres
-      </div>
-      <div style="margin:8px 12px 0;">
-        <button onclick="forceSyncToServer()" id="btn-force-sync" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--corail);color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;">
-          <svg id="sync-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:14px;height:14px;flex-shrink:0"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
-          <span id="sync-label">Forcer sync serveur</span>
-        </button>
-        <div id="sync-status" style="font-size:10px;color:var(--muted);padding:4px 4px 0;display:none;"></div>
       </div>
     </nav>
     <div class="sidebar-footer">
@@ -653,6 +751,17 @@ tbody tr:last-child td { border-bottom: none; }
       <div class="panel" id="panel-homepage">
         <form id="homepage-form" onsubmit="saveHomepage(event)">
 
+          <div class="table-wrap" style="padding:24px 28px;margin-bottom:20px;">
+            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">📣</span> Bandeau promotionnel</h3>
+            <div class="form-grid">
+              <div class="form-field span2">
+                <label>Message affiché en haut du site</label>
+                <textarea id="hp-promo-message" rows="3" placeholder="Livraison offerte dès 40€ d'achat — récolte 2025 disponible 🌰"></textarea>
+                <small>Ce texte alimente le bandeau promotionnel sur toutes les pages du site.</small>
+              </div>
+            </div>
+          </div>
+
           <!-- HERO -->
           <div class="table-wrap" style="padding:24px 28px;margin-bottom:20px;">
             <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">🌄</span> Hero — bannière principale</h3>
@@ -705,7 +814,7 @@ tbody tr:last-child td { border-bottom: none; }
               </div>
               <div class="form-field">
                 <label>Bouton secondaire — lien</label>
-                <input type="text" id="hp-hero-btn2-href" placeholder="#histoire">
+                <input type="text" id="hp-hero-btn2-href" placeholder="histoire.html">
               </div>
             </div>
           </div>
@@ -811,7 +920,7 @@ tbody tr:last-child td { border-bottom: none; }
               </div>
               <div class="form-field">
                 <label>Bouton CTA — lien</label>
-                <input type="text" id="hp-hist-cta-href" placeholder="#">
+                <input type="text" id="hp-hist-cta-href" placeholder="histoire.html">
               </div>
               <div class="form-field">
                 <label>Sticker — titre</label>
@@ -914,11 +1023,6 @@ tbody tr:last-child td { border-bottom: none; }
               </div>
             </form>
           </div>
-          <div class="table-wrap" style="padding:24px 28px;">
-            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:8px;">Données du site</h3>
-            <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Toutes les données (produits, catégories, commandes) sont stockées dans le localStorage du navigateur.</p>
-            <button class="btn btn-danger" onclick="confirmReset()">Réinitialiser toutes les données</button>
-          </div>
         </div>
       </div>
 
@@ -947,7 +1051,7 @@ tbody tr:last-child td { border-bottom: none; }
           <select id="p-category" required></select>
         </div>
         <div class="form-field">
-          <label>Prix (€) *</label>
+          <label>Prix public (€) *</label>
           <input type="number" id="p-price" step="0.01" min="0" placeholder="7.50" required>
         </div>
         <div class="form-field">
@@ -998,6 +1102,75 @@ tbody tr:last-child td { border-bottom: none; }
           </select>
         </div>
 
+        <!-- OFFRES COMMERCIALES -->
+        <div class="form-field span2" style="border-top:1px solid var(--line);padding-top:18px;margin-top:4px;">
+          <label style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;">Vente & déclinaisons commerciales</label>
+        </div>
+        <div class="form-field">
+          <label>Type de produit</label>
+          <select id="p-kind" onchange="toggleProductSalesMode()">
+            <option value="single">Produit simple</option>
+            <option value="coffret">Coffret</option>
+          </select>
+        </div>
+        <div class="form-field span2" id="single-sales-fields">
+          <label>Déclinaisons par quantité <small style="font-weight:400;color:var(--muted)">— prix unitaire appliqué selon le lot choisi</small></label>
+          <div class="uses-card-row" style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">
+            <span>Quantité</span><span>Libellé</span><span>Prix unitaire (€)</span>
+          </div>
+          <div class="uses-card-row">
+            <input type="number" id="p-pack-0-qty" min="2" placeholder="2">
+            <input type="text" id="p-pack-0-label" placeholder="Par deux">
+            <input type="number" id="p-pack-0-unit-price" min="0" step="0.01" placeholder="6.90">
+          </div>
+          <div class="uses-card-row">
+            <input type="number" id="p-pack-1-qty" min="2" placeholder="3">
+            <input type="text" id="p-pack-1-label" placeholder="Par trois">
+            <input type="number" id="p-pack-1-unit-price" min="0" step="0.01" placeholder="6.60">
+          </div>
+          <div class="uses-card-row">
+            <input type="number" id="p-pack-2-qty" min="2" placeholder="4">
+            <input type="text" id="p-pack-2-label" placeholder="Par quatre">
+            <input type="number" id="p-pack-2-unit-price" min="0" step="0.01" placeholder="6.40">
+          </div>
+          <div class="uses-card-row">
+            <input type="number" id="p-pack-3-qty" min="2" placeholder="5">
+            <input type="text" id="p-pack-3-label" placeholder="Par cinq">
+            <input type="number" id="p-pack-3-unit-price" min="0" step="0.01" placeholder="6.20">
+          </div>
+        </div>
+        <div class="form-field span2" id="coffret-sales-fields" style="display:none;">
+          <label>Composition du coffret <small style="font-weight:400;color:var(--muted)">— liste des produits inclus avec leur prix unitaire retenu</small></label>
+          <div class="uses-card-row" style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;grid-template-columns:1.5fr .8fr;">
+            <span>Produit inclus</span><span>Prix unitaire (€)</span>
+          </div>
+          <div class="uses-card-row" style="grid-template-columns:1.5fr .8fr;">
+            <select id="p-box-0-product"></select>
+            <input type="number" id="p-box-0-unit-price" min="0" step="0.01" placeholder="7.50">
+          </div>
+          <div class="uses-card-row" style="grid-template-columns:1.5fr .8fr;">
+            <select id="p-box-1-product"></select>
+            <input type="number" id="p-box-1-unit-price" min="0" step="0.01" placeholder="7.50">
+          </div>
+          <div class="uses-card-row" style="grid-template-columns:1.5fr .8fr;">
+            <select id="p-box-2-product"></select>
+            <input type="number" id="p-box-2-unit-price" min="0" step="0.01" placeholder="7.50">
+          </div>
+          <div class="uses-card-row" style="grid-template-columns:1.5fr .8fr;">
+            <select id="p-box-3-product"></select>
+            <input type="number" id="p-box-3-unit-price" min="0" step="0.01" placeholder="7.50">
+          </div>
+          <div class="uses-card-row" style="grid-template-columns:1.5fr .8fr;">
+            <select id="p-box-4-product"></select>
+            <input type="number" id="p-box-4-unit-price" min="0" step="0.01" placeholder="7.50">
+          </div>
+          <div class="uses-card-row" style="grid-template-columns:1.5fr .8fr;">
+            <select id="p-box-5-product"></select>
+            <input type="number" id="p-box-5-unit-price" min="0" step="0.01" placeholder="7.50">
+          </div>
+          <div style="margin-top:10px;font-size:.92rem;color:var(--ink);font-weight:600;">Total coffret calculé : <span id="p-box-total">0,00€</span></div>
+        </div>
+
         <!-- INTEGRATIONS -->
         <div class="form-field span2" style="border-top:1px solid var(--line);padding-top:18px;margin-top:4px;">
           <label style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;">Intégrations</label>
@@ -1043,8 +1216,50 @@ tbody tr:last-child td { border-bottom: none; }
           </div>
         </div>
         <div class="form-field span2">
+          <label>Cartes infos complémentaires <small style="font-weight:400;color:var(--muted)">— ex. Nutri-Score, origine, conseil</small></label>
+          <div class="form-grid full">
+            <div class="form-field">
+              <label>Mention courte 1</label>
+              <input type="text" id="p-comp-info-0-label" placeholder="Nutri-Score B">
+            </div>
+            <div class="form-field">
+              <label>Titre 1</label>
+              <input type="text" id="p-comp-info-0-title" placeholder="Bon équilibre au quotidien.">
+            </div>
+            <div class="form-field span2">
+              <label>Texte 1</label>
+              <textarea id="p-comp-info-0-text" rows="3" placeholder="À afficher sur une carte au même niveau que les ingrédients."></textarea>
+            </div>
+            <div class="form-field">
+              <label>Mention courte 2</label>
+              <input type="text" id="p-comp-info-1-label" placeholder="Origine France">
+            </div>
+            <div class="form-field">
+              <label>Titre 2</label>
+              <input type="text" id="p-comp-info-1-title" placeholder="Châtaignes françaises.">
+            </div>
+            <div class="form-field span2">
+              <label>Texte 2</label>
+              <textarea id="p-comp-info-1-text" rows="3" placeholder="Deuxième carte libre si tu n'as qu'un ou deux ingrédients à détailler."></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="form-field span2">
           <label>Carte « Sans rien d'autre » <small style="font-weight:400;color:var(--muted)">— texte libre</small></label>
           <input type="text" id="p-comp-rest" placeholder="Sans gluten · sans huile de palme · sans pectine · sans conservateur.">
+        </div>
+        <div class="form-field span2">
+          <label>Aperçu live du bandeau composition</label>
+          <div class="product-comp-preview" id="product-comp-preview">
+            <div class="product-comp-preview__head">
+              <div>
+                <div class="product-comp-preview__eyebrow">Composition</div>
+                <h3 class="product-comp-preview__title" id="product-comp-preview-title">Trois ingrédients,<br><em>pas un de plus.</em></h3>
+              </div>
+              <div class="product-comp-preview__sub">— c'est tout, promis</div>
+            </div>
+            <div class="product-comp-preview__grid" id="product-comp-preview-grid"></div>
+          </div>
         </div>
 
         <!-- UTILISATIONS -->
@@ -1346,6 +1561,30 @@ let editingRecipe = null;
 let selectedExtraImages = [];
 let recipeSteps = [];
 
+function getDefaultPromoMessage() {
+  return 'Livraison offerte dès 40€ d\'achat — récolte 2025 disponible 🌰';
+}
+
+function getHomepageConfig() {
+  return load(KEYS.homepage) || {};
+}
+
+function getPromoMessage() {
+  const cfg = getHomepageConfig();
+  return (cfg.promoMessage || '').trim() || getDefaultPromoMessage();
+}
+
+function updateAdminPromoBar(message) {
+  const promoBar = document.querySelector('.promo-bar');
+  if (promoBar) promoBar.textContent = (message || '').trim() || getDefaultPromoMessage();
+}
+
+function renderSettings() {
+  const creds = load(KEYS.admin);
+  document.getElementById('setting-user').value = creds ? creds.user : 'admin';
+  updateAdminPromoBar(getPromoMessage());
+}
+
 /* ---------- Hash admin password (Web Crypto SHA-256) ---------- */
 async function hashAdmin(pass) {
   const data = new TextEncoder().encode(pass + ':castaneas_admin');
@@ -1354,67 +1593,6 @@ async function hashAdmin(pass) {
 }
 
 /* ---------- Init ---------- */
-async function forceSyncToServer() {
-  const btn   = document.getElementById('btn-force-sync');
-  const label = document.getElementById('sync-label');
-  const icon  = document.getElementById('sync-icon');
-  const status = document.getElementById('sync-status');
-
-  btn.disabled = true;
-  label.textContent = 'Synchronisation…';
-  icon.style.animation = 'spin 1s linear infinite';
-  status.style.display = 'none';
-
-  const pushKeys = [
-    { s: 'products',   l: KEYS.products },
-    { s: 'categories', l: KEYS.categories },
-    { s: 'recipes',    l: KEYS.recipes },
-    { s: 'orders',     l: KEYS.orders },
-    { s: 'homepage',   l: KEYS.homepage },
-  ];
-
-  const results = [];
-  for (const { s, l } of pushKeys) {
-    const local = localStorage.getItem(l);
-    const body  = local !== null ? local : JSON.stringify([]);
-    try {
-      const r = await fetch('/save.php?key=' + s, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Admin-Token': SERVER_TOKEN },
-        body,
-      });
-      results.push(r.ok ? `? ${s}` : `? ${s} (${r.status})`);
-    } catch (e) {
-      results.push(`? ${s} (réseau)`);
-    }
-  }
-
-  const allOk = results.every(r => r.startsWith('?'));
-  btn.disabled = false;
-  icon.style.animation = '';
-  label.textContent = allOk ? 'Sync réussie ?' : 'Erreurs — voir détails';
-  status.style.display = 'block';
-  status.style.color = allOk ? 'var(--vert)' : 'var(--corail)';
-  status.textContent = results.join(' · ');
-  setTimeout(() => { label.textContent = 'Forcer sync serveur'; status.style.display = 'none'; }, 5000);
-
-  if (allOk) {
-    // Vérifie ce que le serveur a vraiment après la sync
-    try {
-      const checks = await Promise.all(['products','categories','recipes'].map(async s => {
-        const r = await fetch('/save.php?key=' + s, { headers: { 'X-Admin-Token': SERVER_TOKEN } });
-        if (!r.ok) return `${s}:?`;
-        const d = await r.json();
-        const count = Array.isArray(d) ? d.length : (d ? '?' : '0');
-        return `${s}:${count}`;
-      }));
-      toast('Serveur mis à jour ? — ' + checks.join(' · '), 'success');
-    } catch(e) {
-      toast('Données synchronisées vers le serveur ?', 'success');
-    }
-  } else toast('?? Sync partielle — voir sidebar', 'error');
-}
-
 async function init() {
   // Récupère les données du serveur avant tout (fallback localStorage si hors ligne)
   await serverLoadAll();
@@ -1443,7 +1621,6 @@ async function serverLoadAll() {
   // Le serveur est toujours la source de vérité au démarrage.
   // On tire toutes les clés depuis le serveur et on met à jour localStorage.
   // Si le serveur retourne null (pas encore initialisé), on garde le localStorage tel quel.
-  // Pour pousser le localStorage vers le serveur, utiliser "Forcer sync serveur".
   const allKeys = [
     { s: 'products',   l: KEYS.products },
     { s: 'categories', l: KEYS.categories },
@@ -1505,8 +1682,7 @@ document.getElementById('guard-form').addEventListener('submit', async function(
 function showApp() {
   document.getElementById('admin-guard').style.display = 'none';
   document.getElementById('admin-app').style.display = 'flex';
-  const creds = load(KEYS.admin);
-  document.getElementById('setting-user').value = creds ? creds.user : 'admin';
+  renderSettings();
   renderAll();
 }
 
@@ -1522,7 +1698,7 @@ const panelMeta = {
   categories: { title: 'Catégories',             actions: '<button class="btn btn-primary" onclick="openCatModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nouvelle catégorie</button>' },
   orders:     { title: 'Commandes',              actions: '' },
   recipes:    { title: 'Recettes',               actions: '<button class="btn btn-primary" onclick="openRecipeModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nouvelle recette</button>' },
-  homepage:   { title: 'Page d\'accueil',        actions: '' },
+  homepage:   { title: 'Site',                   actions: '' },
   pages:      { title: 'Pages générées',         actions: '' },
   settings:   { title: 'Paramètres',             actions: '' },
 };
@@ -1539,6 +1715,7 @@ function switchPanel(el) {
   if (panel === 'pages') renderPages();
   if (panel === 'recipes') renderRecipes();
   if (panel === 'homepage') renderHomepage();
+  if (panel === 'settings') renderSettings();
 }
 
 /* ---------- Render ALL ---------- */
@@ -1786,6 +1963,7 @@ function openProductModal(id = null) {
   const f = document.getElementById('product-form');
   f.reset();
   selectedExtraImages = [];
+  renderCoffretProductOptions();
 
   // Populate category select
   const sel = document.getElementById('p-category');
@@ -1798,6 +1976,7 @@ function openProductModal(id = null) {
     document.getElementById('p-id').value = p.id;
     document.getElementById('p-name').value = p.name;
     document.getElementById('p-category').value = p.category;
+    document.getElementById('p-kind').value = p.kind || 'single';
     document.getElementById('p-price').value = p.price;
     document.getElementById('p-weight').value = p.weight || '';
     document.getElementById('p-stock').value = p.stock;
@@ -1821,6 +2000,32 @@ function openProductModal(id = null) {
       document.getElementById(`p-ing-${i}-desc`).value = ing.desc || '';
     });
     document.getElementById('p-comp-rest').value = comp.restDesc || '';
+    const infoCards = comp.infoCards || (comp.freeTitle || comp.freeText || comp.freeLabel ? [{
+      label: comp.freeLabel || '',
+      title: comp.freeTitle || '',
+      text: comp.freeText || '',
+    }] : []);
+    [0, 1].forEach(i => {
+      const card = infoCards[i] || {};
+      document.getElementById(`p-comp-info-${i}-label`).value = card.label || '';
+      document.getElementById(`p-comp-info-${i}-title`).value = card.title || '';
+      document.getElementById(`p-comp-info-${i}-text`).value = card.text || '';
+    });
+    const quantityOffers = p.quantityOffers || [];
+    [0, 1, 2, 3].forEach(i => {
+      const offer = quantityOffers[i] || {};
+      document.getElementById(`p-pack-${i}-qty`).value = offer.qty || '';
+      document.getElementById(`p-pack-${i}-label`).value = offer.label || (offer.qty ? productBundleLabel(offer.qty) : '');
+      document.getElementById(`p-pack-${i}-unit-price`).value = Number.isFinite(offer.unitPrice) ? offer.unitPrice : '';
+    });
+    renderCoffretProductOptions();
+    const boxItems = p.boxItems || [];
+    [0, 1, 2, 3, 4, 5].forEach(i => {
+      const item = boxItems[i] || {};
+      const select = document.getElementById(`p-box-${i}-product`);
+      if (select) select.value = item.productId || '';
+      document.getElementById(`p-box-${i}-unit-price`).value = Number.isFinite(item.unitPrice) ? item.unitPrice : '';
+    });
     // Utilisations
     const usages = p.usages || {};
     document.getElementById('p-uses-heading').value = usages.heading || '';
@@ -1836,20 +2041,200 @@ function openProductModal(id = null) {
     document.getElementById('modal-product-title').textContent = 'Nouveau produit';
     selectedExtraImages = [];
     renderImagePickers();
+    document.getElementById('p-kind').value = 'single';
+    [0, 1].forEach(i => {
+      document.getElementById(`p-comp-info-${i}-label`).value = '';
+      document.getElementById(`p-comp-info-${i}-title`).value = '';
+      document.getElementById(`p-comp-info-${i}-text`).value = '';
+    });
+    [0, 1, 2, 3].forEach(i => {
+      document.getElementById(`p-pack-${i}-qty`).value = '';
+      document.getElementById(`p-pack-${i}-label`).value = '';
+      document.getElementById(`p-pack-${i}-unit-price`).value = '';
+    });
+    renderCoffretProductOptions();
+    [0, 1, 2, 3, 4, 5].forEach(i => {
+      const select = document.getElementById(`p-box-${i}-product`);
+      if (select) select.value = '';
+      document.getElementById(`p-box-${i}-unit-price`).value = '';
+    });
   }
+  renderProductCompositionPreview();
+  toggleProductSalesMode();
+  updateCoffretTotalPreview();
   openModal('modal-product');
 }
 
 function editProduct(id) { openProductModal(id); }
 
+function escapeProductPreviewHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function formatProductPreviewTitle(value) {
+  const safe = escapeProductPreviewHtml(value || 'Trois ingrédients, pas un de plus.');
+  const parts = safe.split(',');
+  if (parts.length >= 2) {
+    return parts[0] + ',<br><em>' + parts.slice(1).join(',').trim() + '</em>';
+  }
+  return '<em>' + safe + '</em>';
+}
+
+function renderProductCompositionPreview() {
+  const titleEl = document.getElementById('product-comp-preview-title');
+  const gridEl = document.getElementById('product-comp-preview-grid');
+  if (!titleEl || !gridEl) return;
+
+  titleEl.innerHTML = formatProductPreviewTitle(document.getElementById('p-comp-heading')?.value || '');
+
+  const cards = [];
+  [0, 1, 2].forEach(i => {
+    const name = document.getElementById(`p-ing-${i}-name`)?.value.trim() || '';
+    if (!name) return;
+    const pct = document.getElementById(`p-ing-${i}-pct`)?.value.trim() || '0';
+    const origin = document.getElementById(`p-ing-${i}-origin`)?.value.trim() || '';
+    const desc = document.getElementById(`p-ing-${i}-desc`)?.value.trim() || '';
+    cards.push(`<div class="product-comp-preview__card">
+      <div class="product-comp-preview__pct">${escapeProductPreviewHtml(pct)}<sup>%</sup></div>
+      <div class="product-comp-preview__label">${escapeProductPreviewHtml(origin)}</div>
+      <div class="product-comp-preview__name">${escapeProductPreviewHtml(name)}</div>
+      <p class="product-comp-preview__desc">${escapeProductPreviewHtml(desc)}</p>
+    </div>`);
+  });
+
+  [0, 1].forEach(i => {
+    const label = document.getElementById(`p-comp-info-${i}-label`)?.value.trim() || '';
+    const title = document.getElementById(`p-comp-info-${i}-title`)?.value.trim() || '';
+    const text = document.getElementById(`p-comp-info-${i}-text`)?.value.trim() || '';
+    if (!label && !title && !text) return;
+    cards.push(`<div class="product-comp-preview__card is-info">
+      ${label ? `<div class="product-comp-preview__pct">${escapeProductPreviewHtml(label)}</div>` : ''}
+      <div class="product-comp-preview__label">Information</div>
+      <div class="product-comp-preview__name">${escapeProductPreviewHtml(title || 'Information produit')}</div>
+      <p class="product-comp-preview__desc">${escapeProductPreviewHtml(text)}</p>
+    </div>`);
+  });
+
+  const rest = document.getElementById('p-comp-rest')?.value.trim() || '';
+  if (rest) {
+    cards.push(`<div class="product-comp-preview__card is-rest">
+      <div class="product-comp-preview__label">Sans rien d'autre</div>
+      <div class="product-comp-preview__name">Tout le reste</div>
+      <p class="product-comp-preview__desc">${escapeProductPreviewHtml(rest)}</p>
+    </div>`);
+  }
+
+  gridEl.innerHTML = cards.length
+    ? cards.join('')
+    : '<div class="product-comp-preview__empty">Remplis les ingrédients et cartes infos pour voir le rendu final ici pendant l’édition.</div>';
+}
+
+function productBundleLabel(qty) {
+  const labels = {
+    1: 'À l\'unité',
+    2: 'Par deux',
+    3: 'Par trois',
+    4: 'Par quatre',
+    5: 'Par cinq',
+    6: 'Par six',
+  };
+  return labels[qty] || ('Par ' + qty);
+}
+
+function renderCoffretProductOptions() {
+  const currentId = document.getElementById('p-id')?.value || '';
+  const options = ['<option value="">— Choisir un produit —</option>']
+    .concat(state.products
+      .filter(p => p.id !== currentId)
+      .map(p => `<option value="${p.id}">${p.name}${p.weight ? ' · ' + p.weight : ''}</option>`))
+    .join('');
+  [0, 1, 2, 3, 4, 5].forEach(i => {
+    const sel = document.getElementById(`p-box-${i}-product`);
+    if (!sel) return;
+    const current = sel.dataset.selected || sel.value || '';
+    sel.innerHTML = options;
+    sel.value = current;
+    delete sel.dataset.selected;
+  });
+}
+
+function updateCoffretTotalPreview() {
+  const total = [0, 1, 2, 3, 4, 5].reduce((sum, i) => {
+    const productId = document.getElementById(`p-box-${i}-product`)?.value;
+    const unitPrice = parseFloat(document.getElementById(`p-box-${i}-unit-price`)?.value);
+    if (!productId || !Number.isFinite(unitPrice)) return sum;
+    return sum + unitPrice;
+  }, 0);
+  const totalEl = document.getElementById('p-box-total');
+  if (totalEl) totalEl.textContent = total.toFixed(2).replace('.', ',') + '€';
+  if ((document.getElementById('p-kind')?.value || 'single') === 'coffret') {
+    const priceEl = document.getElementById('p-price');
+    if (priceEl) priceEl.value = total ? total.toFixed(2) : '';
+  }
+}
+
+function toggleProductSalesMode() {
+  const kind = document.getElementById('p-kind')?.value || 'single';
+  const singleFields = document.getElementById('single-sales-fields');
+  const coffretFields = document.getElementById('coffret-sales-fields');
+  const priceEl = document.getElementById('p-price');
+  if (singleFields) singleFields.style.display = kind === 'coffret' ? 'none' : '';
+  if (coffretFields) coffretFields.style.display = kind === 'coffret' ? '' : 'none';
+  if (priceEl) {
+    priceEl.readOnly = kind === 'coffret';
+    priceEl.title = kind === 'coffret' ? 'Prix calculé automatiquement à partir des produits inclus' : '';
+  }
+  if (kind === 'coffret') updateCoffretTotalPreview();
+}
+
+document.getElementById('product-form')?.addEventListener('input', function (event) {
+  if (!event.target || !event.target.id || !event.target.id.startsWith('p-comp-') && !event.target.id.startsWith('p-ing-')) return;
+  renderProductCompositionPreview();
+});
+
+document.getElementById('product-form')?.addEventListener('input', function (event) {
+  if (!event.target || !event.target.id) return;
+  if (event.target.id.startsWith('p-box-') || event.target.id === 'p-kind') {
+    if (event.target.id === 'p-kind') toggleProductSalesMode();
+    updateCoffretTotalPreview();
+  }
+});
+
+document.getElementById('product-form')?.addEventListener('change', function (event) {
+  if (!event.target || !event.target.id) return;
+  if (event.target.id.startsWith('p-box-') || event.target.id === 'p-kind') {
+    if (event.target.id === 'p-kind') toggleProductSalesMode();
+    updateCoffretTotalPreview();
+  }
+});
+
 function saveProduct(e) {
   e.preventDefault();
   const id = editingProduct || 'prod-' + Date.now();
+  const kind = document.getElementById('p-kind').value;
+  const quantityOffers = [0, 1, 2, 3].map(i => ({
+    qty: parseInt(document.getElementById(`p-pack-${i}-qty`).value, 10) || 0,
+    label: document.getElementById(`p-pack-${i}-label`).value.trim(),
+    unitPrice: parseFloat(document.getElementById(`p-pack-${i}-unit-price`).value),
+  })).filter(offer => offer.qty > 1 && Number.isFinite(offer.unitPrice));
+  const boxItems = [0, 1, 2, 3, 4, 5].map(i => ({
+    productId: document.getElementById(`p-box-${i}-product`).value,
+    unitPrice: parseFloat(document.getElementById(`p-box-${i}-unit-price`).value),
+  })).filter(item => item.productId && Number.isFinite(item.unitPrice));
+  const price = kind === 'coffret'
+    ? boxItems.reduce((sum, item) => sum + item.unitPrice, 0)
+    : parseFloat(document.getElementById('p-price').value);
   const product = {
     id,
     name:        document.getElementById('p-name').value.trim(),
     category:    document.getElementById('p-category').value,
-    price:       parseFloat(document.getElementById('p-price').value),
+    kind,
+    price:       Number.isFinite(price) ? price : 0,
     weight:      document.getElementById('p-weight').value.trim(),
     stock:       document.getElementById('p-stock').value,
     desc:        document.getElementById('p-desc').value.trim(),
@@ -1859,6 +2244,8 @@ function saveProduct(e) {
     caption:     document.getElementById('p-caption').value.trim(),
     status:      document.getElementById('p-status').value,
     sucrineId:   document.getElementById('p-sucrine-id').value.trim() || null,
+    quantityOffers,
+    boxItems,
     composition: {
       heading:  document.getElementById('p-comp-heading').value.trim(),
       ings:     [0, 1, 2].map(i => ({
@@ -1867,6 +2254,11 @@ function saveProduct(e) {
         name:   document.getElementById(`p-ing-${i}-name`).value.trim(),
         desc:   document.getElementById(`p-ing-${i}-desc`).value.trim(),
       })).filter(ing => ing.name),
+      infoCards: [0, 1].map(i => ({
+        label: document.getElementById(`p-comp-info-${i}-label`).value.trim(),
+        title: document.getElementById(`p-comp-info-${i}-title`).value.trim(),
+        text:  document.getElementById(`p-comp-info-${i}-text`).value.trim(),
+      })).filter(card => card.label || card.title || card.text),
       restDesc: document.getElementById('p-comp-rest').value.trim(),
     },
     usages: {
@@ -2014,6 +2406,14 @@ async function uploadRecipeImage(inputEl) {
     btn.disabled = false;
     btn.textContent = '⬆ Téléverser une photo';
   }
+}
+
+function toggleCompositionMode() {
+  const mode = document.getElementById('p-comp-mode')?.value || 'detailed';
+  const detailedPanel = document.getElementById('p-comp-detailed-panel');
+  const freePanel = document.getElementById('p-comp-free-panel');
+  if (detailedPanel) detailedPanel.hidden = mode !== 'detailed';
+  if (freePanel) freePanel.hidden = mode !== 'free';
 }
 
 /* ---------- Category Modal ---------- */
@@ -2208,6 +2608,7 @@ function previewCatPage(catId) {
 }
 
 function buildCatPageHTML(cat, products) {
+  const promoMessage = getPromoMessage().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   return `<!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -2222,12 +2623,12 @@ function buildCatPageHTML(cat, products) {
 </head>
 <body>
 
-<div class="promo-bar pill">Livraison offerte dès 40€ d'achat — récolte 2025 disponible ??</div>
+<div class="promo-bar pill">${promoMessage}</div>
 
 <header class="navbar pill-nav">
   <div class="nav-inner">
     <a href="index.html" class="brand" aria-label="Castaneas">
-      <img src="assets/castaneas-logo.svg" alt="Castaneas" class="brand-logo">
+      <img src="assets/Castaneas-logo (3).svg" alt="Castaneas" class="brand-logo">
     </a>
     <nav class="nav-links"></nav>
     <div class="nav-actions">
@@ -2271,11 +2672,11 @@ function buildCatPageHTML(cat, products) {
   <div class="footer-inner">
     <div class="footer-grid">
       <div>
-        <div class="footer-brand"><img src="assets/castaneas-logo.svg" alt="Castaneas" class="footer-brand-logo"></div>
+        <div class="footer-brand"><img src="assets/Castaneas-logo (3).svg" alt="Castaneas" class="footer-brand-logo"></div>
         <p>Crèmes de châtaigne et pâtes de noisette faites à la main en Tarn-et-Garonne, en petites quantités, depuis 2018.</p>
       </div>
       <div><h4>Boutique</h4><ul><li><a href="creme-de-chataigne.html">Crèmes de châtaigne</a></li><li><a href="coffrets.html">Coffrets</a></li></ul></div>
-      <div><h4>La maison</h4><ul><li><a href="index.html#histoire">Notre histoire</a></li><li><a href="recettes.html">Recettes</a></li></ul></div>
+      <div><h4>La maison</h4><ul><li><a href="histoire.html">Notre histoire</a></li><li><a href="recettes.html">Recettes</a></li></ul></div>
       <div><h4>Aide</h4><ul><li><a href="#">Livraison &amp; retours</a></li><li><a href="#">Nous contacter</a></li><li><a href="cgv.html">CGV</a></li></ul></div>
     </div>
     <div class="footer-bottom"><div>© 2026 Castaneas · Albias, Tarn-et-Garonne (82)</div><div>Fait à la main, par petites fournées ??</div></div>
@@ -2318,12 +2719,6 @@ async function saveSettings(e) {
   save(KEYS.admin, updated);
   document.getElementById('setting-pass').value = '';
   toast('Paramètres enregistrés ?', 'success');
-}
-
-function confirmReset() {
-  if (!confirm('Réinitialiser TOUTES les données ? Cette action est irréversible.')) return;
-  [KEYS.products, KEYS.categories, KEYS.orders].forEach(k => localStorage.removeItem(k));
-  location.reload();
 }
 
 /* ---------- Modal helpers ---------- */
@@ -2412,7 +2807,7 @@ function editRecipe(id) { openRecipeModal(id); }
 function renderRecipeImgPicker() {
   const picker = document.getElementById('recipe-img-picker');
   const currentImg = document.getElementById('r-image').value;
-  const catalog = [...new Set([...state.imageCatalogMain, ...state.imageCatalogExtra])];
+  const catalog = [...new Set([currentImg, ...state.imageCatalogMain, ...state.imageCatalogExtra].filter(Boolean))];
   picker.innerHTML = catalog.map(src => {
     const sel = src === currentImg ? ' selected' : '';
     return `<div class="img-slot"><img class="img-preview${sel}" data-src="${src}" src="${src}" style="width:72px;height:72px;object-fit:cover;border-radius:12px;cursor:pointer;border:2px solid ${sel ? 'var(--brown-deep)' : 'transparent'}" onerror="this.onerror=null;this.src='assets/product-pate-tartiner.png'" onclick="pickRecipeImg(this)"></div>`;
@@ -2589,7 +2984,9 @@ function renderHomepage() {
     if (el) el.innerHTML = prodOpts;
   });
 
-  const cfg = load(KEYS.homepage) || {};
+  const cfg = getHomepageConfig();
+  hpSetVal('hp-promo-message', cfg.promoMessage ?? getDefaultPromoMessage());
+  updateAdminPromoBar(cfg.promoMessage || getDefaultPromoMessage());
 
   const h = cfg.hero || {};
   hpSetVal('hp-hero-image', h.image || '');
@@ -2601,7 +2998,7 @@ function renderHomepage() {
   hpSetVal('hp-hero-btn1-text',h.btn1Text ?? 'Découvrir la boutique');
   hpSetVal('hp-hero-btn1-href',h.btn1Href ?? 'creme-de-chataigne.html');
   hpSetVal('hp-hero-btn2-text',h.btn2Text ?? 'Notre histoire');
-  hpSetVal('hp-hero-btn2-href',h.btn2Href ?? '#histoire');
+  hpSetVal('hp-hero-btn2-href',h.btn2Href ?? 'histoire.html');
 
   const cs = cfg.catsSection || {};
   hpSetVal('hp-cats-eyebrow',  cs.eyebrow ?? 'Nos collections');
@@ -2633,7 +3030,7 @@ function renderHomepage() {
   hpSetVal('hp-hist-para1',        hi.para1         ?? '');
   hpSetVal('hp-hist-para2',        hi.para2         ?? '');
   hpSetVal('hp-hist-cta-text',     hi.ctaText       ?? 'Lire le récit complet');
-  hpSetVal('hp-hist-cta-href',     hi.ctaHref       ?? '#');
+  hpSetVal('hp-hist-cta-href',     hi.ctaHref       ?? 'histoire.html');
   hpSetVal('hp-hist-sticker-label',hi.stickerLabel  ?? 'Albias · Quercy');
   hpSetVal('hp-hist-sticker-sub',  hi.stickerSub    ?? '44.25°N · 1.13°E · Tarn-et-Garonne (82)');
   hpSetVal('hp-hist-sig-name',     hi.signatureName ?? 'Lucie & Marc');
@@ -2656,6 +3053,8 @@ function saveHomepage(e) {
   e.preventDefault();
   const g = id => document.getElementById(id).value.trim();
   const cfg = {
+    ...getHomepageConfig(),
+    promoMessage: g('hp-promo-message') || getDefaultPromoMessage(),
     hero: {
       image:    g('hp-hero-image'),
       eyebrow:  g('hp-hero-eyebrow'),
@@ -2706,6 +3105,7 @@ function saveHomepage(e) {
     },
   };
   save(KEYS.homepage, cfg);
+  updateAdminPromoBar(cfg.promoMessage);
   toast('Page d\'accueil mise à jour ?', 'success');
 }
 

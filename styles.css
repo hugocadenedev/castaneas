@@ -8,6 +8,7 @@
   --cream:        #F2E8D9;
   --cream-soft:   #F8F1E4;
   --cream-light:  #FBF6EC;
+  --shell-accent: #8E5037;
   --brown-deep:   #5C7560;
   --brown-chest:  #7F957D;
   --brown-soft:   #9CB099;
@@ -63,7 +64,7 @@ img { display: block; max-width: 100%; }
    PROMO BAR
    ========================================================= */
 .promo-bar {
-  background: var(--accent-cocoa);
+  background: var(--shell-accent);
   color: var(--cream);
   text-align: center;
   font-size: 13px;
@@ -177,7 +178,7 @@ img { display: block; max-width: 100%; }
    FOOTER
    ========================================================= */
 .footer {
-  background: transparent;
+  background: var(--shell-accent);
   color: var(--cream);
   margin-top: 96px;
   padding: 64px 32px 32px;
@@ -552,6 +553,56 @@ img { display: block; max-width: 100%; }
   font-size: 12px;
   color: var(--muted);
   margin-top: 2px;
+}
+.cart-item-box {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: var(--cream-soft);
+  border-radius: var(--r-md);
+}
+.cart-item-box__title {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--brown-chest);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.cart-item-box__list {
+  display: grid;
+  gap: 8px;
+}
+.cart-item-box__row {
+  display: grid;
+  grid-template-columns: 36px 1fr auto;
+  align-items: center;
+  gap: 8px;
+}
+.cart-item-box__img {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background-color: #fff;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.cart-item-box__name {
+  font-size: 12px;
+  color: var(--brown-deep);
+  font-weight: 700;
+  line-height: 1.2;
+}
+.cart-item-box__meta {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.cart-item-box__price {
+  font-size: 12px;
+  color: var(--brown-deep);
+  font-weight: 700;
+  white-space: nowrap;
 }
 .cart-item-price {
   font-family: var(--serif);

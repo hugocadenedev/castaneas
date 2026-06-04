@@ -13,7 +13,7 @@ header('Expires: 0');
 $dataDir = __DIR__ . '/data';
 $output  = [];
 
-foreach (['products', 'categories', 'recipes'] as $key) {
+foreach (['products', 'categories', 'recipes', 'homepage'] as $key) {
     $file = $dataDir . '/' . $key . '.json';
     if (file_exists($file)) {
         $raw  = file_get_contents($file);

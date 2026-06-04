@@ -72,7 +72,6 @@
   .crumb .current { color: var(--brown-deep); font-weight: 700; }
 
   @media (max-width: 640px) {
-    /* Mobile : affiche uniquement "← Catégorie" */
     .crumb :nth-child(1),
     .crumb :nth-child(2),
     .crumb :nth-child(4),
@@ -100,12 +99,9 @@
     }
   }
 
-  /* =========================================================
-     HERO — STICKY INFO + GALLERY (déclinaison V1)
-     - V1: gallery G + info D (déjà similaire), mais ici on
-       met l'info en sticky + on remplace thumbs latérales
-       par une bande de thumbs sous l'image principale.
-     ========================================================= */
+    /* =========================================================
+      HERO — galerie + panneau info
+      ========================================================= */
   .hero {
     display: grid;
     grid-template-columns: 1.2fr 1fr;
@@ -357,6 +353,87 @@
   .opt-pill.on strong { color: var(--brown-deep); }
   .opt-pill:hover:not(.on) { background: var(--cream); }
 
+  .box-contents {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 18px;
+    background: var(--cream-soft);
+    border-radius: 24px;
+    border: 1px solid var(--line);
+  }
+  .box-contents.on { display: flex; }
+  .box-contents__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .box-contents__title {
+    font-family: var(--serif);
+    font-size: 24px;
+    line-height: 1.05;
+    color: var(--brown-deep);
+    font-weight: 700;
+    margin: 0;
+  }
+  .box-contents__meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 700;
+  }
+  .box-contents__list {
+    display: grid;
+    gap: 10px;
+  }
+  .box-item {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    background: #fff;
+    border-radius: 18px;
+  }
+  .box-item__img {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--cream);
+  }
+  .box-item__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .box-item__name {
+    font-family: var(--serif);
+    font-size: 20px;
+    line-height: 1.05;
+    color: var(--brown-deep);
+    font-weight: 700;
+    margin: 0 0 4px;
+  }
+  .box-item__desc {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+  .box-item__price {
+    font-family: var(--serif);
+    font-size: 22px;
+    color: var(--brown-deep);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
   /* Qty + Buy row */
   .buy-row {
     display: grid;
@@ -505,6 +582,7 @@
     grid-template-columns: repeat(4, 1fr);
     gap: 14px;
   }
+  .compo-grid.is-free { grid-template-columns: minmax(0, 1fr); }
   .ing {
     background: #fff;
     border-radius: 24px;
@@ -556,6 +634,25 @@
   .ing.is-rest .ing__pct { color: var(--brown-deep); }
   .ing.is-rest .ing__origin { color: var(--brown-deep); }
 
+  .ing--info .ing__pct {
+    font-family: var(--mono);
+    font-style: normal;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--brown-chest);
+    font-weight: 700;
+  }
+  .ing--info .ing__name {
+    font-size: 24px;
+    margin-top: 0;
+  }
+
+  .ing.is-rest .ing__name,
+  .ing.is-rest .ing__desc {
+    color: var(--brown-deep);
+  }
+
   /* =========================================================
      UTILISATIONS — 4 cards usage (SECTION NOUVELLE)
      ========================================================= */
@@ -604,8 +701,21 @@
     font-weight: 500;
   }
 
+  .ing--info { gap: 14px; }
+  .ing--info .ing__pct {
+    font-size: 14px;
+    font-style: normal;
+    font-family: var(--mono);
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--brown-chest);
+    font-weight: 700;
+  }
+  .ing--info .ing__name { font-size: 30px; margin: 0; }
+  .ing--info .ing__desc { font-size: 15px; max-width: 70ch; }
+
   /* =========================================================
-     RECETTES — 2 cards (similaire V1 mais structure différente)
+     RECETTES — cartes alignées sur recettes.html
      ========================================================= */
   .recipes {
     margin-bottom: 80px;
@@ -613,33 +723,39 @@
   .recipes-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 18px;
+    gap: 20px;
   }
-  .recipe {
+  .recipe-card {
     background: #fff;
-    border-radius: 24px;
+    border-radius: 28px;
     overflow: hidden;
     display: grid;
-    grid-template-columns: 1fr 1.2fr;
+    grid-template-columns: 1fr 1.1fr;
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow .2s, transform .2s;
+    box-shadow: 0 2px 12px -6px rgba(59,31,14,.12);
   }
-  .recipe__media {
+  .recipe-card:hover { box-shadow: 0 10px 32px -10px rgba(59,31,14,.22); transform: translateY(-2px); }
+  .recipe-card__media {
     position: relative;
     background: var(--terracotta);
-    min-height: 240px;
+    min-height: 260px;
   }
-  .recipe__media img {
+  .recipe-card__media img {
     position: absolute; inset: 0;
     width: 100%; height: 100%; object-fit: cover;
   }
-  .recipe:nth-child(2) .recipe__media { background: var(--dore); }
-  .recipe__body {
-    padding: 26px 30px;
+  .recipe-card:nth-child(even) .recipe-card__media { background: var(--dore); }
+  .recipe-card__body {
+    padding: 28px 28px;
     display: flex;
     flex-direction: column;
     gap: 8px;
     justify-content: center;
+    overflow: hidden;
   }
-  .recipe__meta {
+  .recipe-card__meta {
     font-family: var(--mono);
     font-size: 10.5px;
     letter-spacing: 0.22em;
@@ -647,25 +763,58 @@
     color: var(--brown-chest);
     font-weight: 700;
   }
-  .recipe__name {
+  .recipe-card__name {
     font-family: var(--serif);
-    font-size: 26px;
+    font-size: 28px;
     color: var(--brown-deep);
     font-weight: 700;
     line-height: 1.1;
     letter-spacing: -0.01em;
     margin: 0;
   }
-  .recipe__name em { color: var(--brown-chest); font-weight: 600; }
-  .recipe__desc {
-    font-size: 14px;
+  .recipe-card__name em { color: var(--brown-chest); font-weight: 600; }
+  .recipe-card__intro {
+    font-family: var(--hand);
+    font-size: 17px;
+    color: var(--brown-chest);
+    margin: 0;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .recipe-card__desc {
+    font-size: 13.5px;
     color: var(--ink-soft);
-    line-height: 1.5;
+    line-height: 1.55;
     margin: 0;
     font-weight: 500;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
-  .recipe__cta {
-    margin-top: 6px;
+  .recipe-card__products {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .recipe-card__prod-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--cream-soft);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--brown-deep);
+  }
+  .recipe-card__prod-pill img { width: 18px; height: 18px; border-radius: 50%; object-fit: cover; }
+  .recipe-card__cta {
+    margin-top: 8px;
     align-self: flex-start;
     display: inline-flex;
     align-items: center;
@@ -932,7 +1081,7 @@
   .footer-inner {
     max-width: 1340px;
     margin: 0 auto;
-    background: var(--accent-cocoa);
+    background: var(--shell-accent);
     color: var(--cream);
     border-radius: 28px;
     padding: 56px 48px 28px;
@@ -978,14 +1127,14 @@
 <!-- NAV -->
 <header class="navbar pill-nav">
   <div class="nav-inner">
-    <a href="index.html" class="brand" aria-label="Castaneas"><img src="assets/castaneas-logo.svg" alt="Castaneas" class="brand-logo"></a>
+    <a href="index.html" class="brand" aria-label="Castaneas"><img src="assets/Castaneas-logo (3).svg" alt="Castaneas" class="brand-logo"></a>
     <nav class="nav-links">
       <a href="index.html">Accueil</a>
       <a href="/categorie/cremes" class="active">Crèmes de châtaigne</a>
       <a href="#">Pâtes à tartiner</a>
       <a href="#">Huiles</a>
       <a href="recettes.html">Recettes</a>
-      <a href="index.html#histoire">Notre histoire</a>
+      <a href="histoire.html">Notre histoire</a>
     </nav>
     <div class="nav-actions">
       <a href="login.html" class="icon-btn" aria-label="Mon compte">
@@ -1055,16 +1204,32 @@
         <span class="info__price-unit" id="prod-unit">Pot de 150g · 5,00€ / 100g</span>
       </div>
 
-      <div class="opt-row">
-        <div class="opt-label">
+      <div class="opt-row" id="format-row">
+        <div class="opt-label" id="format-label">
           Format
           <em>3 contenances</em>
         </div>
-        <div class="opt-pills">
+        <div class="opt-pills" id="format-pills">
           <button class="opt-pill" data-weight="110" data-price="5.90" data-unit="110g · 5,36€ / 100g"><strong>110g</strong><span>Découverte</span></button>
           <button class="opt-pill on" data-weight="150" data-price="7.50" data-unit="150g · 5,00€ / 100g"><strong>150g</strong><span>Classique</span></button>
           <button class="opt-pill" data-weight="300" data-price="12.90" data-unit="300g · 4,30€ / 100g"><strong>300g</strong><span>Famille</span></button>
         </div>
+      </div>
+
+      <div class="opt-row" id="offer-row" style="display:none;">
+        <div class="opt-label" id="offer-label">
+          Quantité
+          <em>1 choix</em>
+        </div>
+        <div class="opt-pills" id="offer-pills"></div>
+      </div>
+
+      <div class="box-contents" id="box-contents">
+        <div class="box-contents__head">
+          <h2 class="box-contents__title">Le coffret contient</h2>
+          <div class="box-contents__meta" id="box-contents-meta">0 produit</div>
+        </div>
+        <div class="box-contents__list" id="box-contents-list"></div>
       </div>
 
       <div class="buy-row">
@@ -1079,29 +1244,6 @@
         </button>
       </div>
 
-      <div class="rea-row">
-        <div class="rea">
-          <div class="rea__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 7h13l5 5v5h-2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
-          </div>
-          <div class="rea__t">48h</div>
-          <div class="rea__d">Livraison</div>
-        </div>
-        <div class="rea">
-          <div class="rea__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16v13H4z"/><path d="M8 7V4h8v3" stroke-linecap="round"/></svg>
-          </div>
-          <div class="rea__t">1€ rendu</div>
-          <div class="rea__d">Pot consigné</div>
-        </div>
-        <div class="rea">
-          <div class="rea__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3 C8 7 6 11 8 15 C9 17 12 19 12 19 C12 19 15 17 16 15 C18 11 16 7 12 3 Z" stroke-linejoin="round"/></svg>
-          </div>
-          <div class="rea__t">Quercy 82</div>
-          <div class="rea__d">Origine</div>
-        </div>
-      </div>
     </aside>
   </section>
 
@@ -1139,62 +1281,6 @@
         <div class="ing__origin">Sans rien d'autre</div>
         <h3 class="ing__name">Tout le reste</h3>
         <p class="ing__desc">Sans gluten · sans huile de palme · sans pectine · sans conservateur.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- UTILISATIONS -->
-  <section class="uses">
-    <div class="section-head" style="margin-bottom: 0;">
-      <div>
-        <div class="section-head__eyebrow" style="color: var(--accent-cocoa);">Comment le déguster</div>
-        <h2 class="section-head__title">Quatre <em>petites idées</em><br>pour le pot.</h2>
-      </div>
-      <div class="section-head__sub">— et la cuillère bien sûr</div>
-    </div>
-
-    <div class="uses-grid">
-      <div class="use">
-        <div class="use__emoji">
-          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6">
-            <rect x="5" y="11" width="22" height="11" rx="2"/>
-            <path d="M9 11V8a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v3" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <h3 class="use__title">Sur tartine</h3>
-        <p class="use__desc">Pain au levain grillé, beurre demi-sel, une grosse cuillère.</p>
-      </div>
-      <div class="use">
-        <div class="use__emoji">
-          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6">
-            <path d="M8 12h16l-2 12a2 2 0 0 1-2 2H12a2 2 0 0 1-2-2L8 12Z"/>
-            <path d="M11 12V9a5 5 0 0 1 10 0v3" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <h3 class="use__title">En yaourt</h3>
-        <p class="use__desc">Deux cuillères dans un fromage blanc, miel et noisettes.</p>
-      </div>
-      <div class="use">
-        <div class="use__emoji">
-          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6">
-            <circle cx="16" cy="16" r="10"/>
-            <path d="M11 18c2 2 8 2 10 0" stroke-linecap="round"/>
-            <circle cx="12" cy="13" r="1" fill="currentColor"/>
-            <circle cx="20" cy="13" r="1" fill="currentColor"/>
-          </svg>
-        </div>
-        <h3 class="use__title">En Mont-Blanc</h3>
-        <p class="use__desc">Vermicelles sur meringue + crème fouettée. Express.</p>
-      </div>
-      <div class="use">
-        <div class="use__emoji">
-          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6">
-            <path d="M9 6h14l-2 22H11L9 6Z"/>
-            <path d="M9 10h14" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <h3 class="use__title">À la cuillère</h3>
-        <p class="use__desc">Directement dans le pot. On ne juge pas.</p>
       </div>
     </div>
   </section>
@@ -1369,7 +1455,7 @@
   <div class="footer-inner">
     <div class="footer-grid">
       <div>
-        <div class="footer-brand"><img src="assets/castaneas-logo.svg" alt="Castaneas" class="footer-brand-logo" style="margin-bottom:14px;"></div>
+        <div class="footer-brand"><img src="assets/Castaneas-logo (3).svg" alt="Castaneas" class="footer-brand-logo" style="margin-bottom:14px;"></div>
         <p>Crèmes de châtaigne et pâtes de noisette faites à la main en Tarn-et-Garonne, en petites quantités, depuis 2018.</p>
       </div>
       <div>
@@ -1384,7 +1470,7 @@
       <div>
         <h4>La maison</h4>
         <ul>
-          <li><a href="index.html#histoire">Notre histoire</a></li>
+          <li><a href="histoire.html">Notre histoire</a></li>
           <li><a href="#">Le verger</a></li>
           <li><a href="#">Recettes</a></li>
         </ul>
@@ -1440,8 +1526,192 @@
 var _product = null;
 var _variants = [];
 var _selectedVariantId = null;
+var _selectedOfferId = null;
+var _selectedOffer = null;
 var selectedPrice = 7.50;
 var qty = 1;
+
+function formatEur(value) {
+  return Number(value || 0).toFixed(2).replace('.', ',') + '€';
+}
+
+function getCurrentVariant() {
+  return _variants.find(function (v) { return v.id === _selectedVariantId; }) || _product;
+}
+
+function getOffersForProduct(product) {
+  if (typeof SiteData !== 'undefined' && SiteData.getProductOffers) {
+    return SiteData.getProductOffers(product);
+  }
+  return [{
+    id: (product && product.id ? product.id : 'default') + '__unit',
+    label: 'À l\'unité',
+    subtitle: product && product.weight ? '1 × ' + product.weight : '1 pièce',
+    quantity: 1,
+    unitPrice: Number(product && product.price || 0),
+    totalPrice: Number(product && product.price || 0),
+    kind: 'single'
+  }];
+}
+
+function getDefaultOfferForProduct(product) {
+  if (typeof SiteData !== 'undefined' && SiteData.getProductDefaultOffer) {
+    return SiteData.getProductDefaultOffer(product);
+  }
+  return getOffersForProduct(product)[0] || null;
+}
+
+function getStartingPriceForProduct(product) {
+  if (typeof SiteData !== 'undefined' && SiteData.getProductStartingPrice) {
+    return SiteData.getProductStartingPrice(product);
+  }
+  return Number(product && product.price || 0);
+}
+
+function renderGallery(product) {
+  var mainImg = document.querySelector('.gallery__main img');
+  if (mainImg) {
+    mainImg.src = product.image;
+    mainImg.alt = product.name;
+  }
+  var thumbsWrap = document.querySelector('.gallery__thumbs');
+  if (!thumbsWrap) return;
+  var allImgs = [product.image].concat(product.images && product.images.length ? product.images : []);
+  allImgs = allImgs.filter(function (src, idx) { return allImgs.indexOf(src) === idx; });
+  thumbsWrap.innerHTML = allImgs.map(function (src, idx) {
+    return '<button class="gallery__thumb' + (idx === 0 ? ' on' : '') + '" data-src="' + src + '">'
+      + '<img src="' + src + '" alt="" onerror="this.onerror=null;this.src=\'assets/product-pate-tartiner.png\'">'
+      + '</button>';
+  }).join('');
+}
+
+function applySelectedOffer(offer) {
+  var variant = getCurrentVariant();
+  _selectedOffer = offer || getDefaultOfferForProduct(variant);
+  _selectedOfferId = _selectedOffer ? _selectedOffer.id : null;
+  selectedPrice = _selectedOffer ? Number(_selectedOffer.totalPrice || 0) : Number(variant && variant.price || 0);
+
+  var prodUnit = document.getElementById('prod-unit');
+  if (prodUnit) {
+    var lines = [];
+    if (_selectedOffer && _selectedOffer.subtitle) lines.push(_selectedOffer.subtitle);
+    else if (variant && variant.weight) lines.push('Pot de ' + variant.weight);
+    if (_selectedOffer && _selectedOffer.quantity > 1 && _selectedOffer.unitPrice) {
+      lines.push(formatEur(_selectedOffer.unitPrice) + ' / unité');
+    }
+    prodUnit.textContent = lines.join(' · ');
+  }
+
+  document.querySelectorAll('#offer-pills .opt-pill').forEach(function (pill) {
+    pill.classList.toggle('on', pill.dataset.offerId === _selectedOfferId);
+  });
+
+  updateBuyCta();
+}
+
+function renderOfferPills(product) {
+  var row = document.getElementById('offer-row');
+  var pillsWrap = document.getElementById('offer-pills');
+  var label = document.getElementById('offer-label');
+  if (!row || !pillsWrap || !label || !product) return;
+
+  var offers = getOffersForProduct(product);
+  if (!offers.length || offers.length === 1) {
+    row.style.display = 'none';
+    applySelectedOffer(offers[0] || null);
+    return;
+  }
+
+  row.style.display = '';
+  label.innerHTML = 'Quantité<em>' + offers.length + ' choix</em>';
+  pillsWrap.innerHTML = offers.map(function (offer, index) {
+    var on = (!_selectedOfferId && index === 0) || offer.id === _selectedOfferId ? ' on' : '';
+    return '<button class="opt-pill' + on + '" data-offer-id="' + offer.id + '">'
+      + '<strong>' + offer.label + '</strong>'
+      + '<span>' + formatEur(offer.totalPrice) + '</span>'
+      + '</button>';
+  }).join('');
+
+  var active = offers.find(function (offer) { return offer.id === _selectedOfferId; }) || offers[0];
+  applySelectedOffer(active);
+}
+
+function renderBoxContents(product) {
+  var wrap = document.getElementById('box-contents');
+  var list = document.getElementById('box-contents-list');
+  var meta = document.getElementById('box-contents-meta');
+  if (!wrap || !list || !meta) return;
+
+  var boxItems = product && product.kind === 'coffret' && Array.isArray(product.boxItems)
+    ? product.boxItems.filter(function (item) {
+        return item && item.productId && isFinite(item.unitPrice);
+      })
+    : [];
+
+  if (!boxItems.length) {
+    wrap.classList.remove('on');
+    list.innerHTML = '';
+    meta.textContent = '0 produit';
+    return;
+  }
+
+  wrap.classList.add('on');
+  meta.textContent = boxItems.length + ' produit' + (boxItems.length > 1 ? 's' : '');
+  list.innerHTML = boxItems.map(function (item) {
+    var linked = SiteData.getProductById ? SiteData.getProductById(item.productId) : null;
+    var name = linked && linked.name ? linked.name : 'Produit du coffret';
+    var detail = [];
+    if (linked && linked.weight) detail.push(linked.weight);
+    if (linked && linked.category) {
+      var cat = SiteData.getCategoryById ? SiteData.getCategoryById(linked.category) : null;
+      if (cat && cat.name) detail.push(cat.name);
+    }
+    var image = linked && linked.image ? linked.image : 'assets/product-pate-tartiner.png';
+    return '<div class="box-item">'
+      + '<div class="box-item__img"><img src="' + image + '" alt="' + name + '" onerror="this.onerror=null;this.src=\'assets/product-pate-tartiner.png\'"></div>'
+      + '<div>'
+      + '<h3 class="box-item__name">' + name + '</h3>'
+      + '<div class="box-item__desc">' + (detail.join(' · ') || 'Produit inclus') + '</div>'
+      + '</div>'
+      + '<div class="box-item__price">' + formatEur(item.unitPrice) + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function renderFormatPills(currentProduct, pid) {
+  var row = document.getElementById('format-row');
+  var pillsWrap = document.getElementById('format-pills');
+  var label = document.getElementById('format-label');
+  if (!row || !pillsWrap || !label || !currentProduct) return;
+
+  if (_variants.length > 1) {
+    row.style.display = '';
+    pillsWrap.innerHTML = _variants.map(function (variant) {
+      var on = variant.id === pid ? ' on' : '';
+      return '<button class="opt-pill' + on + '" data-pid="' + variant.id + '">'
+        + '<strong>' + (variant.weight || variant.id) + '</strong>'
+        + '<span>' + formatEur(getStartingPriceForProduct(variant)) + '</span>'
+        + '</button>';
+    }).join('');
+    label.innerHTML = 'Format<em>' + _variants.length + ' contenances</em>';
+  } else {
+    row.style.display = currentProduct.weight ? '' : 'none';
+    pillsWrap.innerHTML = '<button class="opt-pill on" data-pid="' + currentProduct.id + '">'
+      + '<strong>' + (currentProduct.weight || currentProduct.name) + '</strong>'
+      + '<span>' + formatEur(getStartingPriceForProduct(currentProduct)) + '</span>'
+      + '</button>';
+    label.innerHTML = 'Format<em>' + (currentProduct.weight ? '1 format' : 'Produit unique') + '</em>';
+  }
+}
+
+function updateSelectedVariant(pid) {
+  var variant = _variants.find(function (item) { return item.id === pid; }) || _product;
+  _selectedVariantId = variant.id;
+  _selectedOfferId = null;
+  renderGallery(variant);
+  renderBoxContents(variant);
+  renderOfferPills(variant);
+}
 
 // ========== CHARGEMENT DYNAMIQUE DEPUIS SITEDATA ==========
 (function () {
@@ -1458,12 +1728,15 @@ var qty = 1;
 
   _product = p;
   _selectedVariantId = pid;
-  selectedPrice = p.price;
+  _selectedOffer = getDefaultOfferForProduct(p);
+  _selectedOfferId = _selectedOffer ? _selectedOffer.id : null;
+  selectedPrice = _selectedOffer ? _selectedOffer.totalPrice : p.price;
 
   // Variantes = même nom + même catégorie
   _variants = SiteData.getActiveProducts().filter(function (x) {
     return x.name === p.name && x.category === p.category;
   });
+  if (!_variants.length) _variants = [p];
 
   var cat = SiteData.getCategoryById(p.category);
 
@@ -1479,28 +1752,13 @@ var qty = 1;
     crumbCatLink.href = SiteData.getCategoryHref(cat);
   }
 
-  // Galerie — image principale
-  var mainImg = document.querySelector('.gallery__main img');
-  if (mainImg) { mainImg.src = p.image; mainImg.alt = p.name; }
+  renderGallery(p);
 
   // Galerie — badge
   var galBadge = document.querySelector('.gallery__badge');
   if (galBadge) { if (p.badge) galBadge.textContent = p.badge; else galBadge.style.display = 'none'; }
   var galCaption = document.querySelector('.gallery__caption');
   if (galCaption) { if (p.caption) galCaption.textContent = p.caption; else galCaption.style.display = 'none'; }
-
-  // Galerie — miniatures (image principale + images complémentaires)
-  var thumbsWrap = document.querySelector('.gallery__thumbs');
-  if (thumbsWrap) {
-    var allImgs = [p.image].concat(p.images && p.images.length ? p.images : []);
-    // dédoublonner
-    allImgs = allImgs.filter(function(src, idx) { return allImgs.indexOf(src) === idx; });
-    thumbsWrap.innerHTML = allImgs.map(function(src, idx) {
-      return '<button class="gallery__thumb' + (idx === 0 ? ' on' : '') + '">'
-        + '<img src="' + src + '" alt="" onerror="this.src=\'assets/product-pate-tartiner.png\'">'
-        + '</button>';
-    }).join('');
-  }
 
   // Info catégorie
   var infoCat = document.querySelector('.info__cat');
@@ -1519,32 +1777,9 @@ var qty = 1;
   var infoDesc = document.querySelector('.info__desc');
   if (infoDesc && p.desc) infoDesc.textContent = p.desc;
 
-  // Prix
-  document.getElementById('prod-price').textContent = p.price.toFixed(2).replace('.', ',') + '€';
-  document.getElementById('prod-unit').textContent = p.weight ? 'Pot de ' + p.weight : '';
-
-  // Format pills — construits depuis les variantes
-  var optPills = document.querySelector('.opt-pills');
-  if (optPills) {
-    if (_variants.length > 1) {
-      optPills.innerHTML = _variants.map(function (v) {
-        var on = v.id === pid ? ' on' : '';
-        return '<button class="opt-pill' + on + '" data-pid="' + v.id + '" data-price="' + v.price + '" data-unit="' + (v.weight || '') + '">'
-          + '<strong>' + (v.weight || v.id) + '</strong>'
-          + '<span>' + v.price.toFixed(2).replace('.', ',') + '€</span>'
-          + '</button>';
-      }).join('');
-      var lbl = document.querySelector('.opt-label em');
-      if (lbl) lbl.textContent = _variants.length + ' contenances';
-    } else {
-      optPills.innerHTML = '<button class="opt-pill on" data-pid="' + p.id + '" data-price="' + p.price + '" data-unit="' + (p.weight || '') + '">'
-        + '<strong>' + (p.weight || p.name) + '</strong>'
-        + '<span>' + p.price.toFixed(2).replace('.', ',') + '€</span>'
-        + '</button>';
-      var lbl2 = document.querySelector('.opt-label em');
-      if (lbl2) lbl2.textContent = '1 format';
-    }
-  }
+  renderFormatPills(p, pid);
+  renderBoxContents(p);
+  renderOfferPills(p);
 
   // Suggestions — autres produits, même catégorie en priorité
   var suggestGrid = document.querySelector('.suggest-grid');
@@ -1555,10 +1790,21 @@ var qty = 1;
     });
     var bgs = ['bg-terracotta', 'bg-rose', 'bg-sauge', 'bg-dore'];
     suggestGrid.innerHTML = others.slice(0, 4).map(function (s, i) {
+      var sOffers = SiteData.getProductOffers ? SiteData.getProductOffers(s) : [];
+      var sDefaultOffer = SiteData.getProductDefaultOffer ? SiteData.getProductDefaultOffer(s) : null;
+      var sStartingPrice = SiteData.getProductStartingPrice ? SiteData.getProductStartingPrice(s) : s.price;
       var scat = SiteData.getCategoryById(s.category);
       var meta = (scat ? scat.name : '') + (s.weight ? ' · ' + s.weight : '');
       var sbadge = s.badge ? '<span class="scard__badge">' + s.badge + '</span>' : '';
-      var addJson = JSON.stringify({ id: s.id, name: s.name, price: s.price, image: s.image, variant: s.weight, weight: s.weight }).replace(/'/g, '&#39;');
+      var addJson = JSON.stringify({
+        id: s.id,
+        name: s.name,
+        price: sDefaultOffer ? sDefaultOffer.totalPrice : s.price,
+        image: s.image,
+        variant: sDefaultOffer ? sDefaultOffer.label : s.weight,
+        weight: s.weight,
+        offerId: sDefaultOffer ? sDefaultOffer.id : null
+      }).replace(/'/g, '&#39;');
       return '<a href="Fiche Produit.html#' + s.id + '" class="scard">'
         + '<div class="scard__media ' + bgs[i % bgs.length] + '">' + sbadge
         + '<img src="' + s.image + '" alt="' + s.name + '" onerror="this.src=\'assets/product-pate-tartiner.png\'">'
@@ -1566,7 +1812,7 @@ var qty = 1;
         + '<div class="scard__meta">' + meta + '</div>'
         + '<h3 class="scard__name">' + s.name + '</h3>'
         + '<div class="scard__foot">'
-        + '<span class="scard__price">' + s.price.toFixed(2).replace('.', ',') + '€</span>'
+        + '<span class="scard__price">' + (sOffers.length > 1 ? 'À partir de ' : '') + formatEur(sStartingPrice) + '</span>'
         + '<button class="scard__add" data-add=\'' + addJson + '\' onclick="event.stopPropagation()">+</button>'
         + '</div></a>';
     }).join('');
@@ -1585,53 +1831,49 @@ var qty = 1;
         compTitle.innerHTML = '<em>' + comp.heading + '</em>';
       }
     }
-    // Grille des ingrédients
     var compoGrid = document.querySelector('.compo-grid');
-    if (compoGrid && comp.ings && comp.ings.length) {
-      var ingsHTML = comp.ings.map(function (ing) {
-        return '<div class="ing">'
-          + '<span class="ing__pct">' + ing.pct + '<sup>%</sup></span>'
-          + '<div class="ing__origin">' + ing.origin + '</div>'
-          + '<h3 class="ing__name">' + ing.name + '</h3>'
-          + '<p class="ing__desc">' + ing.desc + '</p>'
-          + '</div>';
-      }).join('');
-      // Carte "Sans rien d'autre" toujours présente
-      ingsHTML += '<div class="ing is-rest">'
-        + '<span class="ing__pct">0<sup>%</sup></span>'
-        + '<div class="ing__origin">Sans rien d\'autre</div>'
-        + '<h3 class="ing__name">Tout le reste</h3>'
-        + '<p class="ing__desc">' + (comp.restDesc || '') + '</p>'
-        + '</div>';
-      compoGrid.innerHTML = ingsHTML;
+    var compSub = document.querySelector('.compo .section-head__sub');
+    if (compSub) {
+      compSub.textContent = '— c\'est tout, promis';
     }
+    if (compoGrid) {
+      var cards = [];
+      (comp.ings || []).forEach(function (ing) {
+        if (!ing || !ing.name) return;
+        cards.push('<div class="ing">'
+          + '<span class="ing__pct">' + (ing.pct || 0) + '<sup>%</sup></span>'
+          + '<div class="ing__origin">' + (ing.origin || '') + '</div>'
+          + '<h3 class="ing__name">' + ing.name + '</h3>'
+          + '<p class="ing__desc">' + (ing.desc || '') + '</p>'
+          + '</div>');
+      });
 
-    // Section "Comment le déguster"
-    var uses = p.usages;
-    if (uses) {
-      var usesTitle = document.querySelector('.uses .section-head__title');
-      if (usesTitle && uses.heading) usesTitle.textContent = uses.heading;
-      var usesSub = document.querySelector('.uses .section-head__sub');
-      if (usesSub && uses.sub) usesSub.textContent = uses.sub;
-      var usesGrid = document.querySelector('.uses-grid');
-      if (usesGrid && uses.cards && uses.cards.length) {
-        var ICON_SVGS = {
-          tartine:  '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="11" width="22" height="11" rx="2"/><path d="M9 11V8a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v3" stroke-linecap="round"/></svg>',
-          yaourt:   '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 12h16l-2 12a2 2 0 0 1-2 2H12a2 2 0 0 1-2-2L8 12Z"/><path d="M11 12V9a5 5 0 0 1 10 0v3" stroke-linecap="round"/></svg>',
-          dessert:  '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="16" cy="16" r="10"/><path d="M11 18c2 2 8 2 10 0" stroke-linecap="round"/><circle cx="12" cy="13" r="1" fill="currentColor"/><circle cx="20" cy="13" r="1" fill="currentColor"/></svg>',
-          cuillere: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 6h14l-2 22H11L9 6Z"/><path d="M9 10h14" stroke-linecap="round"/></svg>',
-          gateau:   '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="16" width="22" height="11" rx="2"/><path d="M9 16v-3a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v3"/><path d="M11 10V8M16 10V8M21 10V8" stroke-linecap="round"/></svg>',
-          smoothie: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 10h12l-3 17H13L10 10Z"/><path d="M10 14h12M19 10V7" stroke-linecap="round"/></svg>',
-          bol:      '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 14a10 10 0 0 0 20 0H6Z"/><path d="M6 14h20M12 26h8" stroke-linecap="round"/></svg>',
-          aperitif: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 5h12L16 18v8"/><path d="M12 26h8" stroke-linecap="round"/><path d="M10 5l2 7M22 5l-2 7"/></svg>',
-        };
-        usesGrid.innerHTML = uses.cards.map(function (c) {
-          return '<div class="use">'
-            + '<div class="use__emoji">' + (ICON_SVGS[c.icon] || ICON_SVGS.cuillere) + '</div>'
-            + '<h3 class="use__title">' + c.title + '</h3>'
-            + '<p class="use__desc">' + c.desc + '</p>'
-            + '</div>';
-        }).join('');
+      var infoCards = comp.infoCards || (comp.freeTitle || comp.freeText || comp.freeLabel ? [{
+        label: comp.freeLabel || '',
+        title: comp.freeTitle || '',
+        text: comp.freeText || ''
+      }] : []);
+
+      infoCards.forEach(function (card) {
+        if (!card || (!card.label && !card.title && !card.text)) return;
+        cards.push('<div class="ing ing--info">'
+          + (card.label ? '<span class="ing__pct">' + card.label + '</span>' : '')
+          + '<div class="ing__origin">Information</div>'
+          + '<h3 class="ing__name">' + (card.title || 'Information produit') + '</h3>'
+          + '<p class="ing__desc">' + (card.text || '') + '</p>'
+          + '</div>');
+      });
+
+      if (comp.restDesc) {
+        cards.push('<div class="ing ing--info is-rest">'
+          + '<div class="ing__origin">Sans rien d\'autre</div>'
+          + '<h3 class="ing__name">Tout le reste</h3>'
+          + '<p class="ing__desc">' + comp.restDesc + '</p>'
+          + '</div>');
+      }
+
+      if (cards.length) {
+        compoGrid.innerHTML = cards.join('');
       }
     }
   }
@@ -1653,20 +1895,28 @@ var qty = 1;
       }
       var recGrid = document.getElementById('recipes-grid');
       if (recGrid) {
-        var ctaSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"/></svg>';
         recGrid.innerHTML = linkedRecipes.slice(0, 2).map(function(r) {
           var meta = [r.time, r.servings].filter(Boolean).join(' · ');
           var name = r.titleEm ? r.title + ' <em>' + r.titleEm + '</em>' : r.title;
           var link = 'recette.html?id=' + r.id;
           var img = r.image || 'assets/product-pate-tartiner.png';
-          return '<article class="recipe">'
-            + '<div class="recipe__media"><img src="' + img + '" alt="" onerror="this.src=\'assets/product-pate-tartiner.png\'"></div>'
-            + '<div class="recipe__body">'
-            + (meta ? '<span class="recipe__meta">' + meta + '</span>' : '')
-            + '<h3 class="recipe__name">' + name + '</h3>'
-            + (r.desc ? '<p class="recipe__desc">' + r.desc + '</p>' : '')
-            + '<a href="' + link + '" class="recipe__cta">Lire la recette ' + ctaSvg + '</a>'
-            + '</div></article>';
+          var products = (r.products || []).map(function(id) {
+            var product = SiteData.getProductById(id);
+            if (!product) return '';
+            return '<span class="recipe-card__prod-pill">'
+              + '<img src="' + (product.image || 'assets/product-pate-tartiner.png') + '" alt="" onerror="this.onerror=null;this.src=\'assets/product-pate-tartiner.png\'">'
+              + product.name + '</span>';
+          }).join('');
+          return '<a class="recipe-card" href="' + link + '">'
+            + '<div class="recipe-card__media"><img src="' + img + '" alt="' + (r.title + (r.titleEm ? ' ' + r.titleEm : '')) + '" onerror="this.onerror=null;this.src=\'assets/product-pate-tartiner.png\'"></div>'
+            + '<div class="recipe-card__body">'
+            + (meta ? '<div class="recipe-card__meta">' + meta.toUpperCase() + '</div>' : '')
+            + '<h3 class="recipe-card__name">' + name + '</h3>'
+            + (r.intro ? '<p class="recipe-card__intro">' + r.intro + '</p>' : '')
+            + (r.desc ? '<p class="recipe-card__desc">' + r.desc + '</p>' : '')
+            + (products ? '<div class="recipe-card__products">' + products + '</div>' : '')
+            + '<span class="recipe-card__cta">Lire la recette →</span>'
+            + '</div></a>';
         }).join('');
       }
     }
@@ -1679,14 +1929,17 @@ var qty = 1;
 // ========== GALERIE ==========
 (function () {
   var mainImg = document.querySelector('.gallery__main img');
-  document.querySelectorAll('.gallery__thumb').forEach(function (btn) {
-    btn.addEventListener('click', function () {
+  var thumbsWrap = document.querySelector('.gallery__thumbs');
+  if (thumbsWrap) {
+    thumbsWrap.addEventListener('click', function (event) {
+      var btn = event.target.closest('.gallery__thumb');
+      if (!btn || !mainImg) return;
       document.querySelectorAll('.gallery__thumb').forEach(function (b) { b.classList.remove('on'); });
       btn.classList.add('on');
-      mainImg.src = btn.querySelector('img').src;
-      mainImg.alt = btn.querySelector('img').alt;
+      mainImg.src = btn.dataset.src || btn.querySelector('img').src;
+      mainImg.alt = _product ? _product.name : '';
     });
-  });
+  }
   document.querySelector('.gallery__zoom').addEventListener('click', function () { openZoom(mainImg.src); });
 })();
 
@@ -1702,40 +1955,25 @@ function closeZoom() {
 // ========== FORMAT PILLS ==========
 function updateBuyCta() {
   var total = (selectedPrice * qty).toFixed(2).replace('.', ',');
-  document.getElementById('prod-price').textContent = selectedPrice.toFixed(2).replace('.', ',') + '€';
+  document.getElementById('prod-price').textContent = formatEur(selectedPrice);
   document.getElementById('buy-cta').innerHTML = 'Ajouter au panier · ' + total + '€ '
     + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7h14l-1.5 11.5a2 2 0 0 1-2 1.5h-7a2 2 0 0 1-2-1.5L5 7Z"/><path d="M9 7V5a3 3 0 0 1 6 0v2" stroke-linecap="round"/></svg>';
 }
 
-document.querySelector('.opt-pills').addEventListener('click', function (e) {
-  var pill = e.target.closest('.opt-pill');
+document.getElementById('format-pills').addEventListener('click', function (e) {
+  var pill = e.target.closest('.opt-pill[data-pid]');
   if (!pill) return;
-  document.querySelectorAll('.opt-pill').forEach(function (p) { p.classList.remove('on'); });
+  document.querySelectorAll('#format-pills .opt-pill').forEach(function (item) { item.classList.remove('on'); });
   pill.classList.add('on');
+  updateSelectedVariant(pill.dataset.pid);
+});
 
-  if (pill.dataset.pid) {
-    // Variante dynamique
-    _selectedVariantId = pill.dataset.pid;
-    selectedPrice = parseFloat(pill.dataset.price);
-    var unit = pill.dataset.unit;
-    document.getElementById('prod-unit').textContent = unit ? 'Pot de ' + unit : '';
-    // MAJ image galerie vers la variante sélectionnée
-    var variant = _variants.find(function (v) { return v.id === _selectedVariantId; });
-    if (variant) {
-      var mainImg = document.querySelector('.gallery__main img');
-      if (mainImg) { mainImg.src = variant.image; mainImg.alt = variant.name; }
-    }
-  } else {
-    // Format statique (data-weight numérique)
-    var staticFormats = {
-      '110': { price: 5.90, unit: 'Pot de 110g · 5,36€ / 100g' },
-      '150': { price: 7.50, unit: 'Pot de 150g · 5,00€ / 100g' },
-      '300': { price: 12.90, unit: 'Pot de 300g · 4,30€ / 100g' },
-    };
-    var sf = staticFormats[pill.dataset.weight];
-    if (sf) { selectedPrice = sf.price; document.getElementById('prod-unit').textContent = sf.unit; }
-  }
-  updateBuyCta();
+document.getElementById('offer-pills').addEventListener('click', function (e) {
+  var pill = e.target.closest('.opt-pill[data-offer-id]');
+  if (!pill) return;
+  var variant = getCurrentVariant();
+  var offer = getOffersForProduct(variant).find(function (item) { return item.id === pill.dataset.offerId; });
+  if (offer) applySelectedOffer(offer);
 });
 
 // ========== QUANTITÉ ==========
@@ -1750,8 +1988,21 @@ document.getElementById('qty-inc').addEventListener('click', function () {
 document.getElementById('buy-cta').addEventListener('click', function () {
   var cartProduct;
   if (_product) {
-    var variant = _variants.find(function (v) { return v.id === _selectedVariantId; }) || _product;
-    cartProduct = { id: variant.id, name: variant.name, price: selectedPrice, image: variant.image, variant: variant.weight, weight: variant.weight };
+    var variant = getCurrentVariant();
+    var offer = _selectedOffer || getDefaultOfferForProduct(variant);
+    var cartVariantLabel = offer && offer.label ? offer.label : (variant.weight || variant.name);
+    if (variant.weight && cartVariantLabel !== variant.weight) {
+      cartVariantLabel = variant.weight + ' · ' + cartVariantLabel;
+    }
+    cartProduct = {
+      id: variant.id,
+      name: variant.name,
+      price: offer ? offer.totalPrice : selectedPrice,
+      image: variant.image,
+      variant: cartVariantLabel,
+      weight: offer && offer.subtitle ? offer.subtitle : variant.weight,
+      offerId: offer ? offer.id : null
+    };
   } else {
     // Fallback statique
     cartProduct = { id: 'creme-vanillee-150', name: 'Châtaigne vanillée', price: selectedPrice, image: 'assets/product-huile-noisettes.png', variant: '150g', weight: '150g' };

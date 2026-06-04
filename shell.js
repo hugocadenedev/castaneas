@@ -14,7 +14,7 @@ window.renderShell = function (activePage) {
   <header class="nav">
     <div class="nav-inner">
       <a href="index.html" class="logo">
-        <img src="assets/castaneas-logo.svg" alt="Castaneas" style="height:44px;width:auto;">
+        <img src="assets/Castaneas-logo (3).svg" alt="Castaneas" style="height:44px;width:auto;">
       </a>
       <nav class="nav-links">
         <a href="index.html" ${activePage === 'home' ? 'class="active"' : ''}>Accueil</a>
@@ -74,7 +74,7 @@ window.renderShell = function (activePage) {
   <footer class="footer">
     <div class="footer-inner">
       <div class="footer-brand">
-        <img src="assets/castaneas-logo.svg" alt="Castaneas" style="height:60px;width:auto;filter:invert(1) brightness(1.05);">
+        <img src="assets/Castaneas-logo (3).svg" alt="Castaneas" style="height:60px;width:auto;filter:invert(1) brightness(1.05);">
         <p>Du verger d'Albias à votre tartine. Pâtes à tartiner artisanales, noisettes, noix et châtaignes récoltées par la famille sur nos terres du Tarn-et-Garonne.</p>
       </div>
       <div>

@@ -72,6 +72,10 @@
   function renderCard(p) {
     var bg    = getBg(p);
     var badge = p.badge ? '<span class="badge badge--brown">' + p.badge + '</span>' : '';
+    var offers = SiteData.getProductOffers ? SiteData.getProductOffers(p) : [];
+    var defaultOffer = SiteData.getProductDefaultOffer ? SiteData.getProductDefaultOffer(p) : null;
+    var startingPrice = SiteData.getProductStartingPrice ? SiteData.getProductStartingPrice(p) : p.price;
+    var priceFrom = offers.length > 1;
     var stock = '';
     if (p.stock === 'out_of_stock') {
       stock = '<span class="badge badge--corail" style="position:absolute;bottom:12px;left:12px;top:auto;">Rupture</span>';
@@ -79,10 +83,15 @@
       stock = '<span class="badge badge--cream" style="position:absolute;bottom:12px;left:12px;top:auto;">Dernières unités</span>';
     }
     var addData = JSON.stringify({
-      id: p.id, name: p.name, price: p.price,
-      image: p.image, variant: p.weight, weight: p.weight
+      id: p.id,
+      name: p.name,
+      price: defaultOffer ? defaultOffer.totalPrice : p.price,
+      image: p.image,
+      variant: defaultOffer ? defaultOffer.label : p.weight,
+      weight: p.weight,
+      offerId: defaultOffer ? defaultOffer.id : null
     }).replace(/'/g, '&#39;');
-    return '<article class="product-card" data-price="' + p.price + '" style="cursor:pointer;">'
+    return '<article class="product-card" data-price="' + startingPrice + '" style="cursor:pointer;">'
       + '<div class="product-img ' + bg + '">'
       + badge
       + '<button type="button" class="fav-btn" aria-label="Ajouter aux favoris">'
@@ -97,7 +106,7 @@
       + '<h3 class="product-name">' + p.name + '</h3>'
       + '<p class="product-desc">' + (p.desc || '') + '</p>'
       + '<div class="product-foot">'
-      + '<span class="product-price">' + p.price.toFixed(2).replace('.', ',') + '\u20ac</span>'
+      + '<span class="product-price">' + (priceFrom ? 'À partir de ' : '') + startingPrice.toFixed(2).replace('.', ',') + '\u20ac</span>'
       + '<button class="add-btn" data-add=\'' + addData + '\'>Ajouter '
       + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5v14" stroke-linecap="round"/></svg>'
       + '</button>'
