@@ -10,31 +10,19 @@ header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Pragma: no-cache');
 header('Expires: 0');
 
-$configDir = getenv('CASTANEAS_DATA_DIR');
-$dataDirs = [
-    $configDir ? rtrim($configDir, '/\\') : null,
-    dirname(__DIR__) . DIRECTORY_SEPARATOR . 'castaneas-data',
-    __DIR__ . '/data',
-    __DIR__ . '/uploads/data',
-];
+require_once __DIR__ . '/storage.php';
+
 $output  = [];
 
 foreach (['products', 'categories', 'recipes', 'homepage'] as $key) {
-    foreach ($dataDirs as $dataDir) {
-        if (!$dataDir) {
-            continue;
-        }
-        $file = $dataDir . '/' . $key . '.json';
-        if (!file_exists($file)) {
-            continue;
-        }
+    $raw = castaneas_storage_read_raw($key);
+    if ($raw === null) {
+        continue;
+    }
 
-        $raw  = file_get_contents($file);
-        $data = json_decode($raw);
-        if ($data !== null) {
-            $output[$key] = $data;
-            break;
-        }
+    $data = json_decode($raw);
+    if ($data !== null) {
+        $output[$key] = $data;
     }
 }
 
