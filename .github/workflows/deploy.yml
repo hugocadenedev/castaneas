@@ -27,7 +27,10 @@ jobs:
           set cmd:fail-exit true
           set ftp:ssl-force true
           set ftp:ssl-protect-data true
+          set ftp:ssl-use-ccc true
           set ftp:passive-mode true
+          set ftp:prefer-epsv false
+          set ftp:ignore-pasv-address true
           set ftp:sync-mode true
           set ssl:verify-certificate no
           set net:timeout 20
@@ -40,10 +43,10 @@ jobs:
           open -u "$FTP_USERNAME","$FTP_PASSWORD" -p 21 "$FTP_SERVER"
           mirror -R ./ /public_html/ \
             --verbose=3 \
-            --delete \
             --parallel=1 \
             --max-errors=1 \
             --only-newer \
+            --continue \
             --no-perms \
             --exclude-glob .git* \
             --exclude-glob .github* \
