@@ -482,6 +482,125 @@ tbody tr:last-child td { border-bottom: none; }
 .order-item-meta { font-size: 11px; color: var(--muted); }
 .order-item-price { font-weight: 700; margin-left: 16px; font-family: var(--serif); font-size: 15px; }
 
+.order-detail-shell { display: grid; gap: 20px; }
+.order-detail-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 24px 28px;
+  background: linear-gradient(135deg, #fff 0%, #f7efe4 100%);
+  border: 1.5px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+}
+.order-detail-title { font-family: var(--serif); font-size: 30px; line-height: 1.02; margin-bottom: 6px; }
+.order-detail-sub { color: var(--muted); font-size: 13px; }
+.order-detail-kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; min-width: 360px; }
+.order-detail-kpi {
+  background: rgba(255,255,255,.82);
+  border: 1.5px solid var(--line);
+  border-radius: 16px;
+  padding: 14px 16px;
+}
+.order-detail-kpi-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; font-weight: 800; }
+.order-detail-kpi-value { margin-top: 8px; font-size: 24px; font-family: var(--serif); font-weight: 600; }
+.order-detail-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(340px, .95fr); gap: 20px; align-items: start; }
+.order-detail-main, .order-detail-side { display: grid; gap: 20px; }
+.order-card {
+  background: #fff;
+  border-radius: var(--r-lg);
+  border: 1.5px solid var(--line);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.order-card-head {
+  padding: 18px 22px 14px;
+  border-bottom: 1.5px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+.order-card-head h3 { font-family: var(--serif); font-size: 19px; font-weight: 600; }
+.order-card-body { padding: 20px 22px; }
+.order-info-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 18px; }
+.order-info-item { display: grid; gap: 4px; }
+.order-info-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; font-weight: 800; }
+.order-info-value { font-size: 14px; color: var(--ink); word-break: break-word; }
+.order-address-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.order-address-card {
+  background: var(--cream-soft);
+  border: 1.5px solid var(--line);
+  border-radius: 16px;
+  padding: 16px 18px;
+  display: grid;
+  gap: 6px;
+}
+.order-address-card h4 { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+.order-address-name { font-weight: 700; }
+.order-meta-stack { display: grid; gap: 10px; }
+.order-meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.order-meta-row:last-child { border-bottom: none; padding-bottom: 0; }
+.order-meta-row strong { font-size: 13px; }
+.order-meta-row span { color: var(--ink-soft); font-size: 13px; text-align: right; }
+.order-chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.order-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: var(--r-pill);
+  background: var(--cream-soft);
+  border: 1px solid var(--line);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+.order-lines { width: 100%; border-collapse: collapse; }
+.order-lines th, .order-lines td { padding: 14px 12px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.order-lines th {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  background: var(--cream-soft);
+  text-align: left;
+}
+.order-lines tr:last-child td { border-bottom: none; }
+.order-line-product { display: flex; align-items: center; gap: 12px; }
+.order-line-product img { width: 52px; height: 52px; border-radius: 12px; object-fit: cover; background: var(--cream-soft); }
+.order-line-name { font-weight: 700; }
+.order-line-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.order-note {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--cream-soft);
+  border: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--ink-soft);
+  white-space: pre-wrap;
+}
+
+@media (max-width: 1180px) {
+  .order-detail-hero { flex-direction: column; }
+  .order-detail-kpis { min-width: 0; width: 100%; }
+  .order-detail-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 760px) {
+  .order-detail-kpis,
+  .order-info-grid,
+  .order-address-grid { grid-template-columns: 1fr; }
+}
+
 /* ---- EMPTY STATE ---- */
 .empty-state { text-align: center; padding: 64px 32px; }
 .empty-state svg { width: 56px; height: 56px; color: var(--muted); margin: 0 auto 16px; }
@@ -727,6 +846,10 @@ tbody tr:last-child td { border-bottom: none; }
             <tbody id="orders-tbody"></tbody>
           </table>
         </div>
+      </div>
+
+      <div class="panel" id="panel-order-detail">
+        <div id="order-detail-content"></div>
       </div>
 
       <!-- ========== RECIPES ========== -->
@@ -1592,6 +1715,7 @@ let editingCat = null;
 let editingRecipe = null;
 let selectedExtraImages = [];
 let recipeSteps = [];
+let selectedOrderId = null;
 
 function getDefaultPromoMessage() {
   return 'Livraison offerte dès 40€ d\'achat — récolte 2025 disponible 🌰';
@@ -1780,25 +1904,44 @@ const panelMeta = {
   products:   { title: 'Produits',               actions: '<button class="btn btn-primary" onclick="openProductModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nouveau produit</button>' },
   categories: { title: 'Catégories',             actions: '<button class="btn btn-primary" onclick="openCatModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nouvelle catégorie</button>' },
   orders:     { title: 'Commandes',              actions: '' },
+  'order-detail': { title: 'Détail commande',    actions: '' },
   recipes:    { title: 'Recettes',               actions: '<button class="btn btn-primary" onclick="openRecipeModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nouvelle recette</button>' },
   homepage:   { title: 'Site',                   actions: '' },
   pages:      { title: 'Pages générées',         actions: '' },
   settings:   { title: 'Paramètres',             actions: '' },
 };
 
-function switchPanel(el) {
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  el.classList.add('active');
-  const panel = el.dataset.panel;
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('panel-' + panel).classList.add('active');
-  document.getElementById('topbar-title').textContent = panelMeta[panel].title;
-  const ta = document.getElementById('topbar-actions');
-  ta.innerHTML = panelMeta[panel].actions + `<a href="index.html" target="_blank" class="btn btn-secondary btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> Voir le site</a>`;
+function siteTopbarActionHtml() {
+  return `<a href="index.html" target="_blank" class="btn btn-secondary btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> Voir le site</a>`;
+}
+
+function runPanelRenderHooks(panel) {
   if (panel === 'pages') renderPages();
   if (panel === 'recipes') renderRecipes();
   if (panel === 'homepage') renderHomepage();
   if (panel === 'settings') renderSettings();
+}
+
+function activatePanel(panel, options = {}) {
+  const activeNavPanel = options.activeNavPanel || panel;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const navItem = document.querySelector(`.nav-item[data-panel="${activeNavPanel}"]`);
+  if (navItem) navItem.classList.add('active');
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + panel).classList.add('active');
+  const meta = panelMeta[panel] || { title: '', actions: '' };
+  const title = options.title || meta.title;
+  const actions = options.actions !== undefined ? options.actions : meta.actions;
+  document.getElementById('topbar-title').textContent = title;
+  const ta = document.getElementById('topbar-actions');
+  ta.innerHTML = (actions || '') + siteTopbarActionHtml();
+  runPanelRenderHooks(panel);
+}
+
+function switchPanel(el) {
+  const panel = el.dataset.panel;
+  if (panel !== 'order-detail') selectedOrderId = null;
+  activatePanel(panel);
 }
 
 /* ---------- Render ALL ---------- */
@@ -1931,7 +2074,7 @@ function renderOrders(filter = '') {
     return;
   }
   tbody.innerHTML = [...list].reverse().map(o => `
-    <tr style="cursor:pointer;" onclick="toggleOrderExpand('${o.id}')">
+    <tr style="cursor:pointer;" onclick="openOrderDetail('${o.id}')">
       <td><span style="font-weight:700;font-family:monospace;font-size:13px;">${o.id}</span></td>
       <td>${o.date}</td>
       <td>
@@ -1953,6 +2096,9 @@ function renderOrders(filter = '') {
         </select>
       </td>
       <td><div class="td-actions">
+        <button class="btn-icon" onclick="event.stopPropagation();openOrderDetail('${o.id}')" title="Détail commande">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
         <button class="btn-icon" onclick="event.stopPropagation();openSendcloudLabel('${o.id}')" title="Etiquette Sendcloud">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 8V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3"/><rect x="2" y="8" width="20" height="9" rx="2"/><path d="M6 17h12v4H6z"/><line x1="7" y1="12" x2="11" y2="12"/></svg>
         </button>
@@ -1962,37 +2108,13 @@ function renderOrders(filter = '') {
         <button class="btn-icon" onclick="event.stopPropagation();deleteOrder('${o.id}')" title="Supprimer" style="color:var(--corail);">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
         </button>
-      </div></td>
-    </tr>
-    <tr class="order-row-expand" id="order-expand-${o.id}" style="display:none;">
-      <td colspan="6"><div class="order-expand-inner">
-        ${o.items.map(i => `<div class="order-item">
-          <img src="${i.image}" alt="" onerror="this.onerror=null;this.src='assets/product-pate-tartiner.png'">
-          <div><div class="order-item-name">${i.name}</div><div class="order-item-meta">Qté : ${i.qty}</div></div>
-          <div class="order-item-price">${(i.price * i.qty).toFixed(2).replace('.', ',')}€</div>
-        </div>`).join('')}
-        <div class="order-item" style="min-width:260px;align-items:flex-start;">
-          <div>
-            <div class="order-item-name">Intégrations</div>
-            <div class="order-item-meta">Sendcloud : ${formatIntegrationStatus(o.sendcloud, 'Non créé')}</div>
-            <div class="order-item-meta">Sucrine : ${formatIntegrationStatus(o.sucrine, 'Non envoyée')}</div>
-          </div>
-        </div>
-        <div class="order-item" style="min-width:260px;align-items:flex-start;">
-          <div>
-            <div class="order-item-name">Livraison</div>
-            <div class="order-item-meta">Mode : ${o.shipping && o.shipping.name ? o.shipping.name : 'Non renseigné'}</div>
-            <div class="order-item-meta">Adresse : ${formatOrderAddressLine(o.billing)}</div>
-            <div class="order-item-meta">${formatOrderLocationLine(o.billing)}</div>
-          </div>
-        </div>
-      </div></td>
     </tr>
   `).join('');
 }
 
 function toggleOrderExpand(id) {
   const row = document.getElementById('order-expand-' + id);
+  if (!row) return;
   row.style.display = row.style.display === 'none' ? '' : 'none';
 }
 function escapeHtml(value) {
@@ -2035,6 +2157,336 @@ function formatOrderServicePoint(order) {
     [address.street, address.houseNumber].filter(Boolean).join(' '),
     [address.postalCode, address.city].filter(Boolean).join(' '),
   ].filter(Boolean).join(' — ');
+}
+function formatMoney(value) {
+  return Number(value || 0).toFixed(2).replace('.', ',') + '€';
+}
+function formatOrderDateTime(value) {
+  if (!value) return '—';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleString('fr-FR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+function formatPaymentMethod(order) {
+  const payment = (order && order.billing ? order.billing.payment : '') || (order && order.payment ? order.payment.method : '');
+  const map = {
+    credit_agricole: 'Crédit Agricole',
+    card: 'Carte bancaire',
+    cash: 'Paiement manuel',
+    simulate: 'Paiement simulé',
+  };
+  return map[payment] || payment || 'Non renseigné';
+}
+function orderStatusSelectHtml(order) {
+  return `<select onchange="updateOrderStatus('${order.id}', this.value)" style="font-size:12px;font-weight:700;padding:7px 10px;border-radius:999px;border:1.5px solid var(--line);background:var(--cream-soft);cursor:pointer;">
+    <option value="pending_payment" ${order.status==='pending_payment'?'selected':''}>Paiement en attente</option>
+    <option value="paid" ${order.status==='paid'?'selected':''}>Payée</option>
+    <option value="pending" ${order.status==='pending'?'selected':''}>En attente</option>
+    <option value="processing" ${order.status==='processing'?'selected':''}>En préparation</option>
+    <option value="shipped" ${order.status==='shipped'?'selected':''}>Expédiée</option>
+    <option value="delivered" ${order.status==='delivered'?'selected':''}>Livrée</option>
+    <option value="payment_refused" ${order.status==='payment_refused'?'selected':''}>Paiement refusé</option>
+    <option value="payment_failed" ${order.status==='payment_failed'?'selected':''}>Paiement en erreur</option>
+    <option value="cancelled" ${order.status==='cancelled'?'selected':''}>Annulée</option>
+  </select>`;
+}
+function formatOrderFunctionalities(order) {
+  const raw = order && order.shipping ? order.shipping.selectedFunctionalities : null;
+  if (Array.isArray(raw)) {
+    return raw
+      .map(entry => entry && (entry.name || entry.code || entry.id || ''))
+      .filter(Boolean);
+  }
+  if (!raw || typeof raw !== 'object') {
+    return [];
+  }
+
+  const labels = [];
+  Object.entries(raw).forEach(([key, value]) => {
+    if (value === false || value === null || value === undefined || value === '') {
+      return;
+    }
+    const normalizedKey = String(key)
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, letter => letter.toUpperCase());
+    if (value === true) {
+      labels.push(normalizedKey);
+      return;
+    }
+    labels.push(`${normalizedKey}: ${value}`);
+  });
+  return labels;
+}
+function orderDetailTopbarActions(order) {
+  return [
+    `<button class="btn btn-secondary btn-sm" onclick="closeOrderDetail()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/><path d="M21 12H9"/></svg> Retour aux commandes</button>`,
+    `<button class="btn btn-green btn-sm" onclick="openSendcloudLabel('${order.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 8V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3"/><rect x="2" y="8" width="20" height="9" rx="2"/><path d="M6 17h12v4H6z"/><line x1="7" y1="12" x2="11" y2="12"/></svg> Etiquette Sendcloud</button>`,
+    `<button class="btn btn-secondary btn-sm" onclick="printOrderDeliverySlip('${order.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/><line x1="8" y1="17" x2="16" y2="17"/><line x1="8" y1="20" x2="13" y2="20"/></svg> Bon de livraison</button>`
+  ].join('');
+}
+function renderOrderDetail(order) {
+  const container = document.getElementById('order-detail-content');
+  if (!container) return;
+  if (!order) {
+    container.innerHTML = '<div class="empty-state"><h3>Commande introuvable</h3><p>Cette commande n\'existe plus ou n\'est pas chargée.</p><button class="btn btn-secondary" onclick="closeOrderDetail()">Retour</button></div>';
+    return;
+  }
+
+  const billing = order.billing || {};
+  const shipping = order.shipping || {};
+  const servicePoint = shipping.servicePoint || null;
+  const servicePointAddress = servicePoint && servicePoint.address ? servicePoint.address : {};
+  const functionalities = formatOrderFunctionalities(order);
+  const lines = Array.isArray(order.items) ? order.items : [];
+  const itemCount = lines.reduce((sum, item) => sum + Number(item.qty || 0), 0);
+  const shippingPrice = shipping && Number.isFinite(Number(shipping.price)) ? formatMoney(shipping.price) : '—';
+  const subtotal = Number(order.subtotal || 0) || Math.max(Number(order.total || 0) - Number(shipping.price || 0), 0);
+  const trackingNumber = order.sendcloud && order.sendcloud.trackingNumber ? order.sendcloud.trackingNumber : '—';
+
+  container.innerHTML = `
+    <div class="order-detail-shell">
+      <section class="order-detail-hero">
+        <div>
+          <div class="order-detail-sub">Commande client</div>
+          <h2 class="order-detail-title">${escapeHtml(order.id)}</h2>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
+            ${statusBadge(order.status || '')}
+            <span class="badge badge-gray">${escapeHtml(formatPaymentMethod(order))}</span>
+            ${shipping.name ? `<span class="badge badge-gray">${escapeHtml(shipping.name)}</span>` : ''}
+          </div>
+          <div class="order-detail-sub">Créée le ${escapeHtml(formatOrderDateTime(order.createdAt || order.date || ''))} · ${escapeHtml(order.customer || 'Client inconnu')}</div>
+        </div>
+        <div class="order-detail-kpis">
+          <div class="order-detail-kpi">
+            <div class="order-detail-kpi-label">Total TTC</div>
+            <div class="order-detail-kpi-value">${formatMoney(order.total || 0)}</div>
+          </div>
+          <div class="order-detail-kpi">
+            <div class="order-detail-kpi-label">Articles</div>
+            <div class="order-detail-kpi-value">${itemCount}</div>
+          </div>
+          <div class="order-detail-kpi">
+            <div class="order-detail-kpi-label">Livraison</div>
+            <div class="order-detail-kpi-value">${escapeHtml(shippingPrice)}</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="order-detail-grid">
+        <div class="order-detail-main">
+          <section class="order-card">
+            <div class="order-card-head">
+              <h3>Articles commandés</h3>
+              <div class="muted">${lines.length} ligne${lines.length > 1 ? 's' : ''}</div>
+            </div>
+            <div class="order-card-body" style="padding:0;">
+              <table class="order-lines">
+                <thead>
+                  <tr>
+                    <th>Produit</th>
+                    <th>Format</th>
+                    <th style="text-align:center;">Qté</th>
+                    <th style="text-align:right;">PU</th>
+                    <th style="text-align:right;">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${lines.map(item => `
+                    <tr>
+                      <td>
+                        <div class="order-line-product">
+                          <img src="${escapeHtml(item.image || 'assets/product-pate-tartiner.png')}" alt="" onerror="this.onerror=null;this.src='assets/product-pate-tartiner.png'">
+                          <div>
+                            <div class="order-line-name">${escapeHtml(item.name || 'Produit')}</div>
+                            <div class="order-line-sub">${escapeHtml(item.variant || item.weight || item.offerLabel || '—')}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td>${escapeHtml(item.variant || item.weight || '—')}</td>
+                      <td style="text-align:center;">${Number(item.qty || 0)}</td>
+                      <td style="text-align:right;">${formatMoney(item.price || 0)}</td>
+                      <td style="text-align:right;font-weight:700;">${formatMoney(Number(item.price || 0) * Number(item.qty || 0))}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="order-card">
+            <div class="order-card-head">
+              <h3>Client et adresses</h3>
+              <div class="muted">Coordonnées et livraison</div>
+            </div>
+            <div class="order-card-body">
+              <div class="order-address-grid">
+                <div class="order-address-card">
+                  <h4>Client</h4>
+                  <div class="order-address-name">${escapeHtml(order.customer || '—')}</div>
+                  <div>${escapeHtml(billing.email || order.email || '—')}</div>
+                  <div>${escapeHtml(billing.tel || 'Téléphone non renseigné')}</div>
+                </div>
+                <div class="order-address-card">
+                  <h4>Adresse de livraison</h4>
+                  <div class="order-address-name">${escapeHtml(order.customer || '—')}</div>
+                  <div>${escapeHtml(formatOrderAddressLine(billing))}</div>
+                  <div>${escapeHtml(formatOrderLocationLine(billing))}</div>
+                </div>
+              </div>
+              ${billing.note ? `<div style="margin-top:16px;"><div class="order-info-label" style="margin-bottom:8px;">Note client</div><div class="order-note">${escapeHtml(billing.note)}</div></div>` : ''}
+            </div>
+          </section>
+
+          <section class="order-card">
+            <div class="order-card-head">
+              <h3>Expédition et préparation</h3>
+              <div class="muted">Mode choisi, point relais et options</div>
+            </div>
+            <div class="order-card-body">
+              <div class="order-info-grid" style="margin-bottom:18px;">
+                <div class="order-info-item">
+                  <div class="order-info-label">Mode de livraison</div>
+                  <div class="order-info-value">${escapeHtml(formatOrderDeliveryMethod(order))}</div>
+                </div>
+                <div class="order-info-item">
+                  <div class="order-info-label">Code méthode</div>
+                  <div class="order-info-value">${escapeHtml(shipping.code || '—')}</div>
+                </div>
+                <div class="order-info-item">
+                  <div class="order-info-label">Produit transporteur</div>
+                  <div class="order-info-value">${escapeHtml(shipping.product && shipping.product.code ? shipping.product.code : '—')}</div>
+                </div>
+                <div class="order-info-item">
+                  <div class="order-info-label">Frais de port</div>
+                  <div class="order-info-value">${escapeHtml(shippingPrice)}</div>
+                </div>
+              </div>
+              <div class="order-info-label" style="margin-bottom:8px;">Options transport</div>
+              ${functionalities.length ? `<div class="order-chip-row">${functionalities.map(label => `<span class="order-chip">${escapeHtml(label)}</span>`).join('')}</div>` : '<div class="muted">Aucune option transport spécifique remontée.</div>'}
+              ${servicePoint ? `
+                <div style="margin-top:18px;">
+                  <div class="order-info-label" style="margin-bottom:8px;">Point relais sélectionné</div>
+                  <div class="order-address-card" style="background:#fff;">
+                    <div class="order-address-name">${escapeHtml(servicePoint.name || 'Point relais')}</div>
+                    <div>${escapeHtml([servicePointAddress.street, servicePointAddress.houseNumber].filter(Boolean).join(' ') || 'Adresse non remontée')}</div>
+                    <div>${escapeHtml([servicePointAddress.postalCode, servicePointAddress.city].filter(Boolean).join(' ') || '')}</div>
+                    <div>${escapeHtml(servicePointAddress.countryCode || '')}</div>
+                    <div class="order-chip-row" style="margin-top:6px;">
+                      ${servicePoint.id ? `<span class="order-chip">ID relais ${escapeHtml(servicePoint.id)}</span>` : ''}
+                      ${servicePoint.carrierServicePointId ? `<span class="order-chip">Code transporteur ${escapeHtml(servicePoint.carrierServicePointId)}</span>` : ''}
+                      ${Number.isFinite(Number(servicePoint.distanceMeters)) ? `<span class="order-chip">${escapeHtml(String(servicePoint.distanceMeters))} m</span>` : ''}
+                    </div>
+                  </div>
+                </div>
+              ` : '<div style="margin-top:18px;" class="muted">Pas de point relais associé à cette commande.</div>'}
+            </div>
+          </section>
+        </div>
+
+        <aside class="order-detail-side">
+          <section class="order-card">
+            <div class="order-card-head">
+              <h3>Traitement</h3>
+              <div class="muted">Pilotage commande</div>
+            </div>
+            <div class="order-card-body">
+              <div class="order-meta-stack">
+                <div class="order-meta-row">
+                  <strong>Statut</strong>
+                  <span>${orderStatusSelectHtml(order)}</span>
+                </div>
+                <div class="order-meta-row">
+                  <strong>Paiement</strong>
+                  <span>${escapeHtml(formatPaymentMethod(order))}</span>
+                </div>
+                <div class="order-meta-row">
+                  <strong>Référence</strong>
+                  <span>${escapeHtml(order.id)}</span>
+                </div>
+                <div class="order-meta-row">
+                  <strong>Créée le</strong>
+                  <span>${escapeHtml(formatOrderDateTime(order.createdAt || order.date || ''))}</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="order-card">
+            <div class="order-card-head">
+              <h3>Intégrations</h3>
+              <div class="muted">Sendcloud et Sucrine</div>
+            </div>
+            <div class="order-card-body">
+              <div class="order-meta-stack">
+                <div class="order-meta-row">
+                  <strong>Sendcloud</strong>
+                  <span>${escapeHtml(formatIntegrationStatus(order.sendcloud, 'Non créé'))}</span>
+                </div>
+                <div class="order-meta-row">
+                  <strong>Tracking</strong>
+                  <span>${escapeHtml(trackingNumber)}</span>
+                </div>
+                <div class="order-meta-row">
+                  <strong>Création étiquette</strong>
+                  <span>${escapeHtml(formatOrderDateTime(order.sendcloud && order.sendcloud.createdAt ? order.sendcloud.createdAt : ''))}</span>
+                </div>
+                <div class="order-meta-row">
+                  <strong>Sucrine</strong>
+                  <span>${escapeHtml(formatIntegrationStatus(order.sucrine, 'Non envoyée'))}</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="order-card">
+            <div class="order-card-head">
+              <h3>Montants</h3>
+              <div class="muted">Synthèse TTC</div>
+            </div>
+            <div class="order-card-body">
+              <div class="order-meta-stack">
+                <div class="order-meta-row">
+                  <strong>Sous-total</strong>
+                  <span>${formatMoney(subtotal)}</span>
+                </div>
+                <div class="order-meta-row">
+                  <strong>Livraison</strong>
+                  <span>${escapeHtml(shippingPrice)}</span>
+                </div>
+                <div class="order-meta-row">
+                  <strong>Total</strong>
+                  <span style="font-weight:800;color:var(--ink);">${formatMoney(order.total || 0)}</span>
+                </div>
+              </div>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </div>`;
+}
+function openOrderDetail(id) {
+  const order = state.orders.find(entry => entry.id === id);
+  if (!order) {
+    toast('Commande introuvable', 'error');
+    return;
+  }
+  selectedOrderId = id;
+  renderOrderDetail(order);
+  activatePanel('order-detail', {
+    activeNavPanel: 'orders',
+    title: 'Commande ' + order.id,
+    actions: orderDetailTopbarActions(order),
+  });
+}
+function closeOrderDetail() {
+  selectedOrderId = null;
+  activatePanel('orders');
 }
 function orderDeliverySlipHtml(order) {
   const billing = order.billing || {};
@@ -2180,7 +2632,21 @@ async function openSendcloudLabel(id) {
 }
 function updateOrderStatus(id, status) {
   const order = state.orders.find(o => o.id === id);
-  if (order) { order.status = status; save(KEYS.orders, state.orders); updateBadges(); }
+  if (order) {
+    order.status = status;
+    save(KEYS.orders, state.orders);
+    renderOrders();
+    renderDashboard();
+    updateBadges();
+    if (selectedOrderId === id) {
+      renderOrderDetail(order);
+      activatePanel('order-detail', {
+        activeNavPanel: 'orders',
+        title: 'Commande ' + order.id,
+        actions: orderDetailTopbarActions(order),
+      });
+    }
+  }
 }
 function filterOrders(v) { renderOrders(v); }
 function deleteOrder(id) {
