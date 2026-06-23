@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+Disallow: /back-office.html
+Disallow: /login.html
+Disallow: /register.html
+Disallow: /panier.html
+Disallow: /facturation.html
+Disallow: /confirmation.html
+Disallow: /save.php
+Disallow: /upload.php
+Disallow: /storage-status.php
+Disallow: /sendcloud-label.php
+Disallow: /payment-return.php
+Disallow: /payment-notify.php
+
+Sitemap: https://www.castaneas.fr/sitemap.xml

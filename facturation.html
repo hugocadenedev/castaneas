@@ -83,6 +83,27 @@
   /* Card brand pictograms */
   .card-badge { height: 24px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
 
+  .ship-block { display: flex; flex-direction: column; gap: 18px; }
+  .ship-status { font-size: 13px; color: var(--ink-soft); min-height: 18px; }
+  .ship-status.error { color: #c0392b; }
+  .ship-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .ship-group-title { font-size: 12px; font-weight: 700; color: var(--ink-soft); letter-spacing: .08em; text-transform: uppercase; font-family: var(--mono); margin-bottom: 10px; }
+  .ship-options { display: flex; flex-direction: column; gap: 10px; }
+  .ship-option { display: flex; align-items: flex-start; gap: 12px; border: 1.5px solid #e0ded7; border-radius: 14px; padding: 14px 16px; cursor: pointer; transition: border .15s, background .15s; background: #fff; }
+  .ship-option:has(input:checked) { border-color: var(--brown-chest); background: #fdf8f5; }
+  .ship-option input[type="radio"] { accent-color: var(--brown-chest); width: 18px; height: 18px; margin-top: 3px; flex-shrink: 0; }
+  .ship-option__body { flex: 1; }
+  .ship-option__top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .ship-option__name { font-size: 14px; font-weight: 700; color: var(--brown-deep); }
+  .ship-option__price { font-size: 14px; font-weight: 700; color: var(--brown-deep); white-space: nowrap; }
+  .ship-option__meta { font-size: 12px; color: var(--ink-soft); margin-top: 4px; }
+  .relay-points { display: flex; flex-direction: column; gap: 10px; }
+  .relay-point { border: 1.5px solid #e0ded7; border-radius: 14px; padding: 14px 16px; cursor: pointer; transition: border .15s, background .15s; }
+  .relay-point.selected { border-color: var(--brown-chest); background: #fdf8f5; }
+  .relay-point__title { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; font-size: 14px; font-weight: 700; color: var(--brown-deep); }
+  .relay-point__meta { font-size: 12px; color: var(--ink-soft); margin-top: 4px; line-height: 1.45; }
+  .relay-empty { font-size: 13px; color: var(--ink-soft); padding: 12px 14px; background: var(--cream-soft); border-radius: 12px; }
+
   /* CGV */
   .cgv-block { display: flex; align-items: flex-start; gap: 12px; background: var(--cream-soft); border-radius: 14px; padding: 16px 18px; margin-top: 4px; }
   .cgv-block input[type="checkbox"] { accent-color: var(--brown-chest); width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; cursor: pointer; }
@@ -91,9 +112,12 @@
   .cgv-error { font-size: 12px; color: #c0392b; margin-top: 6px; min-height: 16px; }
 
   /* CONFIRM BTN */
-  .confirm-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 16px; background: var(--brown-deep); color: #fff; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; font-family: var(--serif); cursor: pointer; transition: background .15s; margin-top: 24px; }
+  .confirm-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; }
+  .confirm-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 16px; background: var(--brown-deep); color: #fff; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; font-family: var(--serif); cursor: pointer; transition: background .15s; }
   .confirm-btn:hover { background: var(--brown-chest); }
   .confirm-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .confirm-btn--test { background: #f3eadf; color: var(--brown-deep); border: 1.5px solid #dcc6aa; }
+  .confirm-btn--test:hover { background: #ead7bf; }
   .secure-note { display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 11.5px; color: var(--ink-soft); margin-top: 10px; }
   .secure-note svg { width: 13px; height: 13px; flex-shrink: 0; }
 
@@ -132,6 +156,8 @@
   @media (max-width: 480px) {
     .form-grid { grid-template-columns: 1fr; }
     .form-grid .span2 { grid-column: 1; }
+    .ship-grid { grid-template-columns: 1fr; }
+    .confirm-actions { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -265,9 +291,31 @@
         </div>
       </div>
 
-      <!-- Mode de paiement -->
       <div class="card">
         <div class="section-eyebrow">Étape 3</div>
+        <div class="section-heading">Modes de livraison</div>
+        <div class="ship-block">
+          <div class="ship-status" id="shipping-status">Renseignez votre adresse pour afficher les options disponibles.</div>
+          <div class="ship-grid">
+            <div>
+              <div class="ship-group-title">Livraison à domicile</div>
+              <div class="ship-options" id="home-options"></div>
+            </div>
+            <div>
+              <div class="ship-group-title">Points relais</div>
+              <div class="ship-options" id="relay-options"></div>
+            </div>
+          </div>
+          <div id="relay-points-wrap" style="display:none;">
+            <div class="ship-group-title">Choix du point relais</div>
+            <div class="relay-points" id="relay-points"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mode de paiement -->
+      <div class="card">
+        <div class="section-eyebrow">Étape 4</div>
         <div class="section-heading">Mode de paiement</div>
         <div class="pay-methods">
 
@@ -313,10 +361,16 @@
         </div>
         <div class="cgv-error" id="err-cgv"></div>
 
-        <button class="confirm-btn" id="confirm-btn">
-          Confirmer et payer
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"/></svg>
-        </button>
+        <div class="confirm-actions">
+          <button class="confirm-btn" id="confirm-btn">
+            Confirmer et payer
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"/></svg>
+          </button>
+          <button class="confirm-btn confirm-btn--test" id="confirm-test-btn" type="button">
+            Commande test
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"/></svg>
+          </button>
+        </div>
         <div class="secure-note">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4" stroke-linecap="round"/></svg>
           Paiement 100 % sécurisé
@@ -387,8 +441,39 @@
   const CHECKOUT_KEY = 'castaneas_checkout_v1';
   const SESSION_KEY  = 'castaneas_session_v1';
   const USERS_KEY    = 'castaneas_users_v1';
+  const QUOTES_ENDPOINT = '/checkout.php?action=quotes';
+  const SERVICE_POINTS_ENDPOINT = '/checkout.php?action=service_points';
+
+  let shippingState = {
+    loading: false,
+    home: [],
+    relay: [],
+    selectedType: null,
+    selectedCode: null,
+    relayPoints: [],
+    selectedRelayPointId: null,
+    geocoding: null,
+  };
+  let shippingRefreshTimer = null;
+  let shippingRequestId = 0;
 
   function fmt(n) { return n.toFixed(2).replace('.', ',') + ' €'; }
+
+  function getCartItems() {
+    try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch { return []; }
+  }
+
+  function getCheckoutState() {
+    try { return JSON.parse(sessionStorage.getItem(CHECKOUT_KEY)) || {}; } catch { return {}; }
+  }
+
+  function setCheckoutState(data) {
+    try { sessionStorage.setItem(CHECKOUT_KEY, JSON.stringify(data)); } catch (_) {}
+  }
+
+  function subtotalFromItems(items) {
+    return items.reduce((sum, item) => sum + Number(item.qty || 0) * Number(item.price || 0), 0);
+  }
 
   // ── SESSION / LOGIN ──────────────────────────────────────
   function getSession() {
@@ -423,10 +508,8 @@
 
   // ── ORDER SUMMARY ────────────────────────────────────────
   function renderSummary() {
-    let items = [];
-    let checkout = null;
-    try { items    = JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch {}
-    try { checkout = JSON.parse(sessionStorage.getItem(CHECKOUT_KEY)); } catch {}
+    const items = getCartItems();
+    const checkout = getCheckoutState();
 
     // Items
     const osItems = document.getElementById('os-items');
@@ -451,7 +534,7 @@
       return;
     }
 
-    document.getElementById('os-subtotal').textContent = fmt(checkout.subtotal || 0);
+    document.getElementById('os-subtotal').textContent = fmt(Number(checkout.subtotal || subtotalFromItems(items)));
 
     const promoRow = document.getElementById('os-promo-row');
     if (checkout.promoCode && checkout.discount > 0) {
@@ -464,13 +547,295 @@
 
     const shippingRow = document.getElementById('os-shipping-row');
     if (checkout.shipping !== null && checkout.shipping !== undefined) {
-      shippingRow.classList.toggle('free', checkout.shipping === 0);
-      document.getElementById('os-shipping-val').textContent = checkout.shipping === 0 ? 'Offerte 🎉' : fmt(checkout.shipping);
+      shippingRow.classList.toggle('free', Number(checkout.shipping) === 0);
+      document.getElementById('os-shipping-val').textContent = Number(checkout.shipping) === 0 ? 'Offerte 🎉' : fmt(Number(checkout.shipping));
     } else {
       document.getElementById('os-shipping-val').textContent = 'À calculer';
     }
 
-    document.getElementById('os-total').textContent = checkout.total !== null ? fmt(checkout.total) : '—';
+    document.getElementById('os-total').textContent = checkout.total !== null && checkout.total !== undefined ? fmt(Number(checkout.total)) : fmt(subtotalFromItems(items));
+  }
+
+  function getBillingPayload() {
+    return {
+      prenom: document.getElementById('f-prenom').value.trim(),
+      nom: document.getElementById('f-nom').value.trim(),
+      email: document.getElementById('f-email').value.trim(),
+      tel: document.getElementById('f-tel').value.trim(),
+      adresse: document.getElementById('f-adresse').value.trim(),
+      complement: document.getElementById('f-complement').value.trim(),
+      cp: document.getElementById('f-cp').value.trim(),
+      ville: document.getElementById('f-ville').value.trim(),
+      pays: document.getElementById('f-pays').value,
+      note: document.getElementById('f-note').value.trim(),
+    };
+  }
+
+  function isAddressReady() {
+    const billing = getBillingPayload();
+    return !!(billing.adresse && billing.cp && billing.ville && billing.pays);
+  }
+
+  function selectedShippingOption() {
+    const list = shippingState.selectedType === 'relay' ? shippingState.relay : shippingState.home;
+    return list.find(option => option.code === shippingState.selectedCode) || null;
+  }
+
+  function selectedRelayPoint() {
+    return shippingState.relayPoints.find(point => point.id === shippingState.selectedRelayPointId) || null;
+  }
+
+  function persistCheckoutShipping() {
+    const items = getCartItems();
+    const current = getCheckoutState();
+    const subtotal = subtotalFromItems(items);
+    const discount = Number(current.discount || 0);
+    const option = selectedShippingOption();
+    const shippingPrice = option ? Number(option.price || 0) : null;
+    const next = {
+      ...current,
+      subtotal,
+      shipping: shippingPrice,
+      total: subtotal - discount + (shippingPrice || 0),
+    };
+
+    if (option) {
+      next.shippingMethod = {
+        type: shippingState.selectedType,
+        code: option.code,
+        name: option.name,
+        carrier: option.carrier,
+        price: Number(option.price || 0),
+      };
+    } else {
+      delete next.shippingMethod;
+    }
+
+    if (shippingState.selectedType === 'relay') {
+      const point = selectedRelayPoint();
+      if (point) {
+        next.servicePoint = point;
+      } else {
+        delete next.servicePoint;
+      }
+    } else {
+      delete next.servicePoint;
+    }
+
+    setCheckoutState(next);
+    renderSummary();
+  }
+
+  function renderOption(option, type) {
+    const eta = option.leadTimeHours ? ' · env. ' + option.leadTimeHours + 'h' : '';
+    const checked = shippingState.selectedType === type && shippingState.selectedCode === option.code ? 'checked' : '';
+    return `
+      <label class="ship-option">
+        <input type="radio" name="shipping-choice" value="${option.code}" data-type="${type}" ${checked}>
+        <div class="ship-option__body">
+          <div class="ship-option__top">
+            <span class="ship-option__name">${option.name}</span>
+            <span class="ship-option__price">${fmt(Number(option.price || 0))}</span>
+          </div>
+          <div class="ship-option__meta">${option.carrier.name || 'Transporteur'}${eta}</div>
+        </div>
+      </label>`;
+  }
+
+  function renderShippingOptions() {
+    const homeEl = document.getElementById('home-options');
+    const relayEl = document.getElementById('relay-options');
+    const statusEl = document.getElementById('shipping-status');
+    const relayWrap = document.getElementById('relay-points-wrap');
+    const relayPointsEl = document.getElementById('relay-points');
+
+    statusEl.classList.remove('error');
+    if (shippingState.loading) {
+      statusEl.textContent = 'Calcul des options de livraison en cours…';
+    } else if (!isAddressReady()) {
+      statusEl.textContent = 'Renseignez votre adresse pour afficher les options disponibles.';
+    } else if (!shippingState.home.length && !shippingState.relay.length) {
+      statusEl.textContent = 'Aucune option de livraison disponible pour cette adresse.';
+      statusEl.classList.add('error');
+    } else {
+      statusEl.textContent = 'Sélectionnez votre mode de livraison. Les 2 options les moins chères sont affichées pour chaque mode.';
+    }
+
+    homeEl.innerHTML = shippingState.home.length
+      ? shippingState.home.map(option => renderOption(option, 'home')).join('')
+      : '<div class="relay-empty">Aucune livraison à domicile disponible pour cette adresse.</div>';
+    relayEl.innerHTML = shippingState.relay.length
+      ? shippingState.relay.map(option => renderOption(option, 'relay')).join('')
+      : '<div class="relay-empty">Aucun point relais disponible pour cette adresse.</div>';
+
+    relayWrap.style.display = shippingState.selectedType === 'relay' ? 'block' : 'none';
+    if (shippingState.selectedType === 'relay') {
+      relayPointsEl.innerHTML = shippingState.relayPoints.length
+        ? shippingState.relayPoints.map(point => {
+            const selected = point.id === shippingState.selectedRelayPointId ? ' selected' : '';
+            const distance = point.distanceMeters ? Math.round(point.distanceMeters / 100) / 10 + ' km' : '';
+            return `
+              <button type="button" class="relay-point${selected}" data-relay-point="${point.id}">
+                <div class="relay-point__title">
+                  <span>${point.name}</span>
+                  <span>${distance}</span>
+                </div>
+                <div class="relay-point__meta">${[point.address.street + ' ' + point.address.houseNumber, point.address.postalCode + ' ' + point.address.city, point.carrier.name].filter(Boolean).join(' · ')}</div>
+              </button>`;
+          }).join('')
+        : '<div class="relay-empty">Choisissez un mode relais pour charger les points disponibles.</div>';
+    } else {
+      relayPointsEl.innerHTML = '';
+    }
+
+    persistCheckoutShipping();
+  }
+
+  async function loadServicePoints() {
+    const option = selectedShippingOption();
+    if (!option || shippingState.selectedType !== 'relay') {
+      shippingState.relayPoints = [];
+      shippingState.selectedRelayPointId = null;
+      renderShippingOptions();
+      return;
+    }
+
+    const response = await fetch(SERVICE_POINTS_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        billing: getBillingPayload(),
+        carrierCodes: [option.carrier.code],
+      }),
+    });
+    const result = await response.json().catch(() => null);
+    if (!response.ok || !result || !result.ok) {
+      shippingState.relayPoints = [];
+      shippingState.selectedRelayPointId = null;
+      const statusEl = document.getElementById('shipping-status');
+      statusEl.textContent = result && result.error ? result.error : 'Impossible de charger les points relais.';
+      statusEl.classList.add('error');
+      renderShippingOptions();
+      return;
+    }
+
+    shippingState.relayPoints = Array.isArray(result.results) ? result.results : [];
+    shippingState.geocoding = result.geocoding || null;
+    if (!shippingState.relayPoints.some(point => point.id === shippingState.selectedRelayPointId)) {
+      shippingState.selectedRelayPointId = shippingState.relayPoints[0] ? shippingState.relayPoints[0].id : null;
+    }
+    renderShippingOptions();
+  }
+
+  async function refreshShippingOptions() {
+    const requestId = ++shippingRequestId;
+    if (!isAddressReady()) {
+      shippingState = { ...shippingState, loading: false, home: [], relay: [], selectedType: null, selectedCode: null, relayPoints: [], selectedRelayPointId: null };
+      renderShippingOptions();
+      return;
+    }
+
+    const items = getCartItems();
+    if (!items.length) {
+      return;
+    }
+
+    shippingState.loading = true;
+    renderShippingOptions();
+
+    try {
+      const response = await fetch(QUOTES_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items, billing: getBillingPayload() }),
+      });
+      const result = await response.json().catch(() => null);
+      if (requestId !== shippingRequestId) return;
+
+      if (!response.ok || !result || !result.ok) {
+        shippingState.loading = false;
+        shippingState.home = [];
+        shippingState.relay = [];
+        shippingState.selectedType = null;
+        shippingState.selectedCode = null;
+        shippingState.relayPoints = [];
+        shippingState.selectedRelayPointId = null;
+        const statusEl = document.getElementById('shipping-status');
+        statusEl.textContent = result && result.error ? result.error : 'Impossible de calculer les frais de livraison.';
+        statusEl.classList.add('error');
+        renderShippingOptions();
+        return;
+      }
+
+      shippingState.loading = false;
+      shippingState.home = Array.isArray(result.home) ? result.home : [];
+      shippingState.relay = Array.isArray(result.relay) ? result.relay : [];
+      const stillValid = [...shippingState.home.map(option => ['home', option.code]), ...shippingState.relay.map(option => ['relay', option.code])]
+        .some(([type, code]) => type === shippingState.selectedType && code === shippingState.selectedCode);
+      if (!stillValid) {
+        const firstHome = shippingState.home[0] || null;
+        const firstRelay = shippingState.relay[0] || null;
+        if (firstHome) {
+          shippingState.selectedType = 'home';
+          shippingState.selectedCode = firstHome.code;
+          shippingState.selectedRelayPointId = null;
+        } else if (firstRelay) {
+          shippingState.selectedType = 'relay';
+          shippingState.selectedCode = firstRelay.code;
+        } else {
+          shippingState.selectedType = null;
+          shippingState.selectedCode = null;
+        }
+      }
+
+      renderShippingOptions();
+      if (shippingState.selectedType === 'relay') {
+        await loadServicePoints();
+      }
+    } catch (_) {
+      if (requestId !== shippingRequestId) return;
+      shippingState.loading = false;
+      shippingState.home = [];
+      shippingState.relay = [];
+      const statusEl = document.getElementById('shipping-status');
+      statusEl.textContent = 'Le service de livraison est temporairement indisponible.';
+      statusEl.classList.add('error');
+      renderShippingOptions();
+    }
+  }
+
+  function queueShippingRefresh() {
+    window.clearTimeout(shippingRefreshTimer);
+    shippingRefreshTimer = window.setTimeout(refreshShippingOptions, 450);
+  }
+
+  function bindShippingInputs() {
+    ['f-adresse', 'f-complement', 'f-cp', 'f-ville', 'f-pays', 'f-email', 'f-tel'].forEach(id => {
+      const field = document.getElementById(id);
+      if (!field) return;
+      field.addEventListener('input', queueShippingRefresh);
+      field.addEventListener('change', queueShippingRefresh);
+    });
+
+    document.addEventListener('change', event => {
+      const input = event.target.closest('input[name="shipping-choice"]');
+      if (!input) return;
+      shippingState.selectedType = input.dataset.type;
+      shippingState.selectedCode = input.value;
+      shippingState.selectedRelayPointId = null;
+      shippingState.relayPoints = [];
+      renderShippingOptions();
+      if (shippingState.selectedType === 'relay') {
+        loadServicePoints();
+      }
+    });
+
+    document.addEventListener('click', event => {
+      const button = event.target.closest('[data-relay-point]');
+      if (!button) return;
+      shippingState.selectedRelayPointId = button.getAttribute('data-relay-point');
+      renderShippingOptions();
+    });
   }
 
   // ── VALIDATION ───────────────────────────────────────────
@@ -488,7 +853,41 @@
     setError(errId, msg);
   }
 
-  document.getElementById('confirm-btn').addEventListener('click', function () {
+  function setConfirmLoading(isLoading) {
+    ['confirm-btn', 'confirm-test-btn'].forEach(id => {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      btn.disabled = isLoading;
+      btn.style.opacity = isLoading ? '.7' : '';
+      btn.style.pointerEvents = isLoading ? 'none' : '';
+    });
+  }
+
+  function submitPaymentForm(payment) {
+    if (!payment || payment.mode !== 'form' || !payment.action || !payment.fields) {
+      throw new Error('Réponse de paiement invalide.');
+    }
+
+    const form = document.createElement('form');
+    form.method = payment.method || 'POST';
+    form.action = payment.action;
+    form.style.display = 'none';
+
+    Object.entries(payment.fields).forEach(([name, value]) => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = name;
+      input.value = value;
+      form.appendChild(input);
+    });
+
+    document.body.appendChild(form);
+    form.submit();
+  }
+
+  async function handleCheckoutSubmission(options = {}) {
+    const bypassPayment = !!options.bypassPayment;
+
     clearErrors();
     let valid = true;
 
@@ -500,6 +899,8 @@
     const ville   = document.getElementById('f-ville').value.trim();
     const payment = document.querySelector('input[name="payment"]:checked');
     const cgv     = document.getElementById('cgv-check').checked;
+    const shippingOption = selectedShippingOption();
+    const relayPoint = selectedRelayPoint();
 
     if (!prenom)  { markError('f-prenom',  'err-prenom',  'Le prénom est requis.'); valid = false; }
     if (!nom)     { markError('f-nom',     'err-nom',     'Le nom est requis.'); valid = false; }
@@ -510,6 +911,8 @@
     if (!cp || !/^\d{4,5}$/.test(cp)) { markError('f-cp', 'err-cp', 'Code postal invalide.'); valid = false; }
     if (!ville)   { markError('f-ville',   'err-ville',   'La ville est requise.'); valid = false; }
     if (!payment) { setError('err-payment', 'Sélectionnez un mode de paiement.'); valid = false; }
+    if (!shippingOption) { setError('err-payment', 'Sélectionnez un mode de livraison.'); valid = false; }
+    if (shippingState.selectedType === 'relay' && !relayPoint) { setError('err-payment', 'Sélectionnez un point relais.'); valid = false; }
     if (!cgv)     { setError('err-cgv', 'Vous devez accepter les conditions générales.'); valid = false; }
 
     if (!valid) {
@@ -517,27 +920,102 @@
       return;
     }
 
+    let items = [];
+    try { items = JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch (_) {}
+    if (!Array.isArray(items) || !items.length) {
+      setError('err-payment', 'Votre panier est vide.');
+      return;
+    }
+
+    const billing = {
+      prenom, nom, email,
+      tel:        document.getElementById('f-tel').value.trim(),
+      adresse,
+      complement: document.getElementById('f-complement').value.trim(),
+      cp, ville,
+      pays:       document.getElementById('f-pays').value,
+      note:       document.getElementById('f-note').value.trim(),
+      payment:    payment.value,
+    };
+
     // Save billing info for confirmation page
     try {
-      sessionStorage.setItem('castaneas_billing_v1', JSON.stringify({
-        prenom, nom, email,
-        tel:        document.getElementById('f-tel').value.trim(),
-        adresse,
-        complement: document.getElementById('f-complement').value.trim(),
-        cp, ville,
-        pays:       document.getElementById('f-pays').value,
-        note:       document.getElementById('f-note').value.trim(),
-        payment:    payment.value,
-      }));
+      sessionStorage.setItem('castaneas_billing_v1', JSON.stringify(billing));
     } catch (_) {}
 
-    window.location.href = 'confirmation.html';
+    setConfirmLoading(true);
+
+    try {
+      const response = await fetch('/checkout.php?action=create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items,
+          billing,
+          shipping: shippingOption ? {
+            type: shippingState.selectedType,
+            code: shippingOption.code,
+            name: shippingOption.name,
+            carrier: shippingOption.carrier,
+            product: shippingOption.product,
+            selectedFunctionalities: shippingOption.selectedFunctionalities,
+            price: Number(shippingOption.price || 0),
+            servicePoint: relayPoint,
+          } : null,
+          bypassPayment,
+          payment: payment.value,
+        }),
+      });
+
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result || !result.ok) {
+        setError('err-payment', result && result.error ? result.error : 'Impossible d’initialiser le paiement.');
+        setConfirmLoading(false);
+        return;
+      }
+
+      try {
+        sessionStorage.setItem('castaneas_order_ref_v1', result.orderRef || '');
+      } catch (_) {}
+
+      if (bypassPayment) {
+        if (!result.orderRef) {
+          setError('err-payment', 'Commande test créée, mais référence introuvable pour finaliser le paiement simulé.');
+          setConfirmLoading(false);
+          return;
+        }
+
+        window.location.href = '/payment-return.php?status=paid&simulate=1&ref=' + encodeURIComponent(result.orderRef);
+        return;
+      }
+
+      if (result.payment && result.payment.mode === 'redirect' && result.payment.url) {
+        window.location.href = result.payment.url;
+        return;
+      }
+
+      submitPaymentForm(result.payment);
+    } catch (_) {
+      setError('err-payment', 'Le service de paiement est temporairement indisponible.');
+      setConfirmLoading(false);
+    }
+  }
+
+  document.getElementById('confirm-btn').addEventListener('click', function () {
+    handleCheckoutSubmission();
+  });
+
+  document.getElementById('confirm-test-btn').addEventListener('click', function () {
+    handleCheckoutSubmission({ bypassPayment: true });
   });
 
   // ── INIT ─────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
     initAuthBanner();
     renderSummary();
+    bindShippingInputs();
+    renderShippingOptions();
+    queueShippingRefresh();
   });
 })();
 </script>

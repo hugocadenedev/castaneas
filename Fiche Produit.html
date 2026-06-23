@@ -4,6 +4,19 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Produit · Castaneas</title>
+<meta name="description" content="Découvrez les produits Castaneas, fabriqués à la main autour de la châtaigne et de la noisette dans le Tarn-et-Garonne.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://www.castaneas.fr/produit/creme-de-chataigne">
+<meta property="og:type" content="product">
+<meta property="og:site_name" content="Castaneas">
+<meta property="og:title" content="Produit · Castaneas">
+<meta property="og:description" content="Découvrez les produits Castaneas, fabriqués à la main autour de la châtaigne et de la noisette dans le Tarn-et-Garonne.">
+<meta property="og:url" content="https://www.castaneas.fr/produit/creme-de-chataigne">
+<meta property="og:image" content="https://www.castaneas.fr/assets/Castaneas-logo%20(3).svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Produit · Castaneas">
+<meta name="twitter:description" content="Découvrez les produits Castaneas, fabriqués à la main autour de la châtaigne et de la noisette dans le Tarn-et-Garonne.">
+<script type="application/ld+json" id="seo-jsonld-product">{"@context":"https://schema.org","@type":"Product","name":"Produit Castaneas","brand":{"@type":"Brand","name":"Castaneas"}}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -1726,6 +1739,61 @@ function updateSelectedVariant(pid) {
 
 // ========== CHARGEMENT DYNAMIQUE DEPUIS SITEDATA ==========
 (function () {
+  function setMeta(selector, attr, value) {
+    if (!value) return;
+    var el = document.querySelector(selector);
+    if (el) el.setAttribute(attr, value);
+  }
+
+  function excerpt(value, maxLength) {
+    var plain = String(value || '').replace(/\s+/g, ' ').trim();
+    if (!plain) return '';
+    return plain.length > maxLength ? plain.slice(0, maxLength - 1).trim() + '…' : plain;
+  }
+
+  function updateProductSeo(product, category, canonicalHref, offer) {
+    if (!product) return;
+    var title = product.name + (product.weight ? ' ' + product.weight : '') + ' · Castaneas';
+    var description = excerpt(product.desc || ('Découvrez ' + product.name + ' de Castaneas, fabriqué à la main en petites quantités.'), 160);
+    var absoluteHref = location.origin + canonicalHref;
+    var image = location.origin + '/' + String(product.image || 'assets/Castaneas-logo (3).svg').replace(/^\/+/, '');
+    var price = Number(offer && offer.totalPrice ? offer.totalPrice : product.price || 0);
+
+    document.title = title;
+    setMeta('meta[name="description"]', 'content', description);
+    setMeta('link[rel="canonical"]', 'href', absoluteHref);
+    setMeta('meta[property="og:title"]', 'content', title);
+    setMeta('meta[property="og:description"]', 'content', description);
+    setMeta('meta[property="og:url"]', 'content', absoluteHref);
+    setMeta('meta[property="og:image"]', 'content', image);
+    setMeta('meta[name="twitter:title"]', 'content', title);
+    setMeta('meta[name="twitter:description"]', 'content', description);
+
+    var jsonLd = document.getElementById('seo-jsonld-product');
+    if (jsonLd) {
+      jsonLd.textContent = JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: product.name + (product.weight ? ' ' + product.weight : ''),
+        description: description,
+        image: [image],
+        sku: product.id,
+        brand: {
+          '@type': 'Brand',
+          name: 'Castaneas'
+        },
+        category: category ? category.name : undefined,
+        offers: {
+          '@type': 'Offer',
+          priceCurrency: 'EUR',
+          price: price.toFixed(2),
+          availability: product.stock === 'out_of_stock' ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock',
+          url: absoluteHref,
+        }
+      });
+    }
+  }
+
   function finishRender() {
     document.documentElement.classList.remove('product-page-pending');
   }
@@ -1780,8 +1848,7 @@ function updateSelectedVariant(pid) {
 
   var cat = SiteData.getCategoryById(p.category);
 
-  // Titre de la page
-  document.title = p.name + (p.weight ? ' ' + p.weight : '') + ' · Castaneas';
+  updateProductSeo(p, cat, canonicalHref || location.pathname, _selectedOffer);
 
   // Breadcrumb
   var crumb = document.querySelector('.crumb .current');

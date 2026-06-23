@@ -10,7 +10,7 @@ function castaneas_admin_token() {
 }
 
 function castaneas_allowed_keys() {
-    return ['products', 'categories', 'orders', 'recipes', 'homepage'];
+    return ['products', 'categories', 'orders', 'recipes', 'homepage', 'packagings'];
 }
 
 function castaneas_db_config() {

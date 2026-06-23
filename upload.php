@@ -8,13 +8,13 @@
 //  Retourne : {"url":"uploads/xxxxxx.jpg"}
 // ============================================================
 
-define('ADMIN_TOKEN', 'cas_srv_9e4f2b8d3a7c1065');
+require_once __DIR__ . '/storage.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
 // ── Vérification du token ─────────────────────────────────
 $token = isset($_SERVER['HTTP_X_ADMIN_TOKEN']) ? $_SERVER['HTTP_X_ADMIN_TOKEN'] : '';
-if ($token !== ADMIN_TOKEN) {
+if ($token !== castaneas_admin_token()) {
     http_response_code(401);
     echo json_encode(['error' => 'Unauthorized']);
     exit;

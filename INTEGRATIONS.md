@@ -9,7 +9,7 @@ Envoyer automatiquement chaque commande client vers le CRM Sucrine au moment de 
 - Base URL : `https://app.sucrine.club/api`
 - Auth : header `Authorization: ApiKey XXXX`
 - Doc : https://developers.sucrineclub.com/api-reference/index.html
-
+![alt text](image.png)
 ### Ce que l'API expose
 | Endpoint | Usage |
 |---|---|

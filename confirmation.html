@@ -32,6 +32,7 @@
   .cart-pill svg { width: 18px; height: 18px; }
   .brand-logo { display: block; height: 34px; width: auto; }
   .promo-bar.pill { max-width: 1340px; margin: 14px auto 0; border-radius: 999px; padding: 11px 24px; font-size: 13px; font-weight: 600; }
+  .confirm-status-note { margin-top: 14px; font-size: 14px; color: #6B3A2A; }
   @media (max-width: 768px) {
     .navbar.pill-nav { top: 0; }
     .navbar.pill-nav .nav-inner { margin: 0 auto; border-radius: 0 0 22px 22px; padding: 10px 14px 10px 18px; }
@@ -68,16 +69,17 @@
 
 <div class="confirm-page">
   <div class="confirm-card">
-    <span class="confirm-icon">🌰</span>
-    <h1 class="confirm-title">Merci pour votre<br><em>commande !</em></h1>
-    <p class="confirm-sub">
+    <span class="confirm-icon" id="confirm-icon">🌰</span>
+    <h1 class="confirm-title" id="confirm-title">Merci pour votre<br><em>commande !</em></h1>
+    <p class="confirm-sub" id="confirm-sub">
       Votre commande a bien été reçue. Nous la préparons avec soin dans notre atelier de Albias.<br>
       Vous recevrez un e-mail de confirmation d'ici quelques minutes.
     </p>
     <div class="confirm-ref" id="confirm-ref">CAS-XXXXXX</div>
+    <div class="confirm-status-note" id="confirm-note"></div>
     <div class="confirm-actions">
-      <a href="index.html" class="btn btn--ghost btn--lg">Retour à l'accueil</a>
-      <a href="/categorie/cremes" class="btn btn--dark btn--lg">Continuer mes achats</a>
+      <a href="index.html" class="btn btn--ghost btn--lg" id="confirm-primary-link">Retour à l'accueil</a>
+      <a href="/categorie/cremes" class="btn btn--dark btn--lg" id="confirm-secondary-link">Continuer mes achats</a>
     </div>
   </div>
 </div>
@@ -98,8 +100,8 @@
       <span data-cart-total>0,00€</span>
     </div>
     <p class="cart-shipping-note">🚚 Livraison offerte dès 40€ d'achat</p>
-    <a href="confirmation.html" class="cart-checkout-btn">
-      Passer commande
+    <a href="panier.html" class="cart-checkout-btn">
+      Voir le panier
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"/></svg>
     </a>
   </div>
@@ -108,29 +110,118 @@
 <script src="data.php?v=2"></script><script src="site-data.js?v=5"></script>
 <script src="cart.js"></script>
 <script>
-// Sauvegarder la commande dans l'admin + vider le panier
 document.addEventListener('DOMContentLoaded', function() {
-  var ref = 'CAS-XXXXXX';
-
-  // Lire le panier AVANT de le vider
-  var cartData = null;
-  try { cartData = JSON.parse(localStorage.getItem('castaneas_cart_v1') || 'null'); } catch(e) {}
-
-  if (cartData && cartData.items && cartData.items.length > 0 && window.SiteData) {
-    var total = cartData.items.reduce(function(sum, item) { return sum + item.price * item.qty; }, 0);
-    ref = SiteData.saveOrder(cartData.items, total);
-  } else {
-    ref = 'CAS-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+  function setStatusView(config) {
+    document.getElementById('confirm-icon').textContent = config.icon;
+    document.getElementById('confirm-title').innerHTML = config.title;
+    document.getElementById('confirm-sub').innerHTML = config.sub;
+    document.getElementById('confirm-note').textContent = config.note || '';
+    document.getElementById('confirm-secondary-link').textContent = config.secondaryLabel;
+    document.getElementById('confirm-secondary-link').href = config.secondaryHref;
   }
 
-  document.getElementById('confirm-ref').textContent = ref;
+  function clearCartOnce(ref) {
+    try {
+      if (sessionStorage.getItem('castaneas_cart_cleared_ref') === ref) return;
+      localStorage.removeItem('castaneas_cart_v1');
+      sessionStorage.setItem('castaneas_cart_cleared_ref', ref);
+    } catch (e) {}
 
-  // Vider le panier
-  if (window.Castaneas) {
-    window.Castaneas.state.items = [];
-    localStorage.removeItem('castaneas_cart_v1');
-    window.Castaneas.render();
+    if (window.Castaneas) {
+      window.Castaneas.state.items = [];
+      window.Castaneas.render();
+    }
   }
+
+  async function loadOrderStatus() {
+    function paidOrderNote(order) {
+      var notes = [];
+      if (order.sendcloud && order.sendcloud.created) {
+        notes.push('Colis créé dans Sendcloud' + (order.sendcloud.parcelId ? ' #' + order.sendcloud.parcelId : '') + '.');
+      }
+      if (order.sucrine && order.sucrine.sent) {
+        notes.push('Commande transmise au CRM Sucrine.');
+      }
+
+      return notes.length ? notes.join(' ') : 'Paiement confirmé.';
+    }
+
+    var params = new URLSearchParams(window.location.search);
+    var ref = params.get('ref') || '';
+    document.getElementById('confirm-ref').textContent = ref || 'CAS-XXXXXX';
+
+    if (!ref) {
+      setStatusView({
+        icon: '🌰',
+        title: 'Commande<br><em>enregistrée</em>',
+        sub: 'Nous attendons la référence de paiement pour confirmer définitivement votre commande.',
+        note: 'Revenez depuis la page de paiement ou contactez-nous si besoin.',
+        secondaryLabel: 'Retour à la facturation',
+        secondaryHref: 'facturation.html'
+      });
+      return;
+    }
+
+    try {
+      var response = await fetch('/checkout.php?action=status&ref=' + encodeURIComponent(ref), { cache: 'no-store' });
+      var result = await response.json();
+      if (!response.ok || !result || !result.ok || !result.order) {
+        throw new Error('status');
+      }
+
+      var order = result.order;
+      document.getElementById('confirm-ref').textContent = order.id || ref;
+
+      if (order.status === 'paid') {
+        setStatusView({
+          icon: '🌰',
+          title: 'Merci pour votre<br><em>commande !</em>',
+          sub: 'Votre paiement a bien été validé. Nous préparons votre commande avec soin dans notre atelier de Albias.<br>Vous recevrez un e-mail de confirmation d\'ici quelques minutes.',
+          note: paidOrderNote(order),
+          secondaryLabel: 'Continuer mes achats',
+          secondaryHref: '/categorie/cremes'
+        });
+        clearCartOnce(order.id || ref);
+        return;
+      }
+
+      if (order.status === 'pending_payment') {
+        setStatusView({
+          icon: '⏳',
+          title: 'Paiement<br><em>en attente</em>',
+          sub: 'Votre commande a bien été créée, mais nous attendons encore la confirmation du paiement.',
+          note: 'Actualisez cette page dans quelques instants si vous revenez du Crédit Agricole.',
+          secondaryLabel: 'Retour à la facturation',
+          secondaryHref: 'facturation.html'
+        });
+        return;
+      }
+
+      setStatusView({
+        icon: '⚠️',
+        title: 'Paiement<br><em>non validé</em>',
+        sub: 'Le paiement n\'a pas abouti ou a été annulé. Votre panier est conservé pour vous permettre de réessayer.',
+        note: 'Statut actuel : ' + order.status,
+        secondaryLabel: 'Réessayer le paiement',
+        secondaryHref: 'facturation.html'
+      });
+    } catch (e) {
+      setStatusView({
+        icon: '⚠️',
+        title: 'Confirmation<br><em>indisponible</em>',
+        sub: 'Nous n\'avons pas pu récupérer l\'état de votre commande pour le moment.',
+        note: 'Si le paiement a été débité, contactez-nous avec votre référence.',
+        secondaryLabel: 'Retour à la facturation',
+        secondaryHref: 'facturation.html'
+      });
+  }
+
+    if (window.Castaneas) {
+      window.Castaneas.render();
+    }
+  }
+
+  loadOrderStatus();
 });
 </script>
 </body>

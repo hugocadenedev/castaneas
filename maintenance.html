@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Castaneas · Site en renouveau</title>
+<meta name="description" content="Castaneas fait peau neuve. Le site revient très vite avec une nouvelle expérience, tout en gardant l'esprit artisanal de la maison.">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4ecdf;
+    --paper: rgba(255, 251, 245, 0.82);
+    --ink: #35231a;
+    --muted: #76594a;
+    --accent: #8f4d35;
+    --accent-soft: #d8b18e;
+    --line: rgba(97, 63, 45, 0.14);
+    --shadow: 0 28px 80px rgba(68, 37, 20, 0.14);
+    --serif: 'Fraunces', Georgia, serif;
+    --sans: 'Inter', Arial, sans-serif;
+    --hand: 'Caveat', cursive;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; }
+  body {
+    font-family: var(--sans);
+    color: var(--ink);
+    background:
+      radial-gradient(circle at top left, rgba(241, 208, 169, 0.55), transparent 34%),
+      radial-gradient(circle at bottom right, rgba(160, 98, 64, 0.14), transparent 28%),
+      linear-gradient(180deg, #fbf6ef 0%, var(--bg) 100%);
+  }
+
+  .shell {
+    width: 100vw;
+    height: 100vh;
+  }
+
+  .card {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+    overflow: hidden;
+    background: var(--paper);
+    backdrop-filter: blur(14px);
+    box-shadow: none;
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: 1.08fr 0.92fr;
+    width: 100%;
+    height: 100vh;
+  }
+
+  .hero-copy {
+    padding: clamp(28px, 3vw, 42px) clamp(24px, 3vw, 44px);
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    min-height: 0;
+  }
+
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .logo {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .logo img {
+    height: 44px;
+    width: auto;
+    display: block;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(143, 77, 53, 0.08);
+    border: 1px solid rgba(143, 77, 53, 0.12);
+  }
+
+  .pill::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 6px rgba(143, 77, 53, 0.08);
+  }
+
+  .eyebrow {
+    margin-top: 18px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  h1 {
+    margin: 0;
+    max-width: 9ch;
+    font-family: var(--serif);
+    font-size: clamp(3rem, 6vw, 5.2rem);
+    line-height: 0.95;
+    letter-spacing: -0.045em;
+  }
+
+  h1 em {
+    display: block;
+    font-style: italic;
+    font-weight: 400;
+    color: #5f3424;
+  }
+
+  .lead {
+    max-width: 56ch;
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+
+  .lead strong {
+    color: var(--ink);
+  }
+
+  .highlights {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 6px;
+  }
+
+  .highlight {
+    padding: 18px;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.58);
+    border: 1px solid rgba(97, 63, 45, 0.08);
+  }
+
+  .highlight strong {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 15px;
+  }
+
+  .highlight span {
+    display: block;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .note {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 18px 20px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, rgba(143, 77, 53, 0.09), rgba(216, 177, 142, 0.18));
+    border: 1px solid rgba(143, 77, 53, 0.10);
+  }
+
+  .note-mark {
+    font-family: var(--hand);
+    font-size: 34px;
+    line-height: 1;
+    color: var(--accent);
+    transform: rotate(-8deg);
+  }
+
+  .note p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  .signature {
+    margin-top: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 24px;
+    align-items: center;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .signature strong {
+    display: block;
+    font-family: var(--hand);
+    font-size: 30px;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .hero-visual {
+    position: relative;
+    min-height: 0;
+    height: 100%;
+    padding: 0;
+    background: #e8d2be;
+  }
+
+  .visual-frame {
+    position: relative;
+    height: 100%;
+    min-height: 0;
+    border-radius: 0;
+    overflow: hidden;
+    background: #3b281d;
+  }
+
+  .visual-frame > img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.04);
+  }
+
+  .visual-frame::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(20, 11, 5, 0.14) 0%, rgba(28, 14, 7, 0.74) 100%);
+  }
+
+  .floating-card {
+    position: absolute;
+    right: 24px;
+    bottom: 24px;
+    z-index: 2;
+    max-width: 300px;
+    padding: 20px 22px;
+    border-radius: 24px;
+    background: rgba(255, 248, 240, 0.92);
+    box-shadow: 0 16px 40px rgba(31, 16, 9, 0.18);
+  }
+
+  .floating-card small {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .floating-card strong {
+    display: block;
+    margin-bottom: 8px;
+    font-family: var(--serif);
+    font-size: 28px;
+    line-height: 1.05;
+  }
+
+  .floating-card p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 980px) {
+    .hero {
+      grid-template-columns: 1fr;
+      grid-template-rows: 42vh 58vh;
+    }
+
+    .hero-copy {
+      padding: 22px 20px 24px;
+      gap: 18px;
+    }
+
+    .hero-visual {
+      order: -1;
+      min-height: 0;
+    }
+
+    .visual-frame {
+      min-height: 0;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .topbar {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    h1 {
+      max-width: none;
+      font-size: clamp(2.5rem, 12vw, 4rem);
+    }
+
+    .lead {
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .highlights {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .highlight {
+      padding: 14px;
+    }
+
+    .highlight span,
+    .note p,
+    .signature {
+      font-size: 13px;
+    }
+
+    .signature strong {
+      font-size: 26px;
+    }
+
+    .floating-card {
+      left: 18px;
+      right: 18px;
+      max-width: none;
+      padding: 16px 18px;
+    }
+
+    .floating-card strong {
+      font-size: 22px;
+    }
+  }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="card" aria-label="Information de maintenance Castaneas">
+      <div class="hero">
+        <div class="hero-copy">
+          <div class="topbar">
+            <a class="logo" href="#" aria-label="Castaneas">
+              <img src="assets/Castaneas-logo (3).svg" alt="Castaneas">
+            </a>
+            <span class="pill">maintenance temporaire</span>
+          </div>
+
+          <div>
+            <div class="eyebrow">Le site fait peau neuve</div>
+            <h1>On affine <em>chaque détail.</em></h1>
+          </div>
+
+          <p class="lead">Castaneas se refait une beauté pour revenir avec une expérience plus nette, plus gourmande et plus fluide. <strong>La maison reste bien là</strong>, nous préparons simplement une nouvelle version à la hauteur de l’univers de la marque.</p>
+
+          <div class="highlights">
+            <article class="highlight">
+              <strong>Nouvelle vitrine</strong>
+              <span>Une page d’accueil retravaillée, plus claire et plus fidèle à l’atelier.</span>
+            </article>
+            <article class="highlight">
+              <strong>Boutique peaufinée</strong>
+              <span>Des fiches produit, parcours panier et détails de livraison remis au propre.</span>
+            </article>
+            <article class="highlight">
+              <strong>Retour imminent</strong>
+              <span>Le site revient très vite, avec le même goût du détail artisanal.</span>
+            </article>
+          </div>
+
+          <div class="note">
+            <div class="note-mark">🌰</div>
+            <p>Merci pour votre patience. Cette parenthèse nous permet de remettre le site au niveau de la marque, sans toucher à l’âme Castaneas.</p>
+          </div>
+
+          <div class="signature">
+            <div>
+              <strong>À très vite,</strong>
+              <span>l’équipe Castaneas</span>
+            </div>
+            <span>Maison artisanale du Tarn-et-Garonne</span>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-hidden="true">
+          <div class="visual-frame">
+            <img src="assets/story-chataigneraie.jpg" alt="">
+            <div class="floating-card">
+              <small>En coulisses</small>
+              <strong>Une nouvelle boutique se prépare.</strong>
+              <p>Nous revoyons l’interface, les contenus et le parcours pour une remise en ligne propre et aboutie.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

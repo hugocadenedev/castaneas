@@ -987,6 +987,57 @@ tbody tr:last-child td { border-bottom: none; }
               </div>
             </form>
           </div>
+          <div class="table-wrap" style="padding:24px 28px;max-width:960px;">
+            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:16px;">Types de conditionnement</h3>
+            <form class="form-grid full" id="packagings-form" onsubmit="savePackagings(event)">
+              <div class="form-field span2">
+                <label style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;">Conditionnements utilisés pour calculer l'expédition</label>
+                <div class="uses-card-row" style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;grid-template-columns:1.3fr .9fr .7fr .7fr .7fr .8fr .8fr;">
+                  <span>Nom</span><span>Code</span><span>L (cm)</span><span>l (cm)</span><span>H (cm)</span><span>Tare (g)</span><span>Max (g)</span>
+                </div>
+                <div class="uses-card-row" style="grid-template-columns:1.3fr .9fr .7fr .7fr .7fr .8fr .8fr;">
+                  <input type="text" id="pkg-0-name" placeholder="Petit carton">
+                  <input type="text" id="pkg-0-code" placeholder="small-box">
+                  <input type="number" id="pkg-0-length" min="0" step="0.1" placeholder="16">
+                  <input type="number" id="pkg-0-width" min="0" step="0.1" placeholder="12">
+                  <input type="number" id="pkg-0-height" min="0" step="0.1" placeholder="10">
+                  <input type="number" id="pkg-0-tare" min="0" step="1" placeholder="60">
+                  <input type="number" id="pkg-0-max" min="0" step="1" placeholder="1000">
+                </div>
+                <div class="uses-card-row" style="grid-template-columns:1.3fr .9fr .7fr .7fr .7fr .8fr .8fr;">
+                  <input type="text" id="pkg-1-name" placeholder="Carton moyen">
+                  <input type="text" id="pkg-1-code" placeholder="medium-box">
+                  <input type="number" id="pkg-1-length" min="0" step="0.1" placeholder="24">
+                  <input type="number" id="pkg-1-width" min="0" step="0.1" placeholder="18">
+                  <input type="number" id="pkg-1-height" min="0" step="0.1" placeholder="14">
+                  <input type="number" id="pkg-1-tare" min="0" step="1" placeholder="110">
+                  <input type="number" id="pkg-1-max" min="0" step="1" placeholder="3000">
+                </div>
+                <div class="uses-card-row" style="grid-template-columns:1.3fr .9fr .7fr .7fr .7fr .8fr .8fr;">
+                  <input type="text" id="pkg-2-name" placeholder="Grand carton">
+                  <input type="text" id="pkg-2-code" placeholder="large-box">
+                  <input type="number" id="pkg-2-length" min="0" step="0.1" placeholder="32">
+                  <input type="number" id="pkg-2-width" min="0" step="0.1" placeholder="24">
+                  <input type="number" id="pkg-2-height" min="0" step="0.1" placeholder="18">
+                  <input type="number" id="pkg-2-tare" min="0" step="1" placeholder="180">
+                  <input type="number" id="pkg-2-max" min="0" step="1" placeholder="5000">
+                </div>
+                <div class="uses-card-row" style="grid-template-columns:1.3fr .9fr .7fr .7fr .7fr .8fr .8fr;">
+                  <input type="text" id="pkg-3-name" placeholder="Coffret / colis spécial">
+                  <input type="text" id="pkg-3-code" placeholder="gift-box">
+                  <input type="number" id="pkg-3-length" min="0" step="0.1" placeholder="36">
+                  <input type="number" id="pkg-3-width" min="0" step="0.1" placeholder="28">
+                  <input type="number" id="pkg-3-height" min="0" step="0.1" placeholder="20">
+                  <input type="number" id="pkg-3-tare" min="0" step="1" placeholder="260">
+                  <input type="number" id="pkg-3-max" min="0" step="1" placeholder="8000">
+                </div>
+                <small>Ces conditionnements servent à estimer le colis expédié à partir des poids et dimensions saisis sur chaque produit.</small>
+              </div>
+              <div>
+                <button type="submit" class="btn btn-primary">Enregistrer les conditionnements</button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
 
@@ -1021,6 +1072,21 @@ tbody tr:last-child td { border-bottom: none; }
         <div class="form-field">
           <label>Poids / Format</label>
           <input type="text" id="p-weight" placeholder="150g">
+        </div>
+        <div class="form-field span2" style="border-top:1px solid var(--line);padding-top:18px;margin-top:4px;">
+          <label style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;">Expédition produit</label>
+        </div>
+        <div class="form-field">
+          <label>Poids produit (g)</label>
+          <input type="number" id="p-ship-weight" min="0" step="1" placeholder="105">
+        </div>
+        <div class="form-field span2">
+          <label>Dimensions produit (cm)</label>
+          <div class="uses-card-row" style="grid-template-columns:1fr 1fr 1fr;">
+            <input type="number" id="p-ship-length" min="0" step="0.1" placeholder="7">
+            <input type="number" id="p-ship-width" min="0" step="0.1" placeholder="6.5">
+            <input type="number" id="p-ship-height" min="0" step="0.1" placeholder="11.5">
+          </div>
         </div>
         <div class="form-field">
           <label>Stock</label>
@@ -1500,6 +1566,7 @@ const KEYS = {
   imagesExtra: 'castaneas_admin_images_extra',
   recipes: 'castaneas_admin_recipes',
   homepage: 'castaneas_homepage_v1',
+  packagings: 'castaneas_packagings_v1',
 };
 
 /* ---------- Server sync ---------- */
@@ -1510,6 +1577,7 @@ const SERVER_KEYS = {
   [KEYS.orders]:     'orders',
   [KEYS.recipes]:    'recipes',
   [KEYS.homepage]:   'homepage',
+  [KEYS.packagings]: 'packagings',
 };
 
 /* ---------- Default data ---------- */
@@ -1518,7 +1586,7 @@ const SERVER_KEYS = {
 
 /* ---------- State ---------- */
 const DEFAULT_IMAGE_CATALOG = [];
-let state = { products: [], categories: [], orders: [], imageCatalogMain: [], imageCatalogExtra: [], recipes: [] };
+let state = { products: [], categories: [], orders: [], imageCatalogMain: [], imageCatalogExtra: [], recipes: [], packagings: [] };
 let editingProduct = null;
 let editingCat = null;
 let editingRecipe = null;
@@ -1547,6 +1615,55 @@ function renderSettings() {
   const creds = load(KEYS.admin);
   document.getElementById('setting-user').value = creds ? creds.user : 'admin';
   updateAdminPromoBar(getPromoMessage());
+  renderPackagingSettings();
+}
+
+function normalizePackaging(packaging, index) {
+  const shipping = packaging && packaging.shipping ? packaging.shipping : packaging || {};
+  return {
+    id: packaging && packaging.id ? packaging.id : `pkg-${index + 1}`,
+    name: (packaging && packaging.name) || '',
+    code: (packaging && packaging.code) || '',
+    shipping: {
+      lengthCm: Number(shipping.lengthCm || 0) || 0,
+      widthCm: Number(shipping.widthCm || 0) || 0,
+      heightCm: Number(shipping.heightCm || 0) || 0,
+      tareWeightG: Number(shipping.tareWeightG || 0) || 0,
+      maxWeightG: Number(shipping.maxWeightG || 0) || 0,
+    },
+  };
+}
+
+function renderPackagingSettings() {
+  const list = Array.isArray(state.packagings) ? state.packagings.map(normalizePackaging) : [];
+  [0, 1, 2, 3].forEach(index => {
+    const packaging = list[index] || normalizePackaging({}, index);
+    document.getElementById(`pkg-${index}-name`).value = packaging.name || '';
+    document.getElementById(`pkg-${index}-code`).value = packaging.code || '';
+    document.getElementById(`pkg-${index}-length`).value = packaging.shipping.lengthCm || '';
+    document.getElementById(`pkg-${index}-width`).value = packaging.shipping.widthCm || '';
+    document.getElementById(`pkg-${index}-height`).value = packaging.shipping.heightCm || '';
+    document.getElementById(`pkg-${index}-tare`).value = packaging.shipping.tareWeightG || '';
+    document.getElementById(`pkg-${index}-max`).value = packaging.shipping.maxWeightG || '';
+  });
+}
+
+function savePackagings(event) {
+  event.preventDefault();
+  state.packagings = [0, 1, 2, 3].map(index => ({
+    id: `pkg-${index + 1}`,
+    name: document.getElementById(`pkg-${index}-name`).value.trim(),
+    code: document.getElementById(`pkg-${index}-code`).value.trim(),
+    shipping: {
+      lengthCm: parseFloat(document.getElementById(`pkg-${index}-length`).value) || 0,
+      widthCm: parseFloat(document.getElementById(`pkg-${index}-width`).value) || 0,
+      heightCm: parseFloat(document.getElementById(`pkg-${index}-height`).value) || 0,
+      tareWeightG: parseInt(document.getElementById(`pkg-${index}-tare`).value, 10) || 0,
+      maxWeightG: parseInt(document.getElementById(`pkg-${index}-max`).value, 10) || 0,
+    },
+  })).filter(packaging => packaging.name || packaging.code || packaging.shipping.lengthCm || packaging.shipping.widthCm || packaging.shipping.heightCm || packaging.shipping.tareWeightG || packaging.shipping.maxWeightG);
+  save(KEYS.packagings, state.packagings);
+  toast('Conditionnements mis à jour', 'success');
 }
 
 /* ---------- Hash admin password (Web Crypto SHA-256) ---------- */
@@ -1568,6 +1685,7 @@ async function init() {
   state.imageCatalogMain  = load(KEYS.imagesMain)  || [...DEFAULT_IMAGE_CATALOG];
   state.imageCatalogExtra = load(KEYS.imagesExtra) || [...DEFAULT_IMAGE_CATALOG];
   state.recipes           = load(KEYS.recipes)    || [];
+  state.packagings        = load(KEYS.packagings) || [];
 
   const creds = load(KEYS.admin);
   if (!creds) {
@@ -1590,6 +1708,7 @@ async function serverLoadAll() {
     { s: 'categories', l: KEYS.categories },
     { s: 'recipes',    l: KEYS.recipes },
     { s: 'homepage',   l: KEYS.homepage },
+    { s: 'packagings', l: KEYS.packagings },
     { s: 'orders',     l: KEYS.orders },
   ];
 
@@ -1695,7 +1814,7 @@ function renderAll() {
 function updateBadges() {
   document.getElementById('products-badge').textContent = state.products.length;
   document.getElementById('cats-badge').textContent = state.categories.length;
-  const pending = state.orders.filter(o => o.status === 'pending').length;
+  const pending = state.orders.filter(o => ['pending', 'pending_payment', 'paid', 'processing'].includes(o.status)).length;
   const ob = document.getElementById('orders-badge');
   ob.textContent = pending || '';
   ob.style.display = pending ? '' : 'none';
@@ -1822,14 +1941,24 @@ function renderOrders(filter = '') {
       <td class="td-price">${o.total.toFixed(2).replace('.', ',')}€</td>
       <td>
         <select onchange="updateOrderStatus('${o.id}', this.value)" onclick="event.stopPropagation()" style="font-size:12px;font-weight:700;padding:4px 8px;border-radius:999px;border:none;background:transparent;cursor:pointer;">
+          <option value="pending_payment" ${o.status==='pending_payment'?'selected':''}>Paiement en attente</option>
+          <option value="paid" ${o.status==='paid'?'selected':''}>Payée</option>
           <option value="pending" ${o.status==='pending'?'selected':''}>? En attente</option>
           <option value="processing" ${o.status==='processing'?'selected':''}>?? En préparation</option>
           <option value="shipped" ${o.status==='shipped'?'selected':''}>?? Expédiée</option>
           <option value="delivered" ${o.status==='delivered'?'selected':''}>? Livrée</option>
+          <option value="payment_refused" ${o.status==='payment_refused'?'selected':''}>Paiement refusé</option>
+          <option value="payment_failed" ${o.status==='payment_failed'?'selected':''}>Paiement en erreur</option>
           <option value="cancelled" ${o.status==='cancelled'?'selected':''}>? Annulée</option>
         </select>
       </td>
       <td><div class="td-actions">
+        <button class="btn-icon" onclick="event.stopPropagation();openSendcloudLabel('${o.id}')" title="Etiquette Sendcloud">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 8V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3"/><rect x="2" y="8" width="20" height="9" rx="2"/><path d="M6 17h12v4H6z"/><line x1="7" y1="12" x2="11" y2="12"/></svg>
+        </button>
+        <button class="btn-icon" onclick="event.stopPropagation();printOrderDeliverySlip('${o.id}')" title="Bon de livraison">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/><line x1="8" y1="17" x2="16" y2="17"/><line x1="8" y1="20" x2="13" y2="20"/></svg>
+        </button>
         <button class="btn-icon" onclick="event.stopPropagation();deleteOrder('${o.id}')" title="Supprimer" style="color:var(--corail);">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
         </button>
@@ -1842,6 +1971,21 @@ function renderOrders(filter = '') {
           <div><div class="order-item-name">${i.name}</div><div class="order-item-meta">Qté : ${i.qty}</div></div>
           <div class="order-item-price">${(i.price * i.qty).toFixed(2).replace('.', ',')}€</div>
         </div>`).join('')}
+        <div class="order-item" style="min-width:260px;align-items:flex-start;">
+          <div>
+            <div class="order-item-name">Intégrations</div>
+            <div class="order-item-meta">Sendcloud : ${formatIntegrationStatus(o.sendcloud, 'Non créé')}</div>
+            <div class="order-item-meta">Sucrine : ${formatIntegrationStatus(o.sucrine, 'Non envoyée')}</div>
+          </div>
+        </div>
+        <div class="order-item" style="min-width:260px;align-items:flex-start;">
+          <div>
+            <div class="order-item-name">Livraison</div>
+            <div class="order-item-meta">Mode : ${o.shipping && o.shipping.name ? o.shipping.name : 'Non renseigné'}</div>
+            <div class="order-item-meta">Adresse : ${formatOrderAddressLine(o.billing)}</div>
+            <div class="order-item-meta">${formatOrderLocationLine(o.billing)}</div>
+          </div>
+        </div>
       </div></td>
     </tr>
   `).join('');
@@ -1850,6 +1994,189 @@ function renderOrders(filter = '') {
 function toggleOrderExpand(id) {
   const row = document.getElementById('order-expand-' + id);
   row.style.display = row.style.display === 'none' ? '' : 'none';
+}
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+function formatOrderAddressLine(billing) {
+  if (!billing) return '—';
+  return [billing.adresse, billing.complement].filter(Boolean).join(', ') || '—';
+}
+function formatOrderLocationLine(billing) {
+  if (!billing) return '—';
+  return [billing.cp, billing.ville, billing.pays].filter(Boolean).join(' ') || '—';
+}
+function formatOrderDeliveryMethod(order) {
+  if (!order || !order.shipping) return 'Non renseigné';
+  const parts = [];
+  if (order.shipping.name) parts.push(order.shipping.name);
+  if (order.shipping.carrier && order.shipping.carrier.name) parts.push(order.shipping.carrier.name);
+  return parts.join(' · ') || 'Non renseigné';
+}
+function formatIntegrationStatus(integration, emptyLabel) {
+  if (!integration) return emptyLabel;
+  if (integration.parcelId) return 'Colis #' + integration.parcelId;
+  if (integration.orderId) return 'Commande #' + integration.orderId;
+  if (integration.lastResult && integration.lastResult.message) return 'Erreur ' + integration.lastResult.message;
+  if (integration.lastResult && integration.lastResult.code) return 'Erreur ' + integration.lastResult.code;
+  return emptyLabel;
+}
+function formatOrderServicePoint(order) {
+  const point = order && order.shipping ? order.shipping.servicePoint : null;
+  if (!point) return '';
+  const address = point.address || {};
+  return [
+    point.name,
+    [address.street, address.houseNumber].filter(Boolean).join(' '),
+    [address.postalCode, address.city].filter(Boolean).join(' '),
+  ].filter(Boolean).join(' — ');
+}
+function orderDeliverySlipHtml(order) {
+  const billing = order.billing || {};
+  const rows = (order.items || []).map(item => `
+    <tr>
+      <td>${escapeHtml(item.name)}</td>
+      <td>${escapeHtml(item.variant || item.weight || '—')}</td>
+      <td style="text-align:center;">${Number(item.qty || 0)}</td>
+      <td style="text-align:right;">${Number(item.price || 0).toFixed(2).replace('.', ',')}€</td>
+      <td style="text-align:right;">${(Number(item.price || 0) * Number(item.qty || 0)).toFixed(2).replace('.', ',')}€</td>
+    </tr>
+  `).join('');
+  const servicePoint = formatOrderServicePoint(order);
+  const shippingPrice = order.shipping && Number.isFinite(Number(order.shipping.price))
+    ? Number(order.shipping.price).toFixed(2).replace('.', ',') + '€'
+    : '—';
+  return `<!DOCTYPE html>
+  <html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <title>Bon de livraison ${escapeHtml(order.id)}</title>
+    <style>
+      body { font-family: Arial, sans-serif; color: #2d241d; margin: 32px; }
+      .head { display:flex; justify-content:space-between; gap:24px; margin-bottom:28px; }
+      .brand { font-size:28px; font-weight:700; color:#4e3525; }
+      .doc-title { font-size:22px; font-weight:700; margin:0 0 8px; }
+      .muted { color:#76665a; font-size:13px; }
+      .grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:24px; }
+      .card { border:1px solid #ddd2c8; border-radius:12px; padding:16px; }
+      .card h3 { margin:0 0 10px; font-size:14px; text-transform:uppercase; letter-spacing:.08em; color:#76665a; }
+      table { width:100%; border-collapse:collapse; margin-top:18px; }
+      th, td { border-bottom:1px solid #e7dfd8; padding:10px 8px; font-size:13px; }
+      th { text-align:left; color:#76665a; text-transform:uppercase; letter-spacing:.06em; font-size:11px; }
+      .totals { margin-top:18px; margin-left:auto; width:260px; }
+      .totals-row { display:flex; justify-content:space-between; padding:6px 0; font-size:13px; }
+      .totals-row strong { font-size:15px; }
+      .footer-note { margin-top:28px; font-size:12px; color:#76665a; }
+      @media print { body { margin: 16px; } }
+    </style>
+  </head>
+  <body>
+    <div class="head">
+      <div>
+        <div class="brand">Castaneas</div>
+        <div class="muted">EARL LOUS CASTAGNES CASTANEAS</div>
+      </div>
+      <div style="text-align:right;">
+        <h1 class="doc-title">Bon de livraison</h1>
+        <div class="muted">Commande ${escapeHtml(order.id)}</div>
+        <div class="muted">Date : ${escapeHtml(order.date || order.createdAt || '—')}</div>
+      </div>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <h3>Client</h3>
+        <div><strong>${escapeHtml(order.customer || '—')}</strong></div>
+        <div>${escapeHtml(billing.email || order.email || '—')}</div>
+        <div>${escapeHtml(billing.tel || '—')}</div>
+      </div>
+      <div class="card">
+        <h3>Adresse de livraison</h3>
+        <div>${escapeHtml(formatOrderAddressLine(billing))}</div>
+        <div>${escapeHtml(formatOrderLocationLine(billing))}</div>
+        ${servicePoint ? `<div style="margin-top:8px;"><strong>Point relais :</strong> ${escapeHtml(servicePoint)}</div>` : ''}
+      </div>
+    </div>
+    <div class="card">
+      <h3>Expédition</h3>
+      <div><strong>Mode :</strong> ${escapeHtml(formatOrderDeliveryMethod(order))}</div>
+      <div><strong>Statut :</strong> ${escapeHtml(order.status || '—')}</div>
+      <div><strong>Frais de port :</strong> ${escapeHtml(shippingPrice)}</div>
+      ${order.sendcloud && order.sendcloud.parcelId ? `<div><strong>Sendcloud :</strong> Colis #${escapeHtml(order.sendcloud.parcelId)}</div>` : ''}
+      ${order.sendcloud && order.sendcloud.trackingNumber ? `<div><strong>Tracking :</strong> ${escapeHtml(order.sendcloud.trackingNumber)}</div>` : ''}
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Produit</th>
+          <th>Format</th>
+          <th style="text-align:center;">Qté</th>
+          <th style="text-align:right;">PU</th>
+          <th style="text-align:right;">Total</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="totals">
+      <div class="totals-row"><span>Sous-total</span><span>${Number(order.subtotal || order.total || 0).toFixed(2).replace('.', ',')}€</span></div>
+      <div class="totals-row"><span>Livraison</span><span>${escapeHtml(shippingPrice)}</span></div>
+      <div class="totals-row"><strong>Total</strong><strong>${Number(order.total || 0).toFixed(2).replace('.', ',')}€</strong></div>
+    </div>
+    <div class="footer-note">Document généré automatiquement depuis le back-office Castaneas.</div>
+  </body>
+  </html>`;
+}
+function printOrderDeliverySlip(id) {
+  const order = state.orders.find(entry => entry.id === id);
+  if (!order) {
+    toast('Commande introuvable', 'error');
+    return;
+  }
+  const popup = window.open('', '_blank', 'width=960,height=900');
+  if (!popup) {
+    toast('Autorisez les popups pour imprimer le bon de livraison', 'error');
+    return;
+  }
+  popup.document.open();
+  popup.document.write(orderDeliverySlipHtml(order));
+  popup.document.close();
+  popup.focus();
+  setTimeout(() => popup.print(), 250);
+}
+async function openSendcloudLabel(id) {
+  const order = state.orders.find(entry => entry.id === id);
+  if (!order) {
+    toast('Commande introuvable', 'error');
+    return;
+  }
+
+  try {
+    const response = await fetch('/sendcloud-label.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Token': SERVER_TOKEN,
+      },
+      body: JSON.stringify({ ref: id }),
+    });
+
+    if (!response.ok) {
+      const errorPayload = await response.json().catch(() => null);
+      toast(errorPayload && errorPayload.error ? errorPayload.error : 'Impossible de récupérer l\'étiquette Sendcloud.', 'error');
+      return;
+    }
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank', 'noopener');
+    toast('Etiquette Sendcloud prête', 'success');
+  } catch (error) {
+    toast('Le service Sendcloud est temporairement indisponible.', 'error');
+  }
 }
 function updateOrderStatus(id, status) {
   const order = state.orders.find(o => o.id === id);
@@ -1880,7 +2207,7 @@ function generateFakeOrder() {
     date: new Date().toISOString().slice(0, 10),
     customer: name,
     email: name.split(' ')[0].toLowerCase() + '@exemple.fr',
-    items, total, status: 'pending',
+    items, total, status: 'paid',
   };
   state.orders.push(order);
   save(KEYS.orders, state.orders);
@@ -1889,7 +2216,17 @@ function generateFakeOrder() {
 }
 
 function statusBadge(status) {
-  const map = { pending: '<span class="badge badge-orange">? En attente</span>', processing: '<span class="badge badge-gray">?? En prép.</span>', shipped: '<span class="badge badge-green">?? Expédiée</span>', delivered: '<span class="badge badge-green">? Livrée</span>', cancelled: '<span class="badge badge-red">? Annulée</span>' };
+  const map = {
+    pending_payment: '<span class="badge badge-orange">Paiement en attente</span>',
+    paid: '<span class="badge badge-green">Payée</span>',
+    pending: '<span class="badge badge-orange">? En attente</span>',
+    processing: '<span class="badge badge-gray">?? En prép.</span>',
+    shipped: '<span class="badge badge-green">?? Expédiée</span>',
+    delivered: '<span class="badge badge-green">? Livrée</span>',
+    payment_refused: '<span class="badge badge-red">Paiement refusé</span>',
+    payment_failed: '<span class="badge badge-red">Paiement en erreur</span>',
+    cancelled: '<span class="badge badge-red">? Annulée</span>'
+  };
   return map[status] || status;
 }
 
@@ -1943,6 +2280,10 @@ function openProductModal(id = null) {
     document.getElementById('p-kind').value = p.kind || 'single';
     document.getElementById('p-price').value = p.price;
     document.getElementById('p-weight').value = p.weight || '';
+    document.getElementById('p-ship-weight').value = p.shipping?.weightG || '';
+    document.getElementById('p-ship-length').value = p.shipping?.lengthCm || '';
+    document.getElementById('p-ship-width').value = p.shipping?.widthCm || '';
+    document.getElementById('p-ship-height').value = p.shipping?.heightCm || '';
     document.getElementById('p-stock').value = p.stock;
     document.getElementById('p-desc').value = p.desc || '';
     document.getElementById('p-image').value = p.image || '';
@@ -2202,6 +2543,12 @@ function saveProduct(e) {
     kind,
     price:       Number.isFinite(price) ? price : 0,
     weight:      document.getElementById('p-weight').value.trim(),
+    shipping: {
+      weightG: parseInt(document.getElementById('p-ship-weight').value, 10) || 0,
+      lengthCm: parseFloat(document.getElementById('p-ship-length').value) || 0,
+      widthCm: parseFloat(document.getElementById('p-ship-width').value) || 0,
+      heightCm: parseFloat(document.getElementById('p-ship-height').value) || 0,
+    },
     stock:       document.getElementById('p-stock').value,
     desc:        document.getElementById('p-desc').value.trim(),
     image:       document.getElementById('p-image').value.trim() || 'assets/product-pate-tartiner.png',

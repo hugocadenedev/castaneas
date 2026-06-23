@@ -7,6 +7,48 @@
 (function () {
   'use strict';
 
+  function setMeta(selector, attr, value) {
+    if (!value) return;
+    var el = document.querySelector(selector);
+    if (el) el.setAttribute(attr, value);
+  }
+
+  function excerpt(value, maxLength) {
+    var plain = String(value || '').replace(/\s+/g, ' ').trim();
+    if (!plain) return '';
+    return plain.length > maxLength ? plain.slice(0, maxLength - 1).trim() + '…' : plain;
+  }
+
+  function updateCategorySeo(category, href) {
+    if (!category) return;
+    var title = category.name + ' · Castaneas';
+    var description = excerpt(category.desc || ('Découvrez la collection ' + category.name + ' de Castaneas, fabriquée à la main en petites quantités.'), 160);
+    var absoluteHref = location.origin + href;
+    var image = location.origin + '/' + String(category.banner || 'assets/Castaneas-logo (3).svg').replace(/^\/+/, '');
+
+    document.title = title;
+    setMeta('meta[name="description"]', 'content', description);
+    setMeta('link[rel="canonical"]', 'href', absoluteHref);
+    setMeta('meta[property="og:title"]', 'content', title);
+    setMeta('meta[property="og:description"]', 'content', description);
+    setMeta('meta[property="og:url"]', 'content', absoluteHref);
+    setMeta('meta[property="og:image"]', 'content', image);
+    setMeta('meta[name="twitter:title"]', 'content', title);
+    setMeta('meta[name="twitter:description"]', 'content', description);
+
+    var jsonLd = document.getElementById('seo-jsonld-category');
+    if (jsonLd) {
+      jsonLd.textContent = JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: title,
+        description: description,
+        url: absoluteHref,
+        isPartOf: location.origin + '/',
+      });
+    }
+  }
+
   function finishRender() {
     document.documentElement.classList.remove('category-page-pending');
   }
@@ -33,9 +75,9 @@
   }
 
   /* -- Mise à jour du titre et du breadcrumb -- */
-  document.title = cat.name + ' · Castaneas';
   document.getElementById('cat-title').textContent = cat.name;
   document.getElementById('bc-name').textContent    = cat.name;
+  updateCategorySeo(cat, canonicalHref);
 
   var descEl = document.getElementById('cat-desc');
   if (descEl) descEl.textContent = cat.desc || 'Fabriqué à la main, en petites quantités';

@@ -14,7 +14,7 @@ require_once __DIR__ . '/storage.php';
 
 $output  = [];
 
-foreach (['products', 'categories', 'recipes', 'homepage'] as $key) {
+foreach (['products', 'categories', 'recipes', 'homepage', 'packagings'] as $key) {
     $raw = castaneas_storage_read_raw($key);
     if ($raw === null) {
         continue;

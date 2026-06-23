@@ -4,6 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Castaneas · Crèmes de châtaigne &amp; noisettes du Quercy</title>
+<meta name="description" content="Castaneas propose des crèmes de châtaigne, pâtes à tartiner et coffrets gourmands fabriqués à la main dans le Tarn-et-Garonne.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://www.castaneas.fr/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Castaneas">
+<meta property="og:title" content="Castaneas · Crèmes de châtaigne &amp; noisettes du Quercy">
+<meta property="og:description" content="Crèmes de châtaigne, pâtes à tartiner et coffrets gourmands fabriqués à la main dans le Tarn-et-Garonne.">
+<meta property="og:url" content="https://www.castaneas.fr/">
+<meta property="og:image" content="https://www.castaneas.fr/assets/Castaneas-logo%20(3).svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Castaneas · Crèmes de châtaigne &amp; noisettes du Quercy">
+<meta name="twitter:description" content="Crèmes de châtaigne, pâtes à tartiner et coffrets gourmands fabriqués à la main dans le Tarn-et-Garonne.">
+<script type="application/ld+json" id="seo-jsonld-home">{"@context":"https://schema.org","@type":"Organization","name":"Castaneas","url":"https://www.castaneas.fr/","logo":"https://www.castaneas.fr/assets/Castaneas-logo%20(3).svg","address":{"@type":"PostalAddress","addressLocality":"Albias","addressRegion":"Tarn-et-Garonne","postalCode":"82350","addressCountry":"FR"},"sameAs":[]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&amp;family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
@@ -1051,6 +1064,16 @@
   function setHTML(id, html) {
     var el = document.getElementById(id); if (el) el.innerHTML = html;
   }
+  function upsertMeta(selector, attr, value) {
+    if (!value) return;
+    var el = document.querySelector(selector);
+    if (el) el.setAttribute(attr, value);
+  }
+  function textExcerpt(value, max) {
+    var plain = String(value || '').replace(/\s+/g, ' ').trim();
+    if (!plain) return '';
+    return plain.length > max ? plain.slice(0, max - 1).trim() + '…' : plain;
+  }
 
   /* HERO */
   if (cfg && cfg.hero) {
@@ -1077,6 +1100,17 @@
       if (b2) { if (h.btn2Text) b2.textContent = h.btn2Text; if (h.btn2Href) b2.href = h.btn2Href; }
     }
   }
+
+  var seoTitle = 'Castaneas · Crèmes de châtaigne & noisettes du Quercy';
+  var seoDescription = textExcerpt((cfg && cfg.hero && cfg.hero.subtitle) || 'Castaneas propose des crèmes de châtaigne, pâtes à tartiner et coffrets gourmands fabriqués à la main dans le Tarn-et-Garonne.', 160);
+  document.title = seoTitle;
+  upsertMeta('meta[name="description"]', 'content', seoDescription);
+  upsertMeta('link[rel="canonical"]', 'href', location.origin + '/');
+  upsertMeta('meta[property="og:title"]', 'content', seoTitle);
+  upsertMeta('meta[property="og:description"]', 'content', seoDescription);
+  upsertMeta('meta[property="og:url"]', 'content', location.origin + '/');
+  upsertMeta('meta[name="twitter:title"]', 'content', seoTitle);
+  upsertMeta('meta[name="twitter:description"]', 'content', seoDescription);
 
   /* CATS SECTION HEAD */
   if (cfg && cfg.catsSection) {

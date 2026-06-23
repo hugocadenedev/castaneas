@@ -4,11 +4,12 @@
 
 # ── 0. Désactiver le listing des répertoires ──────────────
 Options -Indexes
+DirectoryIndex maintenance.html index.html
 
 # ── 1. Protéger les données sensibles ─────────────────────
-<Files "orders.json">
+<FilesMatch "\.json$">
     Require all denied
-</Files>
+</FilesMatch>
 
 # ── 2. Headers de sécurité ────────────────────────────────
 <IfModule mod_headers.c>
@@ -46,6 +47,9 @@ Options -Indexes
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^produit/([^/]+)/?$ produit.php?slug=$1 [L,QSA]
+
+    # Sitemap dynamique
+    RewriteRule ^sitemap\.xml$ sitemap.php [L,QSA]
 </IfModule>
 
 # ── 5. data.php : jamais mis en cache (données dynamiques) ──
@@ -54,6 +58,14 @@ Options -Indexes
     Header always set Pragma "no-cache"
     Header always set Expires "0"
     Header always set Surrogate-Control "no-store"
+</FilesMatch>
+
+<FilesMatch "^(back-office|login|register|panier|facturation|confirmation|maintenance)\.html$">
+    Header always set X-Robots-Tag "noindex, nofollow, noarchive"
+</FilesMatch>
+
+<FilesMatch "^(save|upload|storage-status|sendcloud-label|payment-return|payment-notify)\.php$">
+    Header always set X-Robots-Tag "noindex, nofollow, noarchive"
 </FilesMatch>
 
 # ── 5bis. HTML : toujours revalider pour éviter les vieilles pages en prod ──

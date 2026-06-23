@@ -16,7 +16,8 @@
     orders:     'castaneas_admin_orders',
     cart:       'castaneas_cart_v1',
     recipes:    'castaneas_admin_recipes',
-    homepage:   'castaneas_homepage_v1'
+    homepage:   'castaneas_homepage_v1',
+    packagings: 'castaneas_packagings_v1'
   };
 
   /* ---------- Helpers de lecture ---------- */
@@ -92,8 +93,41 @@
       }
       used[finalSlug] = product.id;
 
-      return Object.assign({}, product, { slug: finalSlug });
+      return Object.assign({}, product, {
+        slug: finalSlug,
+        shipping: normalizeProductShipping(product)
+      });
     });
+  }
+
+  function normalizePackagingList(packagings) {
+    return (Array.isArray(packagings) ? packagings : []).map(function (packaging, index) {
+      var shipping = packaging && packaging.shipping ? packaging.shipping : packaging || {};
+      return Object.assign({}, packaging || {}, {
+        id: packaging && packaging.id ? packaging.id : 'pkg-' + (index + 1),
+        name: packaging && packaging.name ? packaging.name : '',
+        code: packaging && packaging.code ? packaging.code : '',
+        shipping: {
+          lengthCm: Number(shipping.lengthCm || 0) || 0,
+          widthCm: Number(shipping.widthCm || 0) || 0,
+          heightCm: Number(shipping.heightCm || 0) || 0,
+          tareWeightG: Number(shipping.tareWeightG || 0) || 0,
+          maxWeightG: Number(shipping.maxWeightG || 0) || 0
+        }
+      });
+    }).filter(function (packaging) {
+      return packaging.name || packaging.code || packaging.shipping.lengthCm || packaging.shipping.widthCm || packaging.shipping.heightCm || packaging.shipping.tareWeightG || packaging.shipping.maxWeightG;
+    });
+  }
+
+  function normalizeProductShipping(product) {
+    var shipping = product && product.shipping ? product.shipping : {};
+    return {
+      weightG: Number(shipping.weightG || 0) || 0,
+      lengthCm: Number(shipping.lengthCm || 0) || 0,
+      widthCm: Number(shipping.widthCm || 0) || 0,
+      heightCm: Number(shipping.heightCm || 0) || 0
+    };
   }
 
   /* ---------- Données serveur injectées par data.php (priorité max) ---------- */
@@ -199,6 +233,7 @@
     }()),
     recipes:  (_srv.recipes  && _srv.recipes.length  > 0) ? _srv.recipes  : (loadStorage(KEYS.recipes)  || []),
     homepage: (_srv.homepage && typeof _srv.homepage === 'object') ? _srv.homepage : (loadStorageObject(KEYS.homepage) || {}),
+    packagings: normalizePackagingList((_srv.packagings && _srv.packagings.length > 0) ? _srv.packagings : (loadStorage(KEYS.packagings) || [])),
 
     /** Toutes les catégories visibles dans le header */
     getHeaderCategories: function () {
@@ -277,6 +312,10 @@
 
     getPromoMessage: function () {
       return getPromoMessage(this.homepage);
+    },
+
+    getPackagingById: function (id) {
+      return this.packagings.find(function (packaging) { return packaging.id === id; }) || null;
     },
 
     /** Toutes les recettes publiées */

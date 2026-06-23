@@ -20,6 +20,11 @@ if (isset($legacyRedirects[$path])) {
     exit;
 }
 
+if ($path === '/sitemap.xml') {
+    require __DIR__ . '/sitemap.php';
+    exit;
+}
+
 if (preg_match('#^/categorie/([^/]+)/?$#', $path, $matches)) {
     $_GET['cat'] = $matches[1];
     $_SERVER['QUERY_STRING'] = http_build_query($_GET);
@@ -35,7 +40,7 @@ if (preg_match('#^/produit/([^/]+)/?$#', $path, $matches)) {
 }
 
 if ($path === '/' || $path === '') {
-    require __DIR__ . '/index.html';
+    require __DIR__ . '/maintenance.html';
     exit;
 }
 
