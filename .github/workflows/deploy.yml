@@ -53,15 +53,23 @@ jobs:
             printf '%s' "$value"
           }
 
-          REMOTE_BASE="public_html"
-          echo "Deploy target: public_html"
+          REMOTE_BASE=""
+          echo "Deploy target: FTP session root (Hostinger upload path)"
 
           upload_file() {
             local file="$1"
             local remote_path
-            remote_path=$(encode_remote_path "$REMOTE_BASE/$file")
+            if [ -n "$REMOTE_BASE" ]; then
+              remote_path=$(encode_remote_path "$REMOTE_BASE/$file")
+            else
+              remote_path=$(encode_remote_path "$file")
+            fi
 
-            echo "Uploading $file to $REMOTE_BASE"
+            if [ -n "$REMOTE_BASE" ]; then
+              echo "Uploading $file to $REMOTE_BASE"
+            else
+              echo "Uploading $file to FTP session root"
+            fi
 
             ftp_curl \
               --upload-file "$file" \
