@@ -24,6 +24,7 @@ function castaneas_integrations_config() {
             'rang' => getenv('CASTANEAS_UP2PAY_RANG') ?: '',
             'identifiant' => getenv('CASTANEAS_UP2PAY_IDENTIFIANT') ?: '',
             'hmac_key' => getenv('CASTANEAS_UP2PAY_HMAC_KEY') ?: '',
+            'callback_secret' => getenv('CASTANEAS_UP2PAY_CALLBACK_SECRET') ?: '',
             'gateway_url' => getenv('CASTANEAS_UP2PAY_GATEWAY_URL') ?: 'https://recette-tpeweb.e-transactions.fr/php/',
             'currency' => getenv('CASTANEAS_UP2PAY_CURRENCY') ?: '978',
             'language' => getenv('CASTANEAS_UP2PAY_LANGUAGE') ?: 'FRA',

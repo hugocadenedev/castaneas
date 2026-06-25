@@ -97,15 +97,6 @@
     if (bannerSrc) bannerImg.src = bannerSrc;
   }
 
-  var bannerBg = document.getElementById('cat-banner-bg');
-  if (bannerBg && cat.color) {
-    var _hex = cat.color.replace('#', '');
-    var _r = parseInt(_hex.substring(0, 2), 16);
-    var _g = parseInt(_hex.substring(2, 4), 16);
-    var _b = parseInt(_hex.substring(4, 6), 16);
-    bannerBg.style.background = 'rgba(' + _r + ',' + _g + ',' + _b + ',0.25)';
-  }
-
   /* -- Onglets de catégorie (filter-bar) -- */
   var SLUG_TO_PAGE = {
     'cremes':         'categorie/cremes',

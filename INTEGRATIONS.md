@@ -1,5 +1,81 @@
 # Intégrations futures — Castaneas
 
+## Paiement Up2pay Crédit Agricole
+
+### Domaine actuel a declarer
+
+La base URL de paiement a utiliser pour l'instant est :
+
+`https://tan-aardvark-409923.hostingersite.com`
+
+Les URLs remontees a Up2pay depuis le code sont donc :
+
+| Champ Up2pay | URL actuelle |
+|---|---|
+| `PBX_EFFECTUE` | `https://tan-aardvark-409923.hostingersite.com/payment-return.php?status=paid&ref=...` |
+| `PBX_REFUSE` | `https://tan-aardvark-409923.hostingersite.com/payment-return.php?status=refused&ref=...` |
+| `PBX_ANNULE` | `https://tan-aardvark-409923.hostingersite.com/payment-return.php?status=cancelled&ref=...` |
+| `PBX_REPONDRE_A` | `https://tan-aardvark-409923.hostingersite.com/payment-notify.php?token=...` |
+
+Attention : si vous basculez plus tard sur `https://www.castaneas.fr`, il faudra mettre a jour `base_url` et les URLs declarees chez Credit Agricole.
+
+### Configuration requise
+
+Le paiement ne demarre pas tant que ces valeurs ne sont pas renseignees :
+
+- `base_url`
+- `up2pay.site`
+- `up2pay.rang`
+- `up2pay.identifiant`
+- `up2pay.hmac_key`
+- `up2pay.gateway_url`
+
+Valeurs recommandees :
+
+- `up2pay.gateway_url` : `https://tpeweb.e-transactions.fr/php/`
+- `up2pay.currency` : `978`
+- `up2pay.language` : `FRA`
+- `up2pay.hash_algo` : `SHA512`
+- `up2pay.callback_secret` : secret long et aleatoire uniquement pour `payment-notify.php`
+- `payment_simulate` : `false`
+
+Exemple de configuration serveur :
+
+```php
+<?php
+
+return [
+  'base_url' => 'https://tan-aardvark-409923.hostingersite.com',
+  'payment_simulate' => false,
+  'up2pay' => [
+    'site' => 'VOTRE_SITE_UP2PAY',
+    'rang' => 'VOTRE_RANG',
+    'identifiant' => 'VOTRE_IDENTIFIANT',
+    'hmac_key' => 'VOTRE_CLE_HMAC',
+    'callback_secret' => 'UN_SECRET_LONG_ET_ALEATOIRE',
+    'gateway_url' => 'https://tpeweb.e-transactions.fr/php/',
+    'currency' => '978',
+    'language' => 'FRA',
+    'hash_algo' => 'SHA512',
+  ],
+];
+```
+
+### Comportement de securite
+
+- Le retour navigateur `payment-return.php` ne marque plus une commande en `paid` a lui seul.
+- Le passage a `paid` doit venir de `payment-notify.php` ou du mode simulation.
+- Si `up2pay.callback_secret` est renseigne, `payment-notify.php` refuse les notifications sans le bon token.
+
+### Checklist de mise en service
+
+1. Recuperer les identifiants Up2pay de production : site, rang, identifiant, cle HMAC.
+2. Declarer chez Credit Agricole les URLs de retour ci-dessus avec `https://tan-aardvark-409923.hostingersite.com`.
+3. Poser la configuration sur le serveur, sans activer `payment_simulate`.
+4. Verifier que `payment-notify.php` est joignable publiquement en HTTPS sans redirection parasite.
+5. Lancer un paiement reel ou un test bancaire, puis verifier qu'une commande passe de `pending_payment` a `paid` apres notification serveur.
+6. Lors du passage au vrai domaine, remplacer `base_url` et les URLs declarees chez Up2pay.
+
 ## 1. Sucrine CRM
 
 ### Objectif

@@ -1,13 +1,14 @@
 <?php
 
 return [
-    'base_url' => 'https://www.castaneas.fr',
+    'base_url' => 'https://tan-aardvark-409923.hostingersite.com',
     'payment_simulate' => false,
     'up2pay' => [
         'site' => '1234567',
         'rang' => '01',
         'identifiant' => '123456789',
         'hmac_key' => 'VOTRE_CLE_HMAC',
+        'callback_secret' => 'UN_SECRET_LONG_POUR_PAYMENT_NOTIFY',
         'gateway_url' => 'https://tpeweb.e-transactions.fr/php/',
         'currency' => '978',
         'language' => 'FRA',

@@ -3,6 +3,7 @@
 require_once __DIR__ . '/order-store.php';
 require_once __DIR__ . '/sendcloud.php';
 require_once __DIR__ . '/sucrine.php';
+require_once __DIR__ . '/integrations.php';
 
 function castaneas_payment_request_data() {
     $data = $_REQUEST;
@@ -61,6 +62,22 @@ function castaneas_payment_transaction_id(array $data) {
     }
 
     return null;
+}
+
+function castaneas_payment_is_simulated(array $data) {
+    return !empty($data['simulate']) && trim((string) $data['simulate']) === '1';
+}
+
+function castaneas_payment_notify_is_authorized(array $data) {
+    $config = castaneas_up2pay_config();
+    $expected = trim((string) ($config['callback_secret'] ?? ''));
+    if ($expected === '') {
+        return true;
+    }
+
+    $provided = trim((string) ($data['token'] ?? ''));
+
+    return $provided !== '' && hash_equals($expected, $provided);
 }
 
 function castaneas_payment_finalize_order($ref, $status, array $payload) {

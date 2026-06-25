@@ -620,6 +620,10 @@ function castaneas_checkout_payment_payload(array $order, array $options = []) {
     }
 
     $config = castaneas_up2pay_config();
+    $notifyUrl = castaneas_url('payment-notify.php');
+    if (!empty($config['callback_secret'])) {
+        $notifyUrl .= '?token=' . rawurlencode($config['callback_secret']);
+    }
     $time = gmdate('c');
     $fields = [
         'PBX_SITE' => $config['site'],
@@ -635,7 +639,7 @@ function castaneas_checkout_payment_payload(array $order, array $options = []) {
         'PBX_EFFECTUE' => castaneas_url('payment-return.php?status=paid&ref=' . rawurlencode($order['id'])),
         'PBX_REFUSE' => castaneas_url('payment-return.php?status=refused&ref=' . rawurlencode($order['id'])),
         'PBX_ANNULE' => castaneas_url('payment-return.php?status=cancelled&ref=' . rawurlencode($order['id'])),
-        'PBX_REPONDRE_A' => castaneas_url('payment-notify.php'),
+        'PBX_REPONDRE_A' => $notifyUrl,
         'PBX_LANGUE' => $config['language'],
     ];
     $fields['PBX_HMAC'] = castaneas_up2pay_signature($fields, $config['hash_algo'], $config['hmac_key']);

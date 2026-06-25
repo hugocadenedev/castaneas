@@ -4,7 +4,7 @@ require_once __DIR__ . '/payment-flow.php';
 
 $payload = castaneas_payment_request_data();
 $ref = castaneas_payment_resolve_ref($payload);
-if ($ref !== '') {
+if ($ref !== '' && (castaneas_payment_is_simulated($payload) || castaneas_payment_resolve_status($payload) !== 'paid')) {
     castaneas_payment_finalize_order($ref, castaneas_payment_resolve_status($payload), $payload);
 }
 

@@ -557,6 +557,9 @@
     margin: 0;
     font-weight: 500;
   }
+  .histoire-card__more {
+    display: none;
+  }
   .histoire-card__cta {
     align-self: flex-start;
     margin-top: 14px;
@@ -728,6 +731,29 @@
   }
   @media (max-width: 480px) {
     .bs-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+    #hp-hist-para2.is-collapsed {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      overflow: hidden;
+    }
+    .histoire-card__more {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 10px;
+      padding: 0;
+      border: none;
+      background: none;
+      color: var(--brown-deep);
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+    }
+    .histoire-card__more[hidden] {
+      display: none;
+    }
   }
 </style>
 </head>
@@ -936,6 +962,7 @@
         <h2 id="hp-hist-title" class="histoire-card__title">Deux vergers de famille,<br><em>devenus une maison.</em></h2>
         <p id="hp-hist-para1">Tout a commencé sur les coteaux de Albias. D'un côté, les vieux châtaigniers du causse ; de l'autre, les noisetiers que notre grand-père avait plantés au retour de la guerre. Chaque automne, on ramassait les fruits à genoux, et on les confisait le soir dans le chaudron de cuivre.</p>
         <p id="hp-hist-para2">Aujourd'hui, on suit la même recette, dans le même chaudron. On a juste ajouté des étiquettes — pour pouvoir la partager.</p>
+        <button type="button" id="hp-hist-para2-more" class="histoire-card__more" hidden aria-expanded="false">Voir plus</button>
         <a id="hp-hist-cta" href="histoire.html" class="histoire-card__cta">
           Lire le récit complet
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"></path></svg>
@@ -1035,6 +1062,43 @@
 
 <script src="data.php?v=2"></script><script src="site-data.js?v=5"></script>
 <script src="cart.js"></script>
+<script>
+(function () {
+  var para = document.getElementById('hp-hist-para2');
+  var toggle = document.getElementById('hp-hist-para2-more');
+  if (!para || !toggle) return;
+
+  function syncStoryToggle() {
+    var isMobile = window.matchMedia('(max-width: 480px)').matches;
+    para.classList.remove('is-collapsed');
+    toggle.hidden = true;
+    toggle.textContent = 'Voir plus';
+    toggle.setAttribute('aria-expanded', 'false');
+
+    if (!isMobile) {
+      return;
+    }
+
+    para.classList.add('is-collapsed');
+    if (para.scrollHeight <= para.clientHeight + 1) {
+      para.classList.remove('is-collapsed');
+      return;
+    }
+
+    toggle.hidden = false;
+  }
+
+  toggle.addEventListener('click', function () {
+    var expanded = toggle.getAttribute('aria-expanded') === 'true';
+    para.classList.toggle('is-collapsed', expanded);
+    toggle.textContent = expanded ? 'Voir plus' : 'Voir moins';
+    toggle.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+  });
+
+  syncStoryToggle();
+  window.addEventListener('resize', syncStoryToggle);
+})();
+</script>
 <script>
 /* Apply homepage config from admin (castaneas_homepage_v1) */
 (function () {
