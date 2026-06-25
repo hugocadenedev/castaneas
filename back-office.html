@@ -2222,12 +2222,45 @@ function formatSendcloudSummary(integration) {
 function formatSucrineSummary(integration) {
   if (!integration) return 'Non utilisé';
   if (integration.orderId || integration.sentAt) return 'Commande envoyée';
-  if (integration.lastResult && integration.lastResult.ok === false) return 'Non configuré';
+  if (integration.lastResult && integration.lastResult.ok === false) return 'Action requise';
   return 'En attente';
+}
+function normalizeIntegrationDetail(value) {
+  if (value === null || value === undefined) return '';
+  if (typeof value === 'string') return value.trim();
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+  if (Array.isArray(value)) {
+    return value.map(normalizeIntegrationDetail).filter(Boolean).join(' | ');
+  }
+  if (typeof value === 'object') {
+    const preferred = [value.message, value.error, value.detail, value.title]
+      .map(normalizeIntegrationDetail)
+      .filter(Boolean);
+    if (preferred.length) return preferred.join(' | ');
+
+    const values = Object.values(value)
+      .map(normalizeIntegrationDetail)
+      .filter(Boolean);
+    if (values.length) return values.join(' | ');
+
+    try {
+      return JSON.stringify(value);
+    } catch (_) {
+      return '';
+    }
+  }
+  return '';
 }
 function integrationDetailMessage(integration, emptyLabel) {
   if (!integration) return emptyLabel;
-  if (integration.lastResult && integration.lastResult.message) return integration.lastResult.message;
+  if (integration.lastResult && integration.lastResult.message) {
+    const detail = normalizeIntegrationDetail(integration.lastResult.message);
+    if (detail) return detail;
+  }
+  if (integration.lastResult && integration.lastResult.raw) {
+    const detail = normalizeIntegrationDetail(integration.lastResult.raw);
+    if (detail) return detail;
+  }
   if (integration.orderId) return 'Référence ' + integration.orderId;
   if (integration.parcelId) return 'Colis ' + integration.parcelId;
   return emptyLabel;

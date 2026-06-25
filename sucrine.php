@@ -145,6 +145,66 @@ function castaneas_sucrine_payload(array $order) {
     ];
 }
 
+function castaneas_sucrine_error_message($value) {
+    if (is_string($value)) {
+        $value = trim($value);
+        return $value !== '' ? $value : null;
+    }
+
+    if (!is_array($value)) {
+        return null;
+    }
+
+    $candidates = [
+        $value['message'] ?? null,
+        $value['error'] ?? null,
+        $value['detail'] ?? null,
+        $value['title'] ?? null,
+    ];
+
+    foreach ($candidates as $candidate) {
+        $resolved = castaneas_sucrine_error_message($candidate);
+        if ($resolved !== null) {
+            return $resolved;
+        }
+    }
+
+    if (!empty($value['errors']) && is_array($value['errors'])) {
+        $messages = [];
+        foreach ($value['errors'] as $error) {
+            $resolved = castaneas_sucrine_error_message($error);
+            if ($resolved !== null) {
+                $messages[] = $resolved;
+            }
+        }
+        if ($messages) {
+            return implode(' | ', array_values(array_unique($messages)));
+        }
+    }
+
+    if (!empty($value['violations']) && is_array($value['violations'])) {
+        $messages = [];
+        foreach ($value['violations'] as $violation) {
+            $resolved = castaneas_sucrine_error_message($violation);
+            if ($resolved !== null) {
+                $messages[] = $resolved;
+            }
+        }
+        if ($messages) {
+            return implode(' | ', array_values(array_unique($messages)));
+        }
+    }
+
+    $flat = [];
+    array_walk_recursive($value, static function ($item) use (&$flat) {
+        if (is_scalar($item) && trim((string) $item) !== '') {
+            $flat[] = trim((string) $item);
+        }
+    });
+
+    return $flat ? implode(' | ', array_values(array_unique($flat))) : null;
+}
+
 function castaneas_sucrine_send_order(array $order) {
     if (!castaneas_sucrine_is_ready()) {
         return [
@@ -201,11 +261,16 @@ function castaneas_sucrine_send_order(array $order) {
 
     $decoded = json_decode($response, true);
     if ($status < 200 || $status >= 300) {
+        $message = castaneas_sucrine_error_message($decoded);
+        if ($message === null && is_string($response) && trim($response) !== '') {
+            $message = trim($response);
+        }
+
         return [
             'ok' => false,
             'code' => 'sucrine_http_error',
             'status' => $status,
-            'message' => is_array($decoded) ? ($decoded['message'] ?? $decoded['error'] ?? 'Erreur API Sucrine.') : 'Erreur API Sucrine.',
+            'message' => $message ?: 'Erreur API Sucrine.',
             'raw' => $decoded ?: $response,
         ];
     }
