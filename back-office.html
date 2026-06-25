@@ -2251,6 +2251,13 @@ function normalizeIntegrationDetail(value) {
   }
   return '';
 }
+function stringifyIntegrationDebug(value) {
+  try {
+    return JSON.stringify(value);
+  } catch (_) {
+    return '';
+  }
+}
 function integrationDetailMessage(integration, emptyLabel) {
   if (!integration) return emptyLabel;
   if (integration.lastResult && integration.lastResult.message) {
@@ -2259,6 +2266,10 @@ function integrationDetailMessage(integration, emptyLabel) {
   }
   if (integration.lastResult && integration.lastResult.raw) {
     const detail = normalizeIntegrationDetail(integration.lastResult.raw);
+    if (detail) return detail;
+  }
+  if (integration.lastResult && integration.lastResult.payload) {
+    const detail = stringifyIntegrationDebug(integration.lastResult.payload);
     if (detail) return detail;
   }
   if (integration.orderId) return 'Référence ' + integration.orderId;

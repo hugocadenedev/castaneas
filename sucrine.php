@@ -324,6 +324,7 @@ function castaneas_sucrine_send_order(array $order) {
             'deliveryPoint' => $deliveryPoint,
             'status' => $status,
             'message' => $message ?: 'Erreur API Sucrine.',
+            'payload' => $payload,
             'raw' => $decoded ?: $response,
         ];
     }
