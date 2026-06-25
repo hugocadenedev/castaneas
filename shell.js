@@ -39,10 +39,10 @@ window.renderShell = function (activePage) {
     </div>
   </header>
   <nav class="mobile-cats" aria-label="Catégories">
-    <a href="creme-de-chataigne.html" class="mobile-cats__pill ${activePage === 'cremes' ? 'active' : ''}">🌰 Crèmes de châtaigne</a>
-    <a href="pates-tartiner.html" class="mobile-cats__pill ${activePage === 'pates' ? 'active' : ''}">🧈 Pâtes à tartiner</a>
-    <a href="huiles.html" class="mobile-cats__pill ${activePage === 'huiles' ? 'active' : ''}">🫙 Huiles</a>
-    <a href="coffrets.html" class="mobile-cats__pill ${activePage === 'coffrets' ? 'active' : ''}">🎁 Coffrets</a>
+    <a href="/categorie/cremes" class="mobile-cats__pill ${activePage === 'cremes' ? 'active' : ''}">🌰 Crèmes de châtaigne</a>
+    <a href="/categorie/pates-tartiner" class="mobile-cats__pill ${activePage === 'pates' ? 'active' : ''}">🧈 Pâtes à tartiner</a>
+    <a href="/categorie/huiles" class="mobile-cats__pill ${activePage === 'huiles' ? 'active' : ''}">🫙 Huiles</a>
+    <a href="/categorie/coffrets" class="mobile-cats__pill ${activePage === 'coffrets' ? 'active' : ''}">🎁 Coffrets</a>
   </nav>`;
 
   const drawer = `
