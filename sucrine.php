@@ -77,7 +77,7 @@ function castaneas_sucrine_address_payload(array $billing) {
     ];
 }
 
-function castaneas_sucrine_delivery_point(array $order, array $config) {
+function castaneas_sucrine_delivery_point_candidates(array $order, array $config) {
     $shipping = is_array($order['shipping'] ?? null) ? $order['shipping'] : [];
     $servicePoint = is_array($shipping['servicePoint'] ?? null) ? $shipping['servicePoint'] : [];
     $type = trim((string) ($shipping['type'] ?? ''));
@@ -101,24 +101,65 @@ function castaneas_sucrine_delivery_point(array $order, array $config) {
     if (!empty($shipping['product']['code'])) {
         $candidates[] = $shipping['product']['code'];
     }
+    if (!empty($shipping['carrier']['code'])) {
+        $candidates[] = $shipping['carrier']['code'];
+    }
+    if (!empty($shipping['name'])) {
+        $candidates[] = $shipping['name'];
+    }
+    if (!empty($shipping['product']['name'])) {
+        $candidates[] = $shipping['product']['name'];
+    }
+    if ($type !== '') {
+        $candidates[] = $type;
+    }
 
+    $normalized = [];
     foreach ($candidates as $candidate) {
         $candidate = trim((string) $candidate);
-        if ($candidate !== '') {
-            return $candidate;
+        if ($candidate === '') {
+            continue;
+        }
+        $normalized[] = $candidate;
+
+        $lower = strtolower($candidate);
+        $slug = preg_replace('/[^a-z0-9]+/', '-', $lower);
+        $slug = trim((string) $slug, '-');
+        if ($slug !== '' && $slug !== $candidate) {
+            $normalized[] = $slug;
+        }
+
+        $compact = preg_replace('/[^a-z0-9]+/', '_', $lower);
+        $compact = trim((string) $compact, '_');
+        if ($compact !== '' && $compact !== $candidate && $compact !== $slug) {
+            $normalized[] = $compact;
         }
     }
 
-    return '';
+    $unique = [];
+    foreach ($normalized as $candidate) {
+        if (!in_array($candidate, $unique, true)) {
+            $unique[] = $candidate;
+        }
+    }
+
+    return $unique;
 }
 
-function castaneas_sucrine_payload(array $order) {
+function castaneas_sucrine_delivery_point(array $order, array $config) {
+    $candidates = castaneas_sucrine_delivery_point_candidates($order, $config);
+
+    return $candidates ? $candidates[0] : '';
+}
+
+function castaneas_sucrine_payload(array $order, $deliveryPoint = null) {
     $billing = $order['billing'] ?? [];
     $config = castaneas_sucrine_config();
     $address = castaneas_sucrine_address_payload($billing);
     $shipping = is_array($order['shipping'] ?? null) ? $order['shipping'] : [];
     $shippingLabel = trim((string) (($shipping['name'] ?? '') ?: ($shipping['product']['name'] ?? '') ?: ($shipping['type'] ?? 'Livraison')));
     $shippingAmount = round((float) ($shipping['price'] ?? 0), 2);
+    $resolvedDeliveryPoint = $deliveryPoint !== null ? trim((string) $deliveryPoint) : castaneas_sucrine_delivery_point($order, $config);
 
     return [
         'orderType' => 'order',
@@ -131,7 +172,7 @@ function castaneas_sucrine_payload(array $order) {
         ],
         'advancedCatalogueItems' => castaneas_sucrine_build_items($order),
         'skipPreciseSupplyCheck' => !array_key_exists('skip_precise_supply_check', $config) || !empty($config['skip_precise_supply_check']),
-        'deliveryPoint' => castaneas_sucrine_delivery_point($order, $config),
+        'deliveryPoint' => $resolvedDeliveryPoint,
         'delivery' => [
             'description' => $shippingLabel,
             'amount' => $shippingAmount,
@@ -214,70 +255,85 @@ function castaneas_sucrine_send_order(array $order) {
         ];
     }
 
-    $payload = castaneas_sucrine_payload($order);
-    if (empty($payload['advancedCatalogueItems'])) {
+    $items = castaneas_sucrine_build_items($order);
+    if (empty($items)) {
         return [
             'ok' => false,
             'code' => 'sucrine_missing_products',
             'message' => 'Aucun produit de la commande ne possède de référence Sucrine.',
         ];
     }
-    if (trim((string) ($payload['deliveryPoint'] ?? '')) === '') {
+    $config = castaneas_sucrine_config();
+    $deliveryPointCandidates = castaneas_sucrine_delivery_point_candidates($order, $config);
+    if (!$deliveryPointCandidates) {
         return [
             'ok' => false,
             'code' => 'sucrine_missing_delivery_point',
             'message' => 'Mode de distribution Sucrine manquant. Configurez sucrine.delivery_point ou les variantes home/relay.',
-            'payload' => $payload,
+            'payload' => castaneas_sucrine_payload($order),
         ];
     }
 
-    $config = castaneas_sucrine_config();
     $url = rtrim($config['base_url'], '/') . '/professional/customerOrders/order';
+    $attemptErrors = [];
 
-    $ch = curl_init($url);
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-        CURLOPT_HTTPHEADER => [
-            'Authorization: ApiKey ' . $config['api_key'],
-            'Content-Type: application/json',
-        ],
-        CURLOPT_TIMEOUT => 20,
-    ]);
+    foreach ($deliveryPointCandidates as $deliveryPoint) {
+        $payload = castaneas_sucrine_payload($order, $deliveryPoint);
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            CURLOPT_HTTPHEADER => [
+                'Authorization: ApiKey ' . $config['api_key'],
+                'Content-Type: application/json',
+            ],
+            CURLOPT_TIMEOUT => 20,
+        ]);
 
-    $response = curl_exec($ch);
-    $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $error = curl_error($ch);
-    curl_close($ch);
+        $response = curl_exec($ch);
+        $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
 
-    if ($response === false) {
-        return [
-            'ok' => false,
-            'code' => 'sucrine_transport_error',
-            'message' => $error ?: 'Erreur réseau Sucrine.',
-        ];
-    }
+        if ($response === false) {
+            return [
+                'ok' => false,
+                'code' => 'sucrine_transport_error',
+                'message' => $error ?: 'Erreur réseau Sucrine.',
+                'deliveryPoint' => $deliveryPoint,
+            ];
+        }
 
-    $decoded = json_decode($response, true);
-    if ($status < 200 || $status >= 300) {
+        $decoded = json_decode($response, true);
+        if ($status >= 200 && $status < 300) {
+            return [
+                'ok' => true,
+                'status' => $status,
+                'deliveryPoint' => $deliveryPoint,
+                'data' => is_array($decoded) ? $decoded : ['raw' => $response],
+            ];
+        }
+
         $message = castaneas_sucrine_error_message($decoded);
         if ($message === null && is_string($response) && trim($response) !== '') {
             $message = trim($response);
         }
 
-        return [
-            'ok' => false,
-            'code' => 'sucrine_http_error',
+        $attemptErrors[] = [
+            'deliveryPoint' => $deliveryPoint,
             'status' => $status,
             'message' => $message ?: 'Erreur API Sucrine.',
             'raw' => $decoded ?: $response,
         ];
     }
 
+    $last = end($attemptErrors) ?: null;
     return [
-        'ok' => true,
-        'status' => $status,
-        'data' => is_array($decoded) ? $decoded : ['raw' => $response],
+        'ok' => false,
+        'code' => 'sucrine_http_error',
+        'status' => $last['status'] ?? 500,
+        'message' => ($last['message'] ?? 'Erreur API Sucrine.') . ' | deliveryPoint essayé: ' . implode(', ', $deliveryPointCandidates),
+        'raw' => $attemptErrors,
     ];
 }
