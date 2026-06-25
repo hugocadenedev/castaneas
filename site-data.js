@@ -413,10 +413,14 @@
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
       injectNav();
+      injectMobileCats();
+      injectFooterCategories();
       injectPromoBar();
     });
   } else {
     injectNav();
+    injectMobileCats();
+    injectFooterCategories();
     injectPromoBar();
   }
 
@@ -514,6 +518,79 @@
         if (e.key === 'Escape' && overlay.classList.contains('open')) closeMenu();
       });
     }
+  }
+
+  function injectMobileCats() {
+    var mobileNavs = document.querySelectorAll('.mobile-cats');
+    if (!mobileNavs.length) return;
+
+    var cats = SiteData.getHeaderCategories();
+    if (!cats || cats.length < 2) {
+      cats = SiteData.getActiveCategories();
+    }
+    if (!cats || !cats.length) return;
+
+    var slugFromPath = decodeURIComponent(location.pathname.split('/').pop() || '');
+    var inferredSlug = '';
+
+    if (/^categorie\//i.test(slugFromPath)) {
+      inferredSlug = slugFromPath.split('/').pop();
+    } else if (location.pathname.indexOf('/categorie/') !== -1) {
+      inferredSlug = location.pathname.split('/categorie/').pop().split('/')[0];
+    } else if (window.CAT_SLUG) {
+      inferredSlug = window.CAT_SLUG;
+    }
+
+    mobileNavs.forEach(function (nav) {
+      var existingActive = nav.querySelector('.mobile-cats__pill.active');
+      var existingActiveText = existingActive ? existingActive.textContent.replace(/^\s*[^\p{L}\p{N}]+/u, '').trim().toLowerCase() : '';
+
+      var html = cats.map(function (category) {
+        var href = SiteData.getCategoryHref(category);
+        var slug = SiteData.getCategorySlug(category);
+        var emoji = category.emoji || '';
+        var label = category.name || slug || 'Catégorie';
+        var isActive = false;
+
+        if (inferredSlug) {
+          isActive = SiteData.getCategoryBySlug(inferredSlug) && SiteData.getCategorySlug(SiteData.getCategoryBySlug(inferredSlug)) === slug;
+        } else if (existingActiveText) {
+          isActive = existingActiveText === String(label).trim().toLowerCase();
+        }
+
+        return '<a href="' + href + '" class="mobile-cats__pill' + (isActive ? ' active' : '') + '">' +
+          (emoji ? emoji + ' ' : '') + label +
+        '</a>';
+      }).join('');
+
+      nav.innerHTML = html;
+    });
+  }
+
+  function injectFooterCategories() {
+    var categories = SiteData.getActiveCategories();
+    if (!categories || !categories.length) return;
+
+    var headings = document.querySelectorAll('.footer .footer-grid h4');
+    if (!headings.length) return;
+
+    headings.forEach(function (heading) {
+      if (String(heading.textContent || '').trim().toLowerCase() !== 'boutique') {
+        return;
+      }
+
+      var column = heading.parentElement;
+      if (!column) return;
+
+      var list = column.querySelector('ul');
+      if (!list) return;
+
+      list.innerHTML = categories.map(function (category) {
+        var href = SiteData.getCategoryHref(category);
+        var label = category.name || SiteData.getCategorySlug(category) || 'Catégorie';
+        return '<li><a href="' + href + '">' + label + '</a></li>';
+      }).join('');
+    });
   }
 
   function injectPromoBar() {

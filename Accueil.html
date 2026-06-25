@@ -986,12 +986,9 @@
         </ul>
       </div>
       <div>
-        <h4>La maison</h4>
         <ul>
           <li><a href="histoire.html">Notre histoire</a></li>
-          <li><a href="#">Le verger</a></li>
-          <li><a href="#">Recettes</a></li>
-          <li><a href="#">Journal</a></li>
+          <li><a href="recettes.html">Recettes</a></li>
         </ul>
       </div>
       <div>
@@ -999,14 +996,12 @@
         <ul>
           <li><a href="#">Livraison &amp; retours</a></li>
           <li><a href="#">Nous contacter</a></li>
-          <li><a href="#">Conservation</a></li>
           <li><a href="cgv.html">CGV</a></li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
       <div>© 2026 Castaneas · Albias, Tarn-et-Garonne (82)</div>
-      <div>Fait à la main, par petites fournées 🌰</div>
     </div>
   </div>
 </footer>
@@ -1042,16 +1037,18 @@
 (function () {
   var para = document.getElementById('hp-hist-para2');
   var toggle = document.getElementById('hp-hist-para2-more');
+  var MAX_MOBILE_STORY_CHARS = 160;
   if (!para || !toggle) return;
 
   function syncStoryToggle() {
     var isMobile = window.matchMedia('(max-width: 480px)').matches;
+    var textLength = (para.textContent || '').trim().length;
     para.classList.remove('is-collapsed');
     toggle.hidden = true;
     toggle.textContent = 'Voir plus';
     toggle.setAttribute('aria-expanded', 'false');
 
-    if (!isMobile) {
+    if (!isMobile || textLength <= MAX_MOBILE_STORY_CHARS) {
       return;
     }
 
@@ -1071,6 +1068,7 @@
     toggle.setAttribute('aria-expanded', expanded ? 'false' : 'true');
   });
 
+  window.syncHomepageStoryToggle = syncStoryToggle;
   syncStoryToggle();
   window.addEventListener('resize', syncStoryToggle);
 })();
@@ -1218,6 +1216,9 @@
     }
     setText('hp-hist-para1', hi.para1);
     setText('hp-hist-para2', hi.para2);
+    if (typeof window.syncHomepageStoryToggle === 'function') {
+      window.syncHomepageStoryToggle();
+    }
     if (hi.ctaText || hi.ctaHref) {
       var cta = document.getElementById('hp-hist-cta');
       if (cta) {

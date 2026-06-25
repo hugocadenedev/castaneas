@@ -75,7 +75,6 @@ window.renderShell = function (activePage) {
     <div class="footer-inner">
       <div class="footer-brand">
         <img src="assets/Castaneas-logo (3).svg" alt="Castaneas" style="height:60px;width:auto;filter:invert(1) brightness(1.05);">
-        <p>Du verger d'Albias à votre tartine. Pâtes à tartiner artisanales, noisettes, noix et châtaignes récoltées par la famille sur nos terres du Tarn-et-Garonne.</p>
       </div>
       <div>
         <h4>Boutique</h4>
@@ -87,12 +86,9 @@ window.renderShell = function (activePage) {
         </ul>
       </div>
       <div>
-        <h4>La ferme</h4>
         <ul>
-          <li><a href="#">Notre histoire</a></li>
-          <li><a href="#">Le verger</a></li>
-          <li><a href="#">Savoir-faire</a></li>
-          <li><a href="#">Journal</a></li>
+          <li><a href="/histoire.html">Notre histoire</a></li>
+          <li><a href="/recettes.html">Recettes</a></li>
         </ul>
       </div>
       <div>
@@ -107,7 +103,6 @@ window.renderShell = function (activePage) {
     </div>
     <div class="footer-bottom">
       <span>© 2026 Castaneas · Ferme familiale · Albias, 82350</span>
-      <span>Site imaginé avec ❤ dans le Tarn-et-Garonne</span>
     </div>
   </footer>`;
 
