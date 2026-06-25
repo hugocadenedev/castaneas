@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'base_url' => 'https://tan-aardvark-409923.hostingersite.com',
+    'base_url' => 'https://www.castaneas.fr',
     'payment_simulate' => false,
     'up2pay' => [
         'site' => '1234567',

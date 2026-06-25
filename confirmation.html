@@ -111,6 +111,10 @@
 <script src="cart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  var pendingRefreshTimer = null;
+  var pendingRefreshAttempts = 0;
+  var pendingRefreshMaxAttempts = 8;
+
   function setStatusView(config) {
     document.getElementById('confirm-icon').textContent = config.icon;
     document.getElementById('confirm-title').innerHTML = config.title;
@@ -118,6 +122,25 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('confirm-note').textContent = config.note || '';
     document.getElementById('confirm-secondary-link').textContent = config.secondaryLabel;
     document.getElementById('confirm-secondary-link').href = config.secondaryHref;
+  }
+
+  function stopPendingRefresh() {
+    if (pendingRefreshTimer) {
+      clearTimeout(pendingRefreshTimer);
+      pendingRefreshTimer = null;
+    }
+  }
+
+  function schedulePendingRefresh(ref) {
+    if (!ref || pendingRefreshAttempts >= pendingRefreshMaxAttempts) {
+      return;
+    }
+
+    stopPendingRefresh();
+    pendingRefreshTimer = setTimeout(function () {
+      pendingRefreshAttempts += 1;
+      loadOrderStatus(ref, { silent: true });
+    }, 3000);
   }
 
   function clearCartOnce(ref) {
@@ -133,7 +156,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  async function loadOrderStatus() {
+  async function loadOrderStatus(prefilledRef, options) {
+    options = options || {};
     function paidOrderNote(order) {
       var notes = [];
       if (order.sendcloud && order.sendcloud.created) {
@@ -147,10 +171,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     var params = new URLSearchParams(window.location.search);
-    var ref = params.get('ref') || '';
+    var ref = prefilledRef || params.get('ref') || '';
     document.getElementById('confirm-ref').textContent = ref || 'CAS-XXXXXX';
 
     if (!ref) {
+      stopPendingRefresh();
       setStatusView({
         icon: '🌰',
         title: 'Commande<br><em>enregistrée</em>',
@@ -173,6 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('confirm-ref').textContent = order.id || ref;
 
       if (order.status === 'paid') {
+        stopPendingRefresh();
         setStatusView({
           icon: '🌰',
           title: 'Merci pour votre<br><em>commande !</em>',
@@ -190,13 +216,17 @@ document.addEventListener('DOMContentLoaded', function() {
           icon: '⏳',
           title: 'Paiement<br><em>en attente</em>',
           sub: 'Votre commande a bien été créée, mais nous attendons encore la confirmation du paiement.',
-          note: 'Actualisez cette page dans quelques instants si vous revenez du Crédit Agricole.',
+          note: pendingRefreshAttempts < pendingRefreshMaxAttempts
+            ? 'Confirmation bancaire en cours. Cette page se met à jour automatiquement.'
+            : 'La confirmation bancaire prend plus de temps que prévu. Rechargez la page dans quelques instants si besoin.',
           secondaryLabel: 'Retour à la facturation',
           secondaryHref: 'facturation.html'
         });
+        schedulePendingRefresh(order.id || ref);
         return;
       }
 
+      stopPendingRefresh();
       setStatusView({
         icon: '⚠️',
         title: 'Paiement<br><em>non validé</em>',
@@ -206,11 +236,12 @@ document.addEventListener('DOMContentLoaded', function() {
         secondaryHref: 'facturation.html'
       });
     } catch (e) {
+      stopPendingRefresh();
       setStatusView({
         icon: '⚠️',
         title: 'Confirmation<br><em>indisponible</em>',
         sub: 'Nous n\'avons pas pu récupérer l\'état de votre commande pour le moment.',
-        note: 'Si le paiement a été débité, contactez-nous avec votre référence.',
+        note: options.silent ? 'Nouvelle tentative automatique impossible pour le moment.' : 'Si le paiement a été débité, contactez-nous avec votre référence.',
         secondaryLabel: 'Retour à la facturation',
         secondaryHref: 'facturation.html'
       });

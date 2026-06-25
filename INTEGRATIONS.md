@@ -6,18 +6,18 @@
 
 La base URL de paiement a utiliser pour l'instant est :
 
-`https://tan-aardvark-409923.hostingersite.com`
+`https://www.castaneas.fr`
 
 Les URLs remontees a Up2pay depuis le code sont donc :
 
 | Champ Up2pay | URL actuelle |
 |---|---|
-| `PBX_EFFECTUE` | `https://tan-aardvark-409923.hostingersite.com/payment-return.php?status=paid&ref=...` |
-| `PBX_REFUSE` | `https://tan-aardvark-409923.hostingersite.com/payment-return.php?status=refused&ref=...` |
-| `PBX_ANNULE` | `https://tan-aardvark-409923.hostingersite.com/payment-return.php?status=cancelled&ref=...` |
-| `PBX_REPONDRE_A` | `https://tan-aardvark-409923.hostingersite.com/payment-notify.php?token=...` |
+| `PBX_EFFECTUE` | `https://www.castaneas.fr/payment-return.php?status=paid&ref=...` |
+| `PBX_REFUSE` | `https://www.castaneas.fr/payment-return.php?status=refused&ref=...` |
+| `PBX_ANNULE` | `https://www.castaneas.fr/payment-return.php?status=cancelled&ref=...` |
+| `PBX_REPONDRE_A` | `https://www.castaneas.fr/payment-notify.php?token=...` |
 
-Attention : si vous basculez plus tard sur `https://www.castaneas.fr`, il faudra mettre a jour `base_url` et les URLs declarees chez Credit Agricole.
+Attention : les URLs declarees chez Credit Agricole doivent pointer exactement vers ce domaine de production.
 
 ### Configuration requise
 
@@ -45,7 +45,7 @@ Exemple de configuration serveur :
 <?php
 
 return [
-  'base_url' => 'https://tan-aardvark-409923.hostingersite.com',
+  'base_url' => 'https://www.castaneas.fr',
   'payment_simulate' => false,
   'up2pay' => [
     'site' => 'VOTRE_SITE_UP2PAY',
@@ -70,11 +70,11 @@ return [
 ### Checklist de mise en service
 
 1. Recuperer les identifiants Up2pay de production : site, rang, identifiant, cle HMAC.
-2. Declarer chez Credit Agricole les URLs de retour ci-dessus avec `https://tan-aardvark-409923.hostingersite.com`.
+2. Declarer chez Credit Agricole les URLs de retour ci-dessus avec `https://www.castaneas.fr`.
 3. Poser la configuration sur le serveur, sans activer `payment_simulate`.
 4. Verifier que `payment-notify.php` est joignable publiquement en HTTPS sans redirection parasite.
 5. Lancer un paiement reel ou un test bancaire, puis verifier qu'une commande passe de `pending_payment` a `paid` apres notification serveur.
-6. Lors du passage au vrai domaine, remplacer `base_url` et les URLs declarees chez Up2pay.
+6. Verifier apres mise en service qu'un retour navigateur arrive bien sur `confirmation.html?ref=...` puis qu'une notification serveur fait passer la commande de `pending_payment` a `paid`.
 
 ## 1. Sucrine CRM
 
