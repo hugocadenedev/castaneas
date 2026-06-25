@@ -53,40 +53,15 @@ jobs:
             printf '%s' "$value"
           }
 
-          detect_remote_base() {
-            local candidate
-            local listing
-
-            for candidate in "" "public_html"; do
-              local probe_path="$candidate"
-              if listing=$(ftp_curl --list-only "ftp://$FTP_SERVER/$probe_path" 2>/dev/null); then
-                if printf '%s\n' "$listing" | grep -E '^(index\.html|Accueil\.html|Fiche Produit\.html|assets|styles\.css)$' >/dev/null; then
-                  printf '%s' "$candidate"
-                  return 0
-                fi
-              fi
-            done
-
-            printf ''
-          }
-
-          REMOTE_BASE=$(detect_remote_base)
-          if [ -n "$REMOTE_BASE" ]; then
-            echo "Detected remote base: $REMOTE_BASE"
-          else
-            echo "Detected remote base: FTP root"
-          fi
+          REMOTE_BASE="public_html"
+          echo "Deploy target: public_html"
 
           upload_file() {
             local file="$1"
             local remote_path
-            if [ -n "$REMOTE_BASE" ]; then
-              remote_path=$(encode_remote_path "$REMOTE_BASE/$file")
-            else
-              remote_path=$(encode_remote_path "$file")
-            fi
+            remote_path=$(encode_remote_path "$REMOTE_BASE/$file")
 
-            echo "Uploading $file"
+            echo "Uploading $file to $REMOTE_BASE"
 
             ftp_curl \
               --upload-file "$file" \
