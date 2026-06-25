@@ -53,29 +53,10 @@ jobs:
             printf '%s' "$value"
           }
 
-          detect_remote_base() {
-            local candidate
-            local listing
-
-            for candidate in "" "public_html"; do
-              local probe_path="$candidate"
-              if listing=$(ftp_curl --list-only "ftp://$FTP_SERVER/$probe_path" 2>/dev/null); then
-                if printf '%s\n' "$listing" | grep -E '^(index\.html|Accueil\.html|Fiche Produit\.html|assets|styles\.css)$' >/dev/null; then
-                  printf '%s' "$candidate"
-                  return 0
-                fi
-              fi
-            done
-
-            printf ''
-          }
-
-          REMOTE_BASE=$(detect_remote_base)
-          if [ -n "$REMOTE_BASE" ]; then
-            echo "Detected remote base: $REMOTE_BASE"
-          else
-            echo "Detected remote base: FTP root"
-          fi
+          # This dedicated FTP account is rooted directly at the live public_html.
+          # Always deploy to FTP root to avoid accidentally targeting a nested public_html copy.
+          REMOTE_BASE=""
+          echo "Deploy target: FTP root (account webroot)"
 
           upload_file() {
             local file="$1"
