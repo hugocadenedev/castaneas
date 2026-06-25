@@ -17,6 +17,11 @@ return [
     'sucrine' => [
         'api_key' => 'VOTRE_CLE_API_SUCRINE',
         'base_url' => 'https://app.sucrine.club/api',
+        'order_source' => 'castaneas',
+        'skip_precise_supply_check' => true,
+        'delivery_point' => '',
+        'delivery_point_home' => '',
+        'delivery_point_relay' => '',
     ],
     'sendcloud' => [
         'public_key' => 'VOTRE_CLE_PUBLIQUE_SENDCLOUD',

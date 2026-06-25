@@ -83,6 +83,7 @@ Envoyer automatiquement chaque commande client vers le CRM Sucrine au moment de 
 
 ### API
 - Base URL : `https://app.sucrine.club/api`
+- Base URL test : `https://preview.app.sucrine.club/api`
 - Auth : header `Authorization: ApiKey XXXX`
 - Doc : https://developers.sucrineclub.com/api-reference/index.html
 ![alt text](image.png)
@@ -97,6 +98,8 @@ Envoyer automatiquement chaque commande client vers le CRM Sucrine au moment de 
 
 > ⚠️ Il n'existe **pas** d'endpoint pour lister les produits du catalogue. Les `catalogueItemPriceId` doivent être copiés manuellement depuis le dashboard Sucrine.
 
+> ⚠️ La création de commande requiert aussi un `deliveryPoint` Sucrine valide. Il faut donc renseigner dans la config serveur soit `sucrine.delivery_point`, soit un mapping `sucrine.delivery_point_home` / `sucrine.delivery_point_relay`.
+
 ### Mapping produits
 Chaque produit Castaneas a maintenant un champ `sucrineId` dans le back-office (section **Intégrations** du formulaire produit). Ce champ correspond au `catalogueItemPriceId` dans Sucrine.
 
@@ -104,6 +107,7 @@ Chaque produit Castaneas a maintenant un champ `sucrineId` dans le back-office (
 1. Se connecter au dashboard Sucrine
 2. Pour chaque produit, copier son `catalogueItemPriceId`
 3. Coller cet ID dans le champ **Référence Sucrine** du produit dans le back-office Castaneas
+4. Récupérer l'identifiant du mode de distribution Sucrine utilisé pour les commandes web, puis le renseigner dans `sucrine.delivery_point` ou dans les variantes `home` / `relay`
 
 ### Proxy PHP (à créer sur Hostinger)
 La clé API ne doit **jamais** être dans le JS client. Il faut un proxy côté serveur.

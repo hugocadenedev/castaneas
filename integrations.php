@@ -33,6 +33,11 @@ function castaneas_integrations_config() {
         'sucrine' => [
             'api_key' => getenv('CASTANEAS_SUCRINE_API_KEY') ?: '',
             'base_url' => getenv('CASTANEAS_SUCRINE_BASE_URL') ?: 'https://app.sucrine.club/api',
+            'order_source' => getenv('CASTANEAS_SUCRINE_ORDER_SOURCE') ?: 'castaneas',
+            'skip_precise_supply_check' => !getenv('CASTANEAS_SUCRINE_ENFORCE_STOCK'),
+            'delivery_point' => getenv('CASTANEAS_SUCRINE_DELIVERY_POINT') ?: '',
+            'delivery_point_home' => getenv('CASTANEAS_SUCRINE_DELIVERY_POINT_HOME') ?: '',
+            'delivery_point_relay' => getenv('CASTANEAS_SUCRINE_DELIVERY_POINT_RELAY') ?: '',
         ],
         'sendcloud' => [
             'public_key' => getenv('CASTANEAS_SENDCLOUD_PUBLIC_KEY') ?: '',

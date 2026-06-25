@@ -58,27 +58,90 @@ function castaneas_sucrine_build_items(array $order) {
     return $items;
 }
 
+function castaneas_sucrine_contact_name(array $billing) {
+    return trim(implode(' ', array_filter([
+        trim((string) ($billing['prenom'] ?? '')),
+        trim((string) ($billing['nom'] ?? '')),
+    ])));
+}
+
+function castaneas_sucrine_address_payload(array $billing) {
+    return [
+        'address' => trim((string) ($billing['adresse'] ?? '')),
+        'addressExtra' => trim((string) ($billing['complement'] ?? '')),
+        'city' => trim((string) ($billing['ville'] ?? '')),
+        'company' => trim((string) ($billing['societe'] ?? '')),
+        'name' => castaneas_sucrine_contact_name($billing),
+        'country' => strtoupper(trim((string) ($billing['pays'] ?? 'FR'))),
+        'zipcode' => trim((string) ($billing['cp'] ?? '')),
+    ];
+}
+
+function castaneas_sucrine_delivery_point(array $order, array $config) {
+    $shipping = is_array($order['shipping'] ?? null) ? $order['shipping'] : [];
+    $servicePoint = is_array($shipping['servicePoint'] ?? null) ? $shipping['servicePoint'] : [];
+    $type = trim((string) ($shipping['type'] ?? ''));
+    $candidates = [];
+
+    if (!empty($config['delivery_point'])) {
+        $candidates[] = $config['delivery_point'];
+    }
+    if ($type === 'home' && !empty($config['delivery_point_home'])) {
+        $candidates[] = $config['delivery_point_home'];
+    }
+    if ($type === 'relay' && !empty($config['delivery_point_relay'])) {
+        $candidates[] = $config['delivery_point_relay'];
+    }
+    if (!empty($servicePoint['carrierServicePointId'])) {
+        $candidates[] = $servicePoint['carrierServicePointId'];
+    }
+    if (!empty($shipping['code'])) {
+        $candidates[] = $shipping['code'];
+    }
+    if (!empty($shipping['product']['code'])) {
+        $candidates[] = $shipping['product']['code'];
+    }
+
+    foreach ($candidates as $candidate) {
+        $candidate = trim((string) $candidate);
+        if ($candidate !== '') {
+            return $candidate;
+        }
+    }
+
+    return '';
+}
+
 function castaneas_sucrine_payload(array $order) {
     $billing = $order['billing'] ?? [];
-    $address = [
-        'street' => trim(($billing['adresse'] ?? '') . ' ' . ($billing['complement'] ?? '')),
-        'zipCode' => $billing['cp'] ?? '',
-        'city' => $billing['ville'] ?? '',
-        'country' => $billing['pays'] ?? 'FR',
-    ];
+    $config = castaneas_sucrine_config();
+    $address = castaneas_sucrine_address_payload($billing);
+    $shipping = is_array($order['shipping'] ?? null) ? $order['shipping'] : [];
+    $shippingLabel = trim((string) (($shipping['name'] ?? '') ?: ($shipping['product']['name'] ?? '') ?: ($shipping['type'] ?? 'Livraison')));
+    $shippingAmount = round((float) ($shipping['price'] ?? 0), 2);
 
     return [
+        'orderType' => 'order',
+        'customerOrderReference' => (string) ($order['id'] ?? ''),
+        'orderSource' => trim((string) ($config['order_source'] ?? 'castaneas')),
         'newContact' => [
-            'firstName' => $billing['prenom'] ?? '',
-            'lastName' => $billing['nom'] ?? '',
-            'email' => $billing['email'] ?? '',
-            'phone' => $billing['tel'] ?? '',
+            'name' => castaneas_sucrine_contact_name($billing),
+            'email' => trim((string) ($billing['email'] ?? '')),
+            'phone' => trim((string) ($billing['tel'] ?? '')),
         ],
         'advancedCatalogueItems' => castaneas_sucrine_build_items($order),
+        'skipPreciseSupplyCheck' => !array_key_exists('skip_precise_supply_check', $config) || !empty($config['skip_precise_supply_check']),
+        'deliveryPoint' => castaneas_sucrine_delivery_point($order, $config),
+        'delivery' => [
+            'description' => $shippingLabel,
+            'amount' => $shippingAmount,
+            'dfAmount' => $shippingAmount,
+            'vatRate' => 0,
+            'vatAmount' => 0,
+        ],
         'deliveryAddress' => $address,
         'invoicingAddress' => $address,
-        'comment' => $billing['note'] ?? '',
-        'externalReference' => $order['id'] ?? '',
+        'message' => trim((string) ($billing['note'] ?? '')),
     ];
 }
 
@@ -97,6 +160,14 @@ function castaneas_sucrine_send_order(array $order) {
             'ok' => false,
             'code' => 'sucrine_missing_products',
             'message' => 'Aucun produit de la commande ne possède de référence Sucrine.',
+        ];
+    }
+    if (trim((string) ($payload['deliveryPoint'] ?? '')) === '') {
+        return [
+            'ok' => false,
+            'code' => 'sucrine_missing_delivery_point',
+            'message' => 'Mode de distribution Sucrine manquant. Configurez sucrine.delivery_point ou les variantes home/relay.',
+            'payload' => $payload,
         ];
     }
 
