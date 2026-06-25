@@ -86,7 +86,6 @@ h1,h2,h3,h4 { font-family: var(--serif); letter-spacing: -.02em; }
   z-index: 2;
   padding: 40px 52px;
   color: #fff;
-  text-shadow: 0 2px 16px rgba(0,0,0,.3);
 }
 .cat-banner__eyebrow {
   font-family: var(--mono);
