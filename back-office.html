@@ -588,6 +588,31 @@ tbody tr:last-child td { border-bottom: none; }
   color: var(--ink-soft);
   white-space: pre-wrap;
 }
+.order-tech-block {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.order-tech-toggle {
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  list-style: none;
+}
+.order-tech-toggle::-webkit-details-marker { display: none; }
+.order-tech-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 18px;
+  margin-top: 14px;
+}
+.order-tech-grid .order-info-value {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+}
 
 @media (max-width: 1180px) {
   .order-detail-hero { flex-direction: column; }
@@ -598,7 +623,8 @@ tbody tr:last-child td { border-bottom: none; }
 @media (max-width: 760px) {
   .order-detail-kpis,
   .order-info-grid,
-  .order-address-grid { grid-template-columns: 1fr; }
+  .order-address-grid,
+  .order-tech-grid { grid-template-columns: 1fr; }
 }
 
 /* ---- EMPTY STATE ---- */
@@ -1716,6 +1742,7 @@ let editingRecipe = null;
 let selectedExtraImages = [];
 let recipeSteps = [];
 let selectedOrderId = null;
+let serverStorageReady = false;
 
 function getDefaultPromoMessage() {
   return 'Livraison offerte dès 40€ d\'achat — récolte 2025 disponible 🌰';
@@ -1799,10 +1826,15 @@ async function hashAdmin(pass) {
 
 /* ---------- Init ---------- */
 async function init() {
-  // Récupère les données du serveur avant tout (fallback localStorage si hors ligne)
-  await serverLoadAll();
+  serverStorageReady = await serverLoadAll();
 
-  // Load from server (already synced by serverLoadAll) or localStorage
+  if (!serverStorageReady) {
+    document.getElementById('guard-error').textContent = 'Stockage serveur indisponible. Le back-office est bloqué pour éviter d\'afficher ou de sauvegarder des données locales trompeuses.';
+    toast('Stockage serveur indisponible - verification MySQL requise', 'error');
+    return;
+  }
+
+  // Load from server (already synced by serverLoadAll)
   state.categories        = load(KEYS.categories) || [];
   state.products          = load(KEYS.products)   || [];
   state.orders            = load(KEYS.orders)     || [];
@@ -1824,9 +1856,6 @@ async function init() {
 }
 
 async function serverLoadAll() {
-  // Le serveur est toujours la source de vérité au démarrage.
-  // On tire toutes les clés depuis le serveur et on met à jour localStorage.
-  // Si le serveur retourne null (pas encore initialisé), on garde le localStorage tel quel.
   const allKeys = [
     { s: 'products',   l: KEYS.products },
     { s: 'categories', l: KEYS.categories },
@@ -1840,23 +1869,21 @@ async function serverLoadAll() {
   try {
     await Promise.race([
       Promise.all(allKeys.map(async ({ s, l }) => {
-        try {
-          const r = await fetch('/save.php?key=' + s, {
-            headers: { 'X-Admin-Token': SERVER_TOKEN },
-          });
-          if (r.ok) {
-            const data = await r.json();
-            if (data !== null) {
-              // Le serveur a des données → elles font autorité
-              localStorage.setItem(l, JSON.stringify(data));
-            }
-            // Si null → serveur pas encore initialisé, on garde localStorage intact
-          }
-        } catch (e) { /* réseau indispo */ }
+        const r = await fetch('/save.php?key=' + s, {
+          headers: { 'X-Admin-Token': SERVER_TOKEN },
+        });
+        const data = await r.json().catch(() => null);
+        if (!r.ok || (data && data.error)) {
+          throw new Error((data && data.error) || ('HTTP ' + r.status));
+        }
+        localStorage.setItem(l, JSON.stringify(data === null ? [] : data));
       })),
       timeout,
     ]);
+    return true;
   } catch (e) { /* ignore */ }
+
+  return false;
 }
 
 /* ---------- Guard ---------- */
@@ -2083,17 +2110,7 @@ function renderOrders(filter = '') {
       </td>
       <td class="td-price">${o.total.toFixed(2).replace('.', ',')}€</td>
       <td>
-        <select onchange="updateOrderStatus('${o.id}', this.value)" onclick="event.stopPropagation()" style="font-size:12px;font-weight:700;padding:4px 8px;border-radius:999px;border:none;background:transparent;cursor:pointer;">
-          <option value="pending_payment" ${o.status==='pending_payment'?'selected':''}>Paiement en attente</option>
-          <option value="paid" ${o.status==='paid'?'selected':''}>Payée</option>
-          <option value="pending" ${o.status==='pending'?'selected':''}>? En attente</option>
-          <option value="processing" ${o.status==='processing'?'selected':''}>?? En préparation</option>
-          <option value="shipped" ${o.status==='shipped'?'selected':''}>?? Expédiée</option>
-          <option value="delivered" ${o.status==='delivered'?'selected':''}>? Livrée</option>
-          <option value="payment_refused" ${o.status==='payment_refused'?'selected':''}>Paiement refusé</option>
-          <option value="payment_failed" ${o.status==='payment_failed'?'selected':''}>Paiement en erreur</option>
-          <option value="cancelled" ${o.status==='cancelled'?'selected':''}>? Annulée</option>
-        </select>
+        ${statusBadge(o.status)}
       </td>
       <td><div class="td-actions">
         <button class="btn-icon" onclick="event.stopPropagation();openOrderDetail('${o.id}')" title="Détail commande">
@@ -2102,12 +2119,16 @@ function renderOrders(filter = '') {
         <button class="btn-icon" onclick="event.stopPropagation();openSendcloudLabel('${o.id}')" title="Etiquette Sendcloud">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 8V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3"/><rect x="2" y="8" width="20" height="9" rx="2"/><path d="M6 17h12v4H6z"/><line x1="7" y1="12" x2="11" y2="12"/></svg>
         </button>
+        <button class="btn-icon" onclick="event.stopPropagation();downloadOrderInvoice('${o.id}')" title="Télécharger la facture">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v10"/><path d="m8 10 4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><rect x="5" y="3" width="14" height="18" rx="2" ry="2" stroke-linejoin="round"/></svg>
+        </button>
         <button class="btn-icon" onclick="event.stopPropagation();printOrderDeliverySlip('${o.id}')" title="Bon de livraison">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/><line x1="8" y1="17" x2="16" y2="17"/><line x1="8" y1="20" x2="13" y2="20"/></svg>
         </button>
         <button class="btn-icon" onclick="event.stopPropagation();deleteOrder('${o.id}')" title="Supprimer" style="color:var(--corail);">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
         </button>
+      </div></td>
     </tr>
   `).join('');
 }
@@ -2183,6 +2204,34 @@ function formatPaymentMethod(order) {
   };
   return map[payment] || payment || 'Non renseigné';
 }
+function humanizeShippingCode(value) {
+  if (!value) return '—';
+  const text = String(value);
+  if (text.includes('service_point')) return 'Point relais';
+  if (text.includes('home_domestic')) return 'Livraison à domicile';
+  if (text.includes('same_day')) return 'Livraison le jour même';
+  return text;
+}
+function formatSendcloudSummary(integration) {
+  if (!integration) return 'Non utilisé';
+  if (integration.labelUrl || integration.parcelId) return 'Etiquette prête';
+  if (integration.trackingNumber) return 'Colis créé';
+  if (integration.lastResult && integration.lastResult.ok === false) return 'Action requise';
+  return 'En attente';
+}
+function formatSucrineSummary(integration) {
+  if (!integration) return 'Non utilisé';
+  if (integration.orderId || integration.sentAt) return 'Commande envoyée';
+  if (integration.lastResult && integration.lastResult.ok === false) return 'Non configuré';
+  return 'En attente';
+}
+function integrationDetailMessage(integration, emptyLabel) {
+  if (!integration) return emptyLabel;
+  if (integration.lastResult && integration.lastResult.message) return integration.lastResult.message;
+  if (integration.orderId) return 'Référence ' + integration.orderId;
+  if (integration.parcelId) return 'Colis ' + integration.parcelId;
+  return emptyLabel;
+}
 function orderStatusSelectHtml(order) {
   return `<select onchange="updateOrderStatus('${order.id}', this.value)" style="font-size:12px;font-weight:700;padding:7px 10px;border-radius:999px;border:1.5px solid var(--line);background:var(--cream-soft);cursor:pointer;">
     <option value="pending_payment" ${order.status==='pending_payment'?'selected':''}>Paiement en attente</option>
@@ -2227,6 +2276,7 @@ function orderDetailTopbarActions(order) {
   return [
     `<button class="btn btn-secondary btn-sm" onclick="closeOrderDetail()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/><path d="M21 12H9"/></svg> Retour aux commandes</button>`,
     `<button class="btn btn-green btn-sm" onclick="openSendcloudLabel('${order.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 8V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3"/><rect x="2" y="8" width="20" height="9" rx="2"/><path d="M6 17h12v4H6z"/><line x1="7" y1="12" x2="11" y2="12"/></svg> Etiquette Sendcloud</button>`,
+    `<button class="btn btn-secondary btn-sm" onclick="downloadOrderInvoice('${order.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v10"/><path d="m8 10 4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><rect x="5" y="3" width="14" height="18" rx="2" ry="2" stroke-linejoin="round"/></svg> Télécharger la facture</button>`,
     `<button class="btn btn-secondary btn-sm" onclick="printOrderDeliverySlip('${order.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/><line x1="8" y1="17" x2="16" y2="17"/><line x1="8" y1="20" x2="13" y2="20"/></svg> Bon de livraison</button>`
   ].join('');
 }
@@ -2248,6 +2298,10 @@ function renderOrderDetail(order) {
   const shippingPrice = shipping && Number.isFinite(Number(shipping.price)) ? formatMoney(shipping.price) : '—';
   const subtotal = Number(order.subtotal || 0) || Math.max(Number(order.total || 0) - Number(shipping.price || 0), 0);
   const trackingNumber = order.sendcloud && order.sendcloud.trackingNumber ? order.sendcloud.trackingNumber : '—';
+  const carrierName = shipping.carrier && shipping.carrier.name ? shipping.carrier.name : (shipping.product && shipping.product.name ? shipping.product.name : 'Non renseigné');
+  const shippingTypeLabel = servicePoint ? 'Point relais' : 'Livraison à domicile';
+  const sendcloudSummary = formatSendcloudSummary(order.sendcloud);
+  const sucrineSummary = formatSucrineSummary(order.sucrine);
 
   container.innerHTML = `
     <div class="order-detail-shell">
@@ -2355,12 +2409,12 @@ function renderOrderDetail(order) {
                   <div class="order-info-value">${escapeHtml(formatOrderDeliveryMethod(order))}</div>
                 </div>
                 <div class="order-info-item">
-                  <div class="order-info-label">Code méthode</div>
-                  <div class="order-info-value">${escapeHtml(shipping.code || '—')}</div>
+                  <div class="order-info-label">Type de livraison</div>
+                  <div class="order-info-value">${escapeHtml(shippingTypeLabel)}</div>
                 </div>
                 <div class="order-info-item">
-                  <div class="order-info-label">Produit transporteur</div>
-                  <div class="order-info-value">${escapeHtml(shipping.product && shipping.product.code ? shipping.product.code : '—')}</div>
+                  <div class="order-info-label">Transporteur</div>
+                  <div class="order-info-value">${escapeHtml(carrierName)}</div>
                 </div>
                 <div class="order-info-item">
                   <div class="order-info-label">Frais de port</div>
@@ -2385,6 +2439,19 @@ function renderOrderDetail(order) {
                   </div>
                 </div>
               ` : '<div style="margin-top:18px;" class="muted">Pas de point relais associé à cette commande.</div>'}
+              <details class="order-tech-block">
+                <summary class="order-tech-toggle">Voir les données techniques transport</summary>
+                <div class="order-tech-grid">
+                  <div class="order-info-item">
+                    <div class="order-info-label">Code méthode</div>
+                    <div class="order-info-value">${escapeHtml(shipping.code || '—')}</div>
+                  </div>
+                  <div class="order-info-item">
+                    <div class="order-info-label">Code produit transporteur</div>
+                    <div class="order-info-value">${escapeHtml(shipping.product && shipping.product.code ? shipping.product.code : '—')}</div>
+                  </div>
+                </div>
+              </details>
             </div>
           </section>
         </div>
@@ -2419,28 +2486,41 @@ function renderOrderDetail(order) {
 
           <section class="order-card">
             <div class="order-card-head">
-              <h3>Intégrations</h3>
-              <div class="muted">Sendcloud et Sucrine</div>
+              <h3>Automatisations</h3>
+              <div class="muted">Suivi des services connectés</div>
             </div>
             <div class="order-card-body">
               <div class="order-meta-stack">
                 <div class="order-meta-row">
                   <strong>Sendcloud</strong>
-                  <span>${escapeHtml(formatIntegrationStatus(order.sendcloud, 'Non créé'))}</span>
-                </div>
-                <div class="order-meta-row">
-                  <strong>Tracking</strong>
-                  <span>${escapeHtml(trackingNumber)}</span>
-                </div>
-                <div class="order-meta-row">
-                  <strong>Création étiquette</strong>
-                  <span>${escapeHtml(formatOrderDateTime(order.sendcloud && order.sendcloud.createdAt ? order.sendcloud.createdAt : ''))}</span>
+                  <span>${escapeHtml(sendcloudSummary)}</span>
                 </div>
                 <div class="order-meta-row">
                   <strong>Sucrine</strong>
-                  <span>${escapeHtml(formatIntegrationStatus(order.sucrine, 'Non envoyée'))}</span>
+                  <span>${escapeHtml(sucrineSummary)}</span>
                 </div>
               </div>
+              <details class="order-tech-block">
+                <summary class="order-tech-toggle">Voir le détail technique</summary>
+                <div class="order-meta-stack" style="margin-top:14px;">
+                  <div class="order-meta-row">
+                    <strong>Détail Sendcloud</strong>
+                    <span>${escapeHtml(integrationDetailMessage(order.sendcloud, 'Aucun détail disponible'))}</span>
+                  </div>
+                  <div class="order-meta-row">
+                    <strong>Tracking</strong>
+                    <span>${escapeHtml(trackingNumber)}</span>
+                  </div>
+                  <div class="order-meta-row">
+                    <strong>Création étiquette</strong>
+                    <span>${escapeHtml(formatOrderDateTime(order.sendcloud && order.sendcloud.createdAt ? order.sendcloud.createdAt : ''))}</span>
+                  </div>
+                  <div class="order-meta-row">
+                    <strong>Détail Sucrine</strong>
+                    <span>${escapeHtml(integrationDetailMessage(order.sucrine, 'Aucun détail disponible'))}</span>
+                  </div>
+                </div>
+              </details>
             </div>
           </section>
 
@@ -2487,6 +2567,143 @@ function openOrderDetail(id) {
 function closeOrderDetail() {
   selectedOrderId = null;
   activatePanel('orders');
+}
+function formatInvoiceLongDate(value) {
+  if (!value) return '—';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString('fr-FR', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+}
+function formatInvoiceNumber(order) {
+  const rawId = String(order && order.id ? order.id : '000000').replace(/[^A-Za-z0-9]/g, '');
+  return 'FA_' + rawId;
+}
+function castaneasInvoiceCompany() {
+  return {
+    name: 'Castanéas',
+    addressLines: ['1430 route Loyle', '82350 ALBIAS'],
+    email: 'boutique@castaneas.fr',
+    siret: '32231586200035',
+  };
+}
+function orderInvoiceHtml(order) {
+  const billing = order.billing || {};
+  const company = castaneasInvoiceCompany();
+  const logoUrl = location.origin + '/assets/Castaneas-logo%20(3).svg';
+  const items = Array.isArray(order.items) ? order.items : [];
+  const invoiceDate = order.paidAt || order.updatedAt || order.createdAt || order.date || '';
+  const orderDate = order.createdAt || order.date || '';
+  const subtotal = Number(order.subtotal || 0) || items.reduce((sum, item) => sum + (Number(item.price || 0) * Number(item.qty || 0)), 0);
+  const shippingAmount = order.shipping && Number.isFinite(Number(order.shipping.price)) ? Number(order.shipping.price) : 0;
+  const total = Number(order.total || 0) || subtotal + shippingAmount;
+  const shippingLabel = order.shipping && order.shipping.name ? order.shipping.name : 'Livraison';
+  const paymentLabel = formatPaymentMethod(order);
+  const rows = items.map(item => {
+    const variant = item.variant || item.weight || '';
+    const lineTotal = Number(item.price || 0) * Number(item.qty || 0);
+    const reference = item.offerId || item.id || '';
+    return `
+      <tr>
+        <td>
+          <div class="invoice-product-name">${escapeHtml(item.name || 'Produit')}</div>
+          ${variant ? `<div class="invoice-product-meta">${escapeHtml(variant)}</div>` : ''}
+          ${reference ? `<div class="invoice-product-sub">Réf : ${escapeHtml(reference)}</div>` : ''}
+        </td>
+        <td class="qty">${Number(item.qty || 0)}</td>
+        <td class="price">${formatMoney(lineTotal)}</td>
+      </tr>`;
+  }).join('');
+
+  return `<!DOCTYPE html>
+  <html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <title>Facture ${escapeHtml(formatInvoiceNumber(order))}</title>
+    <style>
+      * { box-sizing: border-box; }
+      body { margin: 0; padding: 34px 42px 42px; font-family: Arial, Helvetica, sans-serif; color: #151515; background: #fff; }
+      .page { max-width: 760px; margin: 0 auto; }
+      .head { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: start; margin-bottom: 28px; }
+      .brand-logo { width: 190px; height: auto; display: block; }
+      .company { font-size: 14px; line-height: 1.45; font-weight: 700; }
+      h1 { margin: 16px 0 22px; font-size: 23px; letter-spacing: .02em; }
+      .intro { display: grid; grid-template-columns: 1.2fr 1fr; gap: 34px; margin-bottom: 28px; }
+      .customer { font-size: 14px; line-height: 1.45; white-space: pre-line; }
+      .meta-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+      .meta-table td { padding: 2px 0; vertical-align: top; }
+      .meta-label { width: 52%; padding-right: 18px; }
+      .lines { width: 100%; border-collapse: collapse; margin-top: 8px; }
+      .lines thead th { background: #000; color: #fff; text-align: left; padding: 8px 10px; font-size: 14px; }
+      .lines thead th.qty, .lines thead th.price, .lines td.qty, .lines td.price { text-align: right; width: 110px; }
+      .lines tbody td { padding: 10px 10px 8px; border-bottom: 1px solid #e6e6e6; vertical-align: top; font-size: 14px; }
+      .invoice-product-name { font-size: 14px; }
+      .invoice-product-meta { margin-top: 4px; font-size: 12px; color: #111; font-weight: 700; }
+      .invoice-product-sub { margin-top: 4px; font-size: 12px; color: #666; font-weight: 700; }
+      .totals { width: 290px; margin-left: auto; margin-top: 10px; }
+      .totals-row { display: grid; grid-template-columns: 1fr auto; gap: 18px; padding: 7px 0; border-bottom: 1px solid #ececec; font-size: 14px; }
+      .totals-row strong { font-size: 15px; }
+      .totals-row.total { border-top: 2px solid #202020; border-bottom: 2px solid #202020; margin-top: 4px; padding-top: 10px; padding-bottom: 10px; }
+      .shipping-note { display: block; margin-top: 4px; font-size: 12px; color: #666; max-width: 140px; text-align: left; }
+      .footer-note { margin-top: 26px; font-size: 12px; color: #666; }
+      @media print { body { padding: 18px 26px 24px; } .page { max-width: none; } }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="head">
+        <div><img src="${logoUrl}" alt="Castaneas" class="brand-logo"></div>
+        <div class="company">
+          <div>${escapeHtml(company.name)}</div>
+          ${company.addressLines.map(line => `<div>${escapeHtml(line)}</div>`).join('')}
+        </div>
+      </div>
+      <h1>FACTURE</h1>
+      <div class="intro">
+        <div class="customer">${escapeHtml([
+          order.customer || [billing.prenom, billing.nom].filter(Boolean).join(' ') || 'Client',
+          formatOrderAddressLine(billing),
+          [billing.cp, billing.ville].filter(Boolean).join(' '),
+          billing.email || order.email || '',
+          billing.tel || '',
+        ].filter(Boolean).join('\n'))}</div>
+        <table class="meta-table">
+          <tr><td class="meta-label">N° de facture :</td><td>${escapeHtml(formatInvoiceNumber(order))}</td></tr>
+          <tr><td class="meta-label">Date de facture :</td><td>${escapeHtml(formatInvoiceLongDate(invoiceDate))}</td></tr>
+          <tr><td class="meta-label">N° de commande :</td><td>${escapeHtml(order.id || '—')}</td></tr>
+          <tr><td class="meta-label">Date de commande :</td><td>${escapeHtml(formatInvoiceLongDate(orderDate))}</td></tr>
+          <tr><td class="meta-label">Méthode de paiement :</td><td>${escapeHtml(paymentLabel)}</td></tr>
+        </table>
+      </div>
+      <table class="lines">
+        <thead>
+          <tr><th>Produits</th><th class="qty">Quantité</th><th class="price">Prix</th></tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="totals">
+        <div class="totals-row"><span>Sous-total</span><span>${formatMoney(subtotal)}</span></div>
+        <div class="totals-row"><span>Expédition</span><span>${formatMoney(shippingAmount)}<span class="shipping-note">${escapeHtml(shippingLabel)}</span></span></div>
+        <div class="totals-row total"><strong>Total</strong><strong>${formatMoney(total)}</strong></div>
+      </div>
+      <div class="footer-note">Document généré automatiquement depuis le back-office Castaneas.<br>${escapeHtml(company.name)} · SIRET ${escapeHtml(company.siret)} · ${escapeHtml(company.email)}</div>
+    </div>
+  </body>
+  </html>`;
+}
+function downloadHtmlDocument(filename, html) {
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 function orderDeliverySlipHtml(order) {
   const billing = order.billing || {};
@@ -2599,6 +2816,15 @@ function printOrderDeliverySlip(id) {
   popup.focus();
   setTimeout(() => popup.print(), 250);
 }
+function downloadOrderInvoice(id) {
+  const order = state.orders.find(entry => entry.id === id);
+  if (!order) {
+    toast('Commande introuvable', 'error');
+    return;
+  }
+  downloadHtmlDocument(`facture-${order.id}.html`, orderInvoiceHtml(order));
+  toast('Facture téléchargée', 'success');
+}
 async function openSendcloudLabel(id) {
   const order = state.orders.find(entry => entry.id === id);
   if (!order) {
@@ -2685,13 +2911,13 @@ function statusBadge(status) {
   const map = {
     pending_payment: '<span class="badge badge-orange">Paiement en attente</span>',
     paid: '<span class="badge badge-green">Payée</span>',
-    pending: '<span class="badge badge-orange">? En attente</span>',
-    processing: '<span class="badge badge-gray">?? En prép.</span>',
-    shipped: '<span class="badge badge-green">?? Expédiée</span>',
-    delivered: '<span class="badge badge-green">? Livrée</span>',
+    pending: '<span class="badge badge-orange">En attente</span>',
+    processing: '<span class="badge badge-gray">En préparation</span>',
+    shipped: '<span class="badge badge-green">Expédiée</span>',
+    delivered: '<span class="badge badge-green">Livrée</span>',
     payment_refused: '<span class="badge badge-red">Paiement refusé</span>',
     payment_failed: '<span class="badge badge-red">Paiement en erreur</span>',
-    cancelled: '<span class="badge badge-red">? Annulée</span>'
+    cancelled: '<span class="badge badge-red">Annulée</span>'
   };
   return map[status] || status;
 }
@@ -3899,19 +4125,40 @@ function saveHomepage(e) {
 /* ---------- Storage helpers ---------- */
 function load(key) { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } }
 function save(key, val) {
+  if (!serverStorageReady && SERVER_KEYS[key]) {
+    toast('Sauvegarde bloquée: stockage serveur indisponible', 'error');
+    return Promise.resolve(false);
+  }
+
+  const previousRaw = localStorage.getItem(key);
   localStorage.setItem(key, JSON.stringify(val));
   const serverKey = SERVER_KEYS[key];
-  if (serverKey) serverSync(serverKey, val);
+  if (!serverKey) return Promise.resolve(true);
+
+  return serverSync(serverKey, val).then(function () {
+    return true;
+  }).catch(function (error) {
+    if (previousRaw === null) {
+      localStorage.removeItem(key);
+    } else {
+      localStorage.setItem(key, previousRaw);
+    }
+    toast(error.message || 'Sync serveur échouée - modification locale annulée', 'error');
+    return false;
+  });
 }
 function serverSync(serverKey, val) {
-  fetch('/save.php?key=' + serverKey, {
+  return fetch('/save.php?key=' + serverKey, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-Admin-Token': SERVER_TOKEN },
     body: JSON.stringify(val),
   }).then(function (r) {
-    if (!r.ok) toast('?? Sync serveur échouée (' + r.status + ')', 'error');
-  }).catch(function () {
-    toast('?? Sync serveur impossible – vérifiez la connexion', 'error');
+    return r.json().catch(function () { return null; }).then(function (payload) {
+      if (!r.ok || (payload && payload.error)) {
+        throw new Error((payload && payload.error) || ('Sync serveur échouée (' + r.status + ')'));
+      }
+      return payload;
+    });
   });
 }
 

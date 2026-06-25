@@ -13,6 +13,46 @@ function castaneas_allowed_keys() {
     return ['products', 'categories', 'orders', 'recipes', 'homepage', 'packagings'];
 }
 
+function castaneas_storage_bool_env($value) {
+    if (is_bool($value)) {
+        return $value;
+    }
+
+    $value = strtolower(trim((string) $value));
+
+    return in_array($value, ['1', 'true', 'yes', 'on'], true);
+}
+
+function castaneas_storage_json_fallback_allowed() {
+    return castaneas_storage_bool_env(getenv('CASTANEAS_ALLOW_JSON_FALLBACK') ?: '');
+}
+
+function castaneas_storage_requires_mysql($key) {
+    return in_array($key, castaneas_allowed_keys(), true) && !castaneas_storage_json_fallback_allowed();
+}
+
+function castaneas_storage_key_status($key) {
+    $requiresMysql = castaneas_storage_requires_mysql($key);
+    $pdo = castaneas_db();
+    $jsonAvailable = castaneas_json_read_raw($key) !== null;
+
+    $status = [
+        'key' => $key,
+        'requires_mysql' => $requiresMysql,
+        'db_connected' => $pdo !== null,
+        'json_available' => $jsonAvailable,
+        'backend' => $pdo ? 'mysql' : ($jsonAvailable ? 'json' : 'missing'),
+        'error' => null,
+    ];
+
+    if ($requiresMysql && !$pdo) {
+        $status['backend'] = 'unavailable';
+        $status['error'] = 'MySQL required for key `' . $key . '` but connection is unavailable.';
+    }
+
+    return $status;
+}
+
 function castaneas_db_config() {
     static $config = null;
     if ($config !== null) {
@@ -198,13 +238,30 @@ function castaneas_json_write_raw($key, $rawJson) {
 }
 
 function castaneas_storage_backend() {
-    return castaneas_db() ? 'mysql' : 'json';
+    if (castaneas_db()) {
+        return 'mysql';
+    }
+
+    if (castaneas_storage_json_fallback_allowed()) {
+        return 'json';
+    }
+
+    return 'unavailable';
 }
 
 function castaneas_storage_read_raw($key) {
+    $status = castaneas_storage_key_status($key);
+    if ($status['error'] !== null) {
+        return null;
+    }
+
     $raw = castaneas_db_read_raw($key);
     if ($raw !== null) {
         return $raw;
+    }
+
+    if ($status['requires_mysql']) {
+        return null;
     }
 
     $raw = castaneas_json_read_raw($key);
@@ -216,8 +273,17 @@ function castaneas_storage_read_raw($key) {
 }
 
 function castaneas_storage_write_raw($key, $rawJson) {
+    $status = castaneas_storage_key_status($key);
+    if ($status['error'] !== null) {
+        return false;
+    }
+
     if (castaneas_db()) {
         return castaneas_db_write_raw($key, $rawJson);
+    }
+
+    if ($status['requires_mysql']) {
+        return false;
     }
 
     return castaneas_json_write_raw($key, $rawJson);
@@ -243,12 +309,14 @@ function castaneas_storage_status() {
 
     return [
         'backend' => castaneas_storage_backend(),
+        'json_fallback_allowed' => castaneas_storage_json_fallback_allowed(),
         'db_config_file_found' => castaneas_db_config_file_found(),
         'db_env_configured' => ($config['host'] !== '' && $config['name'] !== '' && $config['user'] !== ''),
         'pdo_mysql_loaded' => extension_loaded('pdo_mysql'),
         'db_connected' => $pdo !== null,
         'content_store_ready' => $tableExists,
         'stored_keys' => $keys,
+        'key_statuses' => array_map('castaneas_storage_key_status', castaneas_allowed_keys()),
         'json_dirs' => castaneas_json_directories(),
     ];
 }

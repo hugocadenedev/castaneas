@@ -62,6 +62,40 @@
       .replace(/-{2,}/g, '-');
   }
 
+  function sanitizeImagePath(path) {
+    if (typeof path !== 'string') return path;
+
+    var clean = path.trim();
+    if (!clean) return clean;
+
+    if (/^uploads\/[^\s]+\.pg$/i.test(clean)) {
+      return clean + 'j';
+    }
+
+    return clean;
+  }
+
+  function normalizeProductImages(product) {
+    if (!product || typeof product !== 'object') return product;
+
+    var normalized = Object.assign({}, product, {
+      image: sanitizeImagePath(product.image)
+    });
+
+    if (Array.isArray(product.images)) {
+      normalized.images = product.images.map(sanitizeImagePath);
+    }
+
+    return normalized;
+  }
+
+  function normalizeRecipe(recipe) {
+    if (!recipe || typeof recipe !== 'object') return recipe;
+    return Object.assign({}, recipe, {
+      image: sanitizeImagePath(recipe.image)
+    });
+  }
+
   function getCategorySlugAliases(category) {
     var canonical = slugify(category && (category.slug || category.name));
     if (!canonical) return [];
@@ -79,6 +113,8 @@
     var used = {};
     return (products || []).map(function (product) {
       if (!product || !product.id) return product;
+
+      product = normalizeProductImages(product);
 
       var baseSlug = slugify(product.slug)
         || [slugify(product.name), slugify(product.weight)].filter(Boolean).join('-')
@@ -231,7 +267,7 @@
       var source = (_srv.products && _srv.products.length > 0) ? _srv.products : (loadStorage(KEYS.products) || []);
       return withProductSlugs(source);
     }()),
-    recipes:  (_srv.recipes  && _srv.recipes.length  > 0) ? _srv.recipes  : (loadStorage(KEYS.recipes)  || []),
+    recipes:  ((_srv.recipes  && _srv.recipes.length  > 0) ? _srv.recipes  : (loadStorage(KEYS.recipes)  || [])).map(normalizeRecipe),
     homepage: (_srv.homepage && typeof _srv.homepage === 'object') ? _srv.homepage : (loadStorageObject(KEYS.homepage) || {}),
     packagings: normalizePackagingList((_srv.packagings && _srv.packagings.length > 0) ? _srv.packagings : (loadStorage(KEYS.packagings) || [])),
 

@@ -30,6 +30,19 @@ if (!in_array($key, $allowed, true)) {
     echo json_encode(['error' => 'Invalid key']);
     exit;
 }
+
+$storageStatus = castaneas_storage_key_status($key);
+if ($storageStatus['error'] !== null) {
+    http_response_code(503);
+    echo json_encode([
+        'error' => 'Critical storage unavailable',
+        'code' => 'storage_unavailable',
+        'key' => $key,
+        'details' => $storageStatus,
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    exit;
+}
+
 $method = $_SERVER['REQUEST_METHOD'];
 
 // ── Lecture ───────────────────────────────────────────────

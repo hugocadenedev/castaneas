@@ -12,6 +12,29 @@ function castaneas_checkout_response($status, array $payload) {
     exit;
 }
 
+function castaneas_checkout_require_storage(array $keys) {
+    $failures = [];
+
+    foreach ($keys as $key) {
+        $status = castaneas_storage_key_status($key);
+        if ($status['error'] !== null) {
+            $failures[] = [
+                'key' => $key,
+                'error' => $status['error'],
+            ];
+        }
+    }
+
+    if ($failures) {
+        castaneas_checkout_response(503, [
+            'ok' => false,
+            'error' => 'MySQL storage unavailable for checkout.',
+            'code' => 'storage_unavailable',
+            'details' => $failures,
+        ]);
+    }
+}
+
 function castaneas_checkout_json_body() {
     $raw = file_get_contents('php://input');
     if (!is_string($raw) || trim($raw) === '') {
@@ -655,6 +678,8 @@ function castaneas_checkout_payment_payload(array $order, array $options = []) {
 $action = $_GET['action'] ?? 'status';
 
 if ($action === 'status') {
+    castaneas_checkout_require_storage(['orders']);
+
     $ref = trim((string) ($_GET['ref'] ?? ''));
     if ($ref === '') {
         castaneas_checkout_response(400, ['ok' => false, 'error' => 'Référence manquante.']);
@@ -669,6 +694,8 @@ if ($action === 'status') {
 }
 
 if ($action === 'quotes') {
+    castaneas_checkout_require_storage(['products', 'packagings']);
+
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         castaneas_checkout_response(405, ['ok' => false, 'error' => 'Méthode non autorisée.']);
     }
@@ -725,6 +752,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 if ($action !== 'create') {
     castaneas_checkout_response(400, ['ok' => false, 'error' => 'Action invalide.']);
 }
+
+castaneas_checkout_require_storage(['products', 'orders']);
 
 $body = castaneas_checkout_json_body();
 if ($body === null) {
