@@ -23,7 +23,7 @@ DirectoryIndex maintenance.html index.html
     Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';"
 </IfModule>
 
-# ── 4. Forcer HTTPS + URLs propres catégorie ─────────────
+# ── 4. Forcer HTTPS + URLs propres ───────────────────────
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
@@ -37,6 +37,72 @@ DirectoryIndex maintenance.html index.html
     RewriteRule ^pates-tartiner\.html$     /categorie/pates-tartiner [R=301,L]
     RewriteRule ^huiles\.html$             /categorie/huiles [R=301,L]
     RewriteRule ^coffrets\.html$           /categorie/coffrets [R=301,L]
+    RewriteRule ^index\.html$              /accueil [R=301,L]
+    RewriteRule ^login\.html$              /connexion [R=301,L]
+    RewriteRule ^register\.html$           /inscription [R=301,L]
+    RewriteRule ^mon-compte\.html$         /mon-compte [R=301,L]
+    RewriteRule ^panier\.html$             /panier [R=301,L]
+    RewriteRule ^facturation\.html$        /facturation [R=301,L]
+    RewriteRule ^confirmation\.html$       /confirmation [R=301,L]
+    RewriteRule ^recettes\.html$           /recettes [R=301,L]
+    RewriteRule ^recette\.html$            /recette [R=301,L]
+    RewriteRule ^histoire\.html$           /histoire [R=301,L]
+    RewriteRule ^cgv\.html$                /cgv [R=301,L]
+    RewriteRule ^maintenance\.html$        /maintenance [R=301,L]
+    RewriteRule ^back-office\.html$        /back-office [R=301,L]
+
+    # Routes pages propres -> fichiers HTML réels
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^accueil/?$ index.html [L,QSA]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^connexion/?$ login.html [L,QSA]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^inscription/?$ register.html [L,QSA]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^mon-compte/?$ mon-compte.html [L,QSA]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^panier/?$ panier.html [L,QSA]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^facturation/?$ facturation.html [L,QSA]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^confirmation/?$ confirmation.html [L,QSA]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^recettes/?$ recettes.html [L,QSA]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^recette/?$ recette.html [L,QSA]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^histoire/?$ histoire.html [L,QSA]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^cgv/?$ cgv.html [L,QSA]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^maintenance/?$ maintenance.html [L,QSA]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^back-office/?$ back-office.html [L,QSA]
 
     # Route /categorie/<slug> → categorie.html?cat=<slug>
     RewriteCond %{REQUEST_FILENAME} !-f
@@ -60,7 +126,7 @@ DirectoryIndex maintenance.html index.html
     Header always set Surrogate-Control "no-store"
 </FilesMatch>
 
-<FilesMatch "^(back-office|login|register|panier|facturation|confirmation|maintenance)\.html$">
+<FilesMatch "^(back-office|login|register|mon-compte|panier|facturation|confirmation|maintenance)\.html$">
     Header always set X-Robots-Tag "noindex, nofollow, noarchive"
 </FilesMatch>
 
