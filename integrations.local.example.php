@@ -22,6 +22,13 @@ return [
         'delivery_point' => '',
         'delivery_point_home' => '',
         'delivery_point_relay' => '',
+        'delivery_points' => [
+            'chronopost:shop2shop' => '',
+            'chronopost:relay' => '',
+            'chronopost:home' => '',
+            'home' => '',
+            'relay' => '',
+        ],
     ],
     'sendcloud' => [
         'public_key' => 'VOTRE_CLE_PUBLIQUE_SENDCLOUD',

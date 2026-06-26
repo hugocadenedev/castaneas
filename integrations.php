@@ -10,6 +10,17 @@ function castaneas_bool_env($value) {
     return in_array($value, ['1', 'true', 'yes', 'on'], true);
 }
 
+function castaneas_json_env_array($value) {
+    $value = trim((string) $value);
+    if ($value === '') {
+        return [];
+    }
+
+    $decoded = json_decode($value, true);
+
+    return is_array($decoded) ? $decoded : [];
+}
+
 function castaneas_integrations_config() {
     static $config = null;
     if ($config !== null) {
@@ -38,6 +49,7 @@ function castaneas_integrations_config() {
             'delivery_point' => getenv('CASTANEAS_SUCRINE_DELIVERY_POINT') ?: '',
             'delivery_point_home' => getenv('CASTANEAS_SUCRINE_DELIVERY_POINT_HOME') ?: '',
             'delivery_point_relay' => getenv('CASTANEAS_SUCRINE_DELIVERY_POINT_RELAY') ?: '',
+            'delivery_points' => castaneas_json_env_array(getenv('CASTANEAS_SUCRINE_DELIVERY_POINTS') ?: ''),
         ],
         'sendcloud' => [
             'public_key' => getenv('CASTANEAS_SENDCLOUD_PUBLIC_KEY') ?: '',

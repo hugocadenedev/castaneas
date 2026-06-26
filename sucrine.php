@@ -101,6 +101,48 @@ function castaneas_sucrine_address_payload(array $billing) {
     ];
 }
 
+function castaneas_sucrine_shipping_lookup_keys(array $order) {
+    $shipping = is_array($order['shipping'] ?? null) ? $order['shipping'] : [];
+    $product = is_array($shipping['product'] ?? null) ? $shipping['product'] : [];
+    $carrier = is_array($shipping['carrier'] ?? null) ? $shipping['carrier'] : [];
+    $selectedFunctionalities = is_array($shipping['selectedFunctionalities'] ?? null) ? $shipping['selectedFunctionalities'] : [];
+    $type = trim((string) ($shipping['type'] ?? ''));
+    $carrierCode = trim((string) ($carrier['code'] ?? ''));
+    $productCode = trim((string) ($product['code'] ?? ''));
+    $shippingCode = trim((string) ($shipping['code'] ?? ''));
+    $lastMile = trim((string) ($selectedFunctionalities['last_mile'] ?? ''));
+
+    $keys = array_filter([
+        $shippingCode,
+        $productCode,
+        $carrierCode !== '' && $productCode !== '' ? $carrierCode . ':' . $productCode : '',
+        $carrierCode !== '' && $type !== '' ? $carrierCode . ':' . $type : '',
+        $carrierCode !== '' && $lastMile !== '' ? $carrierCode . ':' . $lastMile : '',
+        $carrierCode,
+        $type,
+        $lastMile,
+    ]);
+
+    return array_values(array_unique(array_map('strval', $keys)));
+}
+
+function castaneas_sucrine_configured_delivery_points(array $order, array $config) {
+    $mapping = is_array($config['delivery_points'] ?? null) ? $config['delivery_points'] : [];
+    if (!$mapping) {
+        return [];
+    }
+
+    $points = [];
+    foreach (castaneas_sucrine_shipping_lookup_keys($order) as $key) {
+        $mapped = $mapping[$key] ?? null;
+        if (is_string($mapped) && trim($mapped) !== '') {
+            $points[] = trim($mapped);
+        }
+    }
+
+    return array_values(array_unique($points));
+}
+
 function castaneas_sucrine_delivery_address(array $order, array $billing) {
     $shipping = is_array($order['shipping'] ?? null) ? $order['shipping'] : [];
     $servicePoint = is_array($shipping['servicePoint'] ?? null) ? $shipping['servicePoint'] : [];
@@ -177,7 +219,7 @@ function castaneas_sucrine_delivery_point_candidates(array $order, array $config
     $shipping = is_array($order['shipping'] ?? null) ? $order['shipping'] : [];
     $servicePoint = is_array($shipping['servicePoint'] ?? null) ? $shipping['servicePoint'] : [];
     $type = trim((string) ($shipping['type'] ?? ''));
-    $candidates = [];
+    $candidates = castaneas_sucrine_configured_delivery_points($order, $config);
 
     if (!empty($config['delivery_point'])) {
         $candidates[] = $config['delivery_point'];
@@ -363,10 +405,12 @@ function castaneas_sucrine_send_order(array $order) {
     $config = castaneas_sucrine_config();
     $deliveryPointCandidates = castaneas_sucrine_delivery_point_candidates($order, $config);
     if (!$deliveryPointCandidates) {
+        $lookupKeys = castaneas_sucrine_shipping_lookup_keys($order);
         return [
             'ok' => false,
             'code' => 'sucrine_missing_delivery_point',
             'message' => 'Mode de distribution Sucrine manquant. Configurez sucrine.delivery_point ou les variantes home/relay.',
+            'lookupKeys' => $lookupKeys,
             'payload' => castaneas_sucrine_payload($order),
         ];
     }
@@ -432,6 +476,7 @@ function castaneas_sucrine_send_order(array $order) {
         'code' => 'sucrine_http_error',
         'status' => $last['status'] ?? 500,
         'message' => ($last['message'] ?? 'Erreur API Sucrine.') . ' | deliveryPoint essayé: ' . implode(', ', $deliveryPointCandidates),
+        'lookupKeys' => castaneas_sucrine_shipping_lookup_keys($order),
         'raw' => $attemptErrors,
     ];
 }

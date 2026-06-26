@@ -98,7 +98,7 @@ Envoyer automatiquement chaque commande client vers le CRM Sucrine au moment de 
 
 > ⚠️ Il n'existe **pas** d'endpoint pour lister les produits du catalogue. Les `catalogueItemPriceId` doivent être copiés manuellement depuis le dashboard Sucrine.
 
-> ⚠️ La création de commande requiert aussi un `deliveryPoint` Sucrine valide. Il faut donc renseigner dans la config serveur soit `sucrine.delivery_point`, soit un mapping `sucrine.delivery_point_home` / `sucrine.delivery_point_relay`.
+> ⚠️ La création de commande requiert aussi un `deliveryPoint` Sucrine valide. Il faut donc renseigner dans la config serveur soit `sucrine.delivery_point`, soit un mapping `sucrine.delivery_point_home` / `sucrine.delivery_point_relay`, soit de préférence un mapping exact `sucrine.delivery_points` par code de livraison Sendcloud.
 
 ### Mapping produits
 Chaque produit Castaneas a maintenant un champ `sucrineId` dans le back-office (section **Intégrations** du formulaire produit). Ce champ correspond au `catalogueItemPriceId` dans Sucrine.
@@ -108,6 +108,35 @@ Chaque produit Castaneas a maintenant un champ `sucrineId` dans le back-office (
 2. Pour chaque produit, copier son `catalogueItemPriceId`
 3. Coller cet ID dans le champ **Référence Sucrine** du produit dans le back-office Castaneas
 4. Récupérer l'identifiant du mode de distribution Sucrine utilisé pour les commandes web, puis le renseigner dans `sucrine.delivery_point` ou dans les variantes `home` / `relay`
+5. Si plusieurs modes Sucrine existent selon le transporteur ou le type de livraison, remplir `sucrine.delivery_points` avec un mapping exact par code Sendcloud
+
+Exemple recommande pour les modes de livraison :
+
+```php
+'sucrine' => [
+  'api_key' => 'VOTRE_CLE_API_SUCRINE',
+  'base_url' => 'https://app.sucrine.club/api',
+  'order_source' => 'castaneas',
+  'delivery_points' => [
+    'chronopost:shop2shop' => 'ID_SUCRINE_RELAIS_CHRONO',
+    'chronopost:relay' => 'ID_SUCRINE_RELAIS_CHRONO',
+    'chronopost:home' => 'ID_SUCRINE_DOMICILE_CHRONO',
+    'home' => 'ID_SUCRINE_DOMICILE_PAR_DEFAUT',
+    'relay' => 'ID_SUCRINE_RELAIS_PAR_DEFAUT',
+  ],
+],
+```
+
+Clés testées automatiquement par le code, dans l'ordre :
+
+- `shipping.code`
+- `shipping.product.code`
+- `carrier.code:product.code`
+- `carrier.code:type`
+- `carrier.code:last_mile`
+- `carrier.code`
+- `type`
+- `last_mile`
 
 ### Proxy PHP (à créer sur Hostinger)
 La clé API ne doit **jamais** être dans le JS client. Il faut un proxy côté serveur.
