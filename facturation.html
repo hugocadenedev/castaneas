@@ -116,8 +116,6 @@
   .confirm-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 16px; background: var(--brown-deep); color: #fff; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; font-family: var(--serif); cursor: pointer; transition: background .15s; }
   .confirm-btn:hover { background: var(--brown-chest); }
   .confirm-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
-  .confirm-btn--test { background: #f3eadf; color: var(--brown-deep); border: 1.5px solid #dcc6aa; }
-  .confirm-btn--test:hover { background: #ead7bf; }
   .secure-note { display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 11.5px; color: var(--ink-soft); margin-top: 10px; }
   .secure-note svg { width: 13px; height: 13px; flex-shrink: 0; }
 
@@ -366,10 +364,6 @@
             Confirmer et payer
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"/></svg>
           </button>
-          <button class="confirm-btn confirm-btn--test" id="confirm-test-btn" type="button">
-            Commande test
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"/></svg>
-          </button>
         </div>
         <div class="secure-note">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4" stroke-linecap="round"/></svg>
@@ -553,10 +547,12 @@
     document.getElementById('os-subtotal').textContent = fmt(Number(checkout.subtotal || subtotalFromItems(items)));
 
     const promoRow = document.getElementById('os-promo-row');
-    if (checkout.promoCode && checkout.discount > 0) {
+    if (checkout.promoCode && (checkout.discount > 0 || (checkout.promo && checkout.promo.type === 'free_shipping'))) {
       promoRow.style.display = 'flex';
       document.getElementById('os-promo-label').textContent = 'Code ' + checkout.promoCode;
-      document.getElementById('os-promo-val').textContent   = '− ' + fmt(checkout.discount);
+      document.getElementById('os-promo-val').textContent   = checkout.promo && checkout.promo.type === 'free_shipping'
+        ? 'Livraison offerte'
+        : '− ' + fmt(checkout.discount);
     } else {
       promoRow.style.display = 'none';
     }
@@ -606,13 +602,16 @@
     const current = getCheckoutState();
     const subtotal = subtotalFromItems(items);
     const discount = Number(current.discount || 0);
+    const promo = current.promo || null;
     const option = selectedShippingOption();
     const shippingPrice = option ? Number(option.price || 0) : null;
+    const effectiveShippingPrice = option && promo && promo.type === 'free_shipping' ? 0 : shippingPrice;
     const next = {
       ...current,
       subtotal,
-      shipping: shippingPrice,
-      total: subtotal - discount + (shippingPrice || 0),
+      shipping: effectiveShippingPrice,
+      shippingBasePrice: shippingPrice,
+      total: subtotal - discount + (effectiveShippingPrice || 0),
     };
 
     if (option) {
@@ -621,7 +620,8 @@
         code: option.code,
         name: option.name,
         carrier: option.carrier,
-        price: Number(option.price || 0),
+        price: effectiveShippingPrice,
+        basePrice: shippingPrice,
       };
     } else {
       delete next.shippingMethod;
@@ -870,13 +870,11 @@
   }
 
   function setConfirmLoading(isLoading) {
-    ['confirm-btn', 'confirm-test-btn'].forEach(id => {
-      const btn = document.getElementById(id);
-      if (!btn) return;
-      btn.disabled = isLoading;
-      btn.style.opacity = isLoading ? '.7' : '';
-      btn.style.pointerEvents = isLoading ? 'none' : '';
-    });
+    const btn = document.getElementById('confirm-btn');
+    if (!btn) return;
+    btn.disabled = isLoading;
+    btn.style.opacity = isLoading ? '.7' : '';
+    btn.style.pointerEvents = isLoading ? 'none' : '';
   }
 
   function submitPaymentForm(payment) {
@@ -901,9 +899,7 @@
     form.submit();
   }
 
-  async function handleCheckoutSubmission(options = {}) {
-    const bypassPayment = !!options.bypassPayment;
-
+  async function handleCheckoutSubmission() {
     clearErrors();
     let valid = true;
 
@@ -961,6 +957,12 @@
 
     setConfirmLoading(true);
 
+    const checkout = getCheckoutState();
+    const promo = checkout && checkout.promo ? checkout.promo : null;
+    const effectiveShippingPrice = checkout && checkout.shipping !== null && checkout.shipping !== undefined
+      ? Number(checkout.shipping || 0)
+      : Number(shippingOption.price || 0);
+
     try {
       const response = await fetch('/checkout.php?action=create', {
         method: 'POST',
@@ -975,10 +977,16 @@
             carrier: shippingOption.carrier,
             product: shippingOption.product,
             selectedFunctionalities: shippingOption.selectedFunctionalities,
-            price: Number(shippingOption.price || 0),
+            price: effectiveShippingPrice,
             servicePoint: relayPoint,
           } : null,
-          bypassPayment,
+          promo: promo ? {
+            code: promo.code,
+            type: promo.type,
+            value: promo.value,
+            label: promo.label,
+            discount: Number(promo.discount || 0),
+          } : null,
           payment: payment.value,
         }),
       });
@@ -994,17 +1002,6 @@
         sessionStorage.setItem('castaneas_order_ref_v1', result.orderRef || '');
       } catch (_) {}
 
-      if (bypassPayment) {
-        if (!result.orderRef) {
-          setError('err-payment', 'Commande test créée, mais référence introuvable pour finaliser le paiement simulé.');
-          setConfirmLoading(false);
-          return;
-        }
-
-        window.location.href = '/payment-return.php?status=paid&simulate=1&ref=' + encodeURIComponent(result.orderRef);
-        return;
-      }
-
       if (result.payment && result.payment.mode === 'redirect' && result.payment.url) {
         window.location.href = result.payment.url;
         return;
@@ -1019,10 +1016,6 @@
 
   document.getElementById('confirm-btn').addEventListener('click', function () {
     handleCheckoutSubmission();
-  });
-
-  document.getElementById('confirm-test-btn').addEventListener('click', function () {
-    handleCheckoutSubmission({ bypassPayment: true });
   });
 
   // ── INIT ─────────────────────────────────────────────────

@@ -113,6 +113,13 @@ function castaneas_auth_current_user() {
     return is_array($user) ? $user : null;
 }
 
+function castaneas_auth_is_admin_request() {
+    $token = trim((string) ($_SERVER['HTTP_X_ADMIN_TOKEN'] ?? ''));
+    $expected = trim((string) castaneas_admin_token());
+
+    return $token !== '' && $expected !== '' && hash_equals($expected, $token);
+}
+
 function castaneas_auth_require_user(PDO $pdo) {
     $sessionUser = castaneas_auth_current_user();
     if (!$sessionUser || empty($sessionUser['email'])) {
@@ -253,6 +260,54 @@ function castaneas_auth_latest_addresses(array $orders) {
     ];
 }
 
+function castaneas_auth_admin_customers(PDO $pdo) {
+    $ordersByEmail = [];
+    foreach (castaneas_orders_all() as $order) {
+        if (!is_array($order)) {
+            continue;
+        }
+        $email = castaneas_auth_normalize_email($order['email'] ?? ($order['billing']['email'] ?? ''));
+        if ($email === '') {
+            continue;
+        }
+        if (!isset($ordersByEmail[$email])) {
+            $ordersByEmail[$email] = [];
+        }
+        $ordersByEmail[$email][] = $order;
+    }
+
+    $rows = $pdo->query('SELECT id, email, first_name, last_name, created_at, updated_at, last_login_at FROM customer_accounts ORDER BY created_at DESC')->fetchAll();
+    $customers = [];
+
+    foreach ($rows as $row) {
+        $email = castaneas_auth_normalize_email($row['email'] ?? '');
+        $orders = array_map('castaneas_auth_order_summary', $ordersByEmail[$email] ?? []);
+        usort($orders, static function ($left, $right) {
+            return strcmp((string) ($right['createdAt'] ?? ''), (string) ($left['createdAt'] ?? ''));
+        });
+        $lifetimeValue = array_reduce($orders, static function ($sum, $order) {
+            return $sum + (float) ($order['total'] ?? 0);
+        }, 0.0);
+
+        $customers[] = [
+            'id' => (int) ($row['id'] ?? 0),
+            'email' => (string) ($row['email'] ?? ''),
+            'prenom' => (string) ($row['first_name'] ?? ''),
+            'nom' => (string) ($row['last_name'] ?? ''),
+            'createdAt' => (string) ($row['created_at'] ?? ''),
+            'updatedAt' => (string) ($row['updated_at'] ?? ''),
+            'lastLoginAt' => (string) ($row['last_login_at'] ?? ''),
+            'ordersCount' => count($orders),
+            'lifetimeValue' => round($lifetimeValue, 2),
+            'latestOrder' => $orders[0] ?? null,
+            'addresses' => castaneas_auth_latest_addresses($orders),
+            'orders' => array_slice($orders, 0, 10),
+        ];
+    }
+
+    return $customers;
+}
+
 $action = strtolower(trim((string) ($_GET['action'] ?? $_POST['action'] ?? 'session')));
 $body = castaneas_auth_body();
 
@@ -282,6 +337,31 @@ if ($action === 'logout') {
 }
 
 $pdo = castaneas_auth_db();
+
+if ($action === 'admin_customers') {
+    if (!castaneas_auth_is_admin_request()) {
+        castaneas_auth_response(401, [
+            'ok' => false,
+            'code' => 'unauthorized_admin',
+            'message' => 'Acces admin requis.',
+        ]);
+    }
+
+    $customers = castaneas_auth_admin_customers($pdo);
+    castaneas_auth_response(200, [
+        'ok' => true,
+        'customers' => $customers,
+        'stats' => [
+            'customersCount' => count($customers),
+            'activeCustomersCount' => count(array_filter($customers, static function ($customer) {
+                return (int) ($customer['ordersCount'] ?? 0) > 0;
+            })),
+            'lifetimeValue' => round(array_reduce($customers, static function ($sum, $customer) {
+                return $sum + (float) ($customer['lifetimeValue'] ?? 0);
+            }, 0.0), 2),
+        ],
+    ]);
+}
 
 if ($action === 'account') {
     $user = castaneas_auth_require_user($pdo);

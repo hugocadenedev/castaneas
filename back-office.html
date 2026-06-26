@@ -725,6 +725,16 @@ tbody tr:last-child td { border-bottom: none; }
         Commandes
         <span id="orders-badge" style="margin-left:auto;font-size:11px;font-weight:800;background:var(--corail-light);color:var(--corail);padding:2px 8px;border-radius:999px;"></span>
       </div>
+      <div class="nav-item" data-panel="customers" onclick="switchPanel(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Clients
+        <span id="customers-badge" style="margin-left:auto;font-size:11px;font-weight:800;background:var(--cream-soft);padding:2px 8px;border-radius:999px;"></span>
+      </div>
+      <div class="nav-item" data-panel="promo-codes" onclick="switchPanel(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.59 13.41 12 22l-8.59-8.59A2 2 0 0 1 3 12V5a2 2 0 0 1 2-2h7a2 2 0 0 1 1.41.59L22 12a2 2 0 0 1 0 2.82Z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>
+        Codes promo
+        <span id="promos-badge" style="margin-left:auto;font-size:11px;font-weight:800;background:var(--cream-soft);padding:2px 8px;border-radius:999px;"></span>
+      </div>
       <p class="sidebar-section">Site</p>
       <div class="nav-item" data-panel="homepage" onclick="switchPanel(this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5Z"/><path d="M9 21V12h6v9"/></svg>
@@ -876,6 +886,136 @@ tbody tr:last-child td { border-bottom: none; }
 
       <div class="panel" id="panel-order-detail">
         <div id="order-detail-content"></div>
+      </div>
+
+      <div class="panel" id="panel-customers">
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-icon brown" style="float:right">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            </div>
+            <div class="stat-label">Clients inscrits</div>
+            <div class="stat-value" id="stat-customers">0</div>
+            <div class="stat-delta" id="stat-customers-sub">Comptes créés</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green" style="float:right">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 2 4-5"/></svg>
+            </div>
+            <div class="stat-label">Clients actifs</div>
+            <div class="stat-value" id="stat-customers-active">0</div>
+            <div class="stat-delta" id="stat-customers-active-sub">Avec au moins une commande</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon orange" style="float:right">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <div class="stat-label">Valeur cumulée</div>
+            <div class="stat-value" id="stat-customers-revenue">0€</div>
+            <div class="stat-delta" id="stat-customers-revenue-sub">Toutes commandes confondues</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon red" style="float:right">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
+            </div>
+            <div class="stat-label">Dernière connexion</div>
+            <div class="stat-value" id="stat-customers-login" style="font-size:20px;line-height:1.2;">—</div>
+            <div class="stat-delta" id="stat-customers-login-sub">Client le plus récent</div>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <h2 class="section-title">Clients</h2>
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Rechercher un client…" oninput="filterCustomers(this.value)">
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Client</th><th>Commandes</th><th>Valeur</th><th>Dernière commande</th><th>Dernière connexion</th><th>Actions</th></tr></thead>
+            <tbody id="customers-tbody"></tbody>
+          </table>
+        </div>
+        <div id="customer-detail-wrap" style="margin-top:20px;"></div>
+      </div>
+
+      <div class="panel" id="panel-promo-codes">
+        <div class="section-header">
+          <h2 class="section-title">Codes promo</h2>
+          <button class="btn btn-primary" onclick="resetPromoForm()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nouveau code promo
+          </button>
+        </div>
+
+        <div class="table-wrap" style="padding:24px 28px;margin-bottom:20px;">
+          <form class="form-grid" id="promo-form" onsubmit="savePromoCode(event)">
+            <input type="hidden" id="promo-id">
+            <div class="form-field">
+              <label>Code promo *</label>
+              <input type="text" id="promo-code" placeholder="BIENVENUE10" maxlength="24" required oninput="renderPromoPreview()">
+            </div>
+            <div class="form-field">
+              <label>Libellé interne *</label>
+              <input type="text" id="promo-label" placeholder="Bienvenue 10%" required oninput="renderPromoPreview()">
+            </div>
+            <div class="form-field">
+              <label>Type d'avantage *</label>
+              <select id="promo-type" onchange="syncPromoValueState()">
+                <option value="percent">Réduction en %</option>
+                <option value="fixed">Réduction fixe (€)</option>
+                <option value="free_shipping">Livraison offerte</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Valeur</label>
+              <input type="number" id="promo-value" min="0" step="0.01" placeholder="10" oninput="renderPromoPreview()">
+            </div>
+            <div class="form-field">
+              <label>Sous-total minimum (€)</label>
+              <input type="number" id="promo-min-subtotal" min="0" step="0.01" placeholder="40" oninput="renderPromoPreview()">
+            </div>
+            <div class="form-field">
+              <label>Limite d'utilisation</label>
+              <input type="number" id="promo-usage-limit" min="0" step="1" placeholder="100">
+            </div>
+            <div class="form-field">
+              <label>Début de validité</label>
+              <input type="datetime-local" id="promo-starts-at">
+            </div>
+            <div class="form-field">
+              <label>Fin de validité</label>
+              <input type="datetime-local" id="promo-ends-at">
+            </div>
+            <div class="form-field span2">
+              <label>Description client</label>
+              <textarea id="promo-description" rows="3" placeholder="Ex: offre de bienvenue valable sur la première commande."></textarea>
+            </div>
+            <div class="form-field">
+              <label>Statut</label>
+              <select id="promo-active">
+                <option value="1">Actif</option>
+                <option value="0">Inactif</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Résumé</label>
+              <div id="promo-preview" style="background:var(--cream-soft);border:1.5px solid var(--line);border-radius:var(--r);padding:12px 14px;min-height:44px;font-size:13px;color:var(--ink-soft);"></div>
+            </div>
+            <div class="form-field span2" style="display:flex;flex-direction:row;justify-content:flex-end;gap:10px;align-items:flex-end;">
+              <button type="button" class="btn btn-secondary" onclick="resetPromoForm()">Réinitialiser</button>
+              <button type="submit" class="btn btn-primary">Enregistrer le code promo</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Code</th><th>Avantage</th><th>Conditions</th><th>Période</th><th>Usage</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody id="promo-codes-tbody"></tbody>
+          </table>
+        </div>
       </div>
 
       <!-- ========== RECIPES ========== -->
@@ -1716,6 +1856,7 @@ const KEYS = {
   recipes: 'castaneas_admin_recipes',
   homepage: 'castaneas_homepage_v1',
   packagings: 'castaneas_packagings_v1',
+  promoCodes: 'castaneas_promo_codes_v1',
 };
 
 /* ---------- Server sync ---------- */
@@ -1727,6 +1868,7 @@ const SERVER_KEYS = {
   [KEYS.recipes]:    'recipes',
   [KEYS.homepage]:   'homepage',
   [KEYS.packagings]: 'packagings',
+  [KEYS.promoCodes]: 'promo_codes',
 };
 
 /* ---------- Default data ---------- */
@@ -1735,13 +1877,14 @@ const SERVER_KEYS = {
 
 /* ---------- State ---------- */
 const DEFAULT_IMAGE_CATALOG = [];
-let state = { products: [], categories: [], orders: [], imageCatalogMain: [], imageCatalogExtra: [], recipes: [], packagings: [] };
+let state = { products: [], categories: [], orders: [], imageCatalogMain: [], imageCatalogExtra: [], recipes: [], packagings: [], promoCodes: [], customers: [], customerStats: {} };
 let editingProduct = null;
 let editingCat = null;
 let editingRecipe = null;
 let selectedExtraImages = [];
 let recipeSteps = [];
 let selectedOrderId = null;
+let selectedCustomerId = null;
 let serverStorageReady = false;
 
 function getDefaultPromoMessage() {
@@ -1842,6 +1985,7 @@ async function init() {
   state.imageCatalogExtra = load(KEYS.imagesExtra) || [...DEFAULT_IMAGE_CATALOG];
   state.recipes           = load(KEYS.recipes)    || [];
   state.packagings        = load(KEYS.packagings) || [];
+  state.promoCodes        = load(KEYS.promoCodes) || [];
 
   const creds = load(KEYS.admin);
   if (!creds) {
@@ -1862,6 +2006,7 @@ async function serverLoadAll() {
     { s: 'recipes',    l: KEYS.recipes },
     { s: 'homepage',   l: KEYS.homepage },
     { s: 'packagings', l: KEYS.packagings },
+    { s: 'promo_codes', l: KEYS.promoCodes },
     { s: 'orders',     l: KEYS.orders },
   ];
 
@@ -1918,6 +2063,7 @@ function showApp() {
   document.getElementById('admin-app').style.display = 'flex';
   renderSettings();
   renderAll();
+  loadCustomersFromServer();
 }
 
 function logout() {
@@ -1931,6 +2077,8 @@ const panelMeta = {
   products:   { title: 'Produits',               actions: '<button class="btn btn-primary" onclick="openProductModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nouveau produit</button>' },
   categories: { title: 'Catégories',             actions: '<button class="btn btn-primary" onclick="openCatModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nouvelle catégorie</button>' },
   orders:     { title: 'Commandes',              actions: '' },
+  customers:  { title: 'Clients',                actions: '' },
+  'promo-codes': { title: 'Codes promo',         actions: '<button class="btn btn-primary" onclick="resetPromoForm()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nouveau code promo</button>' },
   'order-detail': { title: 'Détail commande',    actions: '' },
   recipes:    { title: 'Recettes',               actions: '<button class="btn btn-primary" onclick="openRecipeModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nouvelle recette</button>' },
   homepage:   { title: 'Site',                   actions: '' },
@@ -1947,6 +2095,8 @@ function runPanelRenderHooks(panel) {
   if (panel === 'recipes') renderRecipes();
   if (panel === 'homepage') renderHomepage();
   if (panel === 'settings') renderSettings();
+  if (panel === 'customers') renderCustomers();
+  if (panel === 'promo-codes') renderPromoCodes();
 }
 
 function activatePanel(panel, options = {}) {
@@ -1977,6 +2127,8 @@ function renderAll() {
   renderProducts();
   renderCategories();
   renderOrders();
+  renderCustomers();
+  renderPromoCodes();
   renderRecipes();
   updateBadges();
 }
@@ -1989,6 +2141,330 @@ function updateBadges() {
   ob.textContent = pending || '';
   ob.style.display = pending ? '' : 'none';
   document.getElementById('recipes-badge').textContent = state.recipes.length;
+  document.getElementById('customers-badge').textContent = state.customers.length || '';
+  document.getElementById('promos-badge').textContent = state.promoCodes.length || '';
+}
+
+function formatDateTime(value) {
+  if (!value) return '—';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+function formatMoneyValue(value) {
+  return Number(value || 0).toFixed(2).replace('.', ',') + '€';
+}
+
+async function loadCustomersFromServer() {
+  try {
+    const response = await fetch('/auth.php?action=admin_customers', {
+      headers: { 'X-Admin-Token': SERVER_TOKEN },
+    });
+    const payload = await response.json().catch(() => null);
+    if (!response.ok || !payload || !payload.ok) {
+      throw new Error((payload && payload.message) || 'Impossible de charger les clients.');
+    }
+    state.customers = Array.isArray(payload.customers) ? payload.customers : [];
+    state.customerStats = payload.stats || {};
+    if (!selectedCustomerId && state.customers[0]) selectedCustomerId = state.customers[0].id;
+    renderCustomers();
+    updateBadges();
+  } catch (error) {
+    state.customers = [];
+    state.customerStats = {};
+    renderCustomers();
+    toast(error.message || 'Impossible de charger les clients', 'error');
+  }
+}
+
+function renderCustomerDetail() {
+  const wrap = document.getElementById('customer-detail-wrap');
+  if (!wrap) return;
+  const customer = state.customers.find(c => String(c.id) === String(selectedCustomerId));
+  if (!customer) {
+    wrap.innerHTML = '';
+    return;
+  }
+
+  const billing = customer.addresses && customer.addresses.billing ? customer.addresses.billing : null;
+  const shipping = customer.addresses && customer.addresses.shipping ? customer.addresses.shipping : null;
+  const billingLines = billing ? [
+    [billing.prenom, billing.nom].filter(Boolean).join(' '),
+    billing.adresse,
+    billing.complement,
+    [billing.cp, billing.ville].filter(Boolean).join(' '),
+    billing.pays,
+  ].filter(Boolean) : [];
+  const shippingLines = shipping ? [
+    shipping.name,
+    shipping.address,
+    shipping.addressExtra,
+    [shipping.zipcode, shipping.city].filter(Boolean).join(' '),
+    shipping.country,
+    shipping.carrier ? 'Transporteur : ' + shipping.carrier : '',
+  ].filter(Boolean) : [];
+
+  wrap.innerHTML = `
+    <div class="table-wrap" style="padding:24px 28px;">
+      <div style="display:flex;justify-content:space-between;gap:24px;align-items:flex-start;flex-wrap:wrap;margin-bottom:20px;">
+        <div>
+          <h3 style="font-family:var(--serif);font-size:22px;margin-bottom:6px;">${escapeHtml([customer.prenom, customer.nom].filter(Boolean).join(' ') || 'Client')}</h3>
+          <div style="color:var(--muted);font-size:13px;">${escapeHtml(customer.email || '—')}</div>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <span class="badge badge-green">${customer.ordersCount || 0} commande${customer.ordersCount > 1 ? 's' : ''}</span>
+          <span class="badge badge-gray">${formatMoneyValue(customer.lifetimeValue || 0)}</span>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Compte créé le</label>
+          <div style="background:var(--cream-soft);border:1.5px solid var(--line);border-radius:var(--r);padding:12px 14px;">${escapeHtml(formatDateTime(customer.createdAt))}</div>
+        </div>
+        <div class="form-field">
+          <label>Dernière connexion</label>
+          <div style="background:var(--cream-soft);border:1.5px solid var(--line);border-radius:var(--r);padding:12px 14px;">${escapeHtml(formatDateTime(customer.lastLoginAt))}</div>
+        </div>
+        <div class="form-field">
+          <label>Adresse de facturation</label>
+          <div style="background:var(--cream-soft);border:1.5px solid var(--line);border-radius:var(--r);padding:12px 14px;line-height:1.55;">${billingLines.length ? escapeHtml(billingLines.join('\n')).replace(/\n/g, '<br>') : '—'}</div>
+        </div>
+        <div class="form-field">
+          <label>Adresse de livraison</label>
+          <div style="background:var(--cream-soft);border:1.5px solid var(--line);border-radius:var(--r);padding:12px 14px;line-height:1.55;">${shippingLines.length ? escapeHtml(shippingLines.join('\n')).replace(/\n/g, '<br>') : '—'}</div>
+        </div>
+      </div>
+      <div style="margin-top:22px;">
+        <h4 style="font-family:var(--serif);font-size:18px;margin-bottom:12px;">Dernières commandes</h4>
+        <div class="table-wrap" style="box-shadow:none;">
+          <table>
+            <thead><tr><th>Référence</th><th>Date</th><th>Total</th><th>Statut</th></tr></thead>
+            <tbody>
+              ${customer.orders && customer.orders.length ? customer.orders.map(order => `<tr><td style="font-family:monospace;font-weight:700;">${escapeHtml(order.id)}</td><td>${escapeHtml(formatDateTime(order.createdAt))}</td><td class="td-price">${formatMoneyValue(order.total)}</td><td>${statusBadge(order.status)}</td></tr>`).join('') : '<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--muted);">Aucune commande pour ce client.</td></tr>'}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderCustomers(filter = '') {
+  const tbody = document.getElementById('customers-tbody');
+  if (!tbody) return;
+  let list = Array.isArray(state.customers) ? state.customers.slice() : [];
+  if (filter) {
+    const needle = filter.toLowerCase();
+    list = list.filter(customer => [customer.prenom, customer.nom, customer.email].join(' ').toLowerCase().includes(needle));
+  }
+
+  document.getElementById('stat-customers').textContent = state.customerStats.customersCount || state.customers.length || 0;
+  document.getElementById('stat-customers-active').textContent = state.customerStats.activeCustomersCount || state.customers.filter(customer => Number(customer.ordersCount || 0) > 0).length;
+  document.getElementById('stat-customers-revenue').textContent = formatMoneyValue(state.customerStats.lifetimeValue || state.customers.reduce((sum, customer) => sum + Number(customer.lifetimeValue || 0), 0));
+  const latestLoginCustomer = state.customers.filter(customer => customer.lastLoginAt).sort((left, right) => String(right.lastLoginAt).localeCompare(String(left.lastLoginAt)))[0] || null;
+  document.getElementById('stat-customers-login').textContent = latestLoginCustomer ? [latestLoginCustomer.prenom, latestLoginCustomer.nom].filter(Boolean).join(' ') : '—';
+  document.getElementById('stat-customers-login-sub').textContent = latestLoginCustomer ? formatDateTime(latestLoginCustomer.lastLoginAt) : 'Aucune connexion récente';
+
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><h3>Aucun client</h3><p>Les comptes clients inscrits apparaitront ici.</p></div></td></tr>';
+    document.getElementById('customer-detail-wrap').innerHTML = '';
+    return;
+  }
+
+  tbody.innerHTML = list.map(customer => `
+    <tr>
+      <td><div style="font-weight:700;">${escapeHtml([customer.prenom, customer.nom].filter(Boolean).join(' ') || 'Client')}</div><div class="td-sub">${escapeHtml(customer.email || '—')}</div></td>
+      <td>${customer.ordersCount || 0}</td>
+      <td class="td-price">${formatMoneyValue(customer.lifetimeValue || 0)}</td>
+      <td>${customer.latestOrder ? `<div style="font-weight:700;font-family:monospace;">${escapeHtml(customer.latestOrder.id)}</div><div class="td-sub">${escapeHtml(formatDateTime(customer.latestOrder.createdAt))}</div>` : '<span class="badge badge-gray">Aucune</span>'}</td>
+      <td>${escapeHtml(formatDateTime(customer.lastLoginAt))}</td>
+      <td><div class="td-actions"><button class="btn-icon" onclick="selectCustomer('${customer.id}')" title="Voir le détail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td>
+    </tr>`).join('');
+
+  if (!list.some(customer => String(customer.id) === String(selectedCustomerId))) {
+    selectedCustomerId = list[0].id;
+  }
+  renderCustomerDetail();
+}
+
+function filterCustomers(value) { renderCustomers(value); }
+function selectCustomer(id) { selectedCustomerId = id; renderCustomerDetail(); }
+
+function normalizePromoCodeRecord(record) {
+  return {
+    id: record && record.id ? record.id : 'promo-' + Math.random().toString(36).slice(2, 10),
+    code: String(record && record.code || '').trim().toUpperCase(),
+    label: String(record && record.label || '').trim(),
+    type: String(record && record.type || 'percent'),
+    value: Number(record && record.value || 0),
+    minSubtotal: Number(record && record.minSubtotal || 0),
+    usageLimit: Number(record && record.usageLimit || 0),
+    usedCount: Number(record && record.usedCount || 0),
+    usedByOrders: Array.isArray(record && record.usedByOrders) ? record.usedByOrders : [],
+    startsAt: String(record && record.startsAt || ''),
+    endsAt: String(record && record.endsAt || ''),
+    description: String(record && record.description || '').trim(),
+    active: record && record.active !== undefined ? !!record.active : true,
+    createdAt: String(record && record.createdAt || new Date().toISOString()),
+    updatedAt: String(record && record.updatedAt || new Date().toISOString()),
+  };
+}
+
+function promoBenefitLabel(promo) {
+  if (promo.type === 'fixed') return '− ' + formatMoneyValue(promo.value);
+  if (promo.type === 'free_shipping') return 'Livraison offerte';
+  return '− ' + Number(promo.value || 0).toFixed(0) + '%';
+}
+
+function promoConditionsLabel(promo) {
+  const parts = [];
+  if (Number(promo.minSubtotal || 0) > 0) parts.push('dès ' + formatMoneyValue(promo.minSubtotal));
+  if (Number(promo.usageLimit || 0) > 0) parts.push('limité à ' + promo.usageLimit + ' usages');
+  return parts.length ? parts.join(' · ') : 'Aucune condition';
+}
+
+function promoPeriodLabel(promo) {
+  if (!promo.startsAt && !promo.endsAt) return 'Toujours actif';
+  return [promo.startsAt ? 'du ' + formatDateTime(promo.startsAt) : '', promo.endsAt ? 'au ' + formatDateTime(promo.endsAt) : ''].filter(Boolean).join(' ');
+}
+
+function promoStatusBadge(promo) {
+  const now = Date.now();
+  const startsAt = promo.startsAt ? new Date(promo.startsAt).getTime() : null;
+  const endsAt = promo.endsAt ? new Date(promo.endsAt).getTime() : null;
+  const limitReached = Number(promo.usageLimit || 0) > 0 && Number(promo.usedCount || 0) >= Number(promo.usageLimit || 0);
+  if (!promo.active) return '<span class="badge badge-gray">Inactif</span>';
+  if (limitReached) return '<span class="badge badge-red">Limite atteinte</span>';
+  if (startsAt && startsAt > now) return '<span class="badge badge-orange">Planifié</span>';
+  if (endsAt && endsAt < now) return '<span class="badge badge-red">Expiré</span>';
+  return '<span class="badge badge-green">Actif</span>';
+}
+
+function syncPromoValueState() {
+  const type = document.getElementById('promo-type').value;
+  const valueInput = document.getElementById('promo-value');
+  valueInput.disabled = type === 'free_shipping';
+  if (type === 'free_shipping') valueInput.value = '';
+  renderPromoPreview();
+}
+
+function renderPromoPreview() {
+  const type = document.getElementById('promo-type').value;
+  const code = document.getElementById('promo-code').value.trim().toUpperCase();
+  const label = document.getElementById('promo-label').value.trim();
+  const value = Number(document.getElementById('promo-value').value || 0);
+  const minSubtotal = Number(document.getElementById('promo-min-subtotal').value || 0);
+  const preview = document.getElementById('promo-preview');
+  const pseudoPromo = normalizePromoCodeRecord({ code, label, type, value, minSubtotal });
+  preview.textContent = (!code && !label)
+    ? 'Le résumé du code promo apparaitra ici.'
+    : [code || 'CODE', label || 'Sans libellé', promoBenefitLabel(pseudoPromo), promoConditionsLabel(pseudoPromo)].join(' · ');
+}
+
+function resetPromoForm() {
+  document.getElementById('promo-form').reset();
+  document.getElementById('promo-id').value = '';
+  document.getElementById('promo-active').value = '1';
+  document.getElementById('promo-type').value = 'percent';
+  syncPromoValueState();
+}
+
+function renderPromoCodes() {
+  const tbody = document.getElementById('promo-codes-tbody');
+  if (!tbody) return;
+  state.promoCodes = (Array.isArray(state.promoCodes) ? state.promoCodes : []).map(normalizePromoCodeRecord);
+  if (!state.promoCodes.length) {
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.59 13.41 12 22l-8.59-8.59A2 2 0 0 1 3 12V5a2 2 0 0 1 2-2h7a2 2 0 0 1 1.41.59L22 12a2 2 0 0 1 0 2.82Z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg><h3>Aucun code promo</h3><p>Créez votre premier code promo pour l’activer sur le panier.</p></div></td></tr>';
+    updateBadges();
+    renderPromoPreview();
+    return;
+  }
+  tbody.innerHTML = state.promoCodes.map(promo => `
+    <tr>
+      <td><div style="font-weight:700;font-family:monospace;">${escapeHtml(promo.code)}</div><div class="td-sub">${escapeHtml(promo.label)}</div></td>
+      <td>${escapeHtml(promoBenefitLabel(promo))}</td>
+      <td>${escapeHtml(promoConditionsLabel(promo))}</td>
+      <td>${escapeHtml(promoPeriodLabel(promo))}</td>
+      <td>${promo.usedCount || 0}${promo.usageLimit ? ' / ' + promo.usageLimit : ''}</td>
+      <td>${promoStatusBadge(promo)}</td>
+      <td><div class="td-actions"><button class="btn-icon" onclick="editPromoCode('${promo.id}')" title="Modifier"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="btn-icon" onclick="deletePromoCode('${promo.id}')" title="Supprimer" style="color:var(--corail);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></td>
+    </tr>`).join('');
+  updateBadges();
+  renderPromoPreview();
+}
+
+function editPromoCode(id) {
+  const promo = state.promoCodes.find(item => item.id === id);
+  if (!promo) return;
+  document.getElementById('promo-id').value = promo.id;
+  document.getElementById('promo-code').value = promo.code;
+  document.getElementById('promo-label').value = promo.label;
+  document.getElementById('promo-type').value = promo.type;
+  document.getElementById('promo-value').value = promo.type === 'free_shipping' ? '' : (promo.value || '');
+  document.getElementById('promo-min-subtotal').value = promo.minSubtotal || '';
+  document.getElementById('promo-usage-limit').value = promo.usageLimit || '';
+  document.getElementById('promo-starts-at').value = promo.startsAt ? promo.startsAt.slice(0, 16) : '';
+  document.getElementById('promo-ends-at').value = promo.endsAt ? promo.endsAt.slice(0, 16) : '';
+  document.getElementById('promo-description').value = promo.description || '';
+  document.getElementById('promo-active').value = promo.active ? '1' : '0';
+  syncPromoValueState();
+  activatePanel('promo-codes');
+}
+
+function savePromoCode(event) {
+  event.preventDefault();
+  const id = document.getElementById('promo-id').value || null;
+  const previous = id ? state.promoCodes.find(item => item.id === id) : null;
+  const record = normalizePromoCodeRecord({
+    id: id || undefined,
+    code: document.getElementById('promo-code').value,
+    label: document.getElementById('promo-label').value,
+    type: document.getElementById('promo-type').value,
+    value: document.getElementById('promo-value').value,
+    minSubtotal: document.getElementById('promo-min-subtotal').value,
+    usageLimit: document.getElementById('promo-usage-limit').value,
+    startsAt: document.getElementById('promo-starts-at').value ? new Date(document.getElementById('promo-starts-at').value).toISOString() : '',
+    endsAt: document.getElementById('promo-ends-at').value ? new Date(document.getElementById('promo-ends-at').value).toISOString() : '',
+    description: document.getElementById('promo-description').value,
+    active: document.getElementById('promo-active').value === '1',
+    createdAt: previous && previous.createdAt ? previous.createdAt : new Date().toISOString(),
+    usedCount: previous ? previous.usedCount : 0,
+    usedByOrders: previous ? previous.usedByOrders : [],
+    updatedAt: new Date().toISOString(),
+  });
+
+  if (!record.code || !record.label) {
+    toast('Code promo incomplet', 'error');
+    return;
+  }
+  if (record.type !== 'free_shipping' && Number(record.value || 0) <= 0) {
+    toast('La valeur du code promo doit être supérieure à 0', 'error');
+    return;
+  }
+  if (!id && state.promoCodes.some(item => item.code === record.code)) {
+    toast('Ce code promo existe déjà', 'error');
+    return;
+  }
+
+  state.promoCodes = id
+    ? state.promoCodes.map(item => item.id === id ? Object.assign({}, item, record) : item)
+    : [record].concat(state.promoCodes);
+
+  save(KEYS.promoCodes, state.promoCodes);
+  renderPromoCodes();
+  resetPromoForm();
+  toast('Code promo enregistré', 'success');
+}
+
+function deletePromoCode(id) {
+  const promo = state.promoCodes.find(item => item.id === id);
+  if (!promo) return;
+  if (!confirm(`Supprimer le code promo ${promo.code} ?`)) return;
+  state.promoCodes = state.promoCodes.filter(item => item.id !== id);
+  save(KEYS.promoCodes, state.promoCodes);
+  renderPromoCodes();
+  resetPromoForm();
+  toast('Code promo supprimé', 'success');
 }
 
 /* ---------- Dashboard ---------- */

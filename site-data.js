@@ -17,7 +17,8 @@
     cart:       'castaneas_cart_v1',
     recipes:    'castaneas_admin_recipes',
     homepage:   'castaneas_homepage_v1',
-    packagings: 'castaneas_packagings_v1'
+    packagings: 'castaneas_packagings_v1',
+    promoCodes: 'castaneas_promo_codes_v1'
   };
 
   /* ---------- Helpers de lecture ---------- */
@@ -232,6 +233,54 @@
     };
   }
 
+  function normalizePromoCodes(promoCodes) {
+    return (Array.isArray(promoCodes) ? promoCodes : []).map(function (promoCode) {
+      return {
+        id: String(promoCode && promoCode.id || ''),
+        code: String(promoCode && promoCode.code || '').trim().toUpperCase(),
+        label: String(promoCode && promoCode.label || '').trim(),
+        type: String(promoCode && promoCode.type || 'percent'),
+        value: Number(promoCode && promoCode.value || 0),
+        minSubtotal: Number(promoCode && promoCode.minSubtotal || 0),
+        usageLimit: Number(promoCode && promoCode.usageLimit || 0),
+        usedCount: Number(promoCode && promoCode.usedCount || 0),
+        startsAt: String(promoCode && promoCode.startsAt || ''),
+        endsAt: String(promoCode && promoCode.endsAt || ''),
+        description: String(promoCode && promoCode.description || '').trim(),
+        active: promoCode && promoCode.active !== undefined ? !!promoCode.active : true
+      };
+    }).filter(function (promoCode) {
+      return promoCode.code !== '';
+    });
+  }
+
+  function evaluatePromoCode(promoCode, subtotal) {
+    if (!promoCode || !promoCode.code) return { ok: false, reason: 'invalid' };
+
+    var now = Date.now();
+    var startsAt = promoCode.startsAt ? new Date(promoCode.startsAt).getTime() : null;
+    var endsAt = promoCode.endsAt ? new Date(promoCode.endsAt).getTime() : null;
+    if (!promoCode.active) return { ok: false, reason: 'inactive' };
+    if (startsAt && startsAt > now) return { ok: false, reason: 'scheduled' };
+    if (endsAt && endsAt < now) return { ok: false, reason: 'expired' };
+    if (promoCode.usageLimit > 0 && promoCode.usedCount >= promoCode.usageLimit) return { ok: false, reason: 'limit_reached' };
+    if (subtotal < promoCode.minSubtotal) return { ok: false, reason: 'minimum' };
+
+    var discount = 0;
+    if (promoCode.type === 'percent') {
+      discount = subtotal * promoCode.value / 100;
+    } else if (promoCode.type === 'fixed') {
+      discount = Math.min(subtotal, promoCode.value);
+    }
+
+    return {
+      ok: true,
+      promo: promoCode,
+      discount: Math.round(discount * 100) / 100,
+      freeShipping: promoCode.type === 'free_shipping'
+    };
+  }
+
   /* ---------- Données serveur injectées par data.php (priorité max) ---------- */
   var _srv = window.CASTANEAS_DATA || {};
 
@@ -336,6 +385,7 @@
     recipes:  ((_srv.recipes  && _srv.recipes.length  > 0) ? _srv.recipes  : (loadStorage(KEYS.recipes)  || [])).map(normalizeRecipe),
     homepage: (_srv.homepage && typeof _srv.homepage === 'object') ? _srv.homepage : (loadStorageObject(KEYS.homepage) || {}),
     packagings: normalizePackagingList((_srv.packagings && _srv.packagings.length > 0) ? _srv.packagings : (loadStorage(KEYS.packagings) || [])),
+    promoCodes: normalizePromoCodes((_srv.promo_codes && _srv.promo_codes.length > 0) ? _srv.promo_codes : (loadStorage(KEYS.promoCodes) || [])),
 
     /** Toutes les catégories visibles dans le header */
     getHeaderCategories: function () {
@@ -414,6 +464,21 @@
 
     getPromoMessage: function () {
       return getPromoMessage(this.homepage);
+    },
+
+    getPromoCodes: function () {
+      return this.promoCodes.filter(function (promoCode) { return promoCode.active; });
+    },
+
+    getPromoCodeByCode: function (code) {
+      var normalizedCode = String(code || '').trim().toUpperCase();
+      return this.promoCodes.find(function (promoCode) {
+        return promoCode.code === normalizedCode;
+      }) || null;
+    },
+
+    evaluatePromoCode: function (code, subtotal) {
+      return evaluatePromoCode(this.getPromoCodeByCode(code), Number(subtotal || 0));
     },
 
     getPackagingById: function (id) {

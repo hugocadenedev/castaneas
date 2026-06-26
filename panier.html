@@ -230,30 +230,15 @@
         <span id="s-promo-val">—</span>
       </div>
 
-      <!-- Expédition -->
-      <div class="shipping-zone">
-        <div class="shipping-zone__label">Expédition</div>
-        <div class="shipping-zip">
-          <input type="text" id="zip-input" placeholder="Code postal" maxlength="5" inputmode="numeric" pattern="[0-9]{5}">
-          <button id="zip-calc">Calculer les frais</button>
-        </div>
-        <div class="shipping-result" id="shipping-result"></div>
-      </div>
-
-      <div class="s-row" id="s-shipping-row" style="display:none">
-        <span>Expédition</span>
-        <span id="s-shipping-val">—</span>
-      </div>
-
       <hr class="s-divider">
 
       <div class="s-total">
         <span class="s-total-label">Total TTC</span>
         <span class="s-total-val" id="s-total">—</span>
       </div>
-      <div class="s-total-sub" id="s-total-sub">Calculez d'abord les frais de livraison</div>
+      <div class="s-total-sub" id="s-total-sub">Les frais de livraison seront choisis à l'étape suivante</div>
 
-      <a href="facturation.html" class="checkout-btn" id="checkout-btn" disabled aria-disabled="true">
+      <a href="facturation.html" class="checkout-btn" id="checkout-btn">
         Valider le panier
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round"/></svg>
       </a>
@@ -294,19 +279,21 @@
 (function () {
   const CART_KEY     = 'castaneas_cart_v1';
   const CHECKOUT_KEY = 'castaneas_checkout_v1';
-  const PROMO_CODES  = {
-    'CASTANEAS10': { type: 'percent', value: 10, label: '-10 %' },
-    'BIENVENUE5':  { type: 'fixed',   value: 5,  label: '-5,00 €' },
-    'NOEL2025':    { type: 'percent', value: 15, label: '-15 %' },
-  };
 
   let items        = [];
-  let promoCode    = null;
-  let shippingCost = null; // null = not yet calculated
-
+  let appliedPromo = null;
   function loadCart() {
     try { items = JSON.parse(localStorage.getItem(CART_KEY) || '[]'); }
     catch { items = []; }
+  }
+
+  function loadCheckoutState() {
+    try {
+      const checkout = JSON.parse(sessionStorage.getItem(CHECKOUT_KEY) || 'null');
+      appliedPromo = checkout && checkout.promo ? checkout.promo : null;
+    } catch (_) {
+      appliedPromo = null;
+    }
   }
 
   function subtotal() {
@@ -314,9 +301,7 @@
   }
 
   function calcDiscount(sub) {
-    if (!promoCode || !PROMO_CODES[promoCode]) return 0;
-    const p = PROMO_CODES[promoCode];
-    return p.type === 'percent' ? sub * p.value / 100 : Math.min(p.value, sub);
+    return appliedPromo ? Number(appliedPromo.discount || 0) : 0;
   }
 
   function fmt(n) {
@@ -392,48 +377,31 @@
     if (items.length === 0) return;
     const sub      = subtotal();
     const discount = calcDiscount(sub);
-    const shipping = shippingCost;
-    const total    = sub - discount + (shipping || 0);
+    const total    = sub - discount;
 
     document.getElementById('s-subtotal').textContent = fmt(sub);
 
     const promoRow = document.getElementById('s-promo-row');
-    if (promoCode && discount > 0) {
+    if (appliedPromo && (discount > 0 || appliedPromo.type === 'free_shipping')) {
       promoRow.style.display = 'flex';
-      document.getElementById('s-promo-label').textContent = 'Code ' + promoCode + ' (' + PROMO_CODES[promoCode].label + ')';
-      document.getElementById('s-promo-val').textContent   = '− ' + fmt(discount);
+      document.getElementById('s-promo-label').textContent = 'Code ' + appliedPromo.code + (appliedPromo.label ? ' (' + appliedPromo.label + ')' : '');
+      document.getElementById('s-promo-val').textContent   = appliedPromo.type === 'free_shipping' ? 'Livraison offerte' : '− ' + fmt(discount);
     } else {
       promoRow.style.display = 'none';
     }
 
-    const shippingRow = document.getElementById('s-shipping-row');
-    const btn         = document.getElementById('checkout-btn');
-    if (shipping !== null) {
-      shippingRow.style.display = 'flex';
-      const sVal = document.getElementById('s-shipping-val');
-      if (shipping === 0) {
-        sVal.textContent = 'Offerte 🎉';
-        shippingRow.classList.add('free');
-      } else {
-        sVal.textContent = fmt(shipping);
-        shippingRow.classList.remove('free');
-      }
-      document.getElementById('s-total').textContent    = fmt(total);
-      document.getElementById('s-total-sub').textContent = 'TTC, livraison incluse';
-      btn.removeAttribute('disabled');
-      btn.removeAttribute('aria-disabled');
-    } else {
-      shippingRow.style.display = 'none';
-      document.getElementById('s-total').textContent     = 'À calculer';
-      document.getElementById('s-total-sub').textContent = 'Calculez d\'abord les frais de livraison';
-      btn.setAttribute('disabled', '');
-      btn.setAttribute('aria-disabled', 'true');
-    }
+    document.getElementById('s-total').textContent     = fmt(total);
+    document.getElementById('s-total-sub').textContent = 'Les frais de livraison seront ajoutés à l\'étape suivante';
 
     // Persist for facturation.html
     try {
       sessionStorage.setItem(CHECKOUT_KEY, JSON.stringify({
-        subtotal: sub, discount, promoCode, shipping, total: shipping !== null ? total : null,
+        subtotal: sub,
+        discount,
+        promoCode: appliedPromo ? appliedPromo.code : null,
+        promo: appliedPromo,
+        shipping: null,
+        total,
       }));
     } catch (_) {}
   }
@@ -444,44 +412,48 @@
     const fb    = document.getElementById('promo-feedback');
     const code  = input.value.trim().toUpperCase();
     if (!code) { fb.className = 'promo-feedback err'; fb.textContent = 'Entrez un code promo.'; return; }
-    if (!PROMO_CODES[code]) {
+    if (!window.SiteData || !SiteData.evaluatePromoCode) {
       fb.className = 'promo-feedback err';
-      fb.textContent = 'Code invalide ou expiré.';
-      promoCode = null;
+      fb.textContent = 'Les promotions sont temporairement indisponibles.';
+      return;
+    }
+
+    const evaluation = SiteData.evaluatePromoCode(code, subtotal());
+    if (!evaluation.ok) {
+      fb.className = 'promo-feedback err';
+      fb.textContent = {
+        invalid: 'Code invalide ou introuvable.',
+        inactive: 'Ce code promo est désactivé.',
+        scheduled: 'Ce code promo n\'est pas encore actif.',
+        expired: 'Ce code promo est expiré.',
+        limit_reached: 'Ce code promo a atteint sa limite d\'utilisation.',
+        minimum: 'Montant minimum non atteint pour ce code promo.'
+      }[evaluation.reason] || 'Code invalide ou expiré.';
+      appliedPromo = null;
     } else {
-      promoCode = code;
+      appliedPromo = {
+        code: evaluation.promo.code,
+        label: evaluation.promo.label,
+        type: evaluation.promo.type,
+        value: evaluation.promo.value,
+        minSubtotal: evaluation.promo.minSubtotal,
+        description: evaluation.promo.description,
+        discount: evaluation.discount,
+      };
       fb.className = 'promo-feedback ok';
-      fb.textContent = '✓ Code appliqué — ' + PROMO_CODES[code].label + ' sur votre commande !';
+      fb.textContent = evaluation.freeShipping
+        ? '✓ Code appliqué — livraison offerte à l\'étape suivante.'
+        : '✓ Code appliqué — réduction prise en compte sur votre commande.';
     }
     updateSummary();
   }
   document.getElementById('promo-apply').onclick = applyPromo;
   document.getElementById('promo-input').addEventListener('keydown', e => { if (e.key === 'Enter') applyPromo(); });
 
-  // ── SHIPPING ─────────────────────────────────────────────
-  function calcShipping() {
-    const zip      = document.getElementById('zip-input').value.trim();
-    const resultEl = document.getElementById('shipping-result');
-    if (!/^\d{5}$/.test(zip)) {
-      resultEl.style.color = '#c0392b';
-      resultEl.textContent = 'Entrez un code postal valide (5 chiffres).';
-      return;
-    }
-    // Placeholder — API transporteur à intégrer
-    const afterPromo = subtotal() - calcDiscount(subtotal());
-    shippingCost = afterPromo >= 40 ? 0 : 4.90;
-    resultEl.style.color = shippingCost === 0 ? '#2d8c5a' : 'var(--ink-soft)';
-    resultEl.textContent = shippingCost === 0
-      ? '🎉 Livraison offerte pour votre commande !'
-      : 'Frais de port estimés : ' + fmt(shippingCost) + ' (Colissimo)';
-    updateSummary();
-  }
-  document.getElementById('zip-calc').onclick = calcShipping;
-  document.getElementById('zip-input').addEventListener('keydown', e => { if (e.key === 'Enter') calcShipping(); });
-
   // ── INIT ─────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
     loadCart();
+    loadCheckoutState();
     renderItems();
     updateSummary();
   });

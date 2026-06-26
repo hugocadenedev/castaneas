@@ -12,7 +12,7 @@ header('Expires: 0');
 
 require_once __DIR__ . '/storage.php';
 
-$keys = ['products', 'categories', 'recipes', 'homepage', 'packagings'];
+$keys = ['products', 'categories', 'recipes', 'homepage', 'packagings', 'promo_codes'];
 $storageFailures = [];
 foreach ($keys as $key) {
     $status = castaneas_storage_key_status($key);

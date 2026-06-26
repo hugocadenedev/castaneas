@@ -778,6 +778,10 @@ if ($paymentMethod !== 'card') {
     castaneas_checkout_response(400, ['ok' => false, 'error' => 'Mode de paiement non supporté.']);
 }
 
+$promo = is_array($body['promo'] ?? null) ? $body['promo'] : [];
+$promoCode = strtoupper(trim((string) ($promo['code'] ?? '')));
+$promoDiscount = round((float) ($promo['discount'] ?? 0), 2);
+
 $total = castaneas_checkout_total($items);
 $shipping = is_array($body['shipping'] ?? null) ? $body['shipping'] : [];
 $forceSimulatePayment = !empty($body['bypassPayment']) || !empty($body['forceSimulatePayment']);
@@ -794,7 +798,7 @@ $selectedShipping = [
     'servicePoint' => $selectedServicePoint,
 ];
 
-$grandTotal = round($total + $shippingPrice, 2);
+$grandTotal = round(max(0, $total - $promoDiscount) + $shippingPrice, 2);
 $ref = castaneas_order_generate_ref();
 $order = [
     'id' => $ref,
@@ -805,6 +809,11 @@ $order = [
     'email' => trim((string) ($billing['email'] ?? '')),
     'items' => $items,
     'subtotal' => $total,
+    'discount' => $promoDiscount,
+    'promo' => [
+        'code' => $promoCode,
+        'discount' => $promoDiscount,
+    ],
     'total' => $grandTotal,
     'status' => 'pending_payment',
     'billing' => $billing,

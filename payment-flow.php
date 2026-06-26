@@ -4,6 +4,7 @@ require_once __DIR__ . '/order-store.php';
 require_once __DIR__ . '/sendcloud.php';
 require_once __DIR__ . '/sucrine.php';
 require_once __DIR__ . '/integrations.php';
+require_once __DIR__ . '/storage.php';
 
 function castaneas_payment_request_data() {
     $data = $_REQUEST;
@@ -80,6 +81,44 @@ function castaneas_payment_notify_is_authorized(array $data) {
     return $provided !== '' && hash_equals($expected, $provided);
 }
 
+function castaneas_payment_increment_promo_usage(array $order) {
+    $promo = is_array($order['promo'] ?? null) ? $order['promo'] : [];
+    $code = strtoupper(trim((string) ($promo['code'] ?? '')));
+    if ($code === '') {
+        return;
+    }
+
+    $raw = castaneas_storage_read_raw('promo_codes');
+    $codes = $raw ? json_decode($raw, true) : [];
+    if (!is_array($codes)) {
+        return;
+    }
+
+    $updated = false;
+    foreach ($codes as &$promoCode) {
+        if (!is_array($promoCode)) {
+            continue;
+        }
+        if (strtoupper(trim((string) ($promoCode['code'] ?? ''))) !== $code) {
+            continue;
+        }
+        $usedByOrders = is_array($promoCode['usedByOrders'] ?? null) ? $promoCode['usedByOrders'] : [];
+        if (in_array((string) ($order['id'] ?? ''), $usedByOrders, true)) {
+            return;
+        }
+        $usedByOrders[] = (string) ($order['id'] ?? '');
+        $promoCode['usedByOrders'] = $usedByOrders;
+        $promoCode['usedCount'] = count($usedByOrders);
+        $updated = true;
+        break;
+    }
+    unset($promoCode);
+
+    if ($updated) {
+        castaneas_storage_write_raw('promo_codes', json_encode(array_values($codes), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+    }
+}
+
 function castaneas_payment_finalize_order($ref, $status, array $payload) {
     $order = castaneas_order_find($ref);
     if (!$order) {
@@ -110,6 +149,8 @@ function castaneas_payment_finalize_order($ref, $status, array $payload) {
     if (!$order || $mappedStatus !== 'paid') {
         return $order;
     }
+
+    castaneas_payment_increment_promo_usage($order);
 
     if (empty($order['sendcloud']['createdAt'])) {
         $sendcloudResult = castaneas_sendcloud_send_order($order);
