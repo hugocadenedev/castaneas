@@ -383,7 +383,10 @@
         var orders = loadStorage(KEYS.orders) || [];
         var ref = 'CAS-' + Math.random().toString(36).substr(2, 6).toUpperCase();
         var session = {};
-        try { session = JSON.parse(sessionStorage.getItem('castaneas_session_v1') || '{}'); } catch (e) {}
+        try { session = JSON.parse(localStorage.getItem('castaneas_session_v1') || '{}'); } catch (e) {}
+        if (!session || !session.email) {
+          try { session = JSON.parse(sessionStorage.getItem('castaneas_session_v1') || '{}'); } catch (e) {}
+        }
         var order = {
           id:       ref,
           date:     new Date().toISOString().slice(0, 10),

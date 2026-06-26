@@ -433,14 +433,13 @@
   </div>
 </aside>
 
+<script src="auth-client.js"></script>
 <script src="data.php?v=2"></script><script src="site-data.js?v=5"></script>
 <script src="cart.js"></script>
 <script>
 (function () {
   const CART_KEY     = 'castaneas_cart_v1';
   const CHECKOUT_KEY = 'castaneas_checkout_v1';
-  const SESSION_KEY  = 'castaneas_session_v1';
-  const USERS_KEY    = 'castaneas_users_v1';
   const QUOTES_ENDPOINT = '/checkout.php?action=quotes';
   const SERVICE_POINTS_ENDPOINT = '/checkout.php?action=service_points';
 
@@ -477,7 +476,12 @@
 
   // ── SESSION / LOGIN ──────────────────────────────────────
   function getSession() {
-    try { return JSON.parse(sessionStorage.getItem(SESSION_KEY)); } catch { return null; }
+    if (window.CastaneasAuth && CastaneasAuth.getCachedSession) {
+      return CastaneasAuth.getCachedSession();
+    }
+    try { return JSON.parse(localStorage.getItem('castaneas_session_v1')); } catch (_) {}
+    try { return JSON.parse(sessionStorage.getItem('castaneas_session_v1')); } catch (_) {}
+    return null;
   }
 
   function initAuthBanner() {
@@ -497,14 +501,26 @@
     }
   }
 
-  document.getElementById('btn-logout').onclick = function () {
-    sessionStorage.removeItem(SESSION_KEY);
+  document.getElementById('btn-logout').onclick = async function () {
+    if (window.CastaneasAuth && CastaneasAuth.logout) {
+      try { await CastaneasAuth.logout(); } catch (_) {}
+    } else {
+      try { localStorage.removeItem('castaneas_session_v1'); } catch (_) {}
+      try { sessionStorage.removeItem('castaneas_session_v1'); } catch (_) {}
+    }
     document.getElementById('login-banner').style.display = 'flex';
     document.getElementById('user-banner').style.display  = 'none';
     document.getElementById('f-prenom').value = '';
     document.getElementById('f-nom').value    = '';
     document.getElementById('f-email').value  = '';
   };
+
+  async function syncAuthBanner() {
+    if (window.CastaneasAuth && CastaneasAuth.fetchSession) {
+      try { await CastaneasAuth.fetchSession(); } catch (_) {}
+    }
+    initAuthBanner();
+  }
 
   // ── ORDER SUMMARY ────────────────────────────────────────
   function renderSummary() {
@@ -1011,7 +1027,7 @@
 
   // ── INIT ─────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
-    initAuthBanner();
+    syncAuthBanner();
     renderSummary();
     bindShippingInputs();
     renderShippingOptions();

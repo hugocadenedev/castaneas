@@ -68,24 +68,8 @@
   </div>
 </div>
 
+<script src="auth-client.js"></script>
 <script>
-const USERS_KEY = 'castaneas_users_v1';
-const SESSION_KEY = 'castaneas_session_v1';
-
-function getUsers() {
-  try { return JSON.parse(localStorage.getItem(USERS_KEY) || '[]'); }
-  catch { return []; }
-}
-
-async function hashPassword(password, email) {
-  const data = new TextEncoder().encode(password + ':' + email + ':castaneas');
-  const buf = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-}
-function saveUsers(users) {
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
-}
-
 function showError(fieldId, msg) {
   const el = document.getElementById(fieldId);
   el.textContent = msg;
@@ -102,6 +86,15 @@ function showAlert(msg) {
   alert.textContent = msg;
   alert.style.display = 'block';
 }
+
+(async function syncExistingSession() {
+  try {
+    const session = await CastaneasAuth.fetchSession();
+    if (session && session.email) {
+      window.location.href = 'index.html';
+    }
+  } catch (_) {}
+})();
 
 document.getElementById('register-form').addEventListener('submit', async function(e) {
   e.preventDefault();
@@ -127,22 +120,21 @@ document.getElementById('register-form').addEventListener('submit', async functi
   }
   if (!valid) return;
 
-  const users = getUsers();
-  if (users.find(u => u.email === email)) {
-    showAlert('Un compte existe déjà avec cet e-mail. Connectez-vous.');
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  const previousText = btn.textContent;
+  btn.textContent = 'Création…';
+
+  try {
+    await CastaneasAuth.register({ prenom, nom, email, password });
+  } catch (error) {
+    btn.disabled = false;
+    btn.textContent = previousText;
+    showAlert(error && error.message ? error.message : 'Création de compte impossible.');
     return;
   }
 
-  users.push({ prenom, nom, email, password: await hashPassword(password, email), createdAt: Date.now() });
-  saveUsers(users);
-
-  // Auto-login
-  const session = { email, prenom, nom, ts: Date.now() };
-  sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
-
-  const btn = document.getElementById('submit-btn');
   btn.textContent = '✓ Compte créé !';
-  btn.disabled = true;
 
   setTimeout(() => { window.location.href = 'index.html'; }, 800);
 });
