@@ -419,12 +419,14 @@
       injectMobileCats();
       injectFooterCategories();
       injectPromoBar();
+      syncAccountLinks();
     });
   } else {
     injectNav();
     injectMobileCats();
     injectFooterCategories();
     injectPromoBar();
+    syncAccountLinks();
   }
 
   function injectNav() {
@@ -603,6 +605,74 @@
     var message = SiteData.getPromoMessage();
     promoEls.forEach(function (el) {
       el.textContent = message;
+    });
+  }
+
+  function getCustomerSessionFromStorage() {
+    try {
+      var localSession = JSON.parse(localStorage.getItem('castaneas_session_v1') || 'null');
+      if (localSession && localSession.email) return localSession;
+    } catch (e) {}
+
+    try {
+      var sessionSession = JSON.parse(sessionStorage.getItem('castaneas_session_v1') || 'null');
+      if (sessionSession && sessionSession.email) return sessionSession;
+    } catch (e) {}
+
+    return null;
+  }
+
+  function getAccountLoginHref() {
+    var redirect = location.pathname.split('/').pop() || 'index.html';
+    if (!redirect) redirect = 'index.html';
+    return 'login.html?redirect=' + encodeURIComponent(redirect + location.search + location.hash);
+  }
+
+  function applyAccountLinks(session) {
+    var links = document.querySelectorAll('a.icon-btn[aria-label="Mon compte"]');
+    if (!links.length) return;
+
+    var href = session && session.email ? 'facturation.html' : getAccountLoginHref();
+    var label = session && session.email ? 'Mon compte client' : 'Se connecter';
+
+    links.forEach(function (link) {
+      link.setAttribute('href', href);
+      link.setAttribute('aria-label', label);
+      link.setAttribute('title', label);
+    });
+  }
+
+  function syncAccountLinks() {
+    var cachedSession = getCustomerSessionFromStorage();
+    applyAccountLinks(cachedSession);
+
+    fetch('/auth.php?action=session', {
+      method: 'GET',
+      credentials: 'same-origin',
+      headers: { 'Accept': 'application/json' }
+    }).then(function (response) {
+      if (!response.ok) throw new Error('auth session unavailable');
+      return response.json();
+    }).then(function (payload) {
+      if (payload && payload.ok && payload.loggedIn && payload.user && payload.user.email) {
+        var normalized = {
+          id: payload.user.id || null,
+          email: String(payload.user.email || ''),
+          prenom: String(payload.user.prenom || ''),
+          nom: String(payload.user.nom || ''),
+          ts: Date.now()
+        };
+        try { localStorage.setItem('castaneas_session_v1', JSON.stringify(normalized)); } catch (e) {}
+        try { sessionStorage.setItem('castaneas_session_v1', JSON.stringify(normalized)); } catch (e) {}
+        applyAccountLinks(normalized);
+        return;
+      }
+
+      try { localStorage.removeItem('castaneas_session_v1'); } catch (e) {}
+      try { sessionStorage.removeItem('castaneas_session_v1'); } catch (e) {}
+      applyAccountLinks(null);
+    }).catch(function () {
+      applyAccountLinks(cachedSession);
     });
   }
 
