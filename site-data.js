@@ -62,6 +62,72 @@
       .replace(/-{2,}/g, '-');
   }
 
+  function normalizeStorePath(path) {
+    var clean = String(path || '').trim();
+    if (!clean) return clean;
+
+    var pathMap = {
+      '/index.html': '/accueil',
+      '/login.html': '/connexion',
+      '/register.html': '/inscription',
+      '/mon-compte.html': '/mon-compte',
+      '/panier.html': '/panier',
+      '/facturation.html': '/facturation',
+      '/confirmation.html': '/confirmation',
+      '/recettes.html': '/recettes',
+      '/recette.html': '/recette',
+      '/histoire.html': '/histoire',
+      '/cgv.html': '/cgv',
+      '/maintenance.html': '/maintenance',
+      '/back-office.html': '/back-office',
+      '/creme-de-chataigne.html': '/categorie/cremes',
+      '/pates-tartiner.html': '/categorie/pates-tartiner',
+      '/huiles.html': '/categorie/huiles',
+      '/coffrets.html': '/categorie/coffrets'
+    };
+
+    var normalized = clean.charAt(0) === '/' ? clean : '/' + clean;
+    return pathMap[normalized] || clean;
+  }
+
+  function normalizeStoreHref(href) {
+    if (!href || /^(#|mailto:|tel:|javascript:)/i.test(href)) return href;
+
+    try {
+      var url = new URL(href, location.origin);
+      if (url.origin !== location.origin) return href;
+
+      url.pathname = normalizeStorePath(url.pathname);
+      if (url.searchParams.has('redirect')) {
+        var redirect = url.searchParams.get('redirect') || '';
+        if (redirect) {
+          try {
+            var redirectUrl = new URL(redirect, location.origin);
+            redirectUrl.pathname = normalizeStorePath(redirectUrl.pathname);
+            url.searchParams.set('redirect', redirectUrl.pathname + redirectUrl.search + redirectUrl.hash);
+          } catch (e) {}
+        }
+      }
+
+      return url.pathname + url.search + url.hash;
+    } catch (e) {
+      return href;
+    }
+  }
+
+  function normalizeDocumentLinks() {
+    var links = document.querySelectorAll('a[href]');
+    if (!links.length) return;
+
+    links.forEach(function (link) {
+      var href = link.getAttribute('href');
+      var normalized = normalizeStoreHref(href);
+      if (normalized && normalized !== href) {
+        link.setAttribute('href', normalized);
+      }
+    });
+  }
+
   function sanitizeImagePath(path) {
     if (typeof path !== 'string') return path;
 
@@ -330,7 +396,7 @@
     /** URL d'un produit — format SEO : /produit/<slug> */
     getProductHref: function (productOrId) {
       var slug = this.getProductSlug(productOrId);
-      if (!slug) return 'Fiche Produit.html';
+      if (!slug) return '/accueil';
       return '/produit/' + encodeURIComponent(slug);
     },
 
@@ -369,7 +435,7 @@
      */
     getCategoryHref: function (cat) {
       var slug = this.getCategorySlug(cat);
-      return slug ? '/categorie/' + encodeURIComponent(slug) : 'categorie.html';
+      return slug ? '/categorie/' + encodeURIComponent(slug) : '/accueil';
     },
 
     /**
@@ -420,6 +486,7 @@
       injectFooterCategories();
       injectPromoBar();
       syncAccountLinks();
+      normalizeDocumentLinks();
     });
   } else {
     injectNav();
@@ -427,6 +494,7 @@
     injectFooterCategories();
     injectPromoBar();
     syncAccountLinks();
+    normalizeDocumentLinks();
   }
 
   function injectNav() {
@@ -434,24 +502,20 @@
     if (!navEl) return;
 
     var cats = SiteData.getHeaderCategories();
-    var raw  = decodeURIComponent(location.pathname.split('/').pop()).toLowerCase();
-    var page = raw || 'index.html';
+    var page = normalizeStorePath(location.pathname.toLowerCase() || '/accueil');
 
     function isActive(href) {
-      var h = href.toLowerCase();
-      if (h === page) return true;
-      // Pour les URLs /categorie/<slug>, comparer le dernier segment
-      if (h.split('/').pop() === page) return true;
-      return false;
+      var h = normalizeStorePath(String(href || '').toLowerCase());
+      return h === page;
     }
 
-    var html = '<a href="/index.html"' + (isActive('/index.html') ? ' class="active"' : '') + '>Accueil</a>';
+    var html = '<a href="/accueil"' + (isActive('/accueil') ? ' class="active"' : '') + '>Accueil</a>';
     cats.forEach(function (c) {
       var href = SiteData.getCategoryHref(c);
       html += '<a href="' + href + '"' + (isActive(href) ? ' class="active"' : '') + '>' + c.name + '</a>';
     });
-    html += '<a href="/recettes.html"' + (isActive('/recettes.html') ? ' class="active"' : '') + '>Recettes</a>';
-    html += '<a href="/histoire.html"' + (isActive('/histoire.html') ? ' class="active"' : '') + '>Notre histoire</a>';
+    html += '<a href="/recettes"' + (isActive('/recettes') ? ' class="active"' : '') + '>Recettes</a>';
+    html += '<a href="/histoire"' + (isActive('/histoire') ? ' class="active"' : '') + '>Notre histoire</a>';
 
     navEl.innerHTML = html;
 
@@ -480,7 +544,7 @@
       var brandEl = document.querySelector('.brand');
       var brandHtml = brandEl
         ? brandEl.outerHTML
-        : '<a href="/index.html" class="brand">Castaneas</a>';
+        : '<a href="/accueil" class="brand">Castaneas</a>';
 
       overlay.innerHTML =
         '<div class="nav-mobile__panel">' +
@@ -623,16 +687,15 @@
   }
 
   function getAccountLoginHref() {
-    var redirect = location.pathname.split('/').pop() || 'index.html';
-    if (!redirect) redirect = 'index.html';
-    return 'login.html?redirect=' + encodeURIComponent(redirect + location.search + location.hash);
+    var redirect = normalizeStorePath(location.pathname || '/accueil') || '/accueil';
+    return '/connexion?redirect=' + encodeURIComponent(redirect + location.search + location.hash);
   }
 
   function applyAccountLinks(session) {
     var links = document.querySelectorAll('a.icon-btn[aria-label="Mon compte"]');
     if (!links.length) return;
 
-    var href = session && session.email ? 'facturation.html' : getAccountLoginHref();
+    var href = session && session.email ? '/mon-compte' : getAccountLoginHref();
     var label = session && session.email ? 'Mon compte client' : 'Se connecter';
 
     links.forEach(function (link) {

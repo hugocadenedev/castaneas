@@ -21,7 +21,7 @@
 
 <div class="auth-page">
   <div class="auth-card">
-    <a href="index.html" class="auth-logo">
+    <a href="/accueil" class="auth-logo">
       <img src="assets/Castaneas-logo (3).svg" alt="Castaneas" style="height:44px;width:auto;">
     </a>
 
@@ -46,7 +46,7 @@
 
     <div class="auth-divider">
       <span>Pas encore de compte ?</span>
-      <a href="register.html">Créer un compte</a>
+      <a href="/inscription">Créer un compte</a>
     </div>
   </div>
 </div>
@@ -71,8 +71,8 @@ function showAlert(msg) {
 }
 
 function getSafeRedirect() {
-  const raw = new URLSearchParams(location.search).get('redirect') || 'index.html';
-  return /^https?:\/\/|^\/\//.test(raw) ? 'index.html' : raw;
+  const raw = new URLSearchParams(location.search).get('redirect') || '/mon-compte';
+  return /^https?:\/\/|^\/\//.test(raw) ? '/accueil' : raw;
 }
 
 (async function syncExistingSession() {

@@ -4,11 +4,36 @@ $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 $path = rawurldecode($uri ?: '/');
 $fullPath = __DIR__ . $path;
 
-if ($path !== '/' && is_file($fullPath)) {
-    return false;
-}
+$pageRoutes = [
+    '/accueil' => 'index.html',
+    '/connexion' => 'login.html',
+    '/inscription' => 'register.html',
+    '/mon-compte' => 'mon-compte.html',
+    '/panier' => 'panier.html',
+    '/facturation' => 'facturation.html',
+    '/confirmation' => 'confirmation.html',
+    '/recettes' => 'recettes.html',
+    '/recette' => 'recette.html',
+    '/histoire' => 'histoire.html',
+    '/cgv' => 'cgv.html',
+    '/maintenance' => 'maintenance.html',
+    '/back-office' => 'back-office.html',
+];
 
 $legacyRedirects = [
+    '/index.html' => '/accueil',
+    '/login.html' => '/connexion',
+    '/register.html' => '/inscription',
+    '/mon-compte.html' => '/mon-compte',
+    '/panier.html' => '/panier',
+    '/facturation.html' => '/facturation',
+    '/confirmation.html' => '/confirmation',
+    '/recettes.html' => '/recettes',
+    '/recette.html' => '/recette',
+    '/histoire.html' => '/histoire',
+    '/cgv.html' => '/cgv',
+    '/maintenance.html' => '/maintenance',
+    '/back-office.html' => '/back-office',
     '/creme-de-chataigne.html' => '/categorie/cremes',
     '/pates-tartiner.html' => '/categorie/pates-tartiner',
     '/huiles.html' => '/categorie/huiles',
@@ -20,8 +45,17 @@ if (isset($legacyRedirects[$path])) {
     exit;
 }
 
+if ($path !== '/' && is_file($fullPath)) {
+    return false;
+}
+
 if ($path === '/sitemap.xml') {
     require __DIR__ . '/sitemap.php';
+    exit;
+}
+
+if (isset($pageRoutes[$path])) {
+    require __DIR__ . '/' . $pageRoutes[$path];
     exit;
 }
 

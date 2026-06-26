@@ -114,9 +114,9 @@ $categories = castaneas_sitemap_load_key('categories');
 
 $urls = [
     ['loc' => $baseUrl . '/', 'lastmod' => gmdate('Y-m-d'), 'changefreq' => 'weekly', 'priority' => '1.00'],
-    ['loc' => $baseUrl . '/recettes.html', 'lastmod' => gmdate('Y-m-d'), 'changefreq' => 'weekly', 'priority' => '0.60'],
-    ['loc' => $baseUrl . '/histoire.html', 'lastmod' => gmdate('Y-m-d'), 'changefreq' => 'monthly', 'priority' => '0.50'],
-    ['loc' => $baseUrl . '/cgv.html', 'lastmod' => gmdate('Y-m-d'), 'changefreq' => 'yearly', 'priority' => '0.30'],
+    ['loc' => $baseUrl . '/recettes', 'lastmod' => gmdate('Y-m-d'), 'changefreq' => 'weekly', 'priority' => '0.60'],
+    ['loc' => $baseUrl . '/histoire', 'lastmod' => gmdate('Y-m-d'), 'changefreq' => 'monthly', 'priority' => '0.50'],
+    ['loc' => $baseUrl . '/cgv', 'lastmod' => gmdate('Y-m-d'), 'changefreq' => 'yearly', 'priority' => '0.30'],
 ];
 
 $urls = array_merge($urls, castaneas_sitemap_category_urls($categories, $baseUrl));

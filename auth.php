@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/storage.php';
+require_once __DIR__ . '/order-store.php';
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
@@ -91,6 +92,14 @@ function castaneas_auth_find_user_by_email(PDO $pdo, $email) {
     return is_array($row) ? $row : null;
 }
 
+function castaneas_auth_find_user_by_id(PDO $pdo, $id) {
+    $stmt = $pdo->prepare('SELECT * FROM customer_accounts WHERE id = :id LIMIT 1');
+    $stmt->execute(['id' => (int) $id]);
+    $row = $stmt->fetch();
+
+    return is_array($row) ? $row : null;
+}
+
 function castaneas_auth_store_session(array $user) {
     castaneas_auth_start_session();
     session_regenerate_id(true);
@@ -102,6 +111,146 @@ function castaneas_auth_current_user() {
     $user = $_SESSION['castaneas_customer'] ?? null;
 
     return is_array($user) ? $user : null;
+}
+
+function castaneas_auth_require_user(PDO $pdo) {
+    $sessionUser = castaneas_auth_current_user();
+    if (!$sessionUser || empty($sessionUser['email'])) {
+        castaneas_auth_response(401, [
+            'ok' => false,
+            'code' => 'not_authenticated',
+            'message' => 'Connexion requise.',
+        ]);
+    }
+
+    $user = castaneas_auth_find_user_by_email($pdo, castaneas_auth_normalize_email($sessionUser['email']));
+    if (!$user) {
+        castaneas_auth_response(401, [
+            'ok' => false,
+            'code' => 'account_not_found',
+            'message' => 'Compte introuvable.',
+        ]);
+    }
+
+    return $user;
+}
+
+function castaneas_auth_order_status_label($status) {
+    $labels = [
+        'pending_payment' => 'En attente de paiement',
+        'paid' => 'Payee',
+        'processing' => 'En preparation',
+        'payment_failed' => 'Paiement echoue',
+        'payment_refused' => 'Paiement refuse',
+        'cancelled' => 'Annulee',
+    ];
+
+    return $labels[$status] ?? ucfirst(str_replace('_', ' ', (string) $status));
+}
+
+function castaneas_auth_order_summary(array $order) {
+    $items = [];
+    foreach (($order['items'] ?? []) as $item) {
+        if (!is_array($item)) {
+            continue;
+        }
+        $items[] = [
+            'name' => (string) ($item['name'] ?? 'Produit'),
+            'qty' => (int) ($item['qty'] ?? 0),
+            'price' => round((float) ($item['price'] ?? 0), 2),
+            'image' => (string) ($item['image'] ?? ''),
+        ];
+    }
+
+    return [
+        'id' => (string) ($order['id'] ?? ''),
+        'status' => (string) ($order['status'] ?? 'pending_payment'),
+        'statusLabel' => castaneas_auth_order_status_label($order['status'] ?? ''),
+        'total' => round((float) ($order['total'] ?? 0), 2),
+        'subtotal' => round((float) ($order['subtotal'] ?? 0), 2),
+        'createdAt' => (string) ($order['createdAt'] ?? ''),
+        'paidAt' => (string) ($order['paidAt'] ?? ''),
+        'items' => $items,
+        'sendcloud' => [
+            'trackingNumber' => $order['sendcloud']['trackingNumber'] ?? null,
+            'labelUrl' => $order['sendcloud']['labelUrl'] ?? null,
+        ],
+        'billing' => [
+            'prenom' => (string) ($order['billing']['prenom'] ?? ''),
+            'nom' => (string) ($order['billing']['nom'] ?? ''),
+            'email' => (string) ($order['billing']['email'] ?? ''),
+            'tel' => (string) ($order['billing']['tel'] ?? ''),
+            'adresse' => (string) ($order['billing']['adresse'] ?? ''),
+            'complement' => (string) ($order['billing']['complement'] ?? ''),
+            'cp' => (string) ($order['billing']['cp'] ?? ''),
+            'ville' => (string) ($order['billing']['ville'] ?? ''),
+            'pays' => (string) ($order['billing']['pays'] ?? ''),
+        ],
+        'shipping' => $order['shipping'] ?? [],
+    ];
+}
+
+function castaneas_auth_customer_orders($email) {
+    $email = castaneas_auth_normalize_email($email);
+    $orders = [];
+
+    foreach (castaneas_orders_all() as $order) {
+        if (!is_array($order)) {
+            continue;
+        }
+        $orderEmail = castaneas_auth_normalize_email($order['email'] ?? ($order['billing']['email'] ?? ''));
+        if ($orderEmail !== '' && $orderEmail === $email) {
+            $orders[] = castaneas_auth_order_summary($order);
+        }
+    }
+
+    usort($orders, static function ($left, $right) {
+        return strcmp((string) ($right['createdAt'] ?? ''), (string) ($left['createdAt'] ?? ''));
+    });
+
+    return $orders;
+}
+
+function castaneas_auth_latest_addresses(array $orders) {
+    if (!$orders) {
+        return ['billing' => null, 'shipping' => null];
+    }
+
+    $latest = $orders[0];
+    $shipping = is_array($latest['shipping'] ?? null) ? $latest['shipping'] : [];
+    $servicePoint = is_array($shipping['servicePoint'] ?? null) ? $shipping['servicePoint'] : [];
+    $servicePointAddress = is_array($servicePoint['address'] ?? null) ? $servicePoint['address'] : [];
+
+    $shippingAddress = null;
+    if ($servicePoint) {
+        $shippingAddress = [
+            'name' => (string) ($servicePoint['name'] ?? ''),
+            'carrier' => (string) ($servicePoint['carrier']['name'] ?? ''),
+            'address' => trim(implode(' ', array_filter([
+                (string) ($servicePointAddress['street'] ?? ''),
+                (string) ($servicePointAddress['houseNumber'] ?? ''),
+            ]))),
+            'zipcode' => (string) ($servicePointAddress['postalCode'] ?? ''),
+            'city' => (string) ($servicePointAddress['city'] ?? ''),
+            'country' => (string) ($servicePointAddress['countryCode'] ?? ''),
+        ];
+    } else {
+        $billing = is_array($latest['billing'] ?? null) ? $latest['billing'] : [];
+        $shippingAddress = [
+            'name' => trim((string) (($billing['prenom'] ?? '') . ' ' . ($billing['nom'] ?? ''))),
+            'carrier' => (string) ($shipping['carrier']['name'] ?? ''),
+            'address' => (string) ($billing['adresse'] ?? ''),
+            'addressExtra' => (string) ($billing['complement'] ?? ''),
+            'zipcode' => (string) ($billing['cp'] ?? ''),
+            'city' => (string) ($billing['ville'] ?? ''),
+            'country' => (string) ($billing['pays'] ?? ''),
+        ];
+    }
+
+    return [
+        'billing' => $latest['billing'] ?? null,
+        'shipping' => $shippingAddress,
+    ];
 }
 
 $action = strtolower(trim((string) ($_GET['action'] ?? $_POST['action'] ?? 'session')));
@@ -133,6 +282,92 @@ if ($action === 'logout') {
 }
 
 $pdo = castaneas_auth_db();
+
+if ($action === 'account') {
+    $user = castaneas_auth_require_user($pdo);
+    $orders = castaneas_auth_customer_orders($user['email'] ?? '');
+    $totals = [
+        'ordersCount' => count($orders),
+        'lifetimeValue' => array_reduce($orders, static function ($sum, $order) {
+            return $sum + (float) ($order['total'] ?? 0);
+        }, 0.0),
+    ];
+
+    castaneas_auth_response(200, [
+        'ok' => true,
+        'user' => castaneas_auth_user_payload($user),
+        'orders' => $orders,
+        'stats' => $totals,
+        'addresses' => castaneas_auth_latest_addresses($orders),
+    ]);
+}
+
+if ($action === 'update_profile') {
+    $user = castaneas_auth_require_user($pdo);
+    $prenom = trim((string) ($body['prenom'] ?? ''));
+    $nom = trim((string) ($body['nom'] ?? ''));
+
+    if ($prenom === '' || $nom === '') {
+        castaneas_auth_response(422, [
+            'ok' => false,
+            'code' => 'invalid_profile_payload',
+            'message' => 'Prenom et nom requis.',
+        ]);
+    }
+
+    $pdo->prepare('UPDATE customer_accounts SET first_name = :first_name, last_name = :last_name WHERE id = :id')
+        ->execute([
+            'first_name' => $prenom,
+            'last_name' => $nom,
+            'id' => $user['id'],
+        ]);
+
+    $updatedUser = castaneas_auth_find_user_by_id($pdo, $user['id']);
+    castaneas_auth_store_session($updatedUser);
+
+    castaneas_auth_response(200, [
+        'ok' => true,
+        'user' => castaneas_auth_user_payload($updatedUser),
+        'message' => 'Profil mis a jour.',
+    ]);
+}
+
+if ($action === 'change_password') {
+    $user = castaneas_auth_require_user($pdo);
+    $currentPassword = (string) ($body['currentPassword'] ?? '');
+    $newPassword = (string) ($body['newPassword'] ?? '');
+
+    if ($currentPassword === '' || strlen($newPassword) < 8) {
+        castaneas_auth_response(422, [
+            'ok' => false,
+            'code' => 'invalid_password_payload',
+            'message' => 'Mot de passe actuel requis et nouveau mot de passe de 8 caracteres minimum.',
+        ]);
+    }
+
+    if (!password_verify($currentPassword, (string) ($user['password_hash'] ?? ''))) {
+        castaneas_auth_response(401, [
+            'ok' => false,
+            'code' => 'invalid_current_password',
+            'message' => 'Mot de passe actuel incorrect.',
+        ]);
+    }
+
+    $pdo->prepare('UPDATE customer_accounts SET password_hash = :password_hash WHERE id = :id')
+        ->execute([
+            'password_hash' => password_hash($newPassword, PASSWORD_DEFAULT),
+            'id' => $user['id'],
+        ]);
+
+    $updatedUser = castaneas_auth_find_user_by_id($pdo, $user['id']);
+    castaneas_auth_store_session($updatedUser);
+
+    castaneas_auth_response(200, [
+        'ok' => true,
+        'user' => castaneas_auth_user_payload($updatedUser),
+        'message' => 'Mot de passe mis a jour.',
+    ]);
+}
 
 if ($action === 'register') {
     $prenom = trim((string) ($body['prenom'] ?? ''));

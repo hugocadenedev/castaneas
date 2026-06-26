@@ -21,7 +21,7 @@
 
 <div class="auth-page">
   <div class="auth-card">
-    <a href="index.html" class="auth-logo">
+    <a href="/accueil" class="auth-logo">
       <img src="assets/Castaneas-logo (3).svg" alt="Castaneas" style="height:44px;width:auto;">
     </a>
 
@@ -63,7 +63,7 @@
 
     <div class="auth-divider">
       <span>Déjà un compte ?</span>
-      <a href="login.html">Se connecter</a>
+      <a href="/connexion">Se connecter</a>
     </div>
   </div>
 </div>
@@ -91,7 +91,7 @@ function showAlert(msg) {
   try {
     const session = await CastaneasAuth.fetchSession();
     if (session && session.email) {
-      window.location.href = 'index.html';
+      window.location.href = '/mon-compte';
     }
   } catch (_) {}
 })();
@@ -136,7 +136,7 @@ document.getElementById('register-form').addEventListener('submit', async functi
 
   btn.textContent = '✓ Compte créé !';
 
-  setTimeout(() => { window.location.href = 'index.html'; }, 800);
+  setTimeout(() => { window.location.href = '/mon-compte'; }, 800);
 });
 </script>
 <script src="data.php?v=2"></script><script src="site-data.js?v=5"></script>
