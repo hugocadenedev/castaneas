@@ -42,17 +42,41 @@ function castaneas_sucrine_build_items(array $order) {
 
         $product = $products[$item['id'] ?? ''] ?? null;
         $sucrineId = $item['sucrineId'] ?? ($product['sucrineId'] ?? null);
-        $qty = (int) ($item['qty'] ?? 0);
+        $qty = max(0, (int) ($item['qty'] ?? 0));
+        $offerQty = max(1, (int) ($item['offerQty'] ?? 1));
+        $lineQty = $qty * $offerQty;
 
-        if (!$sucrineId || $qty <= 0) {
+        if ($sucrineId && $lineQty > 0) {
+            if (!isset($items[$sucrineId])) {
+                $items[$sucrineId] = ['quantity' => 0];
+            }
+
+            $items[$sucrineId]['quantity'] += $lineQty;
+        }
+
+        $boxItems = is_array($product['boxItems'] ?? null) ? $product['boxItems'] : [];
+        if (!$boxItems || $qty <= 0) {
             continue;
         }
 
-        if (!isset($items[$sucrineId])) {
-            $items[$sucrineId] = ['quantity' => 0];
-        }
+        foreach ($boxItems as $boxItem) {
+            if (!is_array($boxItem) || empty($boxItem['productId'])) {
+                continue;
+            }
 
-        $items[$sucrineId]['quantity'] += $qty;
+            $child = $products[$boxItem['productId']] ?? null;
+            $childSucrineId = $child['sucrineId'] ?? null;
+            if (!$childSucrineId) {
+                continue;
+            }
+
+            $childQty = max(1, (int) ($boxItem['qty'] ?? 1)) * $qty;
+            if (!isset($items[$childSucrineId])) {
+                $items[$childSucrineId] = ['quantity' => 0];
+            }
+
+            $items[$childSucrineId]['quantity'] += $childQty;
+        }
     }
 
     return $items;
@@ -75,6 +99,78 @@ function castaneas_sucrine_address_payload(array $billing) {
         'country' => strtoupper(trim((string) ($billing['pays'] ?? 'FR'))),
         'zipcode' => trim((string) ($billing['cp'] ?? '')),
     ];
+}
+
+function castaneas_sucrine_delivery_address(array $order, array $billing) {
+    $shipping = is_array($order['shipping'] ?? null) ? $order['shipping'] : [];
+    $servicePoint = is_array($shipping['servicePoint'] ?? null) ? $shipping['servicePoint'] : [];
+    $servicePointAddress = is_array($servicePoint['address'] ?? null) ? $servicePoint['address'] : [];
+    $type = trim((string) ($shipping['type'] ?? ''));
+
+    if ($type !== 'relay' || !$servicePoint) {
+        return castaneas_sucrine_address_payload($billing);
+    }
+
+    $street = trim(implode(' ', array_filter([
+        (string) ($servicePointAddress['street'] ?? ''),
+        (string) ($servicePointAddress['houseNumber'] ?? ''),
+    ])));
+
+    return [
+        'address' => $street,
+        'addressExtra' => '',
+        'city' => trim((string) ($servicePointAddress['city'] ?? '')),
+        'company' => trim((string) ($servicePoint['carrier']['name'] ?? '')),
+        'name' => trim((string) ($servicePoint['name'] ?? castaneas_sucrine_contact_name($billing))),
+        'country' => strtoupper(trim((string) ($servicePointAddress['countryCode'] ?? ($billing['pays'] ?? 'FR')))),
+        'zipcode' => trim((string) ($servicePointAddress['postalCode'] ?? '')),
+    ];
+}
+
+function castaneas_sucrine_delivery_description(array $order) {
+    $shipping = is_array($order['shipping'] ?? null) ? $order['shipping'] : [];
+    $servicePoint = is_array($shipping['servicePoint'] ?? null) ? $shipping['servicePoint'] : [];
+
+    $parts = array_filter([
+        trim((string) ($shipping['name'] ?? '')),
+        trim((string) ($shipping['carrier']['name'] ?? '')),
+    ]);
+
+    $description = $parts ? implode(' - ', array_values(array_unique($parts))) : trim((string) ($shipping['type'] ?? 'Livraison'));
+    if (!empty($servicePoint['name'])) {
+        $description .= ' - ' . trim((string) $servicePoint['name']);
+    }
+
+    return $description;
+}
+
+function castaneas_sucrine_message(array $order, array $billing) {
+    $shipping = is_array($order['shipping'] ?? null) ? $order['shipping'] : [];
+    $servicePoint = is_array($shipping['servicePoint'] ?? null) ? $shipping['servicePoint'] : [];
+    $notes = [];
+
+    $rawNote = trim((string) ($billing['note'] ?? ''));
+    if ($rawNote !== '') {
+        $notes[] = $rawNote;
+    }
+
+    if ($servicePoint) {
+        $servicePointAddress = is_array($servicePoint['address'] ?? null) ? $servicePoint['address'] : [];
+        $location = trim(implode(' ', array_filter([
+            (string) ($servicePointAddress['postalCode'] ?? ''),
+            (string) ($servicePointAddress['city'] ?? ''),
+        ])));
+        $relayNote = 'Point relais: ' . trim((string) ($servicePoint['name'] ?? ''));
+        if ($location !== '') {
+            $relayNote .= ' (' . $location . ')';
+        }
+        if (!empty($servicePoint['carrierServicePointId'])) {
+            $relayNote .= ' [code transporteur: ' . trim((string) $servicePoint['carrierServicePointId']) . ']';
+        }
+        $notes[] = $relayNote;
+    }
+
+    return implode(' | ', $notes);
 }
 
 function castaneas_sucrine_delivery_point_candidates(array $order, array $config) {
@@ -155,9 +251,10 @@ function castaneas_sucrine_delivery_point(array $order, array $config) {
 function castaneas_sucrine_payload(array $order, $deliveryPoint = null) {
     $billing = $order['billing'] ?? [];
     $config = castaneas_sucrine_config();
-    $address = castaneas_sucrine_address_payload($billing);
+    $deliveryAddress = castaneas_sucrine_delivery_address($order, $billing);
+    $invoiceAddress = castaneas_sucrine_address_payload($billing);
     $shipping = is_array($order['shipping'] ?? null) ? $order['shipping'] : [];
-    $shippingLabel = trim((string) (($shipping['name'] ?? '') ?: ($shipping['product']['name'] ?? '') ?: ($shipping['type'] ?? 'Livraison')));
+    $shippingLabel = castaneas_sucrine_delivery_description($order);
     $shippingAmount = round((float) ($shipping['price'] ?? 0), 2);
     $resolvedDeliveryPoint = $deliveryPoint !== null ? trim((string) $deliveryPoint) : castaneas_sucrine_delivery_point($order, $config);
 
@@ -180,9 +277,9 @@ function castaneas_sucrine_payload(array $order, $deliveryPoint = null) {
             'vatRate' => 0,
             'vatAmount' => 0,
         ],
-        'deliveryAddress' => $address,
-        'invoicingAddress' => $address,
-        'message' => trim((string) ($billing['note'] ?? '')),
+        'deliveryAddress' => $deliveryAddress,
+        'invoicingAddress' => $invoiceAddress,
+        'message' => castaneas_sucrine_message($order, $billing),
     ];
 }
 
