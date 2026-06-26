@@ -1,2 +1,5 @@
 db-config.local.php
 integrations.local.php
+tmp-preview-sucrine-*.php
+tmp-sucrine-*.php
+tmp-sucrine-*.json

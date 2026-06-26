@@ -94,49 +94,37 @@ Envoyer automatiquement chaque commande client vers le CRM Sucrine au moment de 
 | `GET /professional/customerOrders` | Lister les commandes |
 | `PUT /professional/customerOrders/{id}/cancel` | Annuler une commande |
 | `POST/GET /professional/contacts` | Gérer les contacts clients |
+| `GET /professional/catalogues/{catalogueId}` | Catalogue produits et `rawPrices` |
 | `GET /professional/catalogues/{catalogueId}/deliveryPoints` | Modes de livraison |
 
-> ⚠️ Il n'existe **pas** d'endpoint pour lister les produits du catalogue. Les `catalogueItemPriceId` doivent être copiés manuellement depuis le dashboard Sucrine.
-
-> ⚠️ La création de commande requiert aussi un `deliveryPoint` Sucrine valide. Il faut donc renseigner dans la config serveur soit `sucrine.delivery_point`, soit un mapping `sucrine.delivery_point_home` / `sucrine.delivery_point_relay`, soit de préférence un mapping exact `sucrine.delivery_points` par code de livraison Sendcloud.
+> ⚠️ La création de commande requiert un `deliveryPoint` Sucrine valide. Conformément à la documentation API, ce champ doit être envoyé dans le body de `POST /professional/customerOrders/order`.
 
 ### Mapping produits
-Chaque produit Castaneas a maintenant un champ `sucrineId` dans le back-office (section **Intégrations** du formulaire produit). Ce champ correspond au `catalogueItemPriceId` dans Sucrine.
+Chaque produit Castaneas utilise maintenant le champ `sucrineId` du back-office comme **référence Sucrine source**. Ce champ peut contenir :
+
+- le SKU WooCommerce / Sucrine, par exemple `AR00107`
+- ou directement le `catalogueItemPriceId` Sucrine, par exemple `699c330139793242fa2767a0`
+
+Si la valeur commence par `AR`, Castaneas charge automatiquement `GET /professional/catalogues/{catalogueId}` puis résout le bon `rawPrices[]._id` à partir de `rawPrices[].sku`, `rawPrices[].price.sku` ou `rawPrices[].metadata.woocommerceIdentifier`.
 
 **Étapes :**
-1. Se connecter au dashboard Sucrine
-2. Pour chaque produit, copier son `catalogueItemPriceId`
-3. Coller cet ID dans le champ **Référence Sucrine** du produit dans le back-office Castaneas
-4. Récupérer l'identifiant du mode de distribution Sucrine utilisé pour les commandes web, puis le renseigner dans `sucrine.delivery_point` ou dans les variantes `home` / `relay`
-5. Si plusieurs modes Sucrine existent selon le transporteur ou le type de livraison, remplir `sucrine.delivery_points` avec un mapping exact par code Sendcloud
+1. Récupérer l'identifiant du catalogue Sucrine et le renseigner dans `sucrine.catalogue_id`
+2. Pour chaque produit, saisir de préférence son SKU `AR...` dans le champ **Référence Sucrine** du back-office
+3. Récupérer l'identifiant du mode de distribution Sucrine utilisé pour les commandes web, puis le renseigner dans `sucrine.delivery_point`
+4. En cas de besoin, un `catalogueItemPriceId` brut reste accepté dans ce même champ
 
-Exemple recommande pour les modes de livraison :
+Exemple de configuration minimale conforme à la documentation :
 
 ```php
 'sucrine' => [
   'api_key' => 'VOTRE_CLE_API_SUCRINE',
   'base_url' => 'https://app.sucrine.club/api',
+  'catalogue_id' => 'ID_DU_CATALOGUE_SUCRINE',
   'order_source' => 'castaneas',
-  'delivery_points' => [
-    'chronopost:shop2shop' => 'ID_SUCRINE_RELAIS_CHRONO',
-    'chronopost:relay' => 'ID_SUCRINE_RELAIS_CHRONO',
-    'chronopost:home' => 'ID_SUCRINE_DOMICILE_CHRONO',
-    'home' => 'ID_SUCRINE_DOMICILE_PAR_DEFAUT',
-    'relay' => 'ID_SUCRINE_RELAIS_PAR_DEFAUT',
-  ],
+  'skip_precise_supply_check' => true,
+  'delivery_point' => 'ID_SUCRINE_MODE_DISTRIBUTION',
 ],
 ```
-
-Clés testées automatiquement par le code, dans l'ordre :
-
-- `shipping.code`
-- `shipping.product.code`
-- `carrier.code:product.code`
-- `carrier.code:type`
-- `carrier.code:last_mile`
-- `carrier.code`
-- `type`
-- `last_mile`
 
 ### Proxy PHP (à créer sur Hostinger)
 La clé API ne doit **jamais** être dans le JS client. Il faut un proxy côté serveur.

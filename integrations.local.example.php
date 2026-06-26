@@ -1,4 +1,4 @@
-<?php
+ <?php
 
 return [
     'base_url' => 'https://www.castaneas.fr',
@@ -17,18 +17,12 @@ return [
     'sucrine' => [
         'api_key' => 'VOTRE_CLE_API_SUCRINE',
         'base_url' => 'https://app.sucrine.club/api',
+        'catalogue_id' => 'ID_DU_CATALOGUE_SUCRINE',
         'order_source' => 'castaneas',
         'skip_precise_supply_check' => true,
+        'ca_bundle' => '',
+        'skip_ssl_verify' => false,
         'delivery_point' => '',
-        'delivery_point_home' => '',
-        'delivery_point_relay' => '',
-        'delivery_points' => [
-            'chronopost:shop2shop' => '',
-            'chronopost:relay' => '',
-            'chronopost:home' => '',
-            'home' => '',
-            'relay' => '',
-        ],
     ],
     'sendcloud' => [
         'public_key' => 'VOTRE_CLE_PUBLIQUE_SENDCLOUD',
