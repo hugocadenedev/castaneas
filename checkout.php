@@ -781,14 +781,18 @@ if ($paymentMethod !== 'card') {
 $promo = is_array($body['promo'] ?? null) ? $body['promo'] : [];
 $promoCode = strtoupper(trim((string) ($promo['code'] ?? '')));
 $promoDiscount = round((float) ($promo['discount'] ?? 0), 2);
+$promoDeliveryMode = trim((string) ($promo['deliveryMode'] ?? ''));
+$promoPickupLabel = trim((string) ($promo['pickupLabel'] ?? ''));
+$promoPickupAddress = trim((string) ($promo['pickupAddress'] ?? ''));
 
 $total = castaneas_checkout_total($items);
 $shipping = is_array($body['shipping'] ?? null) ? $body['shipping'] : [];
 $forceSimulatePayment = !empty($body['bypassPayment']) || !empty($body['forceSimulatePayment']);
-$shippingPrice = round((float) ($shipping['price'] ?? 0), 2);
+$shippingType = trim((string) ($shipping['type'] ?? ''));
+$shippingPrice = $shippingType === 'pickup' ? 0.0 : round((float) ($shipping['price'] ?? 0), 2);
 $selectedServicePoint = is_array($shipping['servicePoint'] ?? null) ? $shipping['servicePoint'] : null;
 $selectedShipping = [
-    'type' => trim((string) ($shipping['type'] ?? '')),
+    'type' => $shippingType,
     'code' => trim((string) ($shipping['code'] ?? '')),
     'name' => trim((string) ($shipping['name'] ?? '')),
     'carrier' => is_array($shipping['carrier'] ?? null) ? $shipping['carrier'] : [],
@@ -796,6 +800,7 @@ $selectedShipping = [
     'selectedFunctionalities' => is_array($shipping['selectedFunctionalities'] ?? null) ? $shipping['selectedFunctionalities'] : [],
     'price' => $shippingPrice,
     'servicePoint' => $selectedServicePoint,
+    'pickupAddress' => trim((string) ($shipping['pickupAddress'] ?? '')),
 ];
 
 $grandTotal = round(max(0, $total - $promoDiscount) + $shippingPrice, 2);
@@ -812,6 +817,11 @@ $order = [
     'discount' => $promoDiscount,
     'promo' => [
         'code' => $promoCode,
+        'type' => trim((string) ($promo['type'] ?? '')),
+        'label' => trim((string) ($promo['label'] ?? '')),
+        'deliveryMode' => $promoDeliveryMode,
+        'pickupLabel' => $promoPickupLabel,
+        'pickupAddress' => $promoPickupAddress,
         'discount' => $promoDiscount,
     ],
     'total' => $grandTotal,

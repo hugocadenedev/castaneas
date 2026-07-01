@@ -63,6 +63,16 @@ function castaneas_integrations_config() {
             'request_label' => castaneas_bool_env(getenv('CASTANEAS_SENDCLOUD_REQUEST_LABEL') ?: ''),
             'apply_shipping_rules' => !getenv('CASTANEAS_SENDCLOUD_DISABLE_RULES'),
         ],
+        'google_places' => [
+            'api_key' => getenv('CASTANEAS_GOOGLE_PLACES_API_KEY') ?: '',
+            'base_url' => getenv('CASTANEAS_GOOGLE_PLACES_BASE_URL') ?: 'https://places.googleapis.com/v1',
+            'place_id' => getenv('CASTANEAS_GOOGLE_PLACES_PLACE_ID') ?: '',
+            'query' => getenv('CASTANEAS_GOOGLE_PLACES_QUERY') ?: 'CASTANÉAS Albias',
+            'language' => getenv('CASTANEAS_GOOGLE_PLACES_LANGUAGE') ?: 'fr',
+            'region' => getenv('CASTANEAS_GOOGLE_PLACES_REGION') ?: 'FR',
+            'ca_bundle' => getenv('CASTANEAS_GOOGLE_PLACES_CA_BUNDLE') ?: '',
+            'skip_ssl_verify' => castaneas_bool_env(getenv('CASTANEAS_GOOGLE_PLACES_SKIP_SSL_VERIFY') ?: ''),
+        ],
     ];
 
     $configFiles = [
@@ -150,5 +160,19 @@ function castaneas_sendcloud_is_ready() {
 
     return $config['public_key'] !== ''
         && $config['secret_key'] !== ''
+        && $config['base_url'] !== '';
+}
+
+function castaneas_google_places_config() {
+    $config = castaneas_integrations_config();
+
+    return $config['google_places'];
+}
+
+function castaneas_google_places_is_ready() {
+    $config = castaneas_google_places_config();
+
+    return $config['api_key'] !== ''
+        && ($config['place_id'] !== '' || $config['query'] !== '')
         && $config['base_url'] !== '';
 }

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Livraison &amp; retours · Castaneas</title>
+<meta name="description" content="Informations sur la logistique, l'expédition, le suivi des colis et les retours Castaneas.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=7">
+<style>
+  :root {
+    --serif: 'Fraunces', Georgia, serif;
+    --sans: 'Inter', -apple-system, Arial, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  body { font-family: var(--sans); letter-spacing: -.005em; }
+  h1, h2, h3, h4 { font-family: var(--serif); letter-spacing: -.02em; }
+
+  .navbar.pill-nav { background: transparent; border-bottom: none; position: sticky; top: 14px; z-index: 50; }
+  .navbar.pill-nav .nav-inner { max-width: 1340px; margin: 16px auto 0; background: #fff; border-radius: 999px; padding: 12px 16px 12px 28px; box-shadow: 0 6px 24px -10px rgba(59,31,14,.18); }
+  .navbar.pill-nav .nav-links { font-weight: 600; }
+  .navbar.pill-nav .nav-links a { color: var(--brown-deep); }
+  .navbar.pill-nav .nav-actions { background: transparent; border-radius: 0; padding: 0; gap: 8px; }
+  .navbar.pill-nav .icon-btn { width: 40px; height: 40px; background: #EDEFE5; border-radius: 999px; }
+  .cart-pill { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px 8px 12px; background: #EDEFE5; color: var(--brown-deep); font-weight: 700; font-size: 13px; border-radius: 999px; border: none; cursor: pointer; transition: background .15s; }
+  .cart-pill:hover { background: #dfe3d5; }
+  .cart-pill svg { width: 18px; height: 18px; }
+  .promo-bar.pill { max-width: 1340px; margin: 14px auto 0; border-radius: 999px; }
+
+  .shipping-page { max-width: 1180px; margin: 0 auto; padding: 0 24px 100px; }
+  .crumb { font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); font-weight: 700; padding: 32px 0 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .crumb a { color: var(--muted); text-decoration: none; transition: color .15s; }
+  .crumb a:hover { color: var(--brown-deep); }
+  .crumb .sep { opacity: .5; }
+
+  .shipping-hero {
+    display: grid;
+    grid-template-columns: 1.1fr .9fr;
+    gap: 28px;
+    align-items: stretch;
+    margin: 36px 0 34px;
+  }
+  .shipping-hero__card,
+  .shipping-hero__aside {
+    background: linear-gradient(180deg, #fffaf1 0%, #f5ecdf 100%);
+    border: 1px solid rgba(91, 55, 31, .08);
+    border-radius: 30px;
+    padding: 34px;
+    box-shadow: 0 20px 50px rgba(59,31,14,.08);
+  }
+  .shipping-hero__eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .28em;
+    text-transform: uppercase;
+    color: var(--brown-chest);
+    font-weight: 700;
+    margin-bottom: 18px;
+  }
+  .shipping-hero h1 {
+    font-size: clamp(2.25rem, 5vw, 4.5rem);
+    line-height: 1.02;
+    margin: 0 0 18px;
+    color: var(--ink);
+  }
+  .shipping-hero p {
+    margin: 0 0 14px;
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    max-width: 62ch;
+  }
+  .shipping-hero__aside {
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 26px;
+  }
+  .shipping-partner-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 180px;
+    max-width: 100%;
+    padding: 12px 18px;
+    border-radius: 18px;
+    background: #fffaf4;
+    border: 1px solid rgba(91, 55, 31, .08);
+  }
+  .shipping-partner-logo img { display: block; width: 100%; height: auto; }
+  .shipping-hero__aside h2 { font-size: 1.45rem; margin: 0 0 10px; color: var(--ink); }
+  .shipping-hero__aside p { margin: 0; font-size: 15px; line-height: 1.72; color: var(--ink-soft); }
+
+  .shipping-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin: 0 0 28px; }
+  .shipping-card {
+    background: #fff;
+    border-radius: 28px;
+    border: 1px solid rgba(91, 55, 31, .08);
+    box-shadow: 0 16px 40px rgba(59,31,14,.07);
+    overflow: hidden;
+  }
+  .shipping-card__media { aspect-ratio: 4 / 3; background: #efe5d8; }
+  .shipping-card__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .shipping-card__body { padding: 28px; }
+  .shipping-card__kicker {
+    display: inline-flex;
+    margin-bottom: 10px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--brown-chest);
+    font-weight: 700;
+  }
+  .shipping-card h2 { margin: 0 0 12px; font-size: 1.7rem; color: var(--ink); }
+  .shipping-card p { margin: 0 0 14px; font-size: 15px; line-height: 1.75; color: var(--ink-soft); }
+  .shipping-list { margin: 0; padding-left: 20px; color: var(--ink-soft); }
+  .shipping-list li { margin-bottom: 10px; font-size: 15px; line-height: 1.72; }
+
+  .shipping-methods {
+    background: var(--accent-cocoa);
+    color: var(--cream-light);
+    border-radius: 30px;
+    padding: 34px;
+    margin: 0 0 28px;
+  }
+  .shipping-methods__head { display: flex; justify-content: space-between; gap: 20px; align-items: flex-end; margin-bottom: 26px; flex-wrap: wrap; }
+  .shipping-methods__head h2 { margin: 0; font-size: 2rem; color: #fff; }
+  .shipping-methods__head p { margin: 0; max-width: 58ch; font-size: 15px; line-height: 1.7; color: rgba(248,241,228,.82); }
+  .shipping-methods__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .shipping-method {
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 22px;
+    padding: 22px;
+    min-height: 165px;
+  }
+  .shipping-method strong { display: block; font-size: 1rem; color: #fff; margin-bottom: 10px; }
+  .shipping-method p { margin: 0; font-size: 14px; line-height: 1.7; color: rgba(248,241,228,.82); }
+
+  .returns-note {
+    background: #f7f1e8;
+    border: 1px solid rgba(91, 55, 31, .08);
+    border-radius: 28px;
+    padding: 32px;
+    display: grid;
+    grid-template-columns: .9fr 1.1fr;
+    gap: 28px;
+    align-items: start;
+  }
+  .returns-note__label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .24em;
+    text-transform: uppercase;
+    color: var(--brown-chest);
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: block;
+  }
+  .returns-note h2 { margin: 0; font-size: 1.85rem; color: var(--ink); }
+  .returns-note p { margin: 0 0 14px; font-size: 15px; line-height: 1.78; color: var(--ink-soft); }
+  .returns-note a { color: var(--brown-deep); text-decoration: underline; }
+
+  .footer { background: transparent; margin-top: 56px; padding: 0 16px 24px; }
+  .footer-inner { max-width: 1340px; margin: 0 auto; background: var(--shell-accent); color: var(--cream); border-radius: 28px; padding: 56px 48px 28px; box-shadow: 0 12px 40px -16px rgba(59,31,14,.35); }
+  .footer-brand { margin-bottom: 14px; }
+  .footer-brand-logo { display: block; height: 42px; width: auto; filter: brightness(0) invert(1); }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 40px; }
+  .footer-grid h4 { font-family: var(--serif); font-size: 1rem; font-weight: 600; margin: 0 0 14px; color: #fff; }
+  .footer-grid ul { list-style: none; padding: 0; margin: 0; }
+  .footer-grid li { margin-bottom: 8px; }
+  .footer-grid a { font-size: 13px; color: rgba(248,241,228,.75); text-decoration: none; transition: color .15s; }
+  .footer-grid a:hover { color: #fff; }
+  .footer-bottom { border-top: 1px solid rgba(248,241,228,.12); padding-top: 24px; display: flex; justify-content: space-between; font-size: 12px; color: rgba(248,241,228,.5); flex-wrap: wrap; gap: 8px; }
+
+  @media (max-width: 980px) {
+    .shipping-hero,
+    .shipping-grid,
+    .returns-note,
+    .shipping-methods__grid,
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .shipping-methods__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 720px) {
+    .shipping-page { padding: 0 16px 84px; }
+    .shipping-hero,
+    .shipping-grid,
+    .returns-note,
+    .footer-grid,
+    .shipping-methods__grid { grid-template-columns: 1fr; }
+    .shipping-hero__card,
+    .shipping-hero__aside,
+    .shipping-card__body,
+    .shipping-methods,
+    .returns-note { padding: 26px; }
+    .footer-inner { padding: 40px 24px 24px; border-radius: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="promo-bar pill">Livraison offerte dès 40€ d'achat — récolte 2025 disponible 🌰</div>
+
+<header class="navbar pill-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand" aria-label="Castaneas">
+      <img src="assets/Castaneas-logo (3).svg" alt="Castaneas" class="brand-logo">
+    </a>
+    <nav class="nav-links"></nav>
+    <div class="nav-actions">
+      <a href="login.html" class="icon-btn" aria-label="Mon compte">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke-linecap="round"/></svg>
+      </a>
+      <button class="cart-pill" aria-label="Panier" data-cart-toggle>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 7h14l-1.5 11.5a2 2 0 0 1-2 1.5h-7a2 2 0 0 1-2-1.5L5 7Z"/><path d="M9 7V5a3 3 0 0 1 6 0v2" stroke-linecap="round"/></svg>
+        <span data-cart-count>0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="shipping-page">
+  <nav class="crumb" aria-label="Fil d'ariane">
+    <a href="index.html">Accueil</a>
+    <span class="sep">›</span>
+    <span>Livraison &amp; retours</span>
+  </nav>
+
+  <section class="shipping-hero">
+    <div class="shipping-hero__card">
+      <div class="shipping-hero__eyebrow">Logistique &amp; expédition</div>
+      <h1>Livraison rassurante,<br>préparation soignée.</h1>
+      <p>Castanéas confie la gestion de sa logistique au spécialiste français e-logik. L'objectif d'e-Logik est de vous faire vivre une expérience positive grâce à une logistique rassurante.</p>
+      <p>Toutes commandes reçues avant 13 h sont expédiées le jour même, les jours ouvrés. Les produits sont expédiés depuis l'entrepôt de Toulouse, au sein du réseau d'entrepôts e-Logik réparti dans toute la France.</p>
+    </div>
+
+    <aside class="shipping-hero__aside">
+      <div>
+        <div class="shipping-partner-logo">
+          <img src="https://aqua-porcupine-495858.hostingersite.com/wp-content/uploads/2022/06/e-logik-toulouse-tr-300x150.png.webp" alt="Logo e-logik Toulouse">
+        </div>
+      </div>
+      <div>
+        <h2>Un partenaire logistique français</h2>
+        <p>Chaque colis est préparé avec soin pour préserver vos produits pendant le transport. Les dimensions des boîtes sont adaptées et vos articles sont correctement protégés dès leur départ de l'entrepôt.</p>
+      </div>
+    </aside>
+  </section>
+
+  <section class="shipping-grid" aria-label="Détails logistiques">
+    <article class="shipping-card">
+      <div class="shipping-card__media">
+        <img src="https://aqua-porcupine-495858.hostingersite.com/wp-content/uploads/2022/06/IMG_3761-225x300.jpg.webp" alt="Cartons d'emballage e-logik fabriqués en France">
+      </div>
+      <div class="shipping-card__body">
+        <span class="shipping-card__kicker">Préparation</span>
+        <h2>Des colis pensés pour le trajet</h2>
+        <p>Les cartons d'emballages e-Logik sont fabriqués en France. Chaque produit est emballé avec soin afin d'arriver en bon état, avec un calage adapté à la taille de la commande.</p>
+        <ul class="shipping-list">
+          <li>Boîtes aux dimensions appropriées</li>
+          <li>Protection adaptée à chaque article</li>
+          <li>Préparation et emballage inclus dans les frais d'expédition</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="shipping-card">
+      <div class="shipping-card__body">
+        <span class="shipping-card__kicker">Suivi</span>
+        <h2>Chaque colis est tracé</h2>
+        <p>Nous vous envoyons un numéro de tracking pour suivre votre colis en temps réel. Vous savez ainsi à tout moment où se trouve votre commande, du départ de l'entrepôt jusqu'à la livraison.</p>
+        <ul class="shipping-list">
+          <li>Notification avec numéro de suivi</li>
+          <li>Suivi actualisé selon le transporteur choisi</li>
+          <li>Visibilité complète sur l'acheminement</li>
+        </ul>
+      </div>
+    </article>
+  </section>
+
+  <section class="shipping-methods" aria-labelledby="shipping-methods-title">
+    <div class="shipping-methods__head">
+      <h2 id="shipping-methods-title">Modes d'expédition</h2>
+      <p>Les colis sont expédiés via CHRONOPOST 13, GLS ou Mondial Relay. Les frais d'expédition incluent les frais de préparation, d'emballage ainsi que les frais de port.</p>
+    </div>
+    <div class="shipping-methods__grid">
+      <div class="shipping-method">
+        <strong>CHRONOPOST 13</strong>
+        <p>Pour une livraison rapide, avec suivi communiqué dès l'expédition.</p>
+      </div>
+      <div class="shipping-method">
+        <strong>GLS</strong>
+        <p>Une option de livraison suivie pour les envois à domicile.</p>
+      </div>
+      <div class="shipping-method">
+        <strong>Mondial Relay</strong>
+        <p>Une solution pratique pour récupérer votre commande en point relais.</p>
+      </div>
+      <div class="shipping-method">
+        <strong>Commande groupée</strong>
+        <p>Nous vous recommandons de regrouper tous vos articles dans une seule commande. Deux commandes distinctes ne peuvent pas être fusionnées et les frais d'expédition s'appliquent à chacune d'entre elles.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="returns-note" id="retours">
+    <div>
+      <span class="returns-note__label">Retours</span>
+      <h2>Besoin d'aide après réception&nbsp;?</h2>
+    </div>
+    <div>
+      <p>Pour toute demande liée à un retour, un échange ou un colis reçu avec un souci, contactez-nous en précisant votre numéro de commande afin que nous puissions vous indiquer la marche à suivre.</p>
+      <p>Les modalités complètes applicables restent consultables dans nos <a href="/cgv">conditions générales de vente</a>.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand"><img src="assets/Castaneas-logo (3).svg" alt="Castaneas" class="footer-brand-logo"></div>
+      </div>
+      <div>
+        <h4>Boutique</h4>
+        <ul>
+          <li><a href="/categorie/cremes">Crèmes de châtaigne</a></li>
+          <li><a href="/categorie/coffrets">Coffrets</a></li>
+        </ul>
+      </div>
+      <div>
+        <ul>
+          <li><a href="histoire.html">Notre histoire</a></li>
+          <li><a href="recettes.html">Recettes</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Aide</h4>
+        <ul>
+          <li><a href="/livraison-retours" aria-current="page">Livraison</a></li>
+          <li><a href="#retours">Retours</a></li>
+          <li><a href="mailto:contact@castaneas.fr">Nous contacter</a></li>
+          <li><a href="cgv.html">CGV</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 Castaneas · Albias, Tarn-et-Garonne (82)</div>
+    </div>
+  </div>
+</footer>
+
+<div class="cart-backdrop" data-cart-close></div>
+<aside class="cart-drawer" role="dialog" aria-label="Votre panier">
+  <div class="cart-head">
+    <h3>Votre panier</h3>
+    <button class="cart-close" data-cart-close aria-label="Fermer le panier">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="cart-body" data-cart-body></div>
+  <div class="cart-foot">
+    <div class="cart-total-row"><span>Total</span><strong data-cart-total>0,00 €</strong></div>
+    <a href="facturation.html" class="cart-checkout-btn">Commander →</a>
+  </div>
+</aside>
+
+<script src="data.php?v=2"></script><script src="site-data.js?v=5"></script>
+<script src="cart.js"></script>
+</body>
+</html>

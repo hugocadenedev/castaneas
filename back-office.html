@@ -745,6 +745,11 @@ tbody tr:last-child td { border-bottom: none; }
         Recettes
         <span id="recipes-badge" style="margin-left:auto;font-size:11px;font-weight:800;background:var(--cream-soft);padding:2px 8px;border-radius:999px;"></span>
       </div>
+      <div class="nav-item" data-panel="blog" onclick="switchPanel(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4.5A2.5 2.5 0 0 1 7.5 2H20v18H7.5A2.5 2.5 0 0 0 5 22"/><path d="M5 4.5V22"/><path d="M8 7h8"/><path d="M8 11h8"/><path d="M8 15h5"/></svg>
+        Actualités
+        <span id="blog-badge" style="margin-left:auto;font-size:11px;font-weight:800;background:var(--cream-soft);padding:2px 8px;border-radius:999px;"></span>
+      </div>
       <div class="nav-item" data-panel="pages" onclick="switchPanel(this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
         Pages générées
@@ -1000,6 +1005,21 @@ tbody tr:last-child td { border-bottom: none; }
               </select>
             </div>
             <div class="form-field">
+              <label>Mode de livraison</label>
+              <select id="promo-delivery-mode" onchange="syncPromoDeliveryState()">
+                <option value="standard">Normal</option>
+                <option value="pickup">Retrait sur place</option>
+              </select>
+            </div>
+            <div class="form-field span2" id="promo-pickup-label-wrap" style="display:none;">
+              <label>Libellé du retrait</label>
+              <input type="text" id="promo-pickup-label" placeholder="Retrait à la boutique" oninput="renderPromoPreview()">
+            </div>
+            <div class="form-field span2" id="promo-pickup-address-wrap" style="display:none;">
+              <label>Adresse du retrait</label>
+              <textarea id="promo-pickup-address" rows="3" placeholder="Ex: 120 route de la Châtaigne, 82350 Albias" oninput="renderPromoPreview()"></textarea>
+            </div>
+            <div class="form-field">
               <label>Résumé</label>
               <div id="promo-preview" style="background:var(--cream-soft);border:1.5px solid var(--line);border-radius:var(--r);padding:12px 14px;min-height:44px;font-size:13px;color:var(--ink-soft);"></div>
             </div>
@@ -1031,6 +1051,37 @@ tbody tr:last-child td { border-bottom: none; }
           <table>
             <thead><tr><th>Image</th><th>Titre</th><th>Durée</th><th>Personnes</th><th>Produits liés</th><th>Statut</th><th>Actions</th></tr></thead>
             <tbody id="recipes-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ========== BLOG ========== -->
+      <div class="panel" id="panel-blog">
+        <div class="section-header">
+          <h2 class="section-title">Actualités</h2>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-secondary" onclick="openBlogCategoryModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 7h18"/><path d="M7 3v18"/></svg>
+              Nouvelle catégorie
+            </button>
+            <button class="btn btn-primary" onclick="openBlogPostModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Nouvel article
+            </button>
+          </div>
+        </div>
+
+        <div class="table-wrap" style="margin-bottom:20px;">
+          <table>
+            <thead><tr><th>Catégorie</th><th>Slug SEO</th><th>Description</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody id="blog-categories-tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Article</th><th>Catégorie principale</th><th>Publication</th><th>SEO</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody id="blog-posts-tbody"></tbody>
           </table>
         </div>
       </div>
@@ -1158,6 +1209,225 @@ tbody tr:last-child td { border-bottom: none; }
               <div class="form-field"><label>Produit 2</label><select id="hp-prod-2"></select></div>
               <div class="form-field"><label>Produit 3</label><select id="hp-prod-3"></select></div>
               <div class="form-field"><label>Produit 4</label><select id="hp-prod-4"></select></div>
+            </div>
+          </div>
+
+          <!-- PAGE RECETTES -->
+          <div class="table-wrap" style="padding:24px 28px;margin-bottom:20px;">
+            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">🍽️</span> Page "Recettes"</h3>
+            <div class="form-grid">
+              <div class="form-field span2">
+                <label>Hero — accroche</label>
+                <input type="text" id="hp-recipes-hero-eyebrow" placeholder="Recettes signées Castaneas">
+              </div>
+              <div class="form-field">
+                <label>Hero — titre partie normale</label>
+                <input type="text" id="hp-recipes-hero-title" placeholder="Cuisiner avec">
+              </div>
+              <div class="form-field">
+                <label>Hero — titre partie <em>italique</em></label>
+                <input type="text" id="hp-recipes-hero-title-em" placeholder="la châtaigne.">
+              </div>
+              <div class="form-field span2">
+                <label>Hero — sous-titre</label>
+                <textarea id="hp-recipes-hero-subtitle" rows="2" placeholder="Des recettes simples, directes, qui ne cherchent pas à impressionner."></textarea>
+              </div>
+              <div class="form-field span2">
+                <label>Hero — signature à droite</label>
+                <input type="text" id="hp-recipes-hero-aside" placeholder="— à table !">
+              </div>
+              <div class="form-field">
+                <label>Listing — accroche</label>
+                <input type="text" id="hp-recipes-list-eyebrow" placeholder="Toutes les recettes">
+              </div>
+              <div class="form-field">
+                <label>Listing — titre partie normale</label>
+                <input type="text" id="hp-recipes-list-title" placeholder="Nos idées">
+              </div>
+              <div class="form-field">
+                <label>Listing — titre partie <em>italique</em></label>
+                <input type="text" id="hp-recipes-list-title-em" placeholder="pour vos pots.">
+              </div>
+            </div>
+          </div>
+
+          <!-- PAGE ACTUALITES -->
+          <div class="table-wrap" style="padding:24px 28px;margin-bottom:20px;">
+            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">📰</span> Page "Actualités"</h3>
+            <div class="form-grid">
+              <div class="form-field span2">
+                <label>Hero — accroche</label>
+                <input type="text" id="hp-blog-hero-eyebrow" placeholder="Journal Castaneas">
+              </div>
+              <div class="form-field">
+                <label>Hero — titre partie normale</label>
+                <input type="text" id="hp-blog-hero-title" placeholder="Les actualites qui font vivre">
+              </div>
+              <div class="form-field">
+                <label>Hero — titre partie <em>italique</em></label>
+                <input type="text" id="hp-blog-hero-title-em" placeholder="nos vergers.">
+              </div>
+              <div class="form-field span2">
+                <label>Hero — sous-titre</label>
+                <textarea id="hp-blog-hero-subtitle" rows="3" placeholder="Conseils de dégustation, vie de la ferme..."></textarea>
+              </div>
+              <div class="form-field span2">
+                <label>Hero — signature à droite</label>
+                <input type="text" id="hp-blog-hero-aside" placeholder="— actualités de la ferme">
+              </div>
+              <div class="form-field">
+                <label>Listing — accroche</label>
+                <input type="text" id="hp-blog-list-eyebrow" placeholder="Tous les articles">
+              </div>
+              <div class="form-field">
+                <label>Listing — titre partie normale</label>
+                <input type="text" id="hp-blog-list-title" placeholder="Toutes les">
+              </div>
+              <div class="form-field">
+                <label>Listing — titre partie <em>italique</em></label>
+                <input type="text" id="hp-blog-list-title-em" placeholder="actualites.">
+              </div>
+              <div class="form-field">
+                <label>Bloc catégories — titre</label>
+                <input type="text" id="hp-blog-cats-title" placeholder="Categories">
+              </div>
+              <div class="form-field span2">
+                <label>Message quand aucun article n'est publié</label>
+                <input type="text" id="hp-blog-empty-text" placeholder="Aucun article publie pour le moment dans cette rubrique.">
+              </div>
+            </div>
+          </div>
+
+          <!-- PAGE HISTOIRE -->
+          <div class="table-wrap" style="padding:24px 28px;margin-bottom:20px;">
+            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:20px;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">🌳</span> Page "Notre histoire"</h3>
+
+            <div class="form-grid" style="margin-bottom:18px;">
+              <div class="form-field span2">
+                <label>Image hero</label>
+                <input type="hidden" id="hp-story-hero-image">
+                <input type="file" id="hp-story-hero-img-file" accept="image/*" style="display:none" onchange="handleHpImgFile(this.files[0],'story-hero')">
+                <div class="banner-drop-zone" id="hp-story-hero-img-drop"
+                     onclick="document.getElementById('hp-story-hero-img-file').click()"
+                     ondragover="event.preventDefault();this.classList.add('drag-over')"
+                     ondragleave="this.classList.remove('drag-over')"
+                     ondrop="event.preventDefault();this.classList.remove('drag-over');handleHpImgFile(event.dataTransfer.files[0],'story-hero')">
+                  <div class="banner-drop-zone__empty" id="hp-story-hero-img-empty">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <p>Glissez une image ici<br><span style="font-size:12px">ou cliquez pour parcourir</span></p>
+                  </div>
+                  <img class="banner-drop-zone__img" id="hp-story-hero-img-preview" src="" alt="">
+                  <button type="button" class="banner-drop-zone__remove" id="hp-story-hero-img-remove" onclick="event.stopPropagation();removeHpImg('story-hero')">&times;</button>
+                </div>
+              </div>
+              <div class="form-field span2"><label>Hero — accroche</label><input type="text" id="hp-story-hero-eyebrow" placeholder="La ferme Castaneas"></div>
+              <div class="form-field"><label>Hero — titre normal</label><input type="text" id="hp-story-hero-title" placeholder="Une histoire de famille,"></div>
+              <div class="form-field"><label>Hero — titre <em>italique</em></label><input type="text" id="hp-story-hero-title-em" placeholder="de vergers... et de gourmandise"></div>
+              <div class="form-field span2"><label>Hero — texte</label><textarea id="hp-story-hero-lede" rows="4" placeholder="Chez Castaneas, nous cultivons bien plus..."></textarea></div>
+            </div>
+
+            <div style="margin-bottom:18px;">
+              <h4 style="font-size:14px;font-weight:700;margin:0 0 12px;color:var(--brown-deep);">Badges du hero</h4>
+              <div class="form-grid">
+                <div class="form-field"><label>Badge 1 — valeur</label><input type="text" id="hp-story-badge-0-value" placeholder="30+"></div>
+                <div class="form-field"><label>Badge 1 — label</label><input type="text" id="hp-story-badge-0-label" placeholder="Années"></div>
+                <div class="form-field span2"><label>Badge 1 — texte</label><input type="text" id="hp-story-badge-0-text" placeholder="Une histoire familiale qui grandit..."></div>
+                <div class="form-field"><label>Badge 2 — valeur</label><input type="text" id="hp-story-badge-1-value" placeholder="150"></div>
+                <div class="form-field"><label>Badge 2 — label</label><input type="text" id="hp-story-badge-1-label" placeholder="Hectares"></div>
+                <div class="form-field span2"><label>Badge 2 — texte</label><input type="text" id="hp-story-badge-1-text" placeholder="Des vergers du Sud-Ouest..."></div>
+                <div class="form-field"><label>Badge 3 — valeur</label><input type="text" id="hp-story-badge-2-value" placeholder="1"></div>
+                <div class="form-field"><label>Badge 3 — label</label><input type="text" id="hp-story-badge-2-label" placeholder="Famille"></div>
+                <div class="form-field span2"><label>Badge 3 — texte</label><input type="text" id="hp-story-badge-2-text" placeholder="Alain, Chantal, Aurélien..."></div>
+              </div>
+            </div>
+
+            <div class="form-grid" style="margin-bottom:18px;">
+              <div class="form-field"><label>Bloc famille — accroche</label><input type="text" id="hp-story-family-eyebrow" placeholder="Qui sommes-nous ?"></div>
+              <div class="form-field"><label>Bloc famille — titre normal</label><input type="text" id="hp-story-family-title" placeholder="La famille Dégans,"></div>
+              <div class="form-field"><label>Bloc famille — titre <em>italique</em></label><input type="text" id="hp-story-family-title-em" placeholder="ancrée dans ses vergers."></div>
+              <div class="form-field span2"><label>Bloc famille — paragraphes</label><textarea id="hp-story-family-body" rows="7" placeholder="Un paragraphe, puis une ligne vide, puis le suivant."></textarea></div>
+              <div class="form-field"><label>Encart de droite — titre</label><input type="text" id="hp-story-note-title" placeholder="Ce qui nous guide"></div>
+              <div class="form-field span2"><label>Encart de droite — liste</label><textarea id="hp-story-note-items" rows="5" placeholder="Une ligne par point"></textarea></div>
+            </div>
+
+            <div class="form-grid" style="margin-bottom:18px;">
+              <div class="form-field span2">
+                <label>Image atelier</label>
+                <input type="hidden" id="hp-story-craft-image">
+                <input type="file" id="hp-story-craft-img-file" accept="image/*" style="display:none" onchange="handleHpImgFile(this.files[0],'story-craft')">
+                <div class="banner-drop-zone" id="hp-story-craft-img-drop"
+                     onclick="document.getElementById('hp-story-craft-img-file').click()"
+                     ondragover="event.preventDefault();this.classList.add('drag-over')"
+                     ondragleave="this.classList.remove('drag-over')"
+                     ondrop="event.preventDefault();this.classList.remove('drag-over');handleHpImgFile(event.dataTransfer.files[0],'story-craft')">
+                  <div class="banner-drop-zone__empty" id="hp-story-craft-img-empty">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <p>Glissez une image ici<br><span style="font-size:12px">ou cliquez pour parcourir</span></p>
+                  </div>
+                  <img class="banner-drop-zone__img" id="hp-story-craft-img-preview" src="" alt="">
+                  <button type="button" class="banner-drop-zone__remove" id="hp-story-craft-img-remove" onclick="event.stopPropagation();removeHpImg('story-craft')">&times;</button>
+                </div>
+              </div>
+              <div class="form-field"><label>Bloc atelier — accroche</label><input type="text" id="hp-story-craft-eyebrow" placeholder="De nos vergers à votre table"></div>
+              <div class="form-field"><label>Bloc atelier — titre normal</label><input type="text" id="hp-story-craft-title" placeholder="Cultiver, récolter,"></div>
+              <div class="form-field"><label>Bloc atelier — titre <em>italique</em></label><input type="text" id="hp-story-craft-title-em" placeholder="transformer nous-mêmes."></div>
+              <div class="form-field span2"><label>Bloc atelier — paragraphes</label><textarea id="hp-story-craft-body" rows="6" placeholder="Un paragraphe, puis une ligne vide, puis le suivant."></textarea></div>
+            </div>
+
+            <div class="form-grid" style="margin-bottom:18px;">
+              <div class="form-field"><label>Bloc sols — accroche</label><input type="text" id="hp-story-soil-eyebrow" placeholder="Une agriculture de bon sens"></div>
+              <div class="form-field"><label>Bloc sols — titre normal</label><input type="text" id="hp-story-soil-title" placeholder="Prendre soin des sols,"></div>
+              <div class="form-field"><label>Bloc sols — titre <em>italique</em></label><input type="text" id="hp-story-soil-title-em" placeholder="des arbres et du vivant."></div>
+              <div class="form-field span2"><label>Bloc sols — paragraphes</label><textarea id="hp-story-soil-body" rows="6" placeholder="Un paragraphe, puis une ligne vide, puis le suivant."></textarea></div>
+            </div>
+
+            <div style="margin-bottom:18px;">
+              <h4 style="font-size:14px;font-weight:700;margin:0 0 12px;color:var(--brown-deep);">Indicateurs</h4>
+              <div class="form-grid">
+                <div class="form-field"><label>KPI 1 — valeur</label><input type="text" id="hp-story-kpi-0-value" placeholder="150 ha"></div>
+                <div class="form-field"><label>KPI 1 — label</label><input type="text" id="hp-story-kpi-0-label" placeholder="Vergers"></div>
+                <div class="form-field span2"><label>KPI 1 — texte</label><input type="text" id="hp-story-kpi-0-text" placeholder="Des parcelles suivies..."></div>
+                <div class="form-field"><label>KPI 2 — valeur</label><input type="text" id="hp-story-kpi-1-value" placeholder="Sud-Ouest"></div>
+                <div class="form-field"><label>KPI 2 — label</label><input type="text" id="hp-story-kpi-1-label" placeholder="Terroir"></div>
+                <div class="form-field span2"><label>KPI 2 — texte</label><input type="text" id="hp-story-kpi-1-text" placeholder="Un ancrage local fort..."></div>
+                <div class="form-field"><label>KPI 3 — valeur</label><input type="text" id="hp-story-kpi-2-value" placeholder="Bon sens"></div>
+                <div class="form-field"><label>KPI 3 — label</label><input type="text" id="hp-story-kpi-2-label" placeholder="Méthode"></div>
+                <div class="form-field span2"><label>KPI 3 — texte</label><input type="text" id="hp-story-kpi-2-text" placeholder="Des choix simples et cohérents..."></div>
+              </div>
+            </div>
+
+            <div class="form-grid" style="margin-bottom:18px;">
+              <div class="form-field span2">
+                <label>Image récoltes</label>
+                <input type="hidden" id="hp-story-harvest-image">
+                <input type="file" id="hp-story-harvest-img-file" accept="image/*" style="display:none" onchange="handleHpImgFile(this.files[0],'story-harvest')">
+                <div class="banner-drop-zone" id="hp-story-harvest-img-drop"
+                     onclick="document.getElementById('hp-story-harvest-img-file').click()"
+                     ondragover="event.preventDefault();this.classList.add('drag-over')"
+                     ondragleave="this.classList.remove('drag-over')"
+                     ondrop="event.preventDefault();this.classList.remove('drag-over');handleHpImgFile(event.dataTransfer.files[0],'story-harvest')">
+                  <div class="banner-drop-zone__empty" id="hp-story-harvest-img-empty">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <p>Glissez une image ici<br><span style="font-size:12px">ou cliquez pour parcourir</span></p>
+                  </div>
+                  <img class="banner-drop-zone__img" id="hp-story-harvest-img-preview" src="" alt="">
+                  <button type="button" class="banner-drop-zone__remove" id="hp-story-harvest-img-remove" onclick="event.stopPropagation();removeHpImg('story-harvest')">&times;</button>
+                </div>
+              </div>
+              <div class="form-field"><label>Bloc récoltes — accroche</label><input type="text" id="hp-story-harvest-eyebrow" placeholder="Pourquoi Castaneas ?"></div>
+              <div class="form-field"><label>Bloc récoltes — titre normal</label><input type="text" id="hp-story-harvest-title" placeholder="Partager le goût de nos récoltes,"></div>
+              <div class="form-field"><label>Bloc récoltes — titre <em>italique</em></label><input type="text" id="hp-story-harvest-title-em" placeholder="autrement."></div>
+              <div class="form-field span2"><label>Bloc récoltes — phrase d'intro</label><input type="text" id="hp-story-harvest-lead" placeholder="Parce que nous voulions partager..."></div>
+              <div class="form-field span2"><label>Bloc récoltes — checklist</label><textarea id="hp-story-harvest-checklist" rows="5" placeholder="Une ligne par valeur"></textarea></div>
+              <div class="form-field span2"><label>Bloc récoltes — paragraphe de fin</label><textarea id="hp-story-harvest-outro" rows="3" placeholder="Derrière chaque pot..."></textarea></div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-field"><label>Bloc promesse — accroche</label><input type="text" id="hp-story-promise-eyebrow" placeholder="Notre promesse"></div>
+              <div class="form-field"><label>Bloc promesse — titre normal</label><input type="text" id="hp-story-promise-title" placeholder="Vous faire découvrir le vrai goût"></div>
+              <div class="form-field"><label>Bloc promesse — titre <em>italique</em></label><input type="text" id="hp-story-promise-title-em" placeholder="de nos vergers."></div>
+              <div class="form-field span2"><label>Bloc promesse — paragraphes</label><textarea id="hp-story-promise-body" rows="5" placeholder="Un paragraphe, puis une ligne vide, puis le suivant."></textarea></div>
+              <div class="form-field span2"><label>Signature finale</label><input type="text" id="hp-story-promise-sign" placeholder="La famille Dégans"></div>
             </div>
           </div>
 
@@ -1837,6 +2107,164 @@ tbody tr:last-child td { border-bottom: none; }
   </div>
 </div>
 
+<!-- ========== MODAL CATEGORIE BLOG ========== -->
+<div class="modal-overlay" id="modal-blog-category">
+  <div class="modal" style="width:min(780px,calc(100vw - 32px));max-height:calc(100vh - 32px);">
+    <div class="modal-head">
+      <h2 id="modal-blog-category-title">Nouvelle catégorie d'actualité</h2>
+      <button type="button" class="modal-close" onclick="closeModal('modal-blog-category')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form class="form-grid" id="blog-category-form" onsubmit="saveBlogCategory(event)">
+        <input type="hidden" id="bc-id">
+        <div class="form-field">
+          <label>Nom *</label>
+          <input type="text" id="bc-name" placeholder="Conseils châtaigne" required>
+        </div>
+        <div class="form-field">
+          <label>Slug SEO *</label>
+          <input type="text" id="bc-slug" placeholder="conseils-chataigne" required>
+        </div>
+        <div class="form-field span2">
+          <label>Description</label>
+          <textarea id="bc-description" rows="4" placeholder="Texte court pour présenter la catégorie sur la page listing."></textarea>
+        </div>
+        <div class="form-field">
+          <label>Meta title</label>
+          <input type="text" id="bc-meta-title" placeholder="Conseils châtaigne · Castaneas">
+        </div>
+        <div class="form-field">
+          <label>Statut</label>
+          <select id="bc-status">
+            <option value="active">Active</option>
+            <option value="draft">Brouillon</option>
+          </select>
+        </div>
+        <div class="form-field span2">
+          <label>Meta description</label>
+          <textarea id="bc-meta-description" rows="3" placeholder="Description SEO de la catégorie pour /actualites/categorie/... "></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" onclick="closeModal('modal-blog-category')">Annuler</button>
+      <button class="btn btn-primary" onclick="document.getElementById('blog-category-form').requestSubmit()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Enregistrer
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODAL ARTICLE BLOG ========== -->
+<div class="modal-overlay" id="modal-blog-post">
+  <div class="modal" style="width:min(1040px,calc(100vw - 32px));max-height:calc(100vh - 32px);">
+    <div class="modal-head">
+      <h2 id="modal-blog-post-title">Nouvel article</h2>
+      <button type="button" class="modal-close" onclick="closeModal('modal-blog-post')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form class="form-grid" id="blog-post-form" onsubmit="saveBlogPost(event)">
+        <input type="hidden" id="bp-id">
+        <div class="form-field span2">
+          <label>Titre de l'article *</label>
+          <input type="text" id="bp-title" placeholder="Comment conserver vos châtaignes" required>
+        </div>
+        <div class="form-field">
+          <label>Slug SEO *</label>
+          <input type="text" id="bp-slug" placeholder="comment-conserver-vos-chataignes" required>
+        </div>
+        <div class="form-field">
+          <label>Accroche courte</label>
+          <input type="text" id="bp-eyebrow" placeholder="Conseils Castaneas">
+        </div>
+        <div class="form-field">
+          <label>Auteur</label>
+          <input type="text" id="bp-author" placeholder="Equipe Castaneas">
+        </div>
+        <div class="form-field">
+          <label>Lecture estimée (min)</label>
+          <input type="number" id="bp-reading-minutes" min="1" step="1" placeholder="4">
+        </div>
+        <div class="form-field">
+          <label>Date de publication</label>
+          <input type="datetime-local" id="bp-published-at">
+        </div>
+        <div class="form-field">
+          <label>Statut</label>
+          <select id="bp-status">
+            <option value="draft">Brouillon</option>
+            <option value="published">Publié</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Mise en avant</label>
+          <select id="bp-featured">
+            <option value="0">Non</option>
+            <option value="1">Oui</option>
+          </select>
+        </div>
+        <div class="form-field span2">
+          <label>Extrait / chapô</label>
+          <textarea id="bp-excerpt" rows="3" placeholder="Résumé affiché sur la carte et en introduction de l'article."></textarea>
+        </div>
+
+        <div class="form-field span2" style="border-top:1px solid var(--line);padding-top:16px;margin-top:4px;">
+          <label>Image de couverture</label>
+          <input type="hidden" id="bp-cover-image">
+          <div id="blog-post-img-picker" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
+          <div class="img-add-row" style="margin-top:8px;">
+            <input type="file" id="bp-img-upload" accept="image/*" style="display:none" onchange="uploadBlogImage(this)">
+            <button type="button" id="bp-img-upload-btn" class="btn btn-secondary btn-sm" onclick="document.getElementById('bp-img-upload').click()">⬆ Téléverser une photo</button>
+          </div>
+        </div>
+
+        <div class="form-field span2" style="border-top:1px solid var(--line);padding-top:16px;margin-top:4px;">
+          <label>Catégories de l'article *</label>
+          <div id="blog-post-categories-picker" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
+        </div>
+        <div class="form-field">
+          <label>Catégorie principale</label>
+          <select id="bp-primary-category"></select>
+        </div>
+        <div class="form-field">
+          <label>URL publique</label>
+          <input type="text" id="bp-public-url" readonly placeholder="/actualites/categorie/article">
+        </div>
+
+        <div class="form-field span2" style="border-top:1px solid var(--line);padding-top:16px;margin-top:4px;">
+          <label>Contenu de l'article *</label>
+          <textarea id="bp-content" rows="16" placeholder="Vous pouvez coller du HTML simple ou écrire en texte brut avec des sauts de ligne." required></textarea>
+          <small>Le HTML simple est accepté: paragraphes, titres, listes, liens, blockquotes.</small>
+        </div>
+
+        <div class="form-field span2" style="border-top:1px solid var(--line);padding-top:16px;margin-top:4px;">
+          <h3 style="font-family:var(--serif);font-size:17px;">SEO</h3>
+        </div>
+        <div class="form-field span2">
+          <label>Meta title</label>
+          <input type="text" id="bp-meta-title" placeholder="Titre SEO spécifique si besoin">
+        </div>
+        <div class="form-field span2">
+          <label>Meta description</label>
+          <textarea id="bp-meta-description" rows="4" placeholder="Description SEO de l'article, utilisée dans la balise meta description."></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" onclick="closeModal('modal-blog-post')">Annuler</button>
+      <button class="btn btn-primary" onclick="document.getElementById('blog-post-form').requestSubmit()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Enregistrer l'article
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="admin-toast" id="admin-toast"></div>
 
@@ -1854,6 +2282,8 @@ const KEYS = {
   imagesMain:  'castaneas_admin_images_main',
   imagesExtra: 'castaneas_admin_images_extra',
   recipes: 'castaneas_admin_recipes',
+  blogPosts: 'castaneas_blog_posts_v1',
+  blogCategories: 'castaneas_blog_categories_v1',
   homepage: 'castaneas_homepage_v1',
   packagings: 'castaneas_packagings_v1',
   promoCodes: 'castaneas_promo_codes_v1',
@@ -1866,6 +2296,8 @@ const SERVER_KEYS = {
   [KEYS.categories]: 'categories',
   [KEYS.orders]:     'orders',
   [KEYS.recipes]:    'recipes',
+  [KEYS.blogPosts]:  'blog_posts',
+  [KEYS.blogCategories]: 'blog_categories',
   [KEYS.homepage]:   'homepage',
   [KEYS.packagings]: 'packagings',
   [KEYS.promoCodes]: 'promo_codes',
@@ -1877,10 +2309,12 @@ const SERVER_KEYS = {
 
 /* ---------- State ---------- */
 const DEFAULT_IMAGE_CATALOG = [];
-let state = { products: [], categories: [], orders: [], imageCatalogMain: [], imageCatalogExtra: [], recipes: [], packagings: [], promoCodes: [], customers: [], customerStats: {} };
+let state = { products: [], categories: [], orders: [], imageCatalogMain: [], imageCatalogExtra: [], recipes: [], blogPosts: [], blogCategories: [], packagings: [], promoCodes: [], customers: [], customerStats: {} };
 let editingProduct = null;
 let editingCat = null;
 let editingRecipe = null;
+let editingBlogPost = null;
+let editingBlogCategory = null;
 let selectedExtraImages = [];
 let recipeSteps = [];
 let selectedOrderId = null;
@@ -1984,6 +2418,8 @@ async function init() {
   state.imageCatalogMain  = load(KEYS.imagesMain)  || [...DEFAULT_IMAGE_CATALOG];
   state.imageCatalogExtra = load(KEYS.imagesExtra) || [...DEFAULT_IMAGE_CATALOG];
   state.recipes           = load(KEYS.recipes)    || [];
+  state.blogPosts         = load(KEYS.blogPosts) || [];
+  state.blogCategories    = load(KEYS.blogCategories) || [];
   state.packagings        = load(KEYS.packagings) || [];
   state.promoCodes        = load(KEYS.promoCodes) || [];
 
@@ -2004,6 +2440,8 @@ async function serverLoadAll() {
     { s: 'products',   l: KEYS.products },
     { s: 'categories', l: KEYS.categories },
     { s: 'recipes',    l: KEYS.recipes },
+    { s: 'blog_posts', l: KEYS.blogPosts },
+    { s: 'blog_categories', l: KEYS.blogCategories },
     { s: 'homepage',   l: KEYS.homepage },
     { s: 'packagings', l: KEYS.packagings },
     { s: 'promo_codes', l: KEYS.promoCodes },
@@ -2081,6 +2519,7 @@ const panelMeta = {
   'promo-codes': { title: 'Codes promo',         actions: '<button class="btn btn-primary" onclick="resetPromoForm()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nouveau code promo</button>' },
   'order-detail': { title: 'Détail commande',    actions: '' },
   recipes:    { title: 'Recettes',               actions: '<button class="btn btn-primary" onclick="openRecipeModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nouvelle recette</button>' },
+  blog:       { title: 'Actualités',             actions: '<div style="display:flex;gap:10px;flex-wrap:wrap;"><button class="btn btn-secondary" onclick="openBlogCategoryModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><path d="M3 7h18"/><path d="M7 3v18"/></svg> Nouvelle catégorie</button><button class="btn btn-primary" onclick="openBlogPostModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nouvel article</button></div>' },
   homepage:   { title: 'Site',                   actions: '' },
   pages:      { title: 'Pages générées',         actions: '' },
   settings:   { title: 'Paramètres',             actions: '' },
@@ -2093,6 +2532,7 @@ function siteTopbarActionHtml() {
 function runPanelRenderHooks(panel) {
   if (panel === 'pages') renderPages();
   if (panel === 'recipes') renderRecipes();
+  if (panel === 'blog') renderBlog();
   if (panel === 'homepage') renderHomepage();
   if (panel === 'settings') renderSettings();
   if (panel === 'customers') renderCustomers();
@@ -2130,6 +2570,7 @@ function renderAll() {
   renderCustomers();
   renderPromoCodes();
   renderRecipes();
+  renderBlog();
   updateBadges();
 }
 
@@ -2141,6 +2582,7 @@ function updateBadges() {
   ob.textContent = pending || '';
   ob.style.display = pending ? '' : 'none';
   document.getElementById('recipes-badge').textContent = state.recipes.length;
+  document.getElementById('blog-badge').textContent = state.blogPosts.length;
   document.getElementById('customers-badge').textContent = state.customers.length || '';
   document.getElementById('promos-badge').textContent = state.promoCodes.length || '';
 }
@@ -2305,6 +2747,9 @@ function normalizePromoCodeRecord(record) {
     endsAt: String(record && record.endsAt || ''),
     description: String(record && record.description || '').trim(),
     active: record && record.active !== undefined ? !!record.active : true,
+    deliveryMode: String(record && record.deliveryMode || 'standard').trim() === 'pickup' ? 'pickup' : 'standard',
+    pickupLabel: String(record && record.pickupLabel || '').trim(),
+    pickupAddress: String(record && record.pickupAddress || '').trim(),
     createdAt: String(record && record.createdAt || new Date().toISOString()),
     updatedAt: String(record && record.updatedAt || new Date().toISOString()),
   };
@@ -2316,10 +2761,16 @@ function promoBenefitLabel(promo) {
   return '− ' + Number(promo.value || 0).toFixed(0) + '%';
 }
 
+function promoDeliveryLabel(promo) {
+  if (!promo || promo.deliveryMode !== 'pickup') return '';
+  return promo.pickupLabel || 'Retrait sur place';
+}
+
 function promoConditionsLabel(promo) {
   const parts = [];
   if (Number(promo.minSubtotal || 0) > 0) parts.push('dès ' + formatMoneyValue(promo.minSubtotal));
   if (Number(promo.usageLimit || 0) > 0) parts.push('limité à ' + promo.usageLimit + ' usages');
+  if (promo.deliveryMode === 'pickup') parts.push(promoDeliveryLabel(promo));
   return parts.length ? parts.join(' · ') : 'Aucune condition';
 }
 
@@ -2345,6 +2796,22 @@ function syncPromoValueState() {
   const valueInput = document.getElementById('promo-value');
   valueInput.disabled = type === 'free_shipping';
   if (type === 'free_shipping') valueInput.value = '';
+  syncPromoDeliveryState();
+}
+
+function syncPromoDeliveryState() {
+  const deliveryMode = document.getElementById('promo-delivery-mode').value;
+  const labelWrap = document.getElementById('promo-pickup-label-wrap');
+  const addressWrap = document.getElementById('promo-pickup-address-wrap');
+  const labelInput = document.getElementById('promo-pickup-label');
+  const addressInput = document.getElementById('promo-pickup-address');
+  const showPickup = deliveryMode === 'pickup';
+  if (labelWrap) labelWrap.style.display = showPickup ? '' : 'none';
+  if (addressWrap) addressWrap.style.display = showPickup ? '' : 'none';
+  if (!showPickup) {
+    labelInput.value = '';
+    addressInput.value = '';
+  }
   renderPromoPreview();
 }
 
@@ -2354,11 +2821,14 @@ function renderPromoPreview() {
   const label = document.getElementById('promo-label').value.trim();
   const value = Number(document.getElementById('promo-value').value || 0);
   const minSubtotal = Number(document.getElementById('promo-min-subtotal').value || 0);
+  const deliveryMode = document.getElementById('promo-delivery-mode').value;
+  const pickupLabel = document.getElementById('promo-pickup-label').value.trim();
+  const pickupAddress = document.getElementById('promo-pickup-address').value.trim();
   const preview = document.getElementById('promo-preview');
-  const pseudoPromo = normalizePromoCodeRecord({ code, label, type, value, minSubtotal });
+  const pseudoPromo = normalizePromoCodeRecord({ code, label, type, value, minSubtotal, deliveryMode, pickupLabel, pickupAddress });
   preview.textContent = (!code && !label)
     ? 'Le résumé du code promo apparaitra ici.'
-    : [code || 'CODE', label || 'Sans libellé', promoBenefitLabel(pseudoPromo), promoConditionsLabel(pseudoPromo)].join(' · ');
+    : [code || 'CODE', label || 'Sans libellé', promoBenefitLabel(pseudoPromo), promoConditionsLabel(pseudoPromo), pseudoPromo.deliveryMode === 'pickup' && pseudoPromo.pickupAddress ? pseudoPromo.pickupAddress : ''].filter(Boolean).join(' · ');
 }
 
 function resetPromoForm() {
@@ -2366,6 +2836,7 @@ function resetPromoForm() {
   document.getElementById('promo-id').value = '';
   document.getElementById('promo-active').value = '1';
   document.getElementById('promo-type').value = 'percent';
+  document.getElementById('promo-delivery-mode').value = 'standard';
   syncPromoValueState();
 }
 
@@ -2407,6 +2878,9 @@ function editPromoCode(id) {
   document.getElementById('promo-ends-at').value = promo.endsAt ? promo.endsAt.slice(0, 16) : '';
   document.getElementById('promo-description').value = promo.description || '';
   document.getElementById('promo-active').value = promo.active ? '1' : '0';
+  document.getElementById('promo-delivery-mode').value = promo.deliveryMode || 'standard';
+  document.getElementById('promo-pickup-label').value = promo.pickupLabel || '';
+  document.getElementById('promo-pickup-address').value = promo.pickupAddress || '';
   syncPromoValueState();
   activatePanel('promo-codes');
 }
@@ -2427,6 +2901,9 @@ function savePromoCode(event) {
     endsAt: document.getElementById('promo-ends-at').value ? new Date(document.getElementById('promo-ends-at').value).toISOString() : '',
     description: document.getElementById('promo-description').value,
     active: document.getElementById('promo-active').value === '1',
+    deliveryMode: document.getElementById('promo-delivery-mode').value,
+    pickupLabel: document.getElementById('promo-pickup-label').value,
+    pickupAddress: document.getElementById('promo-pickup-address').value,
     createdAt: previous && previous.createdAt ? previous.createdAt : new Date().toISOString(),
     usedCount: previous ? previous.usedCount : 0,
     usedByOrders: previous ? previous.usedByOrders : [],
@@ -2439,6 +2916,10 @@ function savePromoCode(event) {
   }
   if (record.type !== 'free_shipping' && Number(record.value || 0) <= 0) {
     toast('La valeur du code promo doit être supérieure à 0', 'error');
+    return;
+  }
+  if (record.deliveryMode === 'pickup' && !record.pickupAddress) {
+    toast('Renseignez l\'adresse du retrait pour ce code promo', 'error');
     return;
   }
   if (!id && state.promoCodes.some(item => item.code === record.code)) {
@@ -2632,6 +3113,9 @@ function formatOrderLocationLine(billing) {
 }
 function formatOrderDeliveryMethod(order) {
   if (!order || !order.shipping) return 'Non renseigné';
+  if (order.shipping.type === 'pickup') {
+    return order.shipping.name || 'Retrait sur place';
+  }
   const parts = [];
   if (order.shipping.name) parts.push(order.shipping.name);
   if (order.shipping.carrier && order.shipping.carrier.name) parts.push(order.shipping.carrier.name);
@@ -2818,8 +3302,11 @@ function renderOrderDetail(order) {
   const shippingPrice = shipping && Number.isFinite(Number(shipping.price)) ? formatMoney(shipping.price) : '—';
   const subtotal = Number(order.subtotal || 0) || Math.max(Number(order.total || 0) - Number(shipping.price || 0), 0);
   const trackingNumber = order.sendcloud && order.sendcloud.trackingNumber ? order.sendcloud.trackingNumber : '—';
-  const carrierName = shipping.carrier && shipping.carrier.name ? shipping.carrier.name : (shipping.product && shipping.product.name ? shipping.product.name : 'Non renseigné');
-  const shippingTypeLabel = servicePoint ? 'Point relais' : 'Livraison à domicile';
+  const carrierName = shipping.type === 'pickup'
+    ? 'Retrait sur place'
+    : (shipping.carrier && shipping.carrier.name ? shipping.carrier.name : (shipping.product && shipping.product.name ? shipping.product.name : 'Non renseigné'));
+  const shippingTypeLabel = shipping.type === 'pickup' ? 'Retrait' : (servicePoint ? 'Point relais' : 'Livraison à domicile');
+  const pickupAddress = shipping.pickupAddress || '';
   const sendcloudSummary = formatSendcloudSummary(order.sendcloud);
   const sucrineSummary = formatSucrineSummary(order.sucrine);
 
@@ -2943,7 +3430,15 @@ function renderOrderDetail(order) {
               </div>
               <div class="order-info-label" style="margin-bottom:8px;">Options transport</div>
               ${functionalities.length ? `<div class="order-chip-row">${functionalities.map(label => `<span class="order-chip">${escapeHtml(label)}</span>`).join('')}</div>` : '<div class="muted">Aucune option transport spécifique remontée.</div>'}
-              ${servicePoint ? `
+              ${shipping.type === 'pickup' ? `
+                <div style="margin-top:18px;">
+                  <div class="order-info-label" style="margin-bottom:8px;">Adresse de retrait</div>
+                  <div class="order-address-card" style="background:#fff;">
+                    <div class="order-address-name">${escapeHtml(shipping.name || 'Retrait sur place')}</div>
+                    <div style="white-space:pre-line;">${escapeHtml(pickupAddress || 'Adresse non renseignée')}</div>
+                  </div>
+                </div>
+              ` : servicePoint ? `
                 <div style="margin-top:18px;">
                   <div class="order-info-label" style="margin-bottom:8px;">Point relais sélectionné</div>
                   <div class="order-address-card" style="background:#fff;">
@@ -4230,7 +4725,7 @@ function buildCatPageHTML(cat, products) {
       </div>
       <div><h4>Boutique</h4><ul><li><a href="creme-de-chataigne.html">Crèmes de châtaigne</a></li><li><a href="coffrets.html">Coffrets</a></li></ul></div>
       <div><ul><li><a href="histoire.html">Notre histoire</a></li><li><a href="recettes.html">Recettes</a></li></ul></div>
-      <div><h4>Aide</h4><ul><li><a href="#">Livraison &amp; retours</a></li><li><a href="#">Nous contacter</a></li><li><a href="cgv.html">CGV</a></li></ul></div>
+      <div><h4>Aide</h4><ul><li><a href="/livraison-retours">Livraison</a></li><li><a href="mailto:contact@castaneas.fr">Nous contacter</a></li><li><a href="cgv.html">CGV</a></li></ul></div>
     </div>
     <div class="footer-bottom"><div>© 2026 Castaneas · Albias, Tarn-et-Garonne (82)</div></div>
   </div>
@@ -4289,6 +4784,399 @@ function toast(msg, type = '') {
   el.className = 'admin-toast show' + (type ? ' ' + type : '');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function slugifyText(value) {
+  return String(value || '')
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/&/g, ' et ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .replace(/-{2,}/g, '-');
+}
+
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function toDatetimeLocalValue(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  const offset = date.getTimezoneOffset();
+  const local = new Date(date.getTime() - offset * 60000);
+  return local.toISOString().slice(0, 16);
+}
+
+function fromDatetimeLocalValue(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? '' : date.toISOString();
+}
+
+function currentIsoString() {
+  return new Date().toISOString();
+}
+
+function estimateReadingMinutes(content) {
+  const plain = String(content || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  const words = plain ? plain.split(' ').length : 0;
+  return Math.max(1, Math.ceil(words / 180) || 1);
+}
+
+function buildBlogPostHref(post) {
+  const category = state.blogCategories.find(c => c.id === post.primaryCategoryId)
+    || state.blogCategories.find(c => (post.categoryIds || []).includes(c.id))
+    || null;
+  if (!category) return '/actualites';
+  return '/actualites/' + encodeURIComponent(category.slug) + '/' + encodeURIComponent(post.slug);
+}
+
+function renderBlog() {
+  renderBlogCategories();
+  renderBlogPosts();
+}
+
+function renderBlogCategories() {
+  const tbody = document.getElementById('blog-categories-tbody');
+  if (!tbody) return;
+  if (!state.blogCategories.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--muted);">Aucune catégorie de blog — créez la première.</td></tr>';
+    return;
+  }
+
+  const counts = state.blogPosts.reduce((acc, post) => {
+    (post.categoryIds || []).forEach(id => { acc[id] = (acc[id] || 0) + 1; });
+    return acc;
+  }, {});
+
+  tbody.innerHTML = [...state.blogCategories].sort((a, b) => (a.name || '').localeCompare(b.name || '', 'fr')).map(category => {
+    const statusLabel = category.status === 'active'
+      ? '<span class="badge badge-green">Active</span>'
+      : '<span class="badge badge-gray">Brouillon</span>';
+    return `<tr>
+      <td>
+        <div class="td-name">${escapeHtml(category.name)}</div>
+        <div class="td-sub">${counts[category.id] || 0} article(s)</div>
+      </td>
+      <td><span style="font-family:monospace;font-size:12px;background:var(--cream-soft);padding:4px 8px;border-radius:999px;">/${escapeHtml(category.slug)}</span></td>
+      <td>${escapeHtml(category.description || '—')}</td>
+      <td>${statusLabel}</td>
+      <td>
+        <div class="action-btns">
+          <a href="/actualites/categorie/${encodeURIComponent(category.slug)}" target="_blank" class="btn btn-secondary btn-sm">Voir</a>
+          <button class="btn btn-secondary btn-sm" onclick="openBlogCategoryModal('${category.id}')">Modifier</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteBlogCategory('${category.id}')">Supprimer</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderBlogPosts() {
+  const tbody = document.getElementById('blog-posts-tbody');
+  if (!tbody) return;
+  if (!state.blogPosts.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted);">Aucun article — créez le premier.</td></tr>';
+    return;
+  }
+
+  const categoriesById = Object.fromEntries(state.blogCategories.map(category => [category.id, category]));
+  tbody.innerHTML = [...state.blogPosts].sort((left, right) => {
+    const leftDate = new Date(left.publishedAt || left.updatedAt || 0).getTime();
+    const rightDate = new Date(right.publishedAt || right.updatedAt || 0).getTime();
+    return rightDate - leftDate;
+  }).map(post => {
+    const primaryCategory = categoriesById[post.primaryCategoryId] || categoriesById[(post.categoryIds || [])[0]] || null;
+    const statusLabel = post.status === 'published'
+      ? '<span class="badge badge-green">Publié</span>'
+      : '<span class="badge badge-gray">Brouillon</span>';
+    const seoLabel = post.metaDescription ? 'Meta OK' : 'Meta à compléter';
+    return `<tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <img src="${escapeHtml(post.coverImage || 'assets/story-chataigneraie.jpg')}" onerror="this.onerror=null;this.src='assets/story-chataigneraie.jpg'" style="width:52px;height:52px;object-fit:cover;border-radius:12px;flex-shrink:0;">
+          <div>
+            <div class="td-name">${escapeHtml(post.title)}</div>
+            <div class="td-sub">${escapeHtml(post.slug)}${post.featured ? ' · mis en avant' : ''}</div>
+          </div>
+        </div>
+      </td>
+      <td>${primaryCategory ? escapeHtml(primaryCategory.name) : '<span style="color:var(--muted)">—</span>'}</td>
+      <td>${escapeHtml(formatDateTime(post.publishedAt || post.updatedAt || ''))}</td>
+      <td><span class="badge ${post.metaDescription ? 'badge-green' : 'badge-orange'}">${seoLabel}</span></td>
+      <td>${statusLabel}</td>
+      <td>
+        <div class="action-btns">
+          <a href="${escapeHtml(buildBlogPostHref(post))}" target="_blank" class="btn btn-secondary btn-sm">Voir</a>
+          <button class="btn btn-secondary btn-sm" onclick="openBlogPostModal('${post.id}')">Modifier</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteBlogPost('${post.id}')">Supprimer</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function openBlogCategoryModal(id = null) {
+  editingBlogCategory = id;
+  document.getElementById('blog-category-form').reset();
+  document.getElementById('modal-blog-category-title').textContent = id ? 'Modifier la catégorie d\'actualité' : 'Nouvelle catégorie d\'actualité';
+  document.getElementById('bc-id').value = '';
+  document.getElementById('bc-status').value = 'active';
+
+  if (id) {
+    const category = state.blogCategories.find(entry => entry.id === id);
+    if (!category) return;
+    document.getElementById('bc-id').value = category.id;
+    document.getElementById('bc-name').value = category.name || '';
+    document.getElementById('bc-slug').value = category.slug || '';
+    document.getElementById('bc-description').value = category.description || '';
+    document.getElementById('bc-meta-title').value = category.metaTitle || '';
+    document.getElementById('bc-meta-description').value = category.metaDescription || '';
+    document.getElementById('bc-status').value = category.status || 'active';
+  }
+
+  openModal('modal-blog-category');
+}
+
+function saveBlogCategory(e) {
+  e.preventDefault();
+  const id = editingBlogCategory || 'blog-cat-' + Date.now();
+  const name = document.getElementById('bc-name').value.trim();
+  const slug = slugifyText(document.getElementById('bc-slug').value.trim() || name);
+  if (!name || !slug) {
+    toast('Nom et slug requis pour la catégorie.', 'error');
+    return;
+  }
+
+  const category = {
+    id,
+    name,
+    slug,
+    description: document.getElementById('bc-description').value.trim(),
+    metaTitle: document.getElementById('bc-meta-title').value.trim(),
+    metaDescription: document.getElementById('bc-meta-description').value.trim(),
+    status: document.getElementById('bc-status').value,
+  };
+
+  const idx = state.blogCategories.findIndex(entry => entry.id === id);
+  if (idx >= 0) state.blogCategories[idx] = category;
+  else state.blogCategories.push(category);
+  save(KEYS.blogCategories, state.blogCategories);
+  closeModal('modal-blog-category');
+  renderBlog();
+  toast(editingBlogCategory ? 'Catégorie mise à jour' : 'Catégorie créée', 'success');
+}
+
+function deleteBlogCategory(id) {
+  if (state.blogPosts.some(post => (post.categoryIds || []).includes(id))) {
+    toast('Cette catégorie est encore utilisée par des articles.', 'error');
+    return;
+  }
+  if (!confirm('Supprimer cette catégorie de blog ?')) return;
+  state.blogCategories = state.blogCategories.filter(entry => entry.id !== id);
+  save(KEYS.blogCategories, state.blogCategories);
+  renderBlog();
+  toast('Catégorie supprimée');
+}
+
+function renderBlogPostImagePicker() {
+  const picker = document.getElementById('blog-post-img-picker');
+  const currentImg = document.getElementById('bp-cover-image').value;
+  if (!picker) return;
+  if (!currentImg) {
+    picker.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:10px 2px;">Aucune image de couverture sélectionnée.</div>';
+    return;
+  }
+  picker.innerHTML = `<div class="img-slot"><img class="img-preview selected" data-src="${escapeHtml(currentImg)}" src="${escapeHtml(currentImg)}" style="width:88px;height:88px;object-fit:cover;border-radius:12px;cursor:pointer;border:2px solid var(--brown-deep)" onerror="this.onerror=null;this.src='assets/story-chataigneraie.jpg'"></div>`;
+}
+
+async function uploadBlogImage(inputEl) {
+  const file = inputEl.files[0];
+  if (!file) return;
+  inputEl.value = '';
+  const btn = document.getElementById('bp-img-upload-btn');
+  btn.disabled = true;
+  btn.textContent = 'Envoi…';
+  try {
+    const fd = new FormData();
+    fd.append('file', file);
+    const res = await fetch('/upload.php', { method: 'POST', headers: { 'X-Admin-Token': SERVER_TOKEN }, body: fd });
+    const data = await res.json();
+    if (!res.ok || data.error) throw new Error(data.error || 'Erreur serveur');
+    if (!state.imageCatalogMain.includes(data.url)) {
+      state.imageCatalogMain.push(data.url);
+      save(KEYS.imagesMain, state.imageCatalogMain);
+    }
+    document.getElementById('bp-cover-image').value = data.url;
+    renderBlogPostImagePicker();
+    toast('Image d\'article ajoutée ✓', 'success');
+  } catch (err) {
+    toast('Erreur upload : ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '⬆ Téléverser une photo';
+  }
+}
+
+function getSelectedBlogCategoryIds() {
+  return [...document.querySelectorAll('#blog-post-categories-picker input[name="blog-category"]:checked')].map(el => el.value);
+}
+
+function syncBlogPrimaryCategoryOptions(preferredId = null) {
+  const select = document.getElementById('bp-primary-category');
+  const ids = getSelectedBlogCategoryIds();
+  const current = preferredId || select.value;
+  if (!ids.length) {
+    select.innerHTML = '<option value="">Sélectionnez d\'abord une catégorie</option>';
+    updateBlogPublicUrlPreview();
+    return;
+  }
+
+  select.innerHTML = ids.map(id => {
+    const category = state.blogCategories.find(entry => entry.id === id);
+    return category ? `<option value="${escapeHtml(category.id)}">${escapeHtml(category.name)}</option>` : '';
+  }).join('');
+
+  select.value = ids.includes(current) ? current : ids[0];
+  updateBlogPublicUrlPreview();
+}
+
+function renderBlogPostCategoriesPicker(selectedIds = []) {
+  const picker = document.getElementById('blog-post-categories-picker');
+  if (!picker) return;
+  if (!state.blogCategories.length) {
+    picker.innerHTML = '<em style="color:var(--muted);font-size:13px">Créez d\'abord une catégorie de blog.</em>';
+    document.getElementById('bp-primary-category').innerHTML = '<option value="">Aucune catégorie disponible</option>';
+    updateBlogPublicUrlPreview();
+    return;
+  }
+
+  picker.innerHTML = state.blogCategories.map(category => {
+    const checked = selectedIds.includes(category.id);
+    return `<label style="display:inline-flex;align-items:center;gap:6px;background:${checked ? 'var(--cream)' : 'var(--cream-soft)'};border:2px solid ${checked ? 'var(--brown-deep)' : 'transparent'};padding:6px 12px;border-radius:999px;cursor:pointer;font-size:13px;font-weight:600;transition:all .12s;">
+      <input type="checkbox" name="blog-category" value="${escapeHtml(category.id)}" ${checked ? 'checked' : ''} onchange="syncBlogPrimaryCategoryOptions()" style="accent-color:var(--brown-deep)">
+      ${escapeHtml(category.name)}
+    </label>`;
+  }).join('');
+  syncBlogPrimaryCategoryOptions(selectedIds[0] || null);
+}
+
+function updateBlogPublicUrlPreview() {
+  const urlInput = document.getElementById('bp-public-url');
+  const slug = slugifyText(document.getElementById('bp-slug').value.trim() || document.getElementById('bp-title').value.trim());
+  const primaryCategoryId = document.getElementById('bp-primary-category').value;
+  const primaryCategory = state.blogCategories.find(entry => entry.id === primaryCategoryId);
+  urlInput.value = primaryCategory && slug ? '/actualites/' + primaryCategory.slug + '/' + slug : '/actualites';
+}
+
+function openBlogPostModal(id = null) {
+  editingBlogPost = id;
+  document.getElementById('blog-post-form').reset();
+  document.getElementById('modal-blog-post-title').textContent = id ? 'Modifier l\'article' : 'Nouvel article';
+  document.getElementById('bp-id').value = '';
+  document.getElementById('bp-cover-image').value = '';
+  document.getElementById('bp-status').value = 'draft';
+  document.getElementById('bp-featured').value = '0';
+  document.getElementById('bp-author').value = 'Equipe Castaneas';
+  document.getElementById('bp-reading-minutes').value = '';
+  document.getElementById('bp-eyebrow').value = 'Actualite Castaneas';
+  document.getElementById('bp-published-at').value = toDatetimeLocalValue(currentIsoString());
+
+  let selectedIds = [];
+  let preferredPrimary = '';
+  if (id) {
+    const post = state.blogPosts.find(entry => entry.id === id);
+    if (!post) return;
+    document.getElementById('bp-id').value = post.id;
+    document.getElementById('bp-title').value = post.title || '';
+    document.getElementById('bp-slug').value = post.slug || '';
+    document.getElementById('bp-eyebrow').value = post.eyebrow || '';
+    document.getElementById('bp-author').value = post.author || 'Equipe Castaneas';
+    document.getElementById('bp-reading-minutes').value = post.readingMinutes || '';
+    document.getElementById('bp-published-at').value = toDatetimeLocalValue(post.publishedAt || '');
+    document.getElementById('bp-status').value = post.status || 'draft';
+    document.getElementById('bp-featured').value = post.featured ? '1' : '0';
+    document.getElementById('bp-excerpt').value = post.excerpt || '';
+    document.getElementById('bp-cover-image').value = post.coverImage || '';
+    document.getElementById('bp-content').value = post.content || '';
+    document.getElementById('bp-meta-title').value = post.metaTitle || '';
+    document.getElementById('bp-meta-description').value = post.metaDescription || '';
+    selectedIds = Array.isArray(post.categoryIds) ? [...post.categoryIds] : [];
+    preferredPrimary = post.primaryCategoryId || selectedIds[0] || '';
+  }
+
+  renderBlogPostImagePicker();
+  renderBlogPostCategoriesPicker(selectedIds);
+  if (preferredPrimary) syncBlogPrimaryCategoryOptions(preferredPrimary);
+  updateBlogPublicUrlPreview();
+  openModal('modal-blog-post');
+}
+
+function saveBlogPost(e) {
+  e.preventDefault();
+  const id = editingBlogPost || 'blog-post-' + Date.now();
+  const title = document.getElementById('bp-title').value.trim();
+  const slug = slugifyText(document.getElementById('bp-slug').value.trim() || title);
+  const categoryIds = getSelectedBlogCategoryIds();
+  const primaryCategoryId = document.getElementById('bp-primary-category').value || categoryIds[0] || '';
+
+  if (!title || !slug) {
+    toast('Titre et slug requis pour l\'article.', 'error');
+    return;
+  }
+  if (!categoryIds.length) {
+    toast('Sélectionnez au moins une catégorie.', 'error');
+    return;
+  }
+
+  const status = document.getElementById('bp-status').value;
+  const publishedAt = fromDatetimeLocalValue(document.getElementById('bp-published-at').value) || (status === 'published' ? currentIsoString() : '');
+  const content = document.getElementById('bp-content').value.trim();
+  const readingMinutes = parseInt(document.getElementById('bp-reading-minutes').value, 10) || estimateReadingMinutes(content);
+  const post = {
+    id,
+    title,
+    slug,
+    eyebrow: document.getElementById('bp-eyebrow').value.trim(),
+    author: document.getElementById('bp-author').value.trim() || 'Equipe Castaneas',
+    readingMinutes,
+    publishedAt,
+    updatedAt: currentIsoString(),
+    status,
+    featured: document.getElementById('bp-featured').value === '1',
+    excerpt: document.getElementById('bp-excerpt').value.trim(),
+    coverImage: document.getElementById('bp-cover-image').value.trim(),
+    content,
+    categoryIds,
+    primaryCategoryId,
+    metaTitle: document.getElementById('bp-meta-title').value.trim(),
+    metaDescription: document.getElementById('bp-meta-description').value.trim(),
+  };
+
+  const idx = state.blogPosts.findIndex(entry => entry.id === id);
+  if (idx >= 0) state.blogPosts[idx] = post;
+  else state.blogPosts.push(post);
+  save(KEYS.blogPosts, state.blogPosts);
+  closeModal('modal-blog-post');
+  renderBlog();
+  updateBadges();
+  toast(editingBlogPost ? 'Article mis à jour' : 'Article créé', 'success');
+}
+
+function deleteBlogPost(id) {
+  if (!confirm('Supprimer cet article définitivement ?')) return;
+  state.blogPosts = state.blogPosts.filter(entry => entry.id !== id);
+  save(KEYS.blogPosts, state.blogPosts);
+  renderBlog();
+  updateBadges();
+  toast('Article supprimé');
 }
 
 /* ---------- RECIPES ---------- */
@@ -4491,7 +5379,7 @@ function handleHpImgFile(file, suffix) {
   reader.onload = e => {
     const tmp = new Image();
     tmp.onload = () => {
-      const maxW = suffix === 'hero' ? 1440 : 900;
+      const maxW = suffix === 'hero' || suffix === 'story-hero' ? 1440 : 900;
       let w = tmp.width, h = tmp.height;
       if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
       const canvas = document.createElement('canvas');
@@ -4574,6 +5462,108 @@ function renderHomepage() {
     if (el && ph[i]) el.value = ph[i];
   });
 
+  const rp = cfg.recipesPage || {};
+  const rph = rp.hero || {};
+  hpSetVal('hp-recipes-hero-eyebrow', rph.eyebrow ?? 'Recettes signées Castaneas');
+  hpSetVal('hp-recipes-hero-title', rph.title ?? 'Cuisiner avec');
+  hpSetVal('hp-recipes-hero-title-em', rph.titleEm ?? 'la châtaigne.');
+  hpSetVal('hp-recipes-hero-subtitle', rph.subtitle ?? 'Des recettes simples, directes, qui ne cherchent pas à impressionner. Juste à bien déguster nos pots.');
+  hpSetVal('hp-recipes-hero-aside', rph.aside ?? '— à table !');
+
+  const rpl = rp.listing || {};
+  hpSetVal('hp-recipes-list-eyebrow', rpl.eyebrow ?? 'Toutes les recettes');
+  hpSetVal('hp-recipes-list-title', rpl.title ?? 'Nos idées');
+  hpSetVal('hp-recipes-list-title-em', rpl.titleEm ?? 'pour vos pots.');
+
+  const bp = cfg.actualitesPage || {};
+  const bph = bp.hero || {};
+  hpSetVal('hp-blog-hero-eyebrow', bph.eyebrow ?? 'Journal Castaneas');
+  hpSetVal('hp-blog-hero-title', bph.title ?? 'Les actualites qui font vivre');
+  hpSetVal('hp-blog-hero-title-em', bph.titleEm ?? 'nos vergers.');
+  hpSetVal('hp-blog-hero-subtitle', bph.subtitle ?? 'Conseils de degustation, vie de la ferme, coulisses de production et temps forts de saison: un blog clair, lisible et utile pour renforcer vos pages SEO.');
+  hpSetVal('hp-blog-hero-aside', bph.aside ?? '— actualités de la ferme');
+
+  const bpl = bp.listing || {};
+  hpSetVal('hp-blog-list-eyebrow', bpl.eyebrow ?? 'Tous les articles');
+  hpSetVal('hp-blog-list-title', bpl.title ?? 'Toutes les');
+  hpSetVal('hp-blog-list-title-em', bpl.titleEm ?? 'actualites.');
+
+  const bpc = bp.categories || {};
+  hpSetVal('hp-blog-cats-title', bpc.title ?? 'Categories');
+  hpSetVal('hp-blog-empty-text', bp.emptyText ?? 'Aucun article publie pour le moment dans cette rubrique.');
+
+  const sp = cfg.histoirePage || {};
+  const sph = sp.hero || {};
+  hpSetVal('hp-story-hero-image', sph.image || '');
+  renderHpImgPicker('story-hero');
+  hpSetVal('hp-story-hero-eyebrow', sph.eyebrow ?? 'La ferme Castaneas');
+  hpSetVal('hp-story-hero-title', sph.title ?? 'Une histoire de famille,');
+  hpSetVal('hp-story-hero-title-em', sph.titleEm ?? 'de vergers... et de gourmandise');
+  hpSetVal('hp-story-hero-lede', sph.lede ?? 'Chez Castaneas, nous cultivons bien plus que des noix, des noisettes et des châtaignes. Nous cultivons une passion familiale qui pousse au rythme des saisons depuis plus de 30 ans, au cœur du Tarn-et-Garonne. Et entre nous, quand on passe ses journées entourés de vergers, il est difficile de ne pas devenir un peu gourmands...');
+  const storyBadges = Array.isArray(sph.badges) ? sph.badges : [];
+  [0, 1, 2].forEach(i => {
+    const badge = storyBadges[i] || {};
+    hpSetVal(`hp-story-badge-${i}-value`, badge.value ?? ['30+', '150', '1'][i] ?? '');
+    hpSetVal(`hp-story-badge-${i}-label`, badge.label ?? ['Années', 'Hectares', 'Famille'][i] ?? '');
+    hpSetVal(`hp-story-badge-${i}-text`, badge.text ?? [
+      'Une histoire familiale qui grandit au rythme des saisons depuis les années 1990.',
+      'Des vergers du Sud-Ouest cultivés avec bon sens, patience et respect des sols.',
+      'Alain, Chantal, Aurélien, Marion, Séverine et toute l\'équipe derrière chaque récolte.'
+    ][i]);
+  });
+
+  const sf = sp.family || {};
+  hpSetVal('hp-story-family-eyebrow', sf.eyebrow ?? 'Qui sommes-nous ?');
+  hpSetVal('hp-story-family-title', sf.title ?? 'La famille Dégans,');
+  hpSetVal('hp-story-family-title-em', sf.titleEm ?? 'ancrée dans ses vergers.');
+  hpSetVal('hp-story-family-body', sf.body ?? 'Nous sommes la famille Dégans. Une famille d\'agriculteurs qui aime les bons produits, le travail bien fait et les saveurs authentiques.\n\nL\'aventure commence dans les années 1990 lorsque Alain et Chantal décident de planter leurs premiers châtaigniers. Puis arrivent les noyers, les noisetiers... et quelques années plus tard, une nouvelle génération prête à prendre la relève.\n\nAujourd\'hui, Aurélien, Marion, Séverine et toute l\'équipe poursuivent cette belle aventure familiale avec la même idée en tête : produire des fruits de qualité et les transformer en produits gourmands dont nous sommes fiers.');
+
+  const sn = sp.note || {};
+  hpSetVal('hp-story-note-title', sn.title ?? 'Ce qui nous guide');
+  hpSetVal('hp-story-note-items', Array.isArray(sn.items) ? sn.items.join('\n') : (sn.itemsText ?? 'Le goût des bons produits et des saveurs authentiques.\nLe travail bien fait, du verger jusqu\'à l\'atelier.\nLa transmission d\'un métier entre générations.'));
+
+  const sc = sp.craft || {};
+  hpSetVal('hp-story-craft-image', sc.image || '');
+  renderHpImgPicker('story-craft');
+  hpSetVal('hp-story-craft-eyebrow', sc.eyebrow ?? 'De nos vergers à votre table');
+  hpSetVal('hp-story-craft-title', sc.title ?? 'Cultiver, récolter,');
+  hpSetVal('hp-story-craft-title-em', sc.titleEm ?? 'transformer nous-mêmes.');
+  hpSetVal('hp-story-craft-body', sc.body ?? 'Chez Castaneas, nous avons choisi de rester proches de ce que nous faisons le mieux : cultiver et transformer nos propres récoltes.\n\nNoix, noisettes et châtaignes sont cultivées sur nos terres puis transformées directement dans notre atelier. Résultat ? Des produits simples, sincères et gourmands qui racontent vraiment d\'où ils viennent.\n\nPas besoin d\'aller chercher bien loin quand le meilleur pousse déjà dans nos vergers.');
+
+  const ss = sp.soil || {};
+  hpSetVal('hp-story-soil-eyebrow', ss.eyebrow ?? 'Une agriculture de bon sens');
+  hpSetVal('hp-story-soil-title', ss.title ?? 'Prendre soin des sols,');
+  hpSetVal('hp-story-soil-title-em', ss.titleEm ?? 'des arbres et du vivant.');
+  hpSetVal('hp-story-soil-body', ss.body ?? 'Nos vergers s\'étendent sur près de 150 hectares dans le Sud-Ouest. Nous travaillons chaque jour pour respecter nos sols, nos arbres et notre environnement.\n\nParce qu\'une bonne noisette, une belle noix ou une châtaigne savoureuse commencent toujours par une terre bien cultivée. Et parce que la nature fait déjà beaucoup de choses très bien sans qu\'on ait besoin de trop la déranger.');
+  const storyKpis = Array.isArray(ss.kpis) ? ss.kpis : [];
+  [0, 1, 2].forEach(i => {
+    const kpi = storyKpis[i] || {};
+    hpSetVal(`hp-story-kpi-${i}-value`, kpi.value ?? ['150 ha', 'Sud-Ouest', 'Bon sens'][i] ?? '');
+    hpSetVal(`hp-story-kpi-${i}-label`, kpi.label ?? ['Vergers', 'Terroir', 'Méthode'][i] ?? '');
+    hpSetVal(`hp-story-kpi-${i}-text`, kpi.text ?? [
+      'Des parcelles suivies au fil des saisons, avec une attention constante à l\'équilibre naturel.',
+      'Un ancrage local fort dans le Tarn-et-Garonne, au plus près de nos récoltes.',
+      'Des choix simples et cohérents pour produire mieux, sans en faire trop.'
+    ][i]);
+  });
+
+  const sh = sp.harvest || {};
+  hpSetVal('hp-story-harvest-image', sh.image || '');
+  renderHpImgPicker('story-harvest');
+  hpSetVal('hp-story-harvest-eyebrow', sh.eyebrow ?? 'Pourquoi Castaneas ?');
+  hpSetVal('hp-story-harvest-title', sh.title ?? 'Partager le goût de nos récoltes,');
+  hpSetVal('hp-story-harvest-title-em', sh.titleEm ?? 'autrement.');
+  hpSetVal('hp-story-harvest-lead', sh.lead ?? 'Parce que nous voulions partager le goût de nos récoltes autrement. Créer des produits qui nous ressemblent :');
+  hpSetVal('hp-story-harvest-checklist', Array.isArray(sh.checklist) ? sh.checklist.join('\n') : (sh.checklistText ?? 'Authentiques\nGourmands\nFabriqués à la ferme\nDirect producteur\n100 % passion familiale'));
+  hpSetVal('hp-story-harvest-outro', sh.outro ?? 'Derrière chaque pot de pâte à tartiner, chaque bouteille d\'huile ou chaque sachet de fruits secs, il y a des arbres, des récoltes, des saisons... et quelques réveils très matinaux.');
+
+  const spr = sp.promise || {};
+  hpSetVal('hp-story-promise-eyebrow', spr.eyebrow ?? 'Notre promesse');
+  hpSetVal('hp-story-promise-title', spr.title ?? 'Vous faire découvrir le vrai goût');
+  hpSetVal('hp-story-promise-title-em', spr.titleEm ?? 'de nos vergers.');
+  hpSetVal('hp-story-promise-body', spr.body ?? 'Sans artifices. Sans détour. Juste de bons produits cultivés avec passion par une famille qui aime son métier et qui est toujours heureuse de partager un peu de son terroir avec vous.\n\nBienvenue chez Castaneas.');
+  hpSetVal('hp-story-promise-sign', spr.sign ?? 'La famille Dégans');
+
   const hi = cfg.histoire || {};
   hpSetVal('hp-hist-image', hi.image || '');
   renderHpImgPicker('hist');
@@ -4621,6 +5611,96 @@ function saveHomepage(e) {
       lede:    g('hp-bs-lede'),
     },
     productsHighlight: ['hp-prod-1','hp-prod-2','hp-prod-3','hp-prod-4'].map(id => g(id)).filter(Boolean),
+    recipesPage: {
+      hero: {
+        eyebrow: g('hp-recipes-hero-eyebrow'),
+        title: g('hp-recipes-hero-title'),
+        titleEm: g('hp-recipes-hero-title-em'),
+        subtitle: g('hp-recipes-hero-subtitle'),
+        aside: g('hp-recipes-hero-aside'),
+      },
+      listing: {
+        eyebrow: g('hp-recipes-list-eyebrow'),
+        title: g('hp-recipes-list-title'),
+        titleEm: g('hp-recipes-list-title-em'),
+      },
+    },
+    actualitesPage: {
+      hero: {
+        eyebrow: g('hp-blog-hero-eyebrow'),
+        title: g('hp-blog-hero-title'),
+        titleEm: g('hp-blog-hero-title-em'),
+        subtitle: g('hp-blog-hero-subtitle'),
+        aside: g('hp-blog-hero-aside'),
+      },
+      listing: {
+        eyebrow: g('hp-blog-list-eyebrow'),
+        title: g('hp-blog-list-title'),
+        titleEm: g('hp-blog-list-title-em'),
+      },
+      categories: {
+        title: g('hp-blog-cats-title'),
+      },
+      emptyText: g('hp-blog-empty-text'),
+    },
+    histoirePage: {
+      hero: {
+        image: g('hp-story-hero-image'),
+        eyebrow: g('hp-story-hero-eyebrow'),
+        title: g('hp-story-hero-title'),
+        titleEm: g('hp-story-hero-title-em'),
+        lede: g('hp-story-hero-lede'),
+        badges: [0,1,2].map(i => ({
+          value: g(`hp-story-badge-${i}-value`),
+          label: g(`hp-story-badge-${i}-label`),
+          text: g(`hp-story-badge-${i}-text`),
+        })).filter(item => item.value || item.label || item.text),
+      },
+      family: {
+        eyebrow: g('hp-story-family-eyebrow'),
+        title: g('hp-story-family-title'),
+        titleEm: g('hp-story-family-title-em'),
+        body: g('hp-story-family-body'),
+      },
+      note: {
+        title: g('hp-story-note-title'),
+        items: g('hp-story-note-items').split(/\n+/).map(item => item.trim()).filter(Boolean),
+      },
+      craft: {
+        image: g('hp-story-craft-image'),
+        eyebrow: g('hp-story-craft-eyebrow'),
+        title: g('hp-story-craft-title'),
+        titleEm: g('hp-story-craft-title-em'),
+        body: g('hp-story-craft-body'),
+      },
+      soil: {
+        eyebrow: g('hp-story-soil-eyebrow'),
+        title: g('hp-story-soil-title'),
+        titleEm: g('hp-story-soil-title-em'),
+        body: g('hp-story-soil-body'),
+        kpis: [0,1,2].map(i => ({
+          value: g(`hp-story-kpi-${i}-value`),
+          label: g(`hp-story-kpi-${i}-label`),
+          text: g(`hp-story-kpi-${i}-text`),
+        })).filter(item => item.value || item.label || item.text),
+      },
+      harvest: {
+        image: g('hp-story-harvest-image'),
+        eyebrow: g('hp-story-harvest-eyebrow'),
+        title: g('hp-story-harvest-title'),
+        titleEm: g('hp-story-harvest-title-em'),
+        lead: g('hp-story-harvest-lead'),
+        checklist: g('hp-story-harvest-checklist').split(/\n+/).map(item => item.trim()).filter(Boolean),
+        outro: g('hp-story-harvest-outro'),
+      },
+      promise: {
+        eyebrow: g('hp-story-promise-eyebrow'),
+        title: g('hp-story-promise-title'),
+        titleEm: g('hp-story-promise-title-em'),
+        body: g('hp-story-promise-body'),
+        sign: g('hp-story-promise-sign'),
+      },
+    },
     histoire: {
       image:         g('hp-hist-image'),
       eyebrow:       g('hp-hist-eyebrow'),

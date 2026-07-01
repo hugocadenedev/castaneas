@@ -16,6 +16,8 @@
     orders:     'castaneas_admin_orders',
     cart:       'castaneas_cart_v1',
     recipes:    'castaneas_admin_recipes',
+    blogPosts:  'castaneas_blog_posts_v1',
+    blogCategories: 'castaneas_blog_categories_v1',
     homepage:   'castaneas_homepage_v1',
     packagings: 'castaneas_packagings_v1',
     promoCodes: 'castaneas_promo_codes_v1'
@@ -77,6 +79,7 @@
       '/confirmation.html': '/confirmation',
       '/recettes.html': '/recettes',
       '/recette.html': '/recette',
+      '/actualites.html': '/actualites',
       '/histoire.html': '/histoire',
       '/cgv.html': '/cgv',
       '/maintenance.html': '/maintenance',
@@ -163,6 +166,85 @@
     });
   }
 
+  function normalizeBlogCategory(category) {
+    if (!category || typeof category !== 'object') return null;
+    var slug = slugify(category.slug || category.name);
+    var id = String(category.id || '').trim();
+    if (!id || !slug) return null;
+
+    return {
+      id: id,
+      name: String(category.name || '').trim(),
+      slug: slug,
+      description: String(category.description || '').trim(),
+      metaTitle: String(category.metaTitle || '').trim(),
+      metaDescription: String(category.metaDescription || '').trim(),
+      status: String(category.status || 'active').trim() || 'active'
+    };
+  }
+
+  function stripHtml(value) {
+    return String(value || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+
+  function normalizeBlogPost(post, categoriesById, usedSlugs) {
+    if (!post || typeof post !== 'object') return null;
+
+    var id = String(post.id || '').trim();
+    var title = String(post.title || '').trim();
+    if (!id || !title) return null;
+
+    var slugBase = slugify(post.slug || title) || 'article';
+    var slug = slugBase;
+    var index = 2;
+    while (usedSlugs[slug] && usedSlugs[slug] !== id) {
+      slug = slugBase + '-' + index;
+      index += 1;
+    }
+    usedSlugs[slug] = id;
+
+    var categoryIds = Array.isArray(post.categoryIds) ? post.categoryIds.map(function (item) {
+      return String(item || '').trim();
+    }).filter(Boolean) : [];
+    var primaryCategoryId = String(post.primaryCategoryId || '').trim() || categoryIds[0] || '';
+    if (primaryCategoryId && categoryIds.indexOf(primaryCategoryId) === -1) {
+      categoryIds.unshift(primaryCategoryId);
+    }
+
+    var categories = categoryIds.map(function (categoryId) {
+      return categoriesById[categoryId] || null;
+    }).filter(function (category) {
+      return category && category.status === 'active';
+    });
+    var primaryCategory = categoriesById[primaryCategoryId] || categories[0] || null;
+    var content = String(post.content || '');
+    var wordCount = stripHtml(content).split(/\s+/).filter(Boolean).length;
+    var readingMinutes = Math.max(1, Number(post.readingMinutes || 0) || Math.ceil(wordCount / 180) || 1);
+
+    return {
+      id: id,
+      title: title,
+      slug: slug,
+      eyebrow: String(post.eyebrow || 'Actualite').trim(),
+      excerpt: String(post.excerpt || '').trim(),
+      content: content,
+      coverImage: sanitizeImagePath(post.coverImage || post.image || ''),
+      author: String(post.author || 'Equipe Castaneas').trim(),
+      status: String(post.status || 'draft').trim() || 'draft',
+      featured: !!post.featured,
+      metaTitle: String(post.metaTitle || '').trim(),
+      metaDescription: String(post.metaDescription || '').trim(),
+      publishedAt: String(post.publishedAt || '').trim(),
+      updatedAt: String(post.updatedAt || '').trim(),
+      readingMinutes: readingMinutes,
+      categoryIds: categoryIds,
+      categories: categories,
+      primaryCategoryId: primaryCategory ? primaryCategory.id : '',
+      primaryCategory: primaryCategory,
+      plainExcerpt: String(post.excerpt || '').trim() || stripHtml(content).slice(0, 220)
+    };
+  }
+
   function getCategorySlugAliases(category) {
     var canonical = slugify(category && (category.slug || category.name));
     if (!canonical) return [];
@@ -247,7 +329,10 @@
         startsAt: String(promoCode && promoCode.startsAt || ''),
         endsAt: String(promoCode && promoCode.endsAt || ''),
         description: String(promoCode && promoCode.description || '').trim(),
-        active: promoCode && promoCode.active !== undefined ? !!promoCode.active : true
+        active: promoCode && promoCode.active !== undefined ? !!promoCode.active : true,
+        deliveryMode: String(promoCode && promoCode.deliveryMode || '').trim() === 'pickup' ? 'pickup' : 'standard',
+        pickupLabel: String(promoCode && promoCode.pickupLabel || '').trim(),
+        pickupAddress: String(promoCode && promoCode.pickupAddress || '').trim()
       };
     }).filter(function (promoCode) {
       return promoCode.code !== '';
@@ -277,7 +362,12 @@
       ok: true,
       promo: promoCode,
       discount: Math.round(discount * 100) / 100,
-      freeShipping: promoCode.type === 'free_shipping'
+      freeShipping: promoCode.type === 'free_shipping',
+      forcePickup: promoCode.deliveryMode === 'pickup',
+      pickup: promoCode.deliveryMode === 'pickup' ? {
+        label: promoCode.pickupLabel || 'Retrait sur place',
+        address: promoCode.pickupAddress || ''
+      } : null
     };
   }
 
@@ -367,6 +457,27 @@
       : getDefaultPromoMessage();
   }
 
+  var _blogCategoriesData = (function () {
+    var source = (_srv.blog_categories && _srv.blog_categories.length > 0) ? _srv.blog_categories : (loadStorage(KEYS.blogCategories) || []);
+    return source.map(normalizeBlogCategory).filter(Boolean);
+  }());
+
+  var _blogPostsData = (function () {
+    var source = (_srv.blog_posts && _srv.blog_posts.length > 0) ? _srv.blog_posts : (loadStorage(KEYS.blogPosts) || []);
+    var categoriesById = {};
+    _blogCategoriesData.forEach(function (category) {
+      categoriesById[category.id] = category;
+    });
+    var usedSlugs = {};
+    return source.map(function (post) {
+      return normalizeBlogPost(post, categoriesById, usedSlugs);
+    }).filter(Boolean).sort(function (left, right) {
+      var leftDate = new Date(left.publishedAt || left.updatedAt || 0).getTime();
+      var rightDate = new Date(right.publishedAt || right.updatedAt || 0).getTime();
+      return rightDate - leftDate;
+    });
+  }());
+
   /* ---------- API publique ---------- */
   var SiteData = {
     categories: (function () {
@@ -383,6 +494,8 @@
       return withProductSlugs(source);
     }()),
     recipes:  ((_srv.recipes  && _srv.recipes.length  > 0) ? _srv.recipes  : (loadStorage(KEYS.recipes)  || [])).map(normalizeRecipe),
+    blogCategories: _blogCategoriesData,
+    blogPosts: _blogPostsData,
     homepage: (_srv.homepage && typeof _srv.homepage === 'object') ? _srv.homepage : (loadStorageObject(KEYS.homepage) || {}),
     packagings: normalizePackagingList((_srv.packagings && _srv.packagings.length > 0) ? _srv.packagings : (loadStorage(KEYS.packagings) || [])),
     promoCodes: normalizePromoCodes((_srv.promo_codes && _srv.promo_codes.length > 0) ? _srv.promo_codes : (loadStorage(KEYS.promoCodes) || [])),
@@ -490,6 +603,60 @@
       return this.recipes.filter(function (r) { return r.status === 'published'; });
     },
 
+    getActiveBlogCategories: function () {
+      return this.blogCategories.filter(function (category) { return category.status === 'active'; });
+    },
+
+    getBlogCategoryById: function (id) {
+      return this.blogCategories.find(function (category) { return category.id === id; }) || null;
+    },
+
+    getBlogCategoryBySlug: function (slug) {
+      var cleanSlug = slugify(slug);
+      return this.blogCategories.find(function (category) { return category.slug === cleanSlug; }) || null;
+    },
+
+    getPublishedBlogPosts: function () {
+      return this.blogPosts.filter(function (post) { return post.status === 'published'; });
+    },
+
+    getFeaturedBlogPosts: function () {
+      return this.getPublishedBlogPosts().filter(function (post) { return post.featured; });
+    },
+
+    getBlogPostsByCategory: function (categoryIdOrSlug) {
+      var category = this.getBlogCategoryById(categoryIdOrSlug) || this.getBlogCategoryBySlug(categoryIdOrSlug);
+      if (!category) return [];
+      return this.getPublishedBlogPosts().filter(function (post) {
+        return post.categoryIds.indexOf(category.id) !== -1;
+      });
+    },
+
+    getBlogPostBySlug: function (categorySlug, postSlug) {
+      var cleanCategorySlug = slugify(categorySlug);
+      var cleanPostSlug = slugify(postSlug);
+      return this.getPublishedBlogPosts().find(function (post) {
+        return post.slug === cleanPostSlug
+          && post.primaryCategory
+          && post.primaryCategory.slug === cleanCategorySlug;
+      }) || null;
+    },
+
+    getBlogCategoryHref: function (categoryOrId) {
+      var category = typeof categoryOrId === 'string'
+        ? (this.getBlogCategoryById(categoryOrId) || this.getBlogCategoryBySlug(categoryOrId))
+        : categoryOrId;
+      return category ? '/actualites/categorie/' + encodeURIComponent(category.slug) : '/actualites';
+    },
+
+    getBlogPostHref: function (postOrId) {
+      var post = typeof postOrId === 'string'
+        ? this.blogPosts.find(function (entry) { return entry.id === postOrId; })
+        : postOrId;
+      if (!post || !post.primaryCategory) return '/actualites';
+      return '/actualites/' + encodeURIComponent(post.primaryCategory.slug) + '/' + encodeURIComponent(post.slug);
+    },
+
     /** Recette par ID */
     getRecipeById: function (id) {
       return this.recipes.find(function (r) { return r.id === id; }) || null;
@@ -580,6 +747,7 @@
       html += '<a href="' + href + '"' + (isActive(href) ? ' class="active"' : '') + '>' + c.name + '</a>';
     });
     html += '<a href="/recettes"' + (isActive('/recettes') ? ' class="active"' : '') + '>Recettes</a>';
+    html += '<a href="/actualites"' + (isActive('/actualites') ? ' class="active"' : '') + '>Actualités</a>';
     html += '<a href="/histoire"' + (isActive('/histoire') ? ' class="active"' : '') + '>Notre histoire</a>';
 
     navEl.innerHTML = html;

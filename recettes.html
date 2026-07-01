@@ -231,6 +231,7 @@
       <a href="#">Pâtes à tartiner</a>
       <a href="#">Huiles</a>
       <a href="recettes.html" class="active">Recettes</a>
+      <a href="/actualites">Actualités</a>
       <a href="histoire.html">Notre histoire</a>
     </nav>
     <div class="nav-actions">
@@ -256,19 +257,19 @@
   <!-- HERO -->
   <div class="recipes-hero">
     <div>
-      <div class="recipes-hero__eyebrow">Recettes signées Castaneas</div>
-      <h1 class="recipes-hero__title">Cuisiner avec<br><em>la châtaigne.</em></h1>
-      <p class="recipes-hero__sub">Des recettes simples, directes, qui ne cherchent pas à impressionner. Juste à bien déguster nos pots.</p>
+      <div class="recipes-hero__eyebrow" id="recipes-hero-eyebrow">Recettes signées Castaneas</div>
+      <h1 class="recipes-hero__title"><span id="recipes-hero-title">Cuisiner avec</span><br><em id="recipes-hero-title-em">la châtaigne.</em></h1>
+      <p class="recipes-hero__sub" id="recipes-hero-sub">Des recettes simples, directes, qui ne cherchent pas à impressionner. Juste à bien déguster nos pots.</p>
     </div>
-    <div class="recipes-hero__aside">— à table !</div>
+    <div class="recipes-hero__aside" id="recipes-hero-aside">— à table !</div>
   </div>
 
   <!-- LISTING -->
   <section class="recipes-listing">
     <div class="section-head">
       <div>
-        <div class="section-head__eyebrow">Toutes les recettes</div>
-        <h2 class="section-head__title">Nos idées <em>pour vos pots.</em></h2>
+        <div class="section-head__eyebrow" id="recipes-list-eyebrow">Toutes les recettes</div>
+        <h2 class="section-head__title"><span id="recipes-list-title">Nos idées </span><em id="recipes-list-title-em">pour vos pots.</em></h2>
       </div>
       <div class="section-head__sub" id="recipe-count">— chargement…</div>
     </div>
@@ -302,8 +303,8 @@
       <div>
         <h4>Aide</h4>
         <ul>
-          <li><a href="#">Livraison &amp; retours</a></li>
-          <li><a href="#">Nous contacter</a></li>
+          <li><a href="/livraison-retours">Livraison</a></li>
+          <li><a href="mailto:contact@castaneas.fr">Nous contacter</a></li>
           <li><a href="cgv.html">CGV</a></li>
         </ul>
       </div>
@@ -341,6 +342,24 @@
 <script src="cart.js"></script>
 <script>
 (function () {
+  var recipesPage = (SiteData.homepage && SiteData.homepage.recipesPage) || {};
+  var heroCfg = recipesPage.hero || {};
+  var listingCfg = recipesPage.listing || {};
+
+  function setText(id, value) {
+    var el = document.getElementById(id);
+    if (el && value) el.textContent = value;
+  }
+
+  setText('recipes-hero-eyebrow', heroCfg.eyebrow);
+  setText('recipes-hero-title', heroCfg.title);
+  setText('recipes-hero-title-em', heroCfg.titleEm);
+  setText('recipes-hero-sub', heroCfg.subtitle);
+  setText('recipes-hero-aside', heroCfg.aside);
+  setText('recipes-list-eyebrow', listingCfg.eyebrow);
+  setText('recipes-list-title', listingCfg.title);
+  setText('recipes-list-title-em', listingCfg.titleEm);
+
   var recipes = SiteData.getPublishedRecipes();
   var grid = document.getElementById('recipes-grid');
   var count = document.getElementById('recipe-count');

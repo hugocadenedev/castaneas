@@ -21,6 +21,7 @@ window.renderShell = function (activePage) {
         <a href="boutique.html" ${activePage === 'shop' ? 'class="active"' : ''}>Boutique</a>
         <a href="#" >Notre ferme</a>
         <a href="#">Recettes</a>
+        <a href="/actualites">Actualités</a>
         <a href="#">Contact</a>
       </nav>
       <div class="nav-actions">
@@ -89,14 +90,15 @@ window.renderShell = function (activePage) {
         <ul>
           <li><a href="/histoire.html">Notre histoire</a></li>
           <li><a href="/recettes.html">Recettes</a></li>
+          <li><a href="/actualites">Actualités</a></li>
         </ul>
       </div>
       <div>
         <h4>Aide</h4>
         <ul>
-          <li><a href="#">Livraison</a></li>
-          <li><a href="#">Retours</a></li>
-          <li><a href="#">Contact</a></li>
+          <li><a href="/livraison-retours">Livraison</a></li>
+          <li><a href="/livraison-retours#retours">Retours</a></li>
+          <li><a href="mailto:contact@castaneas.fr">Contact</a></li>
           <li><a href="#">CGV</a></li>
         </ul>
       </div>

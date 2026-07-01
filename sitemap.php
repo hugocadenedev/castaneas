@@ -108,19 +108,114 @@ function castaneas_sitemap_category_urls(array $categories, $baseUrl) {
     return $urls;
 }
 
+function castaneas_sitemap_blog_category_urls(array $categories, $baseUrl) {
+    $urls = [];
+
+    foreach ($categories as $category) {
+        if (!is_array($category) || ($category['status'] ?? '') !== 'active') {
+            continue;
+        }
+
+        $slug = castaneas_sitemap_slugify($category['slug'] ?? '') ?: castaneas_sitemap_slugify($category['name'] ?? '');
+        if ($slug === '') {
+            continue;
+        }
+
+        $urls[] = [
+            'loc' => $baseUrl . '/actualites/categorie/' . rawurlencode($slug),
+            'lastmod' => gmdate('Y-m-d'),
+            'changefreq' => 'weekly',
+            'priority' => '0.65',
+        ];
+    }
+
+    return $urls;
+}
+
+function castaneas_sitemap_blog_post_urls(array $posts, array $blogCategoriesById, $baseUrl) {
+    $urls = [];
+    $usedSlugs = [];
+
+    foreach ($posts as $post) {
+        if (!is_array($post) || ($post['status'] ?? '') !== 'published') {
+            continue;
+        }
+
+        $postId = (string) ($post['id'] ?? '');
+        $baseSlug = castaneas_sitemap_slugify($post['slug'] ?? '') ?: castaneas_sitemap_slugify($post['title'] ?? '');
+        if ($baseSlug === '') {
+            $baseSlug = 'article';
+        }
+
+        $finalSlug = $baseSlug;
+        $index = 2;
+        while (isset($usedSlugs[$finalSlug]) && $usedSlugs[$finalSlug] !== $postId) {
+            $finalSlug = $baseSlug . '-' . $index;
+            $index += 1;
+        }
+        $usedSlugs[$finalSlug] = $postId;
+
+        $categoryId = (string) ($post['primaryCategoryId'] ?? '');
+        if ($categoryId === '' && !empty($post['categoryIds'][0])) {
+            $categoryId = (string) $post['categoryIds'][0];
+        }
+
+        $category = $blogCategoriesById[$categoryId] ?? null;
+        if (!is_array($category) || ($category['status'] ?? '') !== 'active') {
+            continue;
+        }
+
+        $categorySlug = castaneas_sitemap_slugify($category['slug'] ?? '') ?: castaneas_sitemap_slugify($category['name'] ?? '');
+        if ($categorySlug === '') {
+            continue;
+        }
+
+        $lastmod = '';
+        if (!empty($post['updatedAt'])) {
+            $lastmod = gmdate('Y-m-d', strtotime((string) $post['updatedAt']));
+        } elseif (!empty($post['publishedAt'])) {
+            $lastmod = gmdate('Y-m-d', strtotime((string) $post['publishedAt']));
+        } else {
+            $lastmod = gmdate('Y-m-d');
+        }
+
+        $urls[] = [
+            'loc' => $baseUrl . '/actualites/' . rawurlencode($categorySlug) . '/' . rawurlencode($finalSlug),
+            'lastmod' => $lastmod,
+            'changefreq' => 'monthly',
+            'priority' => '0.72',
+        ];
+    }
+
+    return $urls;
+}
+
 $baseUrl = rtrim(castaneas_base_url(), '/');
 $products = castaneas_sitemap_load_key('products');
 $categories = castaneas_sitemap_load_key('categories');
+$blogCategories = castaneas_sitemap_load_key('blog_categories');
+$blogPosts = castaneas_sitemap_load_key('blog_posts');
+$blogCategoriesById = [];
+foreach ($blogCategories as $blogCategory) {
+    if (!is_array($blogCategory) || empty($blogCategory['id'])) {
+        continue;
+    }
+    $blogCategoriesById[(string) $blogCategory['id']] = $blogCategory;
+}
 
 $urls = [
     ['loc' => $baseUrl . '/', 'lastmod' => gmdate('Y-m-d'), 'changefreq' => 'weekly', 'priority' => '1.00'],
     ['loc' => $baseUrl . '/recettes', 'lastmod' => gmdate('Y-m-d'), 'changefreq' => 'weekly', 'priority' => '0.60'],
+    ['loc' => $baseUrl . '/actualites', 'lastmod' => gmdate('Y-m-d'), 'changefreq' => 'weekly', 'priority' => '0.70'],
     ['loc' => $baseUrl . '/histoire', 'lastmod' => gmdate('Y-m-d'), 'changefreq' => 'monthly', 'priority' => '0.50'],
     ['loc' => $baseUrl . '/cgv', 'lastmod' => gmdate('Y-m-d'), 'changefreq' => 'yearly', 'priority' => '0.30'],
+    ['loc' => $baseUrl . '/livraison-retours', 'lastmod' => gmdate('Y-m-d'), 'changefreq' => 'monthly', 'priority' => '0.40'],
 ];
 
 $urls = array_merge($urls, castaneas_sitemap_category_urls($categories, $baseUrl));
 $urls = array_merge($urls, castaneas_sitemap_product_urls($products, $baseUrl));
+$urls = array_merge($urls, castaneas_sitemap_blog_category_urls($blogCategories, $baseUrl));
+$urls = array_merge($urls, castaneas_sitemap_blog_post_urls($blogPosts, $blogCategoriesById, $baseUrl));
 
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';

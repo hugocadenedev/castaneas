@@ -129,6 +129,15 @@
   .os-item__meta { font-size: 11px; color: var(--ink-soft); margin-top: 2px; font-family: var(--mono); text-transform: uppercase; letter-spacing: .05em; }
   .os-item__price { margin-left: auto; font-size: 14px; font-weight: 700; color: var(--brown-deep); flex-shrink: 0; }
   .os-divider { border: none; border-top: 1px solid var(--cream-soft); margin: 14px 0; }
+  .os-promo-box { display: flex; flex-direction: column; gap: 10px; margin: 14px 0 16px; }
+  .os-promo-form { display: flex; gap: 8px; }
+  .os-promo-input { flex: 1; min-width: 0; border: 1.5px solid #e0ded7; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: var(--brown-deep); background: #fdfcfb; outline: none; font-family: var(--sans); text-transform: uppercase; }
+  .os-promo-input:focus { border-color: var(--brown-chest); background: #fff; }
+  .os-promo-btn { border: none; border-radius: 10px; padding: 0 14px; background: var(--brown-deep); color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+  .os-promo-btn:hover { background: var(--brown-chest); }
+  .os-promo-feedback { min-height: 16px; font-size: 12px; color: var(--ink-soft); }
+  .os-promo-feedback.ok { color: #2d8c5a; }
+  .os-promo-feedback.err { color: #c0392b; }
   .os-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--ink-soft); margin-bottom: 8px; }
   .os-row.discount { color: #2d8c5a; font-weight: 600; }
   .os-row.free { color: #2d8c5a; font-weight: 600; }
@@ -386,6 +395,13 @@
         <span id="os-promo-label">Code promo</span>
         <span id="os-promo-val">—</span>
       </div>
+      <div class="os-promo-box">
+        <div class="os-promo-form">
+          <input id="os-promo-input" class="os-promo-input" type="text" placeholder="Code promo" autocomplete="off">
+          <button id="os-promo-apply" class="os-promo-btn" type="button">Appliquer</button>
+        </div>
+        <div id="os-promo-feedback" class="os-promo-feedback"></div>
+      </div>
       <div class="os-row" id="os-shipping-row">
         <span>Expédition</span>
         <span id="os-shipping-val">—</span>
@@ -462,6 +478,49 @@
 
   function setCheckoutState(data) {
     try { sessionStorage.setItem(CHECKOUT_KEY, JSON.stringify(data)); } catch (_) {}
+  }
+
+  function buildPromoState(promo, discount) {
+    return {
+      code: promo.code,
+      label: promo.label,
+      type: promo.type,
+      value: promo.value,
+      minSubtotal: promo.minSubtotal,
+      description: promo.description,
+      deliveryMode: promo.deliveryMode,
+      pickupLabel: promo.pickupLabel || '',
+      pickupAddress: promo.pickupAddress || '',
+      discount: Number(discount || 0),
+    };
+  }
+
+  function getForcedPickupPromo() {
+    const checkout = getCheckoutState();
+    if (!checkout || !checkout.promo || checkout.promo.deliveryMode !== 'pickup') {
+      return null;
+    }
+    return checkout.promo;
+  }
+
+  function forcedPickupOption() {
+    const promo = getForcedPickupPromo();
+    if (!promo) return null;
+    return {
+      type: 'pickup',
+      code: 'promo_pickup',
+      name: promo.pickupLabel || 'Retrait sur place',
+      carrier: { code: 'pickup', name: 'Retrait sur place' },
+      product: { code: 'pickup', name: 'Retrait sur place' },
+      selectedFunctionalities: {},
+      price: 0,
+      currency: 'EUR',
+      leadTimeHours: null,
+      requiresServicePoint: false,
+      requirements: [],
+      lastMile: 'pickup',
+      pickupAddress: promo.pickupAddress || ''
+    };
   }
 
   function subtotalFromItems(items) {
@@ -547,18 +606,23 @@
     document.getElementById('os-subtotal').textContent = fmt(Number(checkout.subtotal || subtotalFromItems(items)));
 
     const promoRow = document.getElementById('os-promo-row');
-    if (checkout.promoCode && (checkout.discount > 0 || (checkout.promo && checkout.promo.type === 'free_shipping'))) {
+    if (checkout.promoCode && (checkout.discount > 0 || (checkout.promo && (checkout.promo.type === 'free_shipping' || checkout.promo.deliveryMode === 'pickup')))) {
       promoRow.style.display = 'flex';
       document.getElementById('os-promo-label').textContent = 'Code ' + checkout.promoCode;
-      document.getElementById('os-promo-val').textContent   = checkout.promo && checkout.promo.type === 'free_shipping'
-        ? 'Livraison offerte'
-        : '− ' + fmt(checkout.discount);
+      document.getElementById('os-promo-val').textContent   = checkout.promo && checkout.promo.deliveryMode === 'pickup'
+        ? (checkout.promo.pickupLabel || 'Retrait sur place')
+        : (checkout.promo && checkout.promo.type === 'free_shipping'
+          ? 'Livraison offerte'
+          : '− ' + fmt(checkout.discount));
     } else {
       promoRow.style.display = 'none';
     }
 
     const shippingRow = document.getElementById('os-shipping-row');
-    if (checkout.shipping !== null && checkout.shipping !== undefined) {
+    if (checkout.promo && checkout.promo.deliveryMode === 'pickup') {
+      shippingRow.classList.add('free');
+      document.getElementById('os-shipping-val').textContent = checkout.promo.pickupLabel || 'Retrait sur place';
+    } else if (checkout.shipping !== null && checkout.shipping !== undefined) {
       shippingRow.classList.toggle('free', Number(checkout.shipping) === 0);
       document.getElementById('os-shipping-val').textContent = Number(checkout.shipping) === 0 ? 'Offerte 🎉' : fmt(Number(checkout.shipping));
     } else {
@@ -566,6 +630,89 @@
     }
 
     document.getElementById('os-total').textContent = checkout.total !== null && checkout.total !== undefined ? fmt(Number(checkout.total)) : fmt(subtotalFromItems(items));
+
+    const promoInput = document.getElementById('os-promo-input');
+    if (promoInput && checkout.promoCode && document.activeElement !== promoInput) {
+      promoInput.value = checkout.promoCode;
+    }
+  }
+
+  function updateCheckoutPromo(promoState) {
+    const items = getCartItems();
+    const current = getCheckoutState();
+    const subtotal = subtotalFromItems(items);
+    const discount = promoState ? Number(promoState.discount || 0) : 0;
+    const option = selectedShippingOption();
+    const shippingPrice = promoState && promoState.deliveryMode === 'pickup'
+      ? 0
+      : (option ? Number(option.price || 0) : (current.shippingBasePrice !== undefined ? Number(current.shippingBasePrice || 0) : current.shipping));
+    const effectiveShippingPrice = promoState && (promoState.type === 'free_shipping' || promoState.deliveryMode === 'pickup')
+      ? (shippingPrice === null || shippingPrice === undefined ? null : 0)
+      : shippingPrice;
+
+    setCheckoutState({
+      ...current,
+      subtotal,
+      discount,
+      promoCode: promoState ? promoState.code : null,
+      promo: promoState,
+      shipping: effectiveShippingPrice,
+      shippingBasePrice: shippingPrice,
+      total: subtotal - discount + (effectiveShippingPrice || 0),
+    });
+
+    renderSummary();
+  }
+
+  function applyCheckoutPromo() {
+    const input = document.getElementById('os-promo-input');
+    const feedback = document.getElementById('os-promo-feedback');
+    const code = input.value.trim().toUpperCase();
+
+    if (!code) {
+      feedback.className = 'os-promo-feedback err';
+      feedback.textContent = 'Entrez un code promo.';
+      return;
+    }
+
+    if (!window.SiteData || !SiteData.evaluatePromoCode) {
+      feedback.className = 'os-promo-feedback err';
+      feedback.textContent = 'Les promotions sont temporairement indisponibles.';
+      return;
+    }
+
+    const evaluation = SiteData.evaluatePromoCode(code, subtotalFromItems(getCartItems()));
+    if (!evaluation.ok) {
+      updateCheckoutPromo(null);
+      feedback.className = 'os-promo-feedback err';
+      feedback.textContent = {
+        invalid: 'Code invalide ou introuvable.',
+        inactive: 'Ce code promo est désactivé.',
+        scheduled: 'Ce code promo n\'est pas encore actif.',
+        expired: 'Ce code promo est expiré.',
+        limit_reached: 'Ce code promo a atteint sa limite d\'utilisation.',
+        minimum: 'Montant minimum non atteint pour ce code promo.'
+      }[evaluation.reason] || 'Code invalide ou expiré.';
+      return;
+    }
+
+    updateCheckoutPromo(buildPromoState(evaluation.promo, evaluation.discount));
+    feedback.className = 'os-promo-feedback ok';
+    feedback.textContent = evaluation.forcePickup
+      ? '✓ Code appliqué — retrait sur place imposé pour cette commande.'
+      : (evaluation.freeShipping
+        ? '✓ Code appliqué — livraison offerte.'
+        : '✓ Code appliqué — réduction prise en compte.');
+  }
+
+  function bindPromoSummary() {
+    document.getElementById('os-promo-apply').addEventListener('click', applyCheckoutPromo);
+    document.getElementById('os-promo-input').addEventListener('keydown', function (event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        applyCheckoutPromo();
+      }
+    });
   }
 
   function getBillingPayload() {
@@ -589,6 +736,10 @@
   }
 
   function selectedShippingOption() {
+    const pickupOption = forcedPickupOption();
+    if (pickupOption) {
+      return pickupOption;
+    }
     const list = shippingState.selectedType === 'relay' ? shippingState.relay : shippingState.home;
     return list.find(option => option.code === shippingState.selectedCode) || null;
   }
@@ -605,7 +756,7 @@
     const promo = current.promo || null;
     const option = selectedShippingOption();
     const shippingPrice = option ? Number(option.price || 0) : null;
-    const effectiveShippingPrice = option && promo && promo.type === 'free_shipping' ? 0 : shippingPrice;
+    const effectiveShippingPrice = option && promo && (promo.type === 'free_shipping' || promo.deliveryMode === 'pickup') ? 0 : shippingPrice;
     const next = {
       ...current,
       subtotal,
@@ -616,18 +767,21 @@
 
     if (option) {
       next.shippingMethod = {
-        type: shippingState.selectedType,
+        type: promo && promo.deliveryMode === 'pickup' ? 'pickup' : shippingState.selectedType,
         code: option.code,
         name: option.name,
         carrier: option.carrier,
         price: effectiveShippingPrice,
         basePrice: shippingPrice,
+        pickupAddress: option.pickupAddress || '',
       };
     } else {
       delete next.shippingMethod;
     }
 
-    if (shippingState.selectedType === 'relay') {
+    if (promo && promo.deliveryMode === 'pickup') {
+      delete next.servicePoint;
+    } else if (shippingState.selectedType === 'relay') {
       const point = selectedRelayPoint();
       if (point) {
         next.servicePoint = point;
@@ -664,9 +818,12 @@
     const statusEl = document.getElementById('shipping-status');
     const relayWrap = document.getElementById('relay-points-wrap');
     const relayPointsEl = document.getElementById('relay-points');
+    const forcedPickup = getForcedPickupPromo();
 
     statusEl.classList.remove('error');
-    if (shippingState.loading) {
+    if (forcedPickup) {
+      statusEl.textContent = 'Ce code promo impose un retrait sur place pour cette commande.';
+    } else if (shippingState.loading) {
       statusEl.textContent = 'Calcul des options de livraison en cours…';
     } else if (!isAddressReady()) {
       statusEl.textContent = 'Renseignez votre adresse pour afficher les options disponibles.';
@@ -677,15 +834,31 @@
       statusEl.textContent = 'Sélectionnez votre mode de livraison. Les 2 options les moins chères sont affichées pour chaque mode.';
     }
 
-    homeEl.innerHTML = shippingState.home.length
-      ? shippingState.home.map(option => renderOption(option, 'home')).join('')
-      : '<div class="relay-empty">Aucune livraison à domicile disponible pour cette adresse.</div>';
-    relayEl.innerHTML = shippingState.relay.length
-      ? shippingState.relay.map(option => renderOption(option, 'relay')).join('')
-      : '<div class="relay-empty">Aucun point relais disponible pour cette adresse.</div>';
+    if (forcedPickup) {
+      const pickupOption = forcedPickupOption();
+      homeEl.innerHTML = `
+        <label class="ship-option">
+          <input type="radio" name="shipping-choice" value="promo_pickup" data-type="pickup" checked disabled>
+          <div class="ship-option__body">
+            <div class="ship-option__top">
+              <span class="ship-option__name">${pickupOption.name}</span>
+              <span class="ship-option__price">0,00 €</span>
+            </div>
+            <div class="ship-option__meta">${pickupOption.pickupAddress || 'Adresse de retrait fournie par le code promo.'}</div>
+          </div>
+        </label>`;
+      relayEl.innerHTML = '<div class="relay-empty">Les autres modes de livraison sont désactivés par ce code promo.</div>';
+    } else {
+      homeEl.innerHTML = shippingState.home.length
+        ? shippingState.home.map(option => renderOption(option, 'home')).join('')
+        : '<div class="relay-empty">Aucune livraison à domicile disponible pour cette adresse.</div>';
+      relayEl.innerHTML = shippingState.relay.length
+        ? shippingState.relay.map(option => renderOption(option, 'relay')).join('')
+        : '<div class="relay-empty">Aucun point relais disponible pour cette adresse.</div>';
+    }
 
-    relayWrap.style.display = shippingState.selectedType === 'relay' ? 'block' : 'none';
-    if (shippingState.selectedType === 'relay') {
+    relayWrap.style.display = !forcedPickup && shippingState.selectedType === 'relay' ? 'block' : 'none';
+    if (!forcedPickup && shippingState.selectedType === 'relay') {
       relayPointsEl.innerHTML = shippingState.relayPoints.length
         ? shippingState.relayPoints.map(point => {
             const selected = point.id === shippingState.selectedRelayPointId ? ' selected' : '';
@@ -745,6 +918,17 @@
 
   async function refreshShippingOptions() {
     const requestId = ++shippingRequestId;
+    if (getForcedPickupPromo()) {
+      shippingState.loading = false;
+      shippingState.home = [];
+      shippingState.relay = [];
+      shippingState.selectedType = 'pickup';
+      shippingState.selectedCode = 'promo_pickup';
+      shippingState.relayPoints = [];
+      shippingState.selectedRelayPointId = null;
+      renderShippingOptions();
+      return;
+    }
     if (!isAddressReady()) {
       shippingState = { ...shippingState, loading: false, home: [], relay: [], selectedType: null, selectedCode: null, relayPoints: [], selectedRelayPointId: null };
       renderShippingOptions();
@@ -971,7 +1155,7 @@
           items,
           billing,
           shipping: shippingOption ? {
-            type: shippingState.selectedType,
+            type: shippingState.selectedType === 'pickup' ? 'pickup' : shippingState.selectedType,
             code: shippingOption.code,
             name: shippingOption.name,
             carrier: shippingOption.carrier,
@@ -979,12 +1163,16 @@
             selectedFunctionalities: shippingOption.selectedFunctionalities,
             price: effectiveShippingPrice,
             servicePoint: relayPoint,
+            pickupAddress: shippingOption.pickupAddress || '',
           } : null,
           promo: promo ? {
             code: promo.code,
             type: promo.type,
             value: promo.value,
             label: promo.label,
+            deliveryMode: promo.deliveryMode,
+            pickupLabel: promo.pickupLabel,
+            pickupAddress: promo.pickupAddress,
             discount: Number(promo.discount || 0),
           } : null,
           payment: payment.value,
@@ -1021,6 +1209,7 @@
   // ── INIT ─────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
     syncAuthBanner();
+    bindPromoSummary();
     renderSummary();
     bindShippingInputs();
     renderShippingOptions();

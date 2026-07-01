@@ -361,15 +361,16 @@
   <a href="/categorie/coffrets" class="mobile-cats__pill">🎁 Coffrets</a>
 </nav>
 
+<main class="page">
   <section class="story-hero">
     <div class="story-hero__panel">
-      <div class="story-hero__eyebrow">La ferme Castaneas</div>
-      <h1 class="story-hero__title">Une histoire de famille,<br><em>de vergers... et de gourmandise</em></h1>
-      <p class="story-hero__lede">Chez Castaneas, nous cultivons bien plus que des noix, des noisettes et des châtaignes. Nous cultivons une passion familiale qui pousse au rythme des saisons depuis plus de 30 ans, au cœur du Tarn-et-Garonne. Et entre nous, quand on passe ses journées entourés de vergers, il est difficile de ne pas devenir un peu gourmands...</p>
+      <div class="story-hero__eyebrow" id="story-hero-eyebrow">La ferme Castaneas</div>
+      <h1 class="story-hero__title"><span id="story-hero-title">Une histoire de famille,</span><br><em id="story-hero-title-em">de vergers... et de gourmandise</em></h1>
+      <p class="story-hero__lede" id="story-hero-lede">Chez Castaneas, nous cultivons bien plus que des noix, des noisettes et des châtaignes. Nous cultivons une passion familiale qui pousse au rythme des saisons depuis plus de 30 ans, au cœur du Tarn-et-Garonne. Et entre nous, quand on passe ses journées entourés de vergers, il est difficile de ne pas devenir un peu gourmands...</p>
     </div>
     <div class="story-hero__aside">
-      <div class="story-media"><img src="assets/story-chataigneraie.jpg" alt="Vergers Castaneas"></div>
-      <div class="story-badge-grid">
+      <div class="story-media"><img id="story-hero-image" src="assets/story-chataigneraie.jpg" alt="Vergers Castaneas"></div>
+      <div class="story-badge-grid" id="story-badges">
         <div class="story-badge">
           <span class="story-badge__value">30+</span>
           <span class="story-badge__label">Années</span>
@@ -391,17 +392,17 @@
 
   <section class="story-section">
     <div class="story-section__card">
-      <div class="section__eyebrow">Qui sommes-nous ?</div>
-      <h2 class="story-section__title">La famille Dégans,<br><em>ancrée dans ses vergers.</em></h2>
-      <div class="story-section__body">
+      <div class="section__eyebrow" id="story-family-eyebrow">Qui sommes-nous ?</div>
+      <h2 class="story-section__title"><span id="story-family-title">La famille Dégans,</span><br><em id="story-family-title-em">ancrée dans ses vergers.</em></h2>
+      <div class="story-section__body" id="story-family-body">
         <p>Nous sommes la famille Dégans. Une famille d'agriculteurs qui aime les bons produits, le travail bien fait et les saveurs authentiques.</p>
         <p>L'aventure commence dans les années 1990 lorsque Alain et Chantal décident de planter leurs premiers châtaigniers. Puis arrivent les noyers, les noisetiers... et quelques années plus tard, une nouvelle génération prête à prendre la relève.</p>
         <p>Aujourd'hui, Aurélien, Marion, Séverine et toute l'équipe poursuivent cette belle aventure familiale avec la même idée en tête : produire des fruits de qualité et les transformer en produits gourmands dont nous sommes fiers.</p>
       </div>
     </div>
     <aside class="story-note">
-      <h3 class="story-note__title">Ce qui nous guide</h3>
-      <div class="story-note__list">
+      <h3 class="story-note__title" id="story-note-title">Ce qui nous guide</h3>
+      <div class="story-note__list" id="story-note-list">
         <div class="story-note__item"><span>1</span><div>Le goût des bons produits et des saveurs authentiques.</div></div>
         <div class="story-note__item"><span>2</span><div>Le travail bien fait, du verger jusqu'à l'atelier.</div></div>
         <div class="story-note__item"><span>3</span><div>La transmission d'un métier entre générations.</div></div>
@@ -410,22 +411,26 @@
   </section>
 
   <section class="story-split">
-    <div class="story-media"><img src="assets/story-atelier.jpg" alt="Atelier Castaneas"></div>
+    <div class="story-media"><img id="story-craft-image" src="assets/story-atelier.jpg" alt="Atelier Castaneas"></div>
     <div class="story-highlight">
-      <div class="section__eyebrow">De nos vergers à votre table</div>
-      <h2 class="story-highlight__title">Cultiver, récolter,<br><em>transformer nous-mêmes.</em></h2>
-      <p>Chez Castaneas, nous avons choisi de rester proches de ce que nous faisons le mieux : cultiver et transformer nos propres récoltes.</p>
-      <p>Noix, noisettes et châtaignes sont cultivées sur nos terres puis transformées directement dans notre atelier. Résultat ? Des produits simples, sincères et gourmands qui racontent vraiment d'où ils viennent.</p>
-      <p>Pas besoin d'aller chercher bien loin quand le meilleur pousse déjà dans nos vergers.</p>
+      <div class="section__eyebrow" id="story-craft-eyebrow">De nos vergers à votre table</div>
+      <h2 class="story-highlight__title"><span id="story-craft-title">Cultiver, récolter,</span><br><em id="story-craft-title-em">transformer nous-mêmes.</em></h2>
+      <div id="story-craft-body">
+        <p>Chez Castaneas, nous avons choisi de rester proches de ce que nous faisons le mieux : cultiver et transformer nos propres récoltes.</p>
+        <p>Noix, noisettes et châtaignes sont cultivées sur nos terres puis transformées directement dans notre atelier. Résultat ? Des produits simples, sincères et gourmands qui racontent vraiment d'où ils viennent.</p>
+        <p>Pas besoin d'aller chercher bien loin quand le meilleur pousse déjà dans nos vergers.</p>
+      </div>
     </div>
   </section>
 
   <section class="story-highlight" style="margin-bottom: 28px;">
-    <div class="section__eyebrow">Une agriculture de bon sens</div>
-    <h2 class="story-highlight__title">Prendre soin des sols,<br><em>des arbres et du vivant.</em></h2>
-    <p>Nos vergers s'étendent sur près de 150 hectares dans le Sud-Ouest. Nous travaillons chaque jour pour respecter nos sols, nos arbres et notre environnement.</p>
-    <p>Parce qu'une bonne noisette, une belle noix ou une châtaigne savoureuse commencent toujours par une terre bien cultivée. Et parce que la nature fait déjà beaucoup de choses très bien sans qu'on ait besoin de trop la déranger.</p>
-    <div class="story-kpis">
+    <div class="section__eyebrow" id="story-soil-eyebrow">Une agriculture de bon sens</div>
+    <h2 class="story-highlight__title"><span id="story-soil-title">Prendre soin des sols,</span><br><em id="story-soil-title-em">des arbres et du vivant.</em></h2>
+    <div id="story-soil-body">
+      <p>Nos vergers s'étendent sur près de 150 hectares dans le Sud-Ouest. Nous travaillons chaque jour pour respecter nos sols, nos arbres et notre environnement.</p>
+      <p>Parce qu'une bonne noisette, une belle noix ou une châtaigne savoureuse commencent toujours par une terre bien cultivée. Et parce que la nature fait déjà beaucoup de choses très bien sans qu'on ait besoin de trop la déranger.</p>
+    </div>
+    <div class="story-kpis" id="story-kpis">
       <div class="story-kpi">
         <span class="story-kpi__value">150 ha</span>
         <span class="story-kpi__label">Vergers</span>
@@ -445,28 +450,30 @@
   </section>
 
   <section class="story-split story-split--reverse">
-    <div class="story-media"><img src="assets/product-noisettes-crues.png" alt="Récoltes Castaneas"></div>
+    <div class="story-media"><img id="story-harvest-image" src="assets/product-noisettes-crues.png" alt="Récoltes Castaneas"></div>
     <div class="story-highlight">
-      <div class="section__eyebrow">Pourquoi Castaneas ?</div>
-      <h2 class="story-highlight__title">Partager le goût de nos récoltes,<br><em>autrement.</em></h2>
-      <p>Parce que nous voulions partager le goût de nos récoltes autrement. Créer des produits qui nous ressemblent :</p>
-      <div class="story-checklist">
+      <div class="section__eyebrow" id="story-harvest-eyebrow">Pourquoi Castaneas ?</div>
+      <h2 class="story-highlight__title"><span id="story-harvest-title">Partager le goût de nos récoltes,</span><br><em id="story-harvest-title-em">autrement.</em></h2>
+      <p id="story-harvest-lead">Parce que nous voulions partager le goût de nos récoltes autrement. Créer des produits qui nous ressemblent :</p>
+      <div class="story-checklist" id="story-checklist">
         <div class="story-check"><span>✔</span><div>Authentiques</div></div>
         <div class="story-check"><span>✔</span><div>Gourmands</div></div>
         <div class="story-check"><span>✔</span><div>Fabriqués à la ferme</div></div>
         <div class="story-check"><span>✔</span><div>Direct producteur</div></div>
         <div class="story-check"><span>✔</span><div>100 % passion familiale</div></div>
       </div>
-      <p>Derrière chaque pot de pâte à tartiner, chaque bouteille d'huile ou chaque sachet de fruits secs, il y a des arbres, des récoltes, des saisons... et quelques réveils très matinaux.</p>
+      <p id="story-harvest-outro">Derrière chaque pot de pâte à tartiner, chaque bouteille d'huile ou chaque sachet de fruits secs, il y a des arbres, des récoltes, des saisons... et quelques réveils très matinaux.</p>
     </div>
   </section>
 
   <section class="story-promise">
-    <div class="section__eyebrow">Notre promesse</div>
-    <h2 class="story-promise__title">Vous faire découvrir le vrai goût<br><em>de nos vergers.</em></h2>
-    <p>Sans artifices. Sans détour. Juste de bons produits cultivés avec passion par une famille qui aime son métier et qui est toujours heureuse de partager un peu de son terroir avec vous.</p>
-    <p>Bienvenue chez Castaneas.</p>
-    <div class="story-promise__sign">La famille Dégans</div>
+    <div class="section__eyebrow" id="story-promise-eyebrow">Notre promesse</div>
+    <h2 class="story-promise__title"><span id="story-promise-title">Vous faire découvrir le vrai goût</span><br><em id="story-promise-title-em">de nos vergers.</em></h2>
+    <div id="story-promise-body">
+      <p>Sans artifices. Sans détour. Juste de bons produits cultivés avec passion par une famille qui aime son métier et qui est toujours heureuse de partager un peu de son terroir avec vous.</p>
+      <p>Bienvenue chez Castaneas.</p>
+    </div>
+    <div class="story-promise__sign" id="story-promise-sign">La famille Dégans</div>
   </section>
 </main>
 
@@ -492,8 +499,8 @@
       <div>
         <h4>Aide</h4>
         <ul>
-          <li><a href="#">Livraison &amp; retours</a></li>
-          <li><a href="#">Nous contacter</a></li>
+          <li><a href="/livraison-retours">Livraison</a></li>
+          <li><a href="mailto:contact@castaneas.fr">Nous contacter</a></li>
           <li><a href="cgv.html">CGV</a></li>
         </ul>
       </div>
@@ -528,5 +535,136 @@
 
 <script src="data.php?v=2"></script><script src="site-data.js?v=5"></script>
 <script src="cart.js"></script>
+<script>
+(function () {
+  function setText(id, value) {
+    var el = document.getElementById(id);
+    if (el && value) el.textContent = value;
+  }
+
+  function setImage(id, value) {
+    var el = document.getElementById(id);
+    if (el && value) el.src = value;
+  }
+
+  function escapeHtml(value) {
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function splitParagraphs(value) {
+    return String(value || '').split(/\n{2,}/).map(function (item) {
+      return item.replace(/\s+/g, ' ').trim();
+    }).filter(Boolean);
+  }
+
+  function splitLines(value) {
+    return String(value || '').split(/\n+/).map(function (item) {
+      return item.trim();
+    }).filter(Boolean);
+  }
+
+  function renderParagraphs(id, value) {
+    var el = document.getElementById(id);
+    if (!el || !value) return;
+    var paragraphs = splitParagraphs(value);
+    if (!paragraphs.length) return;
+    el.innerHTML = paragraphs.map(function (paragraph) {
+      return '<p>' + escapeHtml(paragraph) + '</p>';
+    }).join('');
+  }
+
+  function renderList(id, values, className, itemTemplate) {
+    var el = document.getElementById(id);
+    if (!el || !Array.isArray(values) || !values.length) return;
+    el.innerHTML = values.map(itemTemplate).join('');
+  }
+
+  var pageCfg = (SiteData.homepage && SiteData.homepage.histoirePage) || {};
+  var hero = pageCfg.hero || {};
+  var family = pageCfg.family || {};
+  var note = pageCfg.note || {};
+  var craft = pageCfg.craft || {};
+  var soil = pageCfg.soil || {};
+  var harvest = pageCfg.harvest || {};
+  var promise = pageCfg.promise || {};
+
+  setText('story-hero-eyebrow', hero.eyebrow);
+  setText('story-hero-title', hero.title);
+  setText('story-hero-title-em', hero.titleEm);
+  setText('story-hero-lede', hero.lede);
+  setImage('story-hero-image', hero.image);
+
+  if (Array.isArray(hero.badges) && hero.badges.length) {
+    renderList('story-badges', hero.badges.filter(function (badge) {
+      return badge && (badge.value || badge.label || badge.text);
+    }), 'story-badge', function (badge) {
+      return '<div class="story-badge">'
+        + '<span class="story-badge__value">' + escapeHtml(badge.value || '') + '</span>'
+        + '<span class="story-badge__label">' + escapeHtml(badge.label || '') + '</span>'
+        + '<p>' + escapeHtml(badge.text || '') + '</p>'
+        + '</div>';
+    });
+  }
+
+  setText('story-family-eyebrow', family.eyebrow);
+  setText('story-family-title', family.title);
+  setText('story-family-title-em', family.titleEm);
+  renderParagraphs('story-family-body', family.body);
+
+  setText('story-note-title', note.title);
+  var noteItems = Array.isArray(note.items) ? note.items : splitLines(note.itemsText);
+  if (noteItems.length) {
+    renderList('story-note-list', noteItems, 'story-note__item', function (item, index) {
+      return '<div class="story-note__item"><span>' + (index + 1) + '</span><div>' + escapeHtml(item) + '</div></div>';
+    });
+  }
+
+  setImage('story-craft-image', craft.image);
+  setText('story-craft-eyebrow', craft.eyebrow);
+  setText('story-craft-title', craft.title);
+  setText('story-craft-title-em', craft.titleEm);
+  renderParagraphs('story-craft-body', craft.body);
+
+  setText('story-soil-eyebrow', soil.eyebrow);
+  setText('story-soil-title', soil.title);
+  setText('story-soil-title-em', soil.titleEm);
+  renderParagraphs('story-soil-body', soil.body);
+  if (Array.isArray(soil.kpis) && soil.kpis.length) {
+    renderList('story-kpis', soil.kpis.filter(function (kpi) {
+      return kpi && (kpi.value || kpi.label || kpi.text);
+    }), 'story-kpi', function (kpi) {
+      return '<div class="story-kpi">'
+        + '<span class="story-kpi__value">' + escapeHtml(kpi.value || '') + '</span>'
+        + '<span class="story-kpi__label">' + escapeHtml(kpi.label || '') + '</span>'
+        + '<p>' + escapeHtml(kpi.text || '') + '</p>'
+        + '</div>';
+    });
+  }
+
+  setImage('story-harvest-image', harvest.image);
+  setText('story-harvest-eyebrow', harvest.eyebrow);
+  setText('story-harvest-title', harvest.title);
+  setText('story-harvest-title-em', harvest.titleEm);
+  setText('story-harvest-lead', harvest.lead);
+  setText('story-harvest-outro', harvest.outro);
+  var checklistItems = Array.isArray(harvest.checklist) ? harvest.checklist : splitLines(harvest.checklistText);
+  if (checklistItems.length) {
+    renderList('story-checklist', checklistItems, 'story-check', function (item) {
+      return '<div class="story-check"><span>✔</span><div>' + escapeHtml(item) + '</div></div>';
+    });
+  }
+
+  setText('story-promise-eyebrow', promise.eyebrow);
+  setText('story-promise-title', promise.title);
+  setText('story-promise-title-em', promise.titleEm);
+  renderParagraphs('story-promise-body', promise.body);
+  setText('story-promise-sign', promise.sign);
+})();
+</script>
 </body>
 </html>

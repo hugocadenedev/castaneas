@@ -382,16 +382,20 @@
     document.getElementById('s-subtotal').textContent = fmt(sub);
 
     const promoRow = document.getElementById('s-promo-row');
-    if (appliedPromo && (discount > 0 || appliedPromo.type === 'free_shipping')) {
+    if (appliedPromo && (discount > 0 || appliedPromo.type === 'free_shipping' || appliedPromo.deliveryMode === 'pickup')) {
       promoRow.style.display = 'flex';
       document.getElementById('s-promo-label').textContent = 'Code ' + appliedPromo.code + (appliedPromo.label ? ' (' + appliedPromo.label + ')' : '');
-      document.getElementById('s-promo-val').textContent   = appliedPromo.type === 'free_shipping' ? 'Livraison offerte' : '− ' + fmt(discount);
+      document.getElementById('s-promo-val').textContent   = appliedPromo.deliveryMode === 'pickup'
+        ? (appliedPromo.pickupLabel || 'Retrait sur place')
+        : (appliedPromo.type === 'free_shipping' ? 'Livraison offerte' : '− ' + fmt(discount));
     } else {
       promoRow.style.display = 'none';
     }
 
     document.getElementById('s-total').textContent     = fmt(total);
-    document.getElementById('s-total-sub').textContent = 'Les frais de livraison seront ajoutés à l\'étape suivante';
+    document.getElementById('s-total-sub').textContent = appliedPromo && appliedPromo.deliveryMode === 'pickup'
+      ? ((appliedPromo.pickupLabel || 'Retrait sur place') + (appliedPromo.pickupAddress ? ' · ' + appliedPromo.pickupAddress : ''))
+      : 'Les frais de livraison seront ajoutés à l\'étape suivante';
 
     // Persist for facturation.html
     try {
@@ -438,12 +442,17 @@
         value: evaluation.promo.value,
         minSubtotal: evaluation.promo.minSubtotal,
         description: evaluation.promo.description,
+        deliveryMode: evaluation.promo.deliveryMode,
+        pickupLabel: evaluation.pickup ? evaluation.pickup.label : '',
+        pickupAddress: evaluation.pickup ? evaluation.pickup.address : '',
         discount: evaluation.discount,
       };
       fb.className = 'promo-feedback ok';
-      fb.textContent = evaluation.freeShipping
-        ? '✓ Code appliqué — livraison offerte à l\'étape suivante.'
-        : '✓ Code appliqué — réduction prise en compte sur votre commande.';
+      fb.textContent = evaluation.forcePickup
+        ? '✓ Code appliqué — retrait sur place imposé pour cette commande.'
+        : (evaluation.freeShipping
+          ? '✓ Code appliqué — livraison offerte à l\'étape suivante.'
+          : '✓ Code appliqué — réduction prise en compte sur votre commande.');
     }
     updateSummary();
   }

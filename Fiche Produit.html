@@ -137,10 +137,25 @@
     overflow: hidden;
     aspect-ratio: 1 / 1;
   }
+  .gallery__track {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    transition: transform .28s ease;
+  }
+  .gallery__slide {
+    position: relative;
+    flex: 0 0 100%;
+    min-width: 100%;
+    height: 100%;
+  }
   .gallery__main img {
     position: absolute; inset: 0;
     width: 100%; height: 100%;
     object-fit: cover;
+  }
+  .gallery__main.is-touching .gallery__track {
+    transition: none;
   }
   .gallery__badge {
     position: absolute;
@@ -209,6 +224,20 @@
   .gallery__thumb.on { border-color: var(--brown-deep); }
   .gallery__thumb img {
     width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+  .gallery__dots {
+    display: none;
+  }
+  .gallery__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(59,31,14,0.2);
+    transition: transform .18s, background-color .18s;
+  }
+  .gallery__dot.on {
+    background: var(--brown-deep);
+    transform: scale(1.15);
   }
 
   /* INFO PANEL (sticky) */
@@ -885,6 +914,12 @@
     color: rgba(242,232,217,0.7);
     font-weight: 700;
   }
+  .reviews-sum__note {
+    margin-top: -8px;
+    font-size: 12px;
+    line-height: 1.45;
+    color: rgba(242,232,217,0.72);
+  }
   .reviews-sum__bars {
     margin-top: 18px;
     display: flex;
@@ -1115,6 +1150,16 @@
     .reviews-sum { position: static; }
   }
   @media (max-width: 640px) {
+    .gallery__main {
+      touch-action: pan-y;
+    }
+    .gallery__dots {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-top: 2px;
+    }
     .gallery__thumbs { grid-template-columns: repeat(4, 1fr); }
     .recipe { grid-template-columns: 1fr; }
     .reviews-list { grid-template-columns: 1fr; }
@@ -1149,6 +1194,7 @@
       <a href="#">Pâtes à tartiner</a>
       <a href="#">Huiles</a>
       <a href="/recettes.html">Recettes</a>
+      <a href="/actualites">Actualités</a>
       <a href="/histoire.html">Notre histoire</a>
     </nav>
     <div class="nav-actions">
@@ -1179,12 +1225,17 @@
     <div class="gallery">
       <div class="gallery__main">
         <span class="gallery__badge">Bestseller · Coup de cœur</span>
-        <img src="/assets/product-huile-noisettes.png" alt="Pot Castaneas — Châtaigne vanillée 150g">
+        <div class="gallery__track">
+          <div class="gallery__slide">
+            <img src="/assets/product-huile-noisettes.png" alt="Pot Castaneas — Châtaigne vanillée 150g">
+          </div>
+        </div>
         <span class="gallery__caption">Pot Nº 24, fournée du 14 mars</span>
         <button class="gallery__zoom" aria-label="Zoom">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5" stroke-linecap="round"/><path d="M11 8v6M8 11h6" stroke-linecap="round"/></svg>
         </button>
       </div>
+      <div class="gallery__dots" aria-hidden="true"></div>
       <div class="gallery__thumbs">
         <button class="gallery__thumb on"><img src="/assets/product-huile-noisettes.png" alt=""></button>
         <button class="gallery__thumb"><img src="/assets/product-pate-tartiner.png" alt=""></button>
@@ -1205,9 +1256,9 @@
 
       <h1 class="info__title">Châtaigne<br><em>vanillée.</em></h1>
 
-      <div class="info__rating">
-        <span class="stars">★★★★★</span>
-        <span>4,9 · <a href="#avis">124 avis</a></span>
+      <div class="info__rating" id="info-rating" hidden>
+        <span class="stars" id="info-rating-stars">★★★★★</span>
+        <span><span id="info-rating-value">4,9</span> · <a href="#avis"><span id="info-rating-count">124 avis</span></a></span>
       </div>
 
       <p class="info__desc">Vanille Bourbon de Madagascar infusée à froid pendant 48h, gousse fendue à la main, châtaignes du Quercy confites au sucre roux. Une crème lente, qui ne presse rien.</p>
@@ -1311,91 +1362,31 @@
   </section>
 
   <!-- AVIS -->
-  <section id="avis" class="reviews">
+  <section id="avis" class="reviews" hidden>
     <div class="section-head">
       <div>
         <div class="section-head__eyebrow">Ce qu'on en dit</div>
-        <h2 class="section-head__title">124 avis vérifiés,<br><em>moyenne 4,9.</em></h2>
+        <h2 class="section-head__title"><span id="reviews-title-count">124 avis Google,</span><br><em id="reviews-title-average">moyenne 4,9.</em></h2>
       </div>
     </div>
 
     <div class="reviews-layout">
       <aside class="reviews-sum">
-        <span class="reviews-sum__num">4,9</span>
-        <span class="reviews-sum__stars">★★★★★</span>
-        <span class="reviews-sum__count">Sur 124 avis vérifiés</span>
-        <div class="reviews-sum__bars">
-          <div class="reviews-sum__bar"><span>5★</span><div class="track"><div class="fill" style="width: 89%;"></div></div><span>89%</span></div>
-          <div class="reviews-sum__bar"><span>4★</span><div class="track"><div class="fill" style="width: 8%;"></div></div><span>8%</span></div>
-          <div class="reviews-sum__bar"><span>3★</span><div class="track"><div class="fill" style="width: 2%;"></div></div><span>2%</span></div>
-          <div class="reviews-sum__bar"><span>2★</span><div class="track"><div class="fill" style="width: 1%;"></div></div><span>1%</span></div>
+        <span class="reviews-sum__num" id="reviews-rating-value">4,9</span>
+        <span class="reviews-sum__stars" id="reviews-rating-stars">★★★★★</span>
+        <span class="reviews-sum__count" id="reviews-count-label">Sur 124 avis Google</span>
+        <small class="reviews-sum__note" id="reviews-source-note">Aperçu des derniers avis publics Google</small>
+        <div class="reviews-sum__bars" id="reviews-bars">
+          <div class="reviews-sum__bar"><span>5★</span><div class="track"><div class="fill" style="width: 0%;"></div></div><span>0%</span></div>
+          <div class="reviews-sum__bar"><span>4★</span><div class="track"><div class="fill" style="width: 0%;"></div></div><span>0%</span></div>
+          <div class="reviews-sum__bar"><span>3★</span><div class="track"><div class="fill" style="width: 0%;"></div></div><span>0%</span></div>
+          <div class="reviews-sum__bar"><span>2★</span><div class="track"><div class="fill" style="width: 0%;"></div></div><span>0%</span></div>
           <div class="reviews-sum__bar"><span>1★</span><div class="track"><div class="fill" style="width: 0%;"></div></div><span>0%</span></div>
         </div>
-        <a href="#" class="reviews-sum__cta">Laisser un avis</a>
+        <a href="#" class="reviews-sum__cta" id="reviews-write-link" target="_blank" rel="noopener">Laisser un avis</a>
       </aside>
 
-      <div class="reviews-list">
-        <article class="review">
-          <div class="review__top">
-            <span class="review__stars">★★★★★</span>
-            <span class="review__date">02 / 26</span>
-          </div>
-          <h4 class="review__title">La meilleure que j'ai mangée</h4>
-          <p class="review__body">« On sent vraiment la vanille, pas du tout écœurante. Le pot a fait trois jours à la maison — pas plus. »</p>
-          <div class="review__author">
-            <span class="review__avatar">M</span>
-            <div class="review__who">
-              <strong>Marine D.</strong>
-              <small>Toulouse · achat vérifié</small>
-            </div>
-          </div>
-        </article>
-        <article class="review">
-          <div class="review__top">
-            <span class="review__stars">★★★★★</span>
-            <span class="review__date">01 / 26</span>
-          </div>
-          <h4 class="review__title">Comme celle de ma grand-mère</h4>
-          <p class="review__body">« Un goût que je n'avais pas retrouvé depuis l'Aveyron. Le numéro de fournée, c'est un détail qui fait tout. »</p>
-          <div class="review__author">
-            <span class="review__avatar">J</span>
-            <div class="review__who">
-              <strong>Jean-Paul L.</strong>
-              <small>Bordeaux · achat vérifié</small>
-            </div>
-          </div>
-        </article>
-        <article class="review">
-          <div class="review__top">
-            <span class="review__stars">★★★★☆</span>
-            <span class="review__date">11 / 25</span>
-          </div>
-          <h4 class="review__title">Très bon, un peu cher</h4>
-          <p class="review__body">« La qualité est là, vraiment. Je trouve le pot un peu petit pour le prix, mais on en mange peu à la fois. »</p>
-          <div class="review__author">
-            <span class="review__avatar">C</span>
-            <div class="review__who">
-              <strong>Camille R.</strong>
-              <small>Paris · achat vérifié</small>
-            </div>
-          </div>
-        </article>
-        <article class="review">
-          <div class="review__top">
-            <span class="review__stars">★★★★★</span>
-            <span class="review__date">12 / 25</span>
-          </div>
-          <h4 class="review__title">Coffret offert, succès total</h4>
-          <p class="review__body">« Offert à ma mère pour Noël, elle a adoré les trois pots. L'emballage en bois est superbe et bien pensé. »</p>
-          <div class="review__author">
-            <span class="review__avatar">H</span>
-            <div class="review__who">
-              <strong>Hélène M.</strong>
-              <small>Cahors · achat vérifié</small>
-            </div>
-          </div>
-        </article>
-      </div>
+      <div class="reviews-list" id="reviews-list"></div>
     </div>
   </section>
 
@@ -1488,8 +1479,8 @@
       <div>
         <h4>Aide</h4>
         <ul>
-          <li><a href="#">Livraison &amp; retours</a></li>
-          <li><a href="#">Nous contacter</a></li>
+          <li><a href="/livraison-retours">Livraison</a></li>
+          <li><a href="mailto:contact@castaneas.fr">Nous contacter</a></li>
         </ul>
       </div>
     </div>
@@ -1543,6 +1534,143 @@ function formatEur(value) {
   return Number(value || 0).toFixed(2).replace('.', ',') + '€';
 }
 
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function formatRatingValue(value) {
+  return Number(value || 0).toFixed(1).replace('.', ',');
+}
+
+function renderStars(rating) {
+  var rounded = Math.max(0, Math.min(5, Math.round(Number(rating || 0))));
+  return '★★★★★'.slice(0, rounded) + '☆☆☆☆☆'.slice(0, 5 - rounded);
+}
+
+function reviewInitials(name) {
+  var parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return 'G';
+  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+}
+
+function reviewTitle(text) {
+  var plain = String(text || '').replace(/\s+/g, ' ').trim();
+  if (!plain) return 'Avis Google';
+  var sentence = plain.split(/[.!?]/)[0].trim();
+  if (!sentence) sentence = plain;
+  return sentence.length > 58 ? sentence.slice(0, 55).trim() + '…' : sentence;
+}
+
+function reviewDateLabel(publishTime, relativeTime) {
+  var date = publishTime ? new Date(publishTime) : null;
+  if (date && !isNaN(date.getTime())) {
+    var month = String(date.getMonth() + 1).padStart(2, '0');
+    var year = String(date.getFullYear()).slice(-2);
+    return month + ' / ' + year;
+  }
+  return relativeTime || 'Google';
+}
+
+function renderGoogleReviewBars(histogram, sampleCount) {
+  var wrap = document.getElementById('reviews-bars');
+  if (!wrap) return;
+  var total = Math.max(0, Number(sampleCount || 0));
+  wrap.innerHTML = [5, 4, 3, 2, 1].map(function (stars) {
+    var count = Math.max(0, Number(histogram && histogram[stars] || 0));
+    var pct = total > 0 ? Math.round((count / total) * 100) : 0;
+    return '<div class="reviews-sum__bar"><span>' + stars + '★</span><div class="track"><div class="fill" style="width: ' + pct + '%;"></div></div><span>' + pct + '%</span></div>';
+  }).join('');
+}
+
+function renderGoogleReviews(payload) {
+  var reviewsSection = document.getElementById('avis');
+  var infoRating = document.getElementById('info-rating');
+  var list = document.getElementById('reviews-list');
+  if (!reviewsSection || !infoRating || !list || !payload || !payload.place) return;
+
+  var rating = Number(payload.place.rating || 0);
+  var reviewCount = Math.max(0, Number(payload.place.userRatingCount || 0));
+  var reviews = Array.isArray(payload.reviews) ? payload.reviews.filter(function (review) {
+    return review && review.text;
+  }) : [];
+
+  if (!reviews.length || rating <= 0 || reviewCount <= 0) {
+    reviewsSection.hidden = true;
+    infoRating.hidden = true;
+    return;
+  }
+
+  document.getElementById('info-rating-stars').textContent = renderStars(rating);
+  document.getElementById('info-rating-value').textContent = formatRatingValue(rating);
+  document.getElementById('info-rating-count').textContent = reviewCount + ' avis';
+  document.getElementById('reviews-title-count').textContent = reviewCount + ' avis Google,';
+  document.getElementById('reviews-title-average').textContent = 'moyenne ' + formatRatingValue(rating) + '.';
+  document.getElementById('reviews-rating-value').textContent = formatRatingValue(rating);
+  document.getElementById('reviews-rating-stars').textContent = renderStars(rating);
+  document.getElementById('reviews-count-label').textContent = 'Sur ' + reviewCount + ' avis Google';
+
+  var sourceNote = document.getElementById('reviews-source-note');
+  if (sourceNote) {
+    sourceNote.textContent = 'Aperçu des ' + reviews.length + ' avis publics remontés par Google';
+  }
+
+  var writeLink = document.getElementById('reviews-write-link');
+  if (writeLink) {
+    writeLink.href = payload.place.writeReviewUri || payload.place.googleMapsUri || '#';
+  }
+
+  renderGoogleReviewBars(payload.sampleHistogram || {}, payload.sampleCount || reviews.length);
+
+  list.innerHTML = reviews.slice(0, 4).map(function (review) {
+    return '<article class="review">'
+      + '<div class="review__top">'
+      + '<span class="review__stars">' + renderStars(review.rating) + '</span>'
+      + '<span class="review__date">' + escapeHtml(reviewDateLabel(review.publishTime, review.relativeTime)) + '</span>'
+      + '</div>'
+      + '<h4 class="review__title">' + escapeHtml(reviewTitle(review.text)) + '</h4>'
+      + '<p class="review__body">« ' + escapeHtml(String(review.text || '').trim()) + ' »</p>'
+      + '<div class="review__author">'
+      + '<span class="review__avatar">' + escapeHtml(reviewInitials(review.authorName)) + '</span>'
+      + '<div class="review__who">'
+      + '<strong>' + escapeHtml(review.authorName || 'Client Google') + '</strong>'
+      + '<small>Avis Google</small>'
+      + '</div></div></article>';
+  }).join('');
+
+  infoRating.hidden = false;
+  reviewsSection.hidden = false;
+}
+
+function syncGoogleReviews() {
+  var reviewsSection = document.getElementById('avis');
+  var infoRating = document.getElementById('info-rating');
+  if (!reviewsSection || !infoRating || !window.fetch) return;
+
+  fetch('/google-reviews.php', { headers: { 'Accept': 'application/json' }, cache: 'no-store' })
+    .then(function (response) {
+      if (!response.ok) {
+        throw new Error('HTTP ' + response.status);
+      }
+      return response.json();
+    })
+    .then(function (payload) {
+      if (!payload || payload.ok === false) {
+        throw new Error(payload && payload.message ? payload.message : 'Avis Google indisponibles');
+      }
+      renderGoogleReviews(payload);
+    })
+    .catch(function () {
+      reviewsSection.hidden = true;
+      infoRating.hidden = true;
+    });
+}
+
 function getCurrentVariant() {
   return _variants.find(function (v) { return v.id === _selectedVariantId; }) || _product;
 }
@@ -1584,22 +1712,38 @@ function toSitePath(path) {
   return '/' + path.replace(/^\.?\//, '');
 }
 
-function renderGallery(product) {
-  var mainImg = document.querySelector('.gallery__main img');
-  if (mainImg) {
-    mainImg.src = toSitePath(product.image);
-    mainImg.alt = product.name;
-  }
+function buildGalleryMedia(images, name) {
+  var track = document.querySelector('.gallery__track');
   var thumbsWrap = document.querySelector('.gallery__thumbs');
-  if (!thumbsWrap) return;
-  var allImgs = [product.image].concat(product.images && product.images.length ? product.images : []);
-  allImgs = allImgs.filter(function (src, idx) { return allImgs.indexOf(src) === idx; });
+  var dotsWrap = document.querySelector('.gallery__dots');
+  if (!track || !thumbsWrap) return;
+  var allImgs = images.filter(Boolean).map(toSitePath).filter(function (src, idx, list) {
+    return list.indexOf(src) === idx;
+  });
+  if (!allImgs.length) return;
+  track.innerHTML = allImgs.map(function (src, idx) {
+    return '<div class="gallery__slide">'
+      + '<img src="' + src + '" alt="' + (name || '') + '" data-index="' + idx + '" onerror="this.onerror=null;this.src=\'/assets/product-pate-tartiner.png\'">'
+      + '</div>';
+  }).join('');
   thumbsWrap.innerHTML = allImgs.map(function (src, idx) {
-    var imgSrc = toSitePath(src);
-    return '<button class="gallery__thumb' + (idx === 0 ? ' on' : '') + '" data-src="' + imgSrc + '">'
-      + '<img src="' + imgSrc + '" alt="" onerror="this.onerror=null;this.src=\'/assets/product-pate-tartiner.png\'">'
+    return '<button class="gallery__thumb' + (idx === 0 ? ' on' : '') + '" data-src="' + src + '" data-index="' + idx + '">'
+      + '<img src="' + src + '" alt="" onerror="this.onerror=null;this.src=\'/assets/product-pate-tartiner.png\'">'
       + '</button>';
   }).join('');
+  if (dotsWrap) {
+    dotsWrap.innerHTML = allImgs.length > 1
+      ? allImgs.map(function (_, idx) {
+          return '<span class="gallery__dot' + (idx === 0 ? ' on' : '') + '" data-index="' + idx + '"></span>';
+        }).join('')
+      : '';
+  }
+  if (window.__setGalleryIndex) window.__setGalleryIndex(0);
+}
+
+function renderGallery(product) {
+  var allImgs = [product.image].concat(product.images && product.images.length ? product.images : []);
+  buildGalleryMedia(allImgs, product.name);
 }
 
 function applySelectedOffer(offer) {
@@ -2024,24 +2168,104 @@ function updateSelectedVariant(pid) {
 
   // MAJ du bouton CTA avec le bon prix initial
   updateBuyCta();
+  syncGoogleReviews();
   finishRender();
 })();
 
 // ========== GALERIE ==========
 (function () {
-  var mainImg = document.querySelector('.gallery__main img');
+  var main = document.querySelector('.gallery__main');
+  var track = document.querySelector('.gallery__track');
   var thumbsWrap = document.querySelector('.gallery__thumbs');
+  var dotsWrap = document.querySelector('.gallery__dots');
+  var activeIndex = 0;
+  var startX = 0;
+  var deltaX = 0;
+
+  function getSlides() {
+    return Array.prototype.slice.call(document.querySelectorAll('.gallery__slide img'));
+  }
+
+  function setGalleryIndex(index) {
+    var slides = getSlides();
+    if (!slides.length || !track) return;
+    activeIndex = Math.max(0, Math.min(index, slides.length - 1));
+    track.style.transform = 'translateX(-' + (activeIndex * 100) + '%)';
+    slides.forEach(function (img, idx) {
+      img.alt = _product ? _product.name : img.alt;
+      img.setAttribute('aria-hidden', idx === activeIndex ? 'false' : 'true');
+    });
+    document.querySelectorAll('.gallery__thumb').forEach(function (btn, idx) {
+      btn.classList.toggle('on', idx === activeIndex);
+    });
+    if (dotsWrap) {
+      dotsWrap.querySelectorAll('.gallery__dot').forEach(function (dot, idx) {
+        dot.classList.toggle('on', idx === activeIndex);
+      });
+    }
+  }
+
+  function syncStaticGallery() {
+    var slides = getSlides();
+    var thumbs = Array.prototype.slice.call(document.querySelectorAll('.gallery__thumb img'));
+    if (slides.length > 1 || !thumbs.length) return;
+    var sources = thumbs.map(function (img) { return img.getAttribute('src'); });
+    var mainImg = slides[0];
+    var mainSrc = mainImg ? mainImg.getAttribute('src') : '';
+    if (mainSrc) sources.unshift(mainSrc);
+    buildGalleryMedia(sources, _product ? _product.name : (mainImg ? mainImg.getAttribute('alt') : ''));
+  }
+
+  window.__setGalleryIndex = setGalleryIndex;
+  syncStaticGallery();
+
   if (thumbsWrap) {
     thumbsWrap.addEventListener('click', function (event) {
       var btn = event.target.closest('.gallery__thumb');
-      if (!btn || !mainImg) return;
-      document.querySelectorAll('.gallery__thumb').forEach(function (b) { b.classList.remove('on'); });
-      btn.classList.add('on');
-      mainImg.src = btn.dataset.src || btn.querySelector('img').src;
-      mainImg.alt = _product ? _product.name : '';
+      if (!btn) return;
+      setGalleryIndex(Number(btn.dataset.index || 0));
     });
   }
-  document.querySelector('.gallery__zoom').addEventListener('click', function () { openZoom(mainImg.src); });
+
+  if (dotsWrap) {
+    dotsWrap.addEventListener('click', function (event) {
+      var dot = event.target.closest('.gallery__dot');
+      if (!dot) return;
+      setGalleryIndex(Number(dot.dataset.index || 0));
+    });
+  }
+
+  if (main) {
+    main.addEventListener('touchstart', function (event) {
+      if (window.innerWidth > 640) return;
+      startX = event.touches[0].clientX;
+      deltaX = 0;
+      main.classList.add('is-touching');
+    }, { passive: true });
+
+    main.addEventListener('touchmove', function (event) {
+      if (window.innerWidth > 640) return;
+      deltaX = event.touches[0].clientX - startX;
+    }, { passive: true });
+
+    main.addEventListener('touchend', function () {
+      if (window.innerWidth > 640) return;
+      main.classList.remove('is-touching');
+      if (Math.abs(deltaX) > 45) {
+        setGalleryIndex(activeIndex + (deltaX < 0 ? 1 : -1));
+      } else {
+        setGalleryIndex(activeIndex);
+      }
+    });
+  }
+
+  document.querySelector('.gallery__zoom').addEventListener('click', function () {
+    var slides = getSlides();
+    var current = slides[activeIndex] || slides[0];
+    if (current) openZoom(current.src);
+  });
+
+  setGalleryIndex(0);
 })();
 
 function openZoom(src) {

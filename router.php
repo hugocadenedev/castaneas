@@ -14,8 +14,10 @@ $pageRoutes = [
     '/confirmation' => 'confirmation.html',
     '/recettes' => 'recettes.html',
     '/recette' => 'recette.html',
+    '/actualites' => 'actualites.php',
     '/histoire' => 'histoire.html',
     '/cgv' => 'cgv.html',
+    '/livraison-retours' => 'livraison-retours.html',
     '/maintenance' => 'maintenance.html',
     '/back-office' => 'back-office.html',
 ];
@@ -30,8 +32,10 @@ $legacyRedirects = [
     '/confirmation.html' => '/confirmation',
     '/recettes.html' => '/recettes',
     '/recette.html' => '/recette',
+    '/actualites.html' => '/actualites',
     '/histoire.html' => '/histoire',
     '/cgv.html' => '/cgv',
+    '/livraison-retours.html' => '/livraison-retours',
     '/maintenance.html' => '/maintenance',
     '/back-office.html' => '/back-office',
     '/creme-de-chataigne.html' => '/categorie/cremes',
@@ -63,6 +67,21 @@ if (preg_match('#^/categorie/([^/]+)/?$#', $path, $matches)) {
     $_GET['cat'] = $matches[1];
     $_SERVER['QUERY_STRING'] = http_build_query($_GET);
     require __DIR__ . '/categorie.html';
+    exit;
+}
+
+if (preg_match('#^/actualites/categorie/([^/]+)/?$#', $path, $matches)) {
+    $_GET['category'] = $matches[1];
+    $_SERVER['QUERY_STRING'] = http_build_query($_GET);
+    require __DIR__ . '/actualites.php';
+    exit;
+}
+
+if (preg_match('#^/actualites/([^/]+)/([^/]+)/?$#', $path, $matches)) {
+    $_GET['category'] = $matches[1];
+    $_GET['slug'] = $matches[2];
+    $_SERVER['QUERY_STRING'] = http_build_query($_GET);
+    require __DIR__ . '/actualite.php';
     exit;
 }
 

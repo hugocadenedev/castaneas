@@ -36,4 +36,14 @@ return [
         'request_label' => true,
         'apply_shipping_rules' => true,
     ],
+    'google_places' => [
+        'api_key' => 'VOTRE_CLE_API_GOOGLE_PLACES',
+        'base_url' => 'https://places.googleapis.com/v1',
+        'place_id' => '',
+        'query' => 'CASTANÉAS Albias',
+        'language' => 'fr',
+        'region' => 'FR',
+        'ca_bundle' => '',
+        'skip_ssl_verify' => false,
+    ],
 ];
