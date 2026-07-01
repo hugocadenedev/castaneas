@@ -64,7 +64,7 @@ function castaneas_blog_render_content($content) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=7">
+<link rel="stylesheet" href="/styles.css?v=7">
 <style>
   :root {
     --serif: 'Fraunces', Georgia, serif;
@@ -143,7 +143,7 @@ function castaneas_blog_render_content($content) {
 <div class="promo-bar pill">Livraison offerte dès 40€ d'achat — récolte 2025 disponible 🌰</div>
 <header class="navbar pill-nav">
   <div class="nav-inner">
-    <a href="/accueil" class="brand" aria-label="Castaneas"><img src="assets/Castaneas-logo (3).svg" alt="Castaneas" class="brand-logo"></a>
+    <a href="/accueil" class="brand" aria-label="Castaneas"><img src="/assets/Castaneas-logo (3).svg" alt="Castaneas" class="brand-logo"></a>
     <nav class="nav-links">
       <a href="/accueil">Accueil</a>
       <a href="/recettes">Recettes</a>
@@ -189,7 +189,7 @@ function castaneas_blog_render_content($content) {
         </div>
       </div>
       <div class="article-cover">
-        <img src="<?php echo htmlspecialchars($post['coverImage'] ?: 'assets/story-chataigneraie.jpg', ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($post['title'], ENT_QUOTES, 'UTF-8'); ?>">
+        <img src="<?php echo htmlspecialchars(castaneas_blog_public_url($post['coverImage'] ?: 'assets/story-chataigneraie.jpg'), ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($post['title'], ENT_QUOTES, 'UTF-8'); ?>">
       </div>
     </section>
 
@@ -221,7 +221,7 @@ function castaneas_blog_render_content($content) {
         <div class="related-grid">
           <?php foreach ($relatedPosts as $relatedPost) { ?>
             <a class="related-card" href="<?php echo htmlspecialchars(castaneas_blog_post_href($relatedPost), ENT_QUOTES, 'UTF-8'); ?>">
-              <div class="related-card__media"><img src="<?php echo htmlspecialchars($relatedPost['coverImage'] ?: 'assets/story-atelier.jpg', ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($relatedPost['title'], ENT_QUOTES, 'UTF-8'); ?>"></div>
+              <div class="related-card__media"><img src="<?php echo htmlspecialchars(castaneas_blog_public_url($relatedPost['coverImage'] ?: 'assets/story-atelier.jpg'), ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($relatedPost['title'], ENT_QUOTES, 'UTF-8'); ?>"></div>
               <div class="related-card__body">
                 <div class="article-meta"><?php echo htmlspecialchars(castaneas_blog_format_date($relatedPost['publishedAt'] ?: $relatedPost['updatedAt']), ENT_QUOTES, 'UTF-8'); ?></div>
                 <h3 class="related-card__title"><?php echo htmlspecialchars($relatedPost['title'], ENT_QUOTES, 'UTF-8'); ?></h3>
@@ -238,14 +238,14 @@ function castaneas_blog_render_content($content) {
 <footer class="footer">
   <div class="footer-inner">
     <div class="footer-grid">
-      <div><div class="footer-brand"><img src="assets/Castaneas-logo (3).svg" alt="Castaneas" class="footer-brand-logo"></div></div>
+      <div><div class="footer-brand"><img src="/assets/Castaneas-logo (3).svg" alt="Castaneas" class="footer-brand-logo"></div></div>
       <div><h4>Boutique</h4><ul><li><a href="/categorie/cremes">Cremes de chataigne</a></li><li><a href="/coffrets">Coffrets</a></li></ul></div>
       <div><ul><li><a href="/histoire">Notre histoire</a></li><li><a href="/recettes">Recettes</a></li><li><a href="/actualites">Actualites</a></li></ul></div>
       <div><h4>Informations</h4><ul><li><a href="/livraison-retours">Livraison</a></li><li><a href="/cgv">CGV</a></li><li><a href="mailto:contact@castaneas.fr">Nous contacter</a></li></ul></div>
     </div>
   </div>
 </footer>
-<script src="data.php?v=2"></script><script src="site-data.js?v=5"></script>
-<script src="cart.js"></script>
+<script src="/data.php?v=2"></script><script src="/site-data.js?v=5"></script>
+<script src="/cart.js"></script>
 </body>
 </html>

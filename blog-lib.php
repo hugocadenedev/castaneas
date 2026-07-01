@@ -246,3 +246,16 @@ function castaneas_blog_plain_excerpt($content, $fallback = '', $maxLength = 180
     $slice = function_exists('mb_substr') ? mb_substr($source, 0, $maxLength - 1) : substr($source, 0, $maxLength - 1);
     return rtrim($slice) . '…';
 }
+
+function castaneas_blog_public_url($path) {
+    $path = trim((string) $path);
+    if ($path === '') {
+        return '';
+    }
+
+    if (preg_match('#^(?:https?:)?//#i', $path) || strpos($path, 'data:') === 0 || strpos($path, 'mailto:') === 0 || strpos($path, '#') === 0) {
+        return $path;
+    }
+
+    return '/' . ltrim($path, '/');
+}
