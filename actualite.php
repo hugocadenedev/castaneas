@@ -98,7 +98,7 @@ function castaneas_blog_render_content($content) {
   .article-cat { display:inline-flex; align-items:center; padding:8px 12px; border-radius:999px; background: var(--green-light); color: var(--green); text-decoration:none; letter-spacing:.14em; }
   .article-cover { position:relative; aspect-ratio: 4 / 4.1; border-radius: 32px; overflow:hidden; background:#efe3d1; border:1px solid rgba(59,31,14,.08); box-shadow:0 8px 30px -18px rgba(59,31,14,.24); }
   .article-cover img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-  .article-layout { display:grid; grid-template-columns: minmax(0,1fr) 300px; gap: 30px; align-items:start; }
+  .article-layout { display:block; }
   .article-content { background:#fff; border-radius: 32px; padding: 38px 40px; border:1px solid rgba(59,31,14,.08); box-shadow:0 8px 30px -18px rgba(59,31,14,.24); }
   .article-content p, .article-content li { font-size: 16px; line-height: 1.78; color: var(--ink); }
   .article-content p + p { margin-top: 16px; }
@@ -106,10 +106,6 @@ function castaneas_blog_render_content($content) {
   .article-content h3 { font-size: 23px; color: var(--brown-deep); margin: 26px 0 12px; }
   .article-content ul, .article-content ol { padding-left: 22px; margin: 16px 0; }
   .article-content blockquote { margin: 22px 0; padding: 18px 22px; border-left: 3px solid var(--brown-chest); background: var(--cream-soft); color: var(--ink-soft); font-size: 17px; }
-  .article-side { display:flex; flex-direction:column; gap:20px; position: sticky; top: 130px; }
-  .article-side__card { background:#fff; border-radius: 28px; padding: 24px; border:1px solid rgba(59,31,14,.08); box-shadow:0 8px 30px -18px rgba(59,31,14,.24); }
-  .article-side__title { font-family: var(--mono); font-size: 11px; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); margin-bottom: 12px; font-weight:700; }
-  .article-side__card p { color: var(--ink-soft); font-size: 14px; line-height: 1.6; }
   .related { margin-top: 42px; }
   .section-head { display:grid; grid-template-columns:1fr auto; gap:18px; align-items:end; margin-bottom:22px; }
   .section-head__title { font-size: clamp(28px,3vw,40px); line-height:1.08; color:var(--brown-deep); }
@@ -126,8 +122,7 @@ function castaneas_blog_render_content($content) {
   .footer { background: transparent; margin-top: 0; padding: 0 16px 24px; }
   .footer-inner { max-width: 1340px; margin: 0 auto; background: var(--shell-accent); color: var(--cream); border-radius: 28px; padding: 56px 48px 28px; box-shadow: 0 12px 40px -16px rgba(59,31,14,.35); }
   @media (max-width: 1100px) {
-    .article-hero, .article-layout { grid-template-columns: 1fr; }
-    .article-side { position: static; }
+    .article-hero { grid-template-columns: 1fr; }
     .article-cover { aspect-ratio: 16 / 10; }
   }
   @media (max-width: 768px) {
@@ -195,18 +190,6 @@ function castaneas_blog_render_content($content) {
 
     <div class="article-layout">
       <article class="article-content"><?php echo castaneas_blog_render_content($post['content']); ?></article>
-      <aside class="article-side">
-        <div class="article-side__card">
-          <div class="article-side__title">SEO article</div>
-          <p>Cette page possede une URL propre, une categorie primaire pour le maillage, et une meta description modifiable depuis le back-office.</p>
-        </div>
-        <?php if (!empty($post['primaryCategory'])) { ?>
-          <div class="article-side__card">
-            <div class="article-side__title">Continuer sur ce theme</div>
-            <p>Explorez la rubrique <a href="<?php echo htmlspecialchars(castaneas_blog_category_href($post['primaryCategory']), ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($post['primaryCategory']['name'], ENT_QUOTES, 'UTF-8'); ?></a> pour renforcer la lecture par intention et par sujet.</p>
-          </div>
-        <?php } ?>
-      </aside>
     </div>
 
     <?php if ($relatedPosts) { ?>
