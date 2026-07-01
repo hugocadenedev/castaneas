@@ -710,23 +710,31 @@
   /* SiteData.ready : compatibilité avec ancien code — déjà résolu (données sync via data.php) */
   SiteData.ready = Promise.resolve();
 
-  /* ---------- Injection automatique de la nav ---------- */
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () {
+  function markShellReady() {
+    document.documentElement.classList.remove('site-shell-pending');
+    document.documentElement.classList.add('site-shell-ready');
+  }
+
+  function bootstrapShell() {
+    try {
       injectNav();
       injectMobileCats();
       injectFooterCategories();
       injectPromoBar();
       syncAccountLinks();
       normalizeDocumentLinks();
+    } finally {
+      markShellReady();
+    }
+  }
+
+  /* ---------- Injection automatique de la nav ---------- */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+      bootstrapShell();
     });
   } else {
-    injectNav();
-    injectMobileCats();
-    injectFooterCategories();
-    injectPromoBar();
-    syncAccountLinks();
-    normalizeDocumentLinks();
+    bootstrapShell();
   }
 
   function injectNav() {

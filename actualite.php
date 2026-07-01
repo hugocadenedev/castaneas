@@ -52,7 +52,7 @@ function castaneas_blog_render_content($content) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="site-shell-pending">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
