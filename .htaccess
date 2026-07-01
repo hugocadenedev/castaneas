@@ -46,7 +46,9 @@ DirectoryIndex maintenance.html index.html
     RewriteRule ^confirmation\.html$       /confirmation [R=301,L]
     RewriteRule ^recettes\.html$           /recettes [R=301,L]
     RewriteRule ^recette\.html$            /recette [R=301,L]
+    RewriteRule ^actualites\.html$         /actualites [R=301,L]
     RewriteRule ^histoire\.html$           /histoire [R=301,L]
+    RewriteRule ^livraison-retours\.html$  /livraison-retours [R=301,L]
     RewriteRule ^cgv\.html$                /cgv [R=301,L]
     RewriteRule ^maintenance\.html$        /maintenance [R=301,L]
     RewriteRule ^back-office\.html$        /back-office [R=301,L]
@@ -90,7 +92,15 @@ DirectoryIndex maintenance.html index.html
 
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^actualites/?$ actualites.php [L,QSA]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^histoire/?$ histoire.html [L,QSA]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^livraison-retours/?$ livraison-retours.html [L,QSA]
 
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
@@ -108,6 +118,15 @@ DirectoryIndex maintenance.html index.html
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^categorie/([^/]+)/?$ categorie.html?cat=$1 [L,QSA]
+
+    # Routes blog
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^actualites/categorie/([^/]+)/?$ actualites.php?category=$1 [L,QSA]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^actualites/([^/]+)/([^/]+)/?$ actualite.php?category=$1&slug=$2 [L,QSA]
 
     # Route /produit/<slug> → produit.php?slug=<slug>
     RewriteCond %{REQUEST_FILENAME} !-f
