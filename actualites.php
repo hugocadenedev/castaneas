@@ -146,11 +146,17 @@ function castaneas_blog_listing_count(array $dataset, $categoryId) {
 <main class="page">
   <section class="blog-hero">
     <div>
-      <div class="blog-hero__eyebrow" id="blog-hero-eyebrow"><?php echo $currentCategory ? htmlspecialchars($currentCategory['name'], ENT_QUOTES, 'UTF-8') : 'Journal Castaneas'; ?></div>
-      <h1 class="blog-hero__title"><?php if ($currentCategory) { ?><span id="blog-hero-title">Les actualites</span> <em id="blog-hero-title-em"><?php echo htmlspecialchars($currentCategory['name'], ENT_QUOTES, 'UTF-8'); ?></em><?php } else { ?><span id="blog-hero-title">Les actualites qui font vivre</span> <em id="blog-hero-title-em">nos vergers.</em><?php } ?></h1>
-      <p class="blog-hero__lede" id="blog-hero-sub"><?php echo htmlspecialchars($currentCategory ? ($currentCategory['description'] ?: 'Tous les articles lies a cette rubrique Castaneas, avec une vraie logique de maillage et de lecture par theme.') : 'Conseils de degustation, vie de la ferme, coulisses de production et temps forts de saison: un blog clair, lisible et utile pour renforcer vos pages SEO.', ENT_QUOTES, 'UTF-8'); ?></p>
+      <?php if ($currentCategory) { ?>
+      <div class="blog-hero__eyebrow" id="blog-hero-eyebrow"><?php echo htmlspecialchars($currentCategory['name'], ENT_QUOTES, 'UTF-8'); ?></div>
+      <h1 class="blog-hero__title"><span id="blog-hero-title">Les actualites</span> <em id="blog-hero-title-em"><?php echo htmlspecialchars($currentCategory['name'], ENT_QUOTES, 'UTF-8'); ?></em></h1>
+      <p class="blog-hero__lede" id="blog-hero-sub"><?php echo htmlspecialchars($currentCategory['description'] ?: 'Tous les articles lies a cette rubrique Castaneas, avec une vraie logique de maillage et de lecture par theme.', ENT_QUOTES, 'UTF-8'); ?></p>
+      <?php } else { ?>
+      <h1 class="blog-hero__title"><span id="blog-hero-title">Les actualites</span></h1>
+      <?php } ?>
     </div>
+    <?php if ($currentCategory) { ?>
     <div class="blog-hero__aside" id="blog-hero-aside">— actualités de la ferme</div>
+    <?php } ?>
   </section>
 
   <div class="blog-layout">
