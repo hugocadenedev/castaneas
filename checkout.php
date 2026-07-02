@@ -467,6 +467,11 @@ function castaneas_checkout_present_shipping_option(array $option, $type) {
             'code' => (string) ($option['carrier']['code'] ?? ''),
             'name' => (string) ($option['carrier']['name'] ?? ''),
         ],
+        'contract' => [
+            'id' => isset($option['contract']['id']) ? (int) $option['contract']['id'] : null,
+            'carrierCode' => (string) ($option['contract']['carrier_code'] ?? ''),
+            'name' => (string) ($option['contract']['name'] ?? ''),
+        ],
         'product' => [
             'code' => (string) ($option['product']['code'] ?? ''),
             'name' => (string) ($option['product']['name'] ?? ''),
@@ -478,6 +483,7 @@ function castaneas_checkout_present_shipping_option(array $option, $type) {
         'requiresServicePoint' => !empty($option['requirements']['is_service_point_required']),
         'requirements' => array_values(array_filter($option['requirements']['fields'] ?? [], 'is_string')),
         'lastMile' => (string) ($option['functionalities']['last_mile'] ?? ''),
+        'directContractOnly' => !empty($option['functionalities']['direct_contract_only']),
     ];
 }
 
@@ -796,6 +802,7 @@ $selectedShipping = [
     'code' => trim((string) ($shipping['code'] ?? '')),
     'name' => trim((string) ($shipping['name'] ?? '')),
     'carrier' => is_array($shipping['carrier'] ?? null) ? $shipping['carrier'] : [],
+    'contract' => is_array($shipping['contract'] ?? null) ? $shipping['contract'] : [],
     'product' => is_array($shipping['product'] ?? null) ? $shipping['product'] : [],
     'selectedFunctionalities' => is_array($shipping['selectedFunctionalities'] ?? null) ? $shipping['selectedFunctionalities'] : [],
     'price' => $shippingPrice,

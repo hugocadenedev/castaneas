@@ -165,10 +165,14 @@ function castaneas_payment_finalize_order($ref, $status, array $payload) {
         $sendcloud['lastResult'] = $sendcloudResult;
         if (!empty($sendcloudResult['ok'])) {
             $parcel = $sendcloudResult['data']['parcel'] ?? [];
+            $shipment = is_array($sendcloudResult['data']['shipment'] ?? null) ? $sendcloudResult['data']['shipment'] : [];
             $sendcloud['createdAt'] = gmdate('c');
             $sendcloud['parcelId'] = $parcel['id'] ?? null;
-            $sendcloud['trackingNumber'] = $parcel['tracking_number'] ?? null;
-            $sendcloud['labelUrl'] = $parcel['label']['label_printer'] ?? ($parcel['label']['normal_printer'][0] ?? null);
+            $sendcloud['trackingNumber'] = $parcel['tracking_number'] ?? ($parcel['trackingNumber'] ?? null);
+            $sendcloud['labelUrl'] = castaneas_sendcloud_label_url_from_parcel($parcel);
+            $sendcloud['shipmentId'] = $shipment['id'] ?? null;
+            $sendcloud['shipmentName'] = $shipment['ship_with']['properties']['shipping_option_code'] ?? ($shipment['carrier']['name'] ?? null);
+            $sendcloud['apiVersion'] = $sendcloudResult['data']['apiVersion'] ?? null;
         }
 
         $order = castaneas_order_update_status($ref, $mappedStatus, ['sendcloud' => $sendcloud]);

@@ -15,15 +15,17 @@ function castaneas_sendcloud_label_response($status, array $payload) {
     exit;
 }
 
-function castaneas_sendcloud_label_sync_order(array $order, array $parcel) {
+function castaneas_sendcloud_label_sync_order(array $order, array $parcel, array $shipment = null, $apiVersion = null) {
     $sendcloud = is_array($order['sendcloud'] ?? null) ? $order['sendcloud'] : [];
     $sendcloud['lastAttemptAt'] = gmdate('c');
     $sendcloud['createdAt'] = $sendcloud['createdAt'] ?? gmdate('c');
     $sendcloud['parcelId'] = $parcel['id'] ?? ($sendcloud['parcelId'] ?? null);
-    $sendcloud['trackingNumber'] = $parcel['tracking_number'] ?? ($sendcloud['trackingNumber'] ?? null);
+    $sendcloud['trackingNumber'] = $parcel['tracking_number'] ?? ($parcel['trackingNumber'] ?? ($sendcloud['trackingNumber'] ?? null));
     $sendcloud['labelUrl'] = castaneas_sendcloud_label_url_from_parcel($parcel) ?: ($sendcloud['labelUrl'] ?? null);
-    $sendcloud['shipmentId'] = $parcel['shipment']['id'] ?? ($sendcloud['shipmentId'] ?? null);
-    $sendcloud['shipmentName'] = $parcel['shipment']['name'] ?? ($sendcloud['shipmentName'] ?? null);
+    $sendcloud['shipmentId'] = $shipment['id'] ?? ($parcel['shipment']['id'] ?? ($sendcloud['shipmentId'] ?? null));
+    $sendcloud['shipmentName'] = $shipment['ship_with']['properties']['shipping_option_code']
+        ?? ($shipment['carrier']['name'] ?? ($parcel['shipment']['name'] ?? ($sendcloud['shipmentName'] ?? null)));
+    $sendcloud['apiVersion'] = $apiVersion ?? ($sendcloud['apiVersion'] ?? null);
     $sendcloud['lastResult'] = ['ok' => true, 'status' => 'label_ready'];
 
     $updated = castaneas_order_update_status((string) $order['id'], (string) ($order['status'] ?? 'paid'), ['sendcloud' => $sendcloud]);
@@ -45,6 +47,11 @@ function castaneas_sendcloud_label_sync_failure(array $order, array $result) {
 function castaneas_sendcloud_label_ensure_for_order(array $order) {
     $sendcloud = is_array($order['sendcloud'] ?? null) ? $order['sendcloud'] : [];
     $parcelId = (int) ($sendcloud['parcelId'] ?? 0);
+    $labelUrl = trim((string) ($sendcloud['labelUrl'] ?? ''));
+
+    if ($parcelId > 0 && $labelUrl !== '') {
+        return ['ok' => true, 'order' => $order, 'parcel' => ['id' => $parcelId]];
+    }
 
     if ($parcelId > 0) {
         $parcelResult = castaneas_sendcloud_refresh_parcel($parcelId);
@@ -74,12 +81,12 @@ function castaneas_sendcloud_label_ensure_for_order(array $order) {
         return $sendResult;
     }
 
-    $parcel = castaneas_sendcloud_extract_parcel($sendResult['data']);
+    $parcel = $sendResult['data']['parcel'] ?? castaneas_sendcloud_extract_parcel($sendResult['data']);
     if (!$parcel) {
         return ['ok' => false, 'code' => 'sendcloud_missing_parcel', 'message' => 'Colis Sendcloud introuvable dans la réponse.'];
     }
 
-    $updatedOrder = castaneas_sendcloud_label_sync_order($order, $parcel);
+    $updatedOrder = castaneas_sendcloud_label_sync_order($order, $parcel, $sendResult['data']['shipment'] ?? null, $sendResult['data']['apiVersion'] ?? null);
     if (!$updatedOrder) {
         return ['ok' => false, 'code' => 'sendcloud_order_sync_failed', 'message' => 'Impossible de mettre à jour la commande après création du colis.'];
     }
@@ -128,7 +135,16 @@ if (!$labelResult['ok']) {
 
 $updatedOrder = $labelResult['order'] ?? castaneas_order_find($ref);
 $parcelId = (int) (($updatedOrder['sendcloud']['parcelId'] ?? 0));
-$pdfResult = castaneas_sendcloud_download_label_pdf($parcelId);
+$labelUrl = trim((string) ($updatedOrder['sendcloud']['labelUrl'] ?? ''));
+$pdfResult = $labelUrl !== '' ? castaneas_sendcloud_download_file_url($labelUrl, 'application/pdf') : ['ok' => false];
+if (empty($pdfResult['ok']) && $parcelId > 0) {
+    $apiVersion = trim((string) ($updatedOrder['sendcloud']['apiVersion'] ?? ''));
+    if ($apiVersion === 'v3') {
+        $pdfResult = castaneas_sendcloud_v3_document_request($parcelId, 'label', ['paper_size' => 'A6']);
+    } else {
+        $pdfResult = castaneas_sendcloud_download_label_pdf($parcelId);
+    }
+}
 if (!$pdfResult['ok']) {
     castaneas_sendcloud_label_response(502, ['ok' => false, 'error' => $pdfResult['message'] ?? 'Impossible de télécharger l\'étiquette Sendcloud.', 'code' => $pdfResult['code'] ?? 'sendcloud_label_download_failed']);
 }
