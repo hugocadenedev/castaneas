@@ -453,6 +453,132 @@ function castaneas_checkout_selected_functionalities(array $option) {
     return $selected;
 }
 
+function castaneas_checkout_shipping_option_token($value) {
+    $value = mb_strtolower(trim((string) $value), 'UTF-8');
+    $value = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $value);
+    $value = strtolower((string) $value);
+    $value = preg_replace('/[^a-z0-9]+/', ' ', $value);
+
+    return trim((string) $value);
+}
+
+function castaneas_checkout_shipping_preferences() {
+    static $preferences = null;
+    if ($preferences !== null) {
+        return $preferences;
+    }
+
+    $preferences = [
+        [
+            'type' => 'relay',
+            'contains' => ['mondial', 'relay', 'locker'],
+            'label' => 'Mondial Relay Locker',
+            'priority' => 10,
+        ],
+        [
+            'type' => 'relay',
+            'contains' => ['chrono', 'shop2shop'],
+            'label' => 'Chronopost',
+            'priority' => 20,
+        ],
+        [
+            'type' => 'relay',
+            'contains' => ['mondial', 'relay', 'point', 'relais'],
+            'label' => 'Mondial Relay',
+            'priority' => 30,
+        ],
+        [
+            'type' => 'home',
+            'contains' => ['mondial', 'relay', 'home'],
+            'label' => 'Mondial Relay',
+            'priority' => 10,
+        ],
+        [
+            'type' => 'home',
+            'contains' => ['colissimo', 'home'],
+            'label' => 'Colissimo',
+            'priority' => 20,
+        ],
+    ];
+
+    return $preferences;
+}
+
+function castaneas_checkout_shipping_preference_match(array $option, $type) {
+    $haystack = implode(' ', array_filter([
+        castaneas_checkout_shipping_option_token($option['code'] ?? ''),
+        castaneas_checkout_shipping_option_token($option['name'] ?? ''),
+        castaneas_checkout_shipping_option_token($option['carrier']['code'] ?? ''),
+        castaneas_checkout_shipping_option_token($option['carrier']['name'] ?? ''),
+        castaneas_checkout_shipping_option_token($option['product']['code'] ?? ''),
+        castaneas_checkout_shipping_option_token($option['product']['name'] ?? ''),
+    ]));
+
+    foreach (castaneas_checkout_shipping_preferences() as $preference) {
+        if (($preference['type'] ?? '') !== $type) {
+            continue;
+        }
+
+        $matches = true;
+        foreach (($preference['contains'] ?? []) as $token) {
+            if (strpos($haystack, castaneas_checkout_shipping_option_token($token)) === false) {
+                $matches = false;
+                break;
+            }
+        }
+
+        if ($matches) {
+            return $preference;
+        }
+    }
+
+    return null;
+}
+
+function castaneas_checkout_curate_presented_option(array $presented, array $rawOption, $type) {
+    $preference = castaneas_checkout_shipping_preference_match($rawOption, $type);
+    if ($preference === null) {
+        $presented['preferred'] = false;
+        $presented['displayPriority'] = 999;
+        return $presented;
+    }
+
+    if (!empty($preference['label'])) {
+        $presented['name'] = (string) $preference['label'];
+    }
+    $presented['preferred'] = true;
+    $presented['displayPriority'] = (int) ($preference['priority'] ?? 999);
+
+    return $presented;
+}
+
+function castaneas_checkout_finalize_presented_options(array $options) {
+    if (!$options) {
+        return [];
+    }
+
+    $preferred = array_values(array_filter($options, static function ($option) {
+        return !empty($option['preferred']);
+    }));
+
+    if (!$preferred) {
+        return [];
+    }
+
+    $pool = $preferred;
+    usort($pool, static function ($left, $right) {
+        $leftPriority = (int) ($left['displayPriority'] ?? 999);
+        $rightPriority = (int) ($right['displayPriority'] ?? 999);
+        if ($leftPriority !== $rightPriority) {
+            return $leftPriority <=> $rightPriority;
+        }
+
+        return ((float) ($left['price'] ?? 0)) <=> ((float) ($right['price'] ?? 0));
+    });
+
+    return array_slice(array_values($pool), 0, 2);
+}
+
 function castaneas_checkout_option_is_usable(array $option) {
     $directContractOnly = !empty($option['functionalities']['direct_contract_only']);
     if (!$directContractOnly) {
@@ -530,19 +656,19 @@ function castaneas_checkout_shipping_options(array $items, array $billing) {
         if ($lastMile === 'home_delivery') {
             $presented = castaneas_checkout_present_shipping_option($option, 'home');
             if ($presented) {
-                $home[] = $presented;
+                $home[] = castaneas_checkout_curate_presented_option($presented, $option, 'home');
             }
         }
         if ($lastMile === 'service_point') {
             $presented = castaneas_checkout_present_shipping_option($option, 'relay');
             if ($presented) {
-                $relay[] = $presented;
+                $relay[] = castaneas_checkout_curate_presented_option($presented, $option, 'relay');
             }
         }
     }
 
-    usort($home, static function ($left, $right) { return $left['price'] <=> $right['price']; });
-    usort($relay, static function ($left, $right) { return $left['price'] <=> $right['price']; });
+    $home = castaneas_checkout_finalize_presented_options($home);
+    $relay = castaneas_checkout_finalize_presented_options($relay);
 
     if (!$home && !$relay && $skippedDirectContractOnly > 0) {
         return [
@@ -555,8 +681,8 @@ function castaneas_checkout_shipping_options(array $items, array $billing) {
     return [
         'ok' => true,
         'shipment' => $shipment,
-        'home' => array_slice($home, 0, 2),
-        'relay' => array_slice($relay, 0, 2),
+        'home' => $home,
+        'relay' => $relay,
     ];
 }
 

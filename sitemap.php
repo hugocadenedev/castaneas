@@ -48,7 +48,80 @@ function castaneas_sitemap_load_key($key) {
     return is_array($decoded) ? $decoded : [];
 }
 
-function castaneas_sitemap_product_urls(array $products, $baseUrl) {
+function castaneas_sitemap_lastmod_from_value($value, $fallbackTimestamp = null) {
+    if (is_numeric($value)) {
+        $timestamp = (int) $value;
+        if ($timestamp > 0) {
+            return gmdate('Y-m-d', $timestamp);
+        }
+    }
+
+    if (is_string($value)) {
+        $value = trim($value);
+        if ($value !== '') {
+            $timestamp = strtotime($value);
+            if ($timestamp !== false) {
+                return gmdate('Y-m-d', $timestamp);
+            }
+        }
+    }
+
+    if ($fallbackTimestamp !== null && $fallbackTimestamp > 0) {
+        return gmdate('Y-m-d', $fallbackTimestamp);
+    }
+
+    return gmdate('Y-m-d');
+}
+
+function castaneas_sitemap_record_lastmod(array $record, $fallbackTimestamp = null) {
+    foreach (['updatedAt', 'publishedAt', 'createdAt', 'date'] as $field) {
+        if (!empty($record[$field])) {
+            return castaneas_sitemap_lastmod_from_value($record[$field], $fallbackTimestamp);
+        }
+    }
+
+    return castaneas_sitemap_lastmod_from_value(null, $fallbackTimestamp);
+}
+
+function castaneas_sitemap_key_lastmod($key) {
+    $pdo = castaneas_db();
+    if ($pdo) {
+        castaneas_db_init_schema($pdo);
+        $stmt = $pdo->prepare('SELECT updated_at FROM content_store WHERE store_key = :store_key LIMIT 1');
+        $stmt->execute(['store_key' => $key]);
+        $value = $stmt->fetchColumn();
+        if ($value) {
+            $timestamp = strtotime((string) $value);
+            if ($timestamp !== false) {
+                return $timestamp;
+            }
+        }
+    }
+
+    foreach (castaneas_json_directories() as $dir) {
+        $file = $dir . '/' . $key . '.json';
+        if (is_file($file)) {
+            $timestamp = filemtime($file);
+            if ($timestamp !== false) {
+                return $timestamp;
+            }
+        }
+    }
+
+    return null;
+}
+
+function castaneas_sitemap_file_lastmod($relativePath) {
+    $file = __DIR__ . '/' . ltrim($relativePath, '/');
+    if (!is_file($file)) {
+        return gmdate('Y-m-d');
+    }
+
+    $timestamp = filemtime($file);
+    return castaneas_sitemap_lastmod_from_value(null, $timestamp !== false ? $timestamp : null);
+}
+
+function castaneas_sitemap_product_urls(array $products, $baseUrl, $fallbackTimestamp = null) {
     $urls = [];
     $used = [];
 
@@ -75,7 +148,7 @@ function castaneas_sitemap_product_urls(array $products, $baseUrl) {
 
         $urls[] = [
             'loc' => $baseUrl . '/produit/' . rawurlencode($finalSlug),
-            'lastmod' => gmdate('Y-m-d'),
+            'lastmod' => castaneas_sitemap_record_lastmod($product, $fallbackTimestamp),
             'changefreq' => 'weekly',
             'priority' => '0.80',
         ];
@@ -84,7 +157,7 @@ function castaneas_sitemap_product_urls(array $products, $baseUrl) {
     return $urls;
 }
 
-function castaneas_sitemap_category_urls(array $categories, $baseUrl) {
+function castaneas_sitemap_category_urls(array $categories, $baseUrl, $fallbackTimestamp = null) {
     $urls = [];
 
     foreach ($categories as $category) {
@@ -99,7 +172,7 @@ function castaneas_sitemap_category_urls(array $categories, $baseUrl) {
 
         $urls[] = [
             'loc' => $baseUrl . '/categorie/' . rawurlencode($slug),
-            'lastmod' => gmdate('Y-m-d'),
+            'lastmod' => castaneas_sitemap_record_lastmod($category, $fallbackTimestamp),
             'changefreq' => 'weekly',
             'priority' => '0.70',
         ];
@@ -108,7 +181,7 @@ function castaneas_sitemap_category_urls(array $categories, $baseUrl) {
     return $urls;
 }
 
-function castaneas_sitemap_blog_category_urls(array $categories, $baseUrl) {
+function castaneas_sitemap_blog_category_urls(array $categories, $baseUrl, $fallbackTimestamp = null) {
     $urls = [];
 
     foreach ($categories as $category) {
@@ -123,9 +196,33 @@ function castaneas_sitemap_blog_category_urls(array $categories, $baseUrl) {
 
         $urls[] = [
             'loc' => $baseUrl . '/actualites/categorie/' . rawurlencode($slug),
-            'lastmod' => gmdate('Y-m-d'),
+            'lastmod' => castaneas_sitemap_record_lastmod($category, $fallbackTimestamp),
             'changefreq' => 'weekly',
             'priority' => '0.65',
+        ];
+    }
+
+    return $urls;
+}
+
+function castaneas_sitemap_recipe_urls(array $recipes, $baseUrl, $fallbackTimestamp = null) {
+    $urls = [];
+
+    foreach ($recipes as $recipe) {
+        if (!is_array($recipe) || ($recipe['status'] ?? '') !== 'published') {
+            continue;
+        }
+
+        $recipeId = trim((string) ($recipe['id'] ?? ''));
+        if ($recipeId === '') {
+            continue;
+        }
+
+        $urls[] = [
+            'loc' => $baseUrl . '/recette?id=' . rawurlencode($recipeId),
+            'lastmod' => castaneas_sitemap_record_lastmod($recipe, $fallbackTimestamp),
+            'changefreq' => 'monthly',
+            'priority' => '0.58',
         ];
     }
 
@@ -193,8 +290,15 @@ function castaneas_sitemap_blog_post_urls(array $posts, array $blogCategoriesByI
 $baseUrl = rtrim(castaneas_base_url(), '/');
 $products = castaneas_sitemap_load_key('products');
 $categories = castaneas_sitemap_load_key('categories');
+$recipes = castaneas_sitemap_load_key('recipes');
 $blogCategories = castaneas_sitemap_load_key('blog_categories');
 $blogPosts = castaneas_sitemap_load_key('blog_posts');
+$homepageLastmod = castaneas_sitemap_key_lastmod('homepage');
+$productsLastmod = castaneas_sitemap_key_lastmod('products');
+$categoriesLastmod = castaneas_sitemap_key_lastmod('categories');
+$recipesLastmod = castaneas_sitemap_key_lastmod('recipes');
+$blogCategoriesLastmod = castaneas_sitemap_key_lastmod('blog_categories');
+$blogPostsLastmod = castaneas_sitemap_key_lastmod('blog_posts');
 $blogCategoriesById = [];
 foreach ($blogCategories as $blogCategory) {
     if (!is_array($blogCategory) || empty($blogCategory['id'])) {
@@ -204,17 +308,18 @@ foreach ($blogCategories as $blogCategory) {
 }
 
 $urls = [
-    ['loc' => $baseUrl . '/', 'lastmod' => gmdate('Y-m-d'), 'changefreq' => 'weekly', 'priority' => '1.00'],
-    ['loc' => $baseUrl . '/recettes', 'lastmod' => gmdate('Y-m-d'), 'changefreq' => 'weekly', 'priority' => '0.60'],
-    ['loc' => $baseUrl . '/actualites', 'lastmod' => gmdate('Y-m-d'), 'changefreq' => 'weekly', 'priority' => '0.70'],
-    ['loc' => $baseUrl . '/histoire', 'lastmod' => gmdate('Y-m-d'), 'changefreq' => 'monthly', 'priority' => '0.50'],
-    ['loc' => $baseUrl . '/cgv', 'lastmod' => gmdate('Y-m-d'), 'changefreq' => 'yearly', 'priority' => '0.30'],
-    ['loc' => $baseUrl . '/livraison-retours', 'lastmod' => gmdate('Y-m-d'), 'changefreq' => 'monthly', 'priority' => '0.40'],
+    ['loc' => $baseUrl . '/', 'lastmod' => castaneas_sitemap_lastmod_from_value(null, $homepageLastmod), 'changefreq' => 'weekly', 'priority' => '1.00'],
+    ['loc' => $baseUrl . '/recettes', 'lastmod' => castaneas_sitemap_lastmod_from_value(null, $recipesLastmod), 'changefreq' => 'weekly', 'priority' => '0.60'],
+    ['loc' => $baseUrl . '/actualites', 'lastmod' => castaneas_sitemap_lastmod_from_value(null, $blogPostsLastmod ?: $blogCategoriesLastmod), 'changefreq' => 'weekly', 'priority' => '0.70'],
+    ['loc' => $baseUrl . '/histoire', 'lastmod' => castaneas_sitemap_file_lastmod('histoire.html'), 'changefreq' => 'monthly', 'priority' => '0.50'],
+    ['loc' => $baseUrl . '/cgv', 'lastmod' => castaneas_sitemap_file_lastmod('cgv.html'), 'changefreq' => 'yearly', 'priority' => '0.30'],
+    ['loc' => $baseUrl . '/livraison-retours', 'lastmod' => castaneas_sitemap_file_lastmod('livraison-retours.html'), 'changefreq' => 'monthly', 'priority' => '0.40'],
 ];
 
-$urls = array_merge($urls, castaneas_sitemap_category_urls($categories, $baseUrl));
-$urls = array_merge($urls, castaneas_sitemap_product_urls($products, $baseUrl));
-$urls = array_merge($urls, castaneas_sitemap_blog_category_urls($blogCategories, $baseUrl));
+$urls = array_merge($urls, castaneas_sitemap_category_urls($categories, $baseUrl, $categoriesLastmod));
+$urls = array_merge($urls, castaneas_sitemap_product_urls($products, $baseUrl, $productsLastmod));
+$urls = array_merge($urls, castaneas_sitemap_recipe_urls($recipes, $baseUrl, $recipesLastmod));
+$urls = array_merge($urls, castaneas_sitemap_blog_category_urls($blogCategories, $baseUrl, $blogCategoriesLastmod));
 $urls = array_merge($urls, castaneas_sitemap_blog_post_urls($blogPosts, $blogCategoriesById, $baseUrl));
 
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";

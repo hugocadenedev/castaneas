@@ -173,7 +173,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var params = new URLSearchParams(window.location.search);
     var ref = prefilledRef || params.get('ref') || '';
+    var paymentStatus = params.get('payment_status') || '';
     document.getElementById('confirm-ref').textContent = ref || 'CAS-XXXXXX';
+
+    if (ref && paymentStatus === 'paid') {
+      clearCartOnce(ref);
+    }
 
     if (!ref) {
       stopPendingRefresh();

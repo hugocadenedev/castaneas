@@ -93,7 +93,7 @@ if (preg_match('#^/produit/([^/]+)/?$#', $path, $matches)) {
 }
 
 if ($path === '/' || $path === '') {
-    require __DIR__ . '/maintenance.html';
+    require __DIR__ . '/index.html';
     exit;
 }
 

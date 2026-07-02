@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Recette · Castaneas</title>
+<meta name="description" content="Découvrez une recette Castaneas à base de châtaigne, noisette ou noix, avec les produits utilisés et les étapes de préparation.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -304,6 +305,18 @@
 <script src="cart.js"></script>
 <script>
 (function () {
+  function setMeta(selector, attr, value) {
+    if (!value) return;
+    var el = document.querySelector(selector);
+    if (el) el.setAttribute(attr, value);
+  }
+
+  function excerpt(value, maxLength) {
+    var plain = String(value || '').replace(/\s+/g, ' ').trim();
+    if (!plain) return '';
+    return plain.length > maxLength ? plain.slice(0, maxLength - 1).trim() + '…' : plain;
+  }
+
   var params = new URLSearchParams(location.search);
   var recipeId = params.get('id') || location.hash.replace('#', '') || '';
   var main = document.getElementById('main-content');
@@ -321,6 +334,7 @@
 
   // Update page title
   document.title = r.title + (r.titleEm ? ' ' + r.titleEm : '') + ' · Recette Castaneas';
+  setMeta('meta[name="description"]', 'content', excerpt(r.intro || r.desc || ('Découvrez la recette ' + r.title + ' de Castaneas à base de châtaigne, noisette ou noix.'), 160));
 
   // Build associated products HTML
   var products = (r.products || []).map(function (id) {

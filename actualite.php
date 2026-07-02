@@ -12,7 +12,7 @@ if (!$post) {
     $pageDescription = 'Cet article Castaneas est introuvable ou n\'est plus disponible.';
 } else {
     $pageTitle = $post['metaTitle'] ?: ($post['title'] . ' · Castaneas');
-    $pageDescription = $post['metaDescription'] ?: castaneas_blog_plain_excerpt($post['content'], $post['excerpt'], 155);
+  $pageDescription = $post['metaDescription'] ?: castaneas_blog_plain_excerpt($post['content'], $post['excerpt'] ?: 'Article Castaneas autour de la châtaigne, de la noisette, de la noix et de nos produits gourmands artisanaux.', 155);
 }
 
 $relatedPosts = [];

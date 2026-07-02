@@ -19,10 +19,48 @@
     return plain.length > maxLength ? plain.slice(0, maxLength - 1).trim() + '…' : plain;
   }
 
-  function updateCategorySeo(category, href) {
+  function buildCategorySeoDescription(category, products) {
+    var label = String((category && category.name) || '').trim();
+    var slugValue = String((category && category.slug) || '').trim();
+    var productNames = Array.isArray(products) ? products.slice(0, 3).map(function (product) {
+      return product && product.name ? product.name : '';
+    }).filter(Boolean) : [];
+
+    if (category && category.desc) {
+      return excerpt(category.desc, 160);
+    }
+
+    if (slugValue === 'pate-a-tartiner' || slugValue === 'pates-a-tartiner' || /tartin/i.test(label)) {
+      return excerpt('Achetez nos tartinables Castaneas, dont pâte à tartiner, crème de marrons et recettes miel-noisettes, préparés artisanalement en petites quantités.', 160);
+    }
+
+    if (slugValue === 'fruits-secs' || /fruits secs/i.test(label)) {
+      return excerpt('Découvrez nos fruits secs Castaneas : noisettes torréfiées, noisettes décortiquées et cerneaux de noix sélectionnés pour leur goût et leur croquant.', 160);
+    }
+
+    if (slugValue === 'farine' || /farine/i.test(label)) {
+      return excerpt('Achetez notre farine de châtaignes Castaneas, une farine artisanale naturellement sans gluten pour pâtisseries, crêpes et recettes gourmandes.', 160);
+    }
+
+    if (slugValue === 'huiles' || /huile/i.test(label)) {
+      return excerpt('Découvrez nos huiles artisanales de noix et de noisette Castaneas, idéales pour salades, cuisine gourmande et recettes raffinées.', 160);
+    }
+
+    if (slugValue === 'coffret-cadeaux' || slugValue === 'coffrets' || /coffret/i.test(label)) {
+      return excerpt('Offrez un coffret cadeau Castaneas avec tartinables, fruits secs, huiles et spécialités gourmandes autour de la châtaigne, de la noisette et de la noix.', 160);
+    }
+
+    if (productNames.length) {
+      return excerpt('Découvrez la collection ' + label + ' Castaneas avec ' + productNames.join(', ') + ' et d\'autres produits gourmands artisanaux du terroir.', 160);
+    }
+
+    return excerpt('Achetez en ligne notre collection ' + label + ' Castaneas, des produits gourmands artisanaux à base de châtaigne, noisette et noix.', 160);
+  }
+
+  function updateCategorySeo(category, href, products) {
     if (!category) return;
     var title = category.name + ' · Castaneas';
-    var description = excerpt(category.desc || ('Découvrez la collection ' + category.name + ' de Castaneas, fabriquée à la main en petites quantités.'), 160);
+    var description = buildCategorySeoDescription(category, products);
     var absoluteHref = location.origin + href;
     var image = location.origin + '/' + String(category.banner || 'assets/Castaneas-logo (3).svg').replace(/^\/+/, '');
 
@@ -74,10 +112,18 @@
     window.history.replaceState(null, '', canonicalHref);
   }
 
+  /* -- Données produits -- */
+  var bgClasses   = ['bg-terracotta', 'bg-dore', 'bg-sauge', 'bg-rose', 'bg-cream'];
+  var allProducts = SiteData.getActiveProducts ? SiteData.getActiveProducts() : (SiteData.products || []).filter(function (p) { return p.status === 'active'; });
+  var catProducts = SiteData.getProductsByCategory(cat.id);
+  var grid        = document.getElementById('product-grid');
+  var countEl     = document.getElementById('result-count');
+  var sortOrder   = null;
+
   /* -- Mise à jour du titre et du breadcrumb -- */
   document.getElementById('cat-title').textContent = cat.name;
   document.getElementById('bc-name').textContent    = cat.name;
-  updateCategorySeo(cat, canonicalHref);
+  updateCategorySeo(cat, canonicalHref, catProducts);
 
   var descEl = document.getElementById('cat-desc');
   if (descEl) descEl.textContent = cat.desc || 'Fabriqué à la main, en petites quantités';
@@ -106,14 +152,6 @@
     'huiles':         'categorie/huiles',
     'coffrets':       'categorie/coffrets'
   };
-
-  /* -- Données produits -- */
-  var bgClasses   = ['bg-terracotta', 'bg-dore', 'bg-sauge', 'bg-rose', 'bg-cream'];
-  var allProducts = SiteData.getActiveProducts ? SiteData.getActiveProducts() : (SiteData.products || []).filter(function (p) { return p.status === 'active'; });
-  var catProducts = SiteData.getProductsByCategory(cat.id);
-  var grid        = document.getElementById('product-grid');
-  var countEl     = document.getElementById('result-count');
-  var sortOrder   = null;
 
   function getBg(p) {
     var idx = SiteData.categories.findIndex(function (c) { return c.id === p.category; });

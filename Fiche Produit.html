@@ -1890,7 +1890,8 @@ function updateSelectedVariant(pid) {
   function updateProductSeo(product, category, canonicalHref, offer) {
     if (!product) return;
     var title = product.name + (product.weight ? ' ' + product.weight : '') + ' · Castaneas';
-    var description = excerpt(product.desc || ('Découvrez ' + product.name + ' de Castaneas, fabriqué à la main en petites quantités.'), 160);
+    var categoryLabel = category && category.name ? category.name.toLowerCase() : 'produit gourmand';
+    var description = excerpt(product.desc || ('Achetez ' + product.name + ' de Castaneas, un ' + categoryLabel + ' artisanal à base de châtaigne, noisette ou noix, préparé en petites quantités.'), 160);
     var absoluteHref = location.origin + canonicalHref;
     var image = location.origin + '/' + String(product.image || 'assets/Castaneas-logo (3).svg').replace(/^\/+/, '');
     var price = Number(offer && offer.totalPrice ? offer.totalPrice : product.price || 0);

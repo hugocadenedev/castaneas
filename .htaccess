@@ -4,7 +4,7 @@
 
 # ── 0. Désactiver le listing des répertoires ──────────────
 Options -Indexes
-DirectoryIndex maintenance.html index.html
+DirectoryIndex index.html
 
 # ── 1. Protéger les données sensibles ─────────────────────
 <FilesMatch "\.json$">

@@ -9,12 +9,15 @@ $currentCategory = isset($_GET['category']) ? castaneas_blog_find_category($data
 $posts = $currentCategory
     ? castaneas_blog_get_category_posts($dataset, $currentCategory['id'])
     : castaneas_blog_get_published_posts($dataset);
+$featuredPost = !$currentCategory && !empty($posts) ? $posts[0] : null;
 $pageTitle = $currentCategory
     ? (($currentCategory['metaTitle'] ?: ('Actualites ' . $currentCategory['name'] . ' · Castaneas')))
     : 'Actualites · Castaneas';
 $pageDescription = $currentCategory
-    ? ($currentCategory['metaDescription'] ?: castaneas_blog_plain_excerpt($currentCategory['description'], 'Conseils, coulisses de la ferme et actualites Castaneas autour de la chataigne, de la noisette et du terroir.', 155))
-    : 'Retrouvez les actualites Castaneas, nos conseils, les coulisses de la ferme, les saisons de recolte et nos idees gourmandes autour de la chataigne.';
+  ? ($currentCategory['metaDescription'] ?: castaneas_blog_plain_excerpt($currentCategory['description'], 'Découvrez les actualités Castaneas autour de la châtaigne, de la noisette, de la noix, du terroir et de nos produits gourmands artisanaux.', 155))
+  : ($featuredPost
+    ? ($featuredPost['metaDescription'] ?: castaneas_blog_plain_excerpt($featuredPost['content'], $featuredPost['excerpt'] ?: ('Découvrez les actualités Castaneas, nos conseils, nos coulisses et nos idées gourmandes autour de la châtaigne, de la noisette et de la noix.'), 155))
+    : 'Découvrez les actualités Castaneas, nos conseils, nos coulisses et nos idées gourmandes autour de la châtaigne, de la noisette et de la noix.');
 $canonicalPath = $currentCategory ? castaneas_blog_category_href($currentCategory) : '/actualites';
 
 function castaneas_blog_listing_count(array $dataset, $categoryId) {

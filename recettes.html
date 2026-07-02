@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Recettes · Castaneas</title>
+<meta name="description" content="Découvrez des recettes gourmandes à base de châtaigne, noisette et noix pour cuisiner les produits Castaneas au quotidien.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -346,6 +347,38 @@
   var heroCfg = recipesPage.hero || {};
   var listingCfg = recipesPage.listing || {};
 
+  function setMeta(selector, value) {
+    if (!value) return;
+    var el = document.querySelector(selector);
+    if (el) el.setAttribute('content', value);
+  }
+
+  function excerpt(value, maxLength) {
+    var plain = String(value || '').replace(/\s+/g, ' ').trim();
+    if (!plain) return '';
+    return plain.length > maxLength ? plain.slice(0, maxLength - 1).trim() + '…' : plain;
+  }
+
+  function buildRecipesSeoDescription(recipes) {
+    var associatedProducts = [];
+    var seen = {};
+
+    (recipes || []).forEach(function (recipe) {
+      (recipe.products || []).forEach(function (productId) {
+        if (seen[productId]) return;
+        seen[productId] = true;
+        var product = SiteData.getProductById ? SiteData.getProductById(productId) : null;
+        if (product && product.name) associatedProducts.push(product.name);
+      });
+    });
+
+    if (associatedProducts.length) {
+      return excerpt('Découvrez nos recettes Castaneas autour de ' + associatedProducts.slice(0, 4).join(', ') + ' et d\'autres produits gourmands à base de châtaigne, noisette et noix.', 160);
+    }
+
+    return 'Découvrez des recettes gourmandes à base de châtaigne, noisette et noix pour cuisiner les produits Castaneas au quotidien.';
+  }
+
   function setText(id, value) {
     var el = document.getElementById(id);
     if (el && value) el.textContent = value;
@@ -363,6 +396,10 @@
   var recipes = SiteData.getPublishedRecipes();
   var grid = document.getElementById('recipes-grid');
   var count = document.getElementById('recipe-count');
+  var seoDescription = buildRecipesSeoDescription(recipes);
+
+  document.title = 'Recettes à base de châtaigne, noisette et noix · Castaneas';
+  setMeta('meta[name="description"]', seoDescription);
 
   count.textContent = '— ' + recipes.length + ' recette' + (recipes.length > 1 ? 's' : '');
 

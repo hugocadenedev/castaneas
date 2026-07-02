@@ -3,19 +3,19 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Castaneas · Crèmes de châtaigne &amp; noisettes du Quercy</title>
-<meta name="description" content="Castaneas propose des crèmes de châtaigne, pâtes à tartiner et coffrets gourmands fabriqués à la main dans le Tarn-et-Garonne.">
+<title>Castaneas · Produits gourmands à base de châtaigne, noisette et noix</title>
+<meta name="description" content="Achetez en ligne des produits gourmands à base de châtaigne, noisette et noix : crèmes, pâtes à tartiner et coffrets artisanaux signés Castaneas.">
 <meta name="robots" content="index,follow">
 <link rel="canonical" href="https://www.castaneas.fr/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Castaneas">
-<meta property="og:title" content="Castaneas · Crèmes de châtaigne &amp; noisettes du Quercy">
-<meta property="og:description" content="Crèmes de châtaigne, pâtes à tartiner et coffrets gourmands fabriqués à la main dans le Tarn-et-Garonne.">
+<meta property="og:title" content="Castaneas · Produits gourmands à base de châtaigne, noisette et noix">
+<meta property="og:description" content="Achetez en ligne des produits gourmands à base de châtaigne, noisette et noix : crèmes, pâtes à tartiner et coffrets artisanaux signés Castaneas.">
 <meta property="og:url" content="https://www.castaneas.fr/">
 <meta property="og:image" content="https://www.castaneas.fr/assets/Castaneas-logo%20(3).svg">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Castaneas · Crèmes de châtaigne &amp; noisettes du Quercy">
-<meta name="twitter:description" content="Crèmes de châtaigne, pâtes à tartiner et coffrets gourmands fabriqués à la main dans le Tarn-et-Garonne.">
+<meta name="twitter:title" content="Castaneas · Produits gourmands à base de châtaigne, noisette et noix">
+<meta name="twitter:description" content="Achetez en ligne des produits gourmands à base de châtaigne, noisette et noix : crèmes, pâtes à tartiner et coffrets artisanaux signés Castaneas.">
 <script type="application/ld+json" id="seo-jsonld-home">{"@context":"https://schema.org","@type":"Organization","name":"Castaneas","url":"https://www.castaneas.fr/","logo":"https://www.castaneas.fr/assets/Castaneas-logo%20(3).svg","address":{"@type":"PostalAddress","addressLocality":"Albias","addressRegion":"Tarn-et-Garonne","postalCode":"82350","addressCountry":"FR"},"sameAs":[]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
@@ -1137,6 +1137,33 @@
     return plain.length > max ? plain.slice(0, max - 1).trim() + '…' : plain;
   }
 
+  function buildHomeSeoDescription() {
+    var activeCategories = (typeof SiteData !== 'undefined' && SiteData.getActiveCategories)
+      ? SiteData.getActiveCategories()
+      : [];
+    var activeProducts = (typeof SiteData !== 'undefined' && SiteData.getActiveProducts)
+      ? SiteData.getActiveProducts()
+      : [];
+    var categoryNames = activeCategories.slice(0, 5).map(function (category) {
+      return category && category.name ? category.name : '';
+    }).filter(Boolean);
+
+    if (categoryNames.length) {
+      return textExcerpt('Achetez en ligne les produits Castaneas : ' + categoryNames.join(', ') + ', préparés artisanalement autour de la châtaigne, de la noisette et de la noix.', 160);
+    }
+
+    if (activeProducts.length) {
+      var productNames = activeProducts.slice(0, 4).map(function (product) {
+        return product && product.name ? product.name : '';
+      }).filter(Boolean);
+      if (productNames.length) {
+        return textExcerpt('Découvrez la boutique Castaneas avec ' + productNames.join(', ') + ' et d\'autres gourmandises artisanales à base de châtaigne, noisette et noix.', 160);
+      }
+    }
+
+    return 'Achetez en ligne des produits gourmands à base de châtaigne, noisette et noix : tartinables, fruits secs, farines, huiles et coffrets artisanaux Castaneas.';
+  }
+
   /* HERO */
   if (cfg && cfg.hero) {
     var h = cfg.hero;
@@ -1163,8 +1190,8 @@
     }
   }
 
-  var seoTitle = 'Castaneas · Crèmes de châtaigne & noisettes du Quercy';
-  var seoDescription = textExcerpt((cfg && cfg.hero && cfg.hero.subtitle) || 'Castaneas propose des crèmes de châtaigne, pâtes à tartiner et coffrets gourmands fabriqués à la main dans le Tarn-et-Garonne.', 160);
+  var seoTitle = 'Castaneas · Produits gourmands à base de châtaigne, noisette et noix';
+  var seoDescription = textExcerpt((cfg && cfg.seo && cfg.seo.description) || buildHomeSeoDescription(), 160);
   document.title = seoTitle;
   upsertMeta('meta[name="description"]', 'content', seoDescription);
   upsertMeta('link[rel="canonical"]', 'href', location.origin + '/');
