@@ -1546,6 +1546,34 @@ tbody tr:last-child td { border-bottom: none; }
               </div>
             </form>
           </div>
+          <div class="table-wrap" style="padding:24px 28px;max-width:760px;">
+            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:16px;">Facturation</h3>
+            <form class="form-grid full" id="billing-settings-form" onsubmit="saveBillingSettings(event)">
+              <div class="form-field span2">
+                <label>Format du numéro de facture</label>
+                <input type="text" id="billing-format" value="" oninput="updateBillingPreviewFromForm()" placeholder="FAC-{YYYY}-{SEQ4}">
+                <small>Jetons disponibles : {YYYY}, {YY}, {MM}, {DD}, {SEQ}, {SEQ4}, {SEQ:4}</small>
+              </div>
+              <div class="form-field">
+                <label>Prochain numéro</label>
+                <input type="number" id="billing-next-number" min="1" step="1" value="1" oninput="updateBillingPreviewFromForm()">
+              </div>
+              <div class="form-field">
+                <label>Dernier numéro déjà attribué</label>
+                <div style="min-height:44px;padding:10px 14px;border:1.5px solid var(--line-strong);border-radius:var(--r);background:var(--cream-soft);display:flex;align-items:center;font-weight:700;" id="billing-max-issued">0</div>
+              </div>
+              <div class="form-field span2">
+                <label>Aperçu</label>
+                <div style="min-height:48px;padding:12px 14px;border:1.5px solid var(--line-strong);border-radius:var(--r);background:var(--cream-soft);display:flex;align-items:center;font-weight:800;letter-spacing:.04em;" id="billing-preview">FAC-2026-0001</div>
+              </div>
+              <div class="span2" style="font-size:12px;color:var(--muted);line-height:1.6;">
+                Toute modification demande une double validation. Le prochain numéro doit rester supérieur au dernier déjà émis.
+              </div>
+              <div>
+                <button type="submit" class="btn btn-primary">Enregistrer la facturation</button>
+              </div>
+            </form>
+          </div>
           <div class="table-wrap" style="padding:24px 28px;max-width:960px;">
             <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:16px;">Types de conditionnement</h3>
             <form class="form-grid full" id="packagings-form" onsubmit="savePackagings(event)">
@@ -2287,6 +2315,7 @@ const KEYS = {
   homepage: 'castaneas_homepage_v1',
   packagings: 'castaneas_packagings_v1',
   promoCodes: 'castaneas_promo_codes_v1',
+  billingSettings: 'castaneas_billing_settings_v1',
 };
 
 /* ---------- Server sync ---------- */
@@ -2309,7 +2338,7 @@ const SERVER_KEYS = {
 
 /* ---------- State ---------- */
 const DEFAULT_IMAGE_CATALOG = [];
-let state = { products: [], categories: [], orders: [], imageCatalogMain: [], imageCatalogExtra: [], recipes: [], blogPosts: [], blogCategories: [], packagings: [], promoCodes: [], customers: [], customerStats: {} };
+let state = { products: [], categories: [], orders: [], imageCatalogMain: [], imageCatalogExtra: [], recipes: [], blogPosts: [], blogCategories: [], packagings: [], promoCodes: [], billingSettings: {}, customers: [], customerStats: {} };
 let editingProduct = null;
 let editingCat = null;
 let editingRecipe = null;
@@ -2323,6 +2352,34 @@ let serverStorageReady = false;
 
 function getDefaultPromoMessage() {
   return 'Livraison offerte dès 40€ d\'achat — récolte 2025 disponible 🌰';
+}
+
+function normalizeBillingSettings(settings) {
+  const nextNumber = Number.parseInt(settings && settings.nextNumber, 10);
+  const maxIssuedSequence = Number.parseInt(settings && settings.maxIssuedSequence, 10);
+  const normalized = {
+    format: settings && String(settings.format || '').trim() ? String(settings.format).trim() : 'FAC-{YYYY}-{SEQ4}',
+    nextNumber: Number.isFinite(nextNumber) && nextNumber > 0 ? nextNumber : 1,
+    maxIssuedSequence: Number.isFinite(maxIssuedSequence) && maxIssuedSequence >= 0 ? maxIssuedSequence : 0,
+  };
+  normalized.preview = renderBillingNumberPreview(normalized.format, normalized.nextNumber);
+  return normalized;
+}
+
+function renderBillingNumberPreview(format, sequence) {
+  const now = new Date();
+  const year = String(now.getFullYear());
+  const replacements = {
+    '{YYYY}': year,
+    '{YY}': year.slice(-2),
+    '{MM}': String(now.getMonth() + 1).padStart(2, '0'),
+    '{DD}': String(now.getDate()).padStart(2, '0'),
+  };
+  const base = String(format || 'FAC-{YYYY}-{SEQ4}').replace(/\{YYYY\}|\{YY\}|\{MM\}|\{DD\}/g, token => replacements[token] || token);
+  return base.replace(/\{SEQ(?::(\d+)|(\d+))?\}/g, function (_, widthA, widthB) {
+    const width = Number.parseInt(widthA || widthB || '0', 10) || 0;
+    return width > 0 ? String(sequence).padStart(width, '0') : String(sequence);
+  });
 }
 
 function getHomepageConfig() {
@@ -2343,7 +2400,105 @@ function renderSettings() {
   const creds = load(KEYS.admin);
   document.getElementById('setting-user').value = creds ? creds.user : 'admin';
   updateAdminPromoBar(getPromoMessage());
+  renderBillingSettings();
   renderPackagingSettings();
+}
+
+function renderBillingSettings() {
+  const settings = normalizeBillingSettings(state.billingSettings || load(KEYS.billingSettings) || {});
+  state.billingSettings = settings;
+  const formatInput = document.getElementById('billing-format');
+  const nextNumberInput = document.getElementById('billing-next-number');
+  const previewEl = document.getElementById('billing-preview');
+  const maxIssuedEl = document.getElementById('billing-max-issued');
+  if (formatInput) formatInput.value = settings.format;
+  if (nextNumberInput) nextNumberInput.value = String(settings.nextNumber);
+  if (previewEl) previewEl.textContent = settings.preview;
+  if (maxIssuedEl) maxIssuedEl.textContent = String(settings.maxIssuedSequence || 0);
+}
+
+function updateBillingPreviewFromForm() {
+  const format = document.getElementById('billing-format');
+  const nextNumber = document.getElementById('billing-next-number');
+  const previewEl = document.getElementById('billing-preview');
+  if (!format || !nextNumber || !previewEl) return;
+  const sequence = Math.max(1, Number.parseInt(nextNumber.value, 10) || 1);
+  previewEl.textContent = renderBillingNumberPreview(format.value.trim(), sequence);
+}
+
+async function loadBillingSettings() {
+  const response = await fetch('/billing-settings.php', {
+    headers: { 'X-Admin-Token': SERVER_TOKEN },
+  });
+  const payload = await response.json().catch(() => null);
+  if (!response.ok || !payload || payload.error) {
+    throw new Error((payload && payload.error) || ('HTTP ' + response.status));
+  }
+  const settings = normalizeBillingSettings(payload);
+  state.billingSettings = settings;
+  localStorage.setItem(KEYS.billingSettings, JSON.stringify(settings));
+  return settings;
+}
+
+async function saveBillingSettings(event) {
+  event.preventDefault();
+  const current = normalizeBillingSettings(state.billingSettings || load(KEYS.billingSettings) || {});
+  const next = normalizeBillingSettings({
+    format: document.getElementById('billing-format').value.trim(),
+    nextNumber: document.getElementById('billing-next-number').value,
+    maxIssuedSequence: current.maxIssuedSequence,
+  });
+
+  const hasChanges = next.format !== current.format || next.nextNumber !== current.nextNumber;
+  if (!hasChanges) {
+    toast('Aucune modification de facturation à enregistrer', 'success');
+    return;
+  }
+
+  const firstValidation = confirm(
+    'Confirmer la mise à jour de la numerotation de facture ?\n\n' +
+    'Format : ' + next.format + '\n' +
+    'Prochain numero : ' + next.nextNumber + '\n' +
+    'Apercu : ' + next.preview
+  );
+  if (!firstValidation) {
+    renderBillingSettings();
+    return;
+  }
+
+  const confirmationText = prompt('Deuxieme validation : tapez CONFIRMER pour enregistrer la numerotation de facture.');
+  if (confirmationText !== 'CONFIRMER') {
+    toast('Validation annulée', 'error');
+    renderBillingSettings();
+    return;
+  }
+
+  const response = await fetch('/billing-settings.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Admin-Token': SERVER_TOKEN,
+    },
+    body: JSON.stringify({
+      format: next.format,
+      nextNumber: next.nextNumber,
+    }),
+  });
+  const payload = await response.json().catch(() => null);
+  if (!response.ok || !payload || payload.error) {
+    toast((payload && payload.error) || 'Enregistrement de la facturation impossible', 'error');
+    renderBillingSettings();
+    return;
+  }
+
+  state.billingSettings = normalizeBillingSettings({
+    format: payload.settings && payload.settings.format,
+    nextNumber: payload.settings && payload.settings.nextNumber,
+    maxIssuedSequence: payload.maxIssuedSequence,
+  });
+  localStorage.setItem(KEYS.billingSettings, JSON.stringify(state.billingSettings));
+  renderBillingSettings();
+  toast('Paramètres de facturation enregistrés', 'success');
 }
 
 function normalizePackaging(packaging, index) {
@@ -2422,6 +2577,15 @@ async function init() {
   state.blogCategories    = load(KEYS.blogCategories) || [];
   state.packagings        = load(KEYS.packagings) || [];
   state.promoCodes        = load(KEYS.promoCodes) || [];
+  state.billingSettings   = normalizeBillingSettings(load(KEYS.billingSettings) || {});
+
+  try {
+    await loadBillingSettings();
+  } catch (error) {
+    document.getElementById('guard-error').textContent = 'Paramètres de facturation indisponibles. Vérifiez le stockage serveur.';
+    toast('Paramètres de facturation indisponibles', 'error');
+    return;
+  }
 
   const creds = load(KEYS.admin);
   if (!creds) {
@@ -3594,14 +3758,79 @@ function formatInvoiceLongDate(value) {
   });
 }
 function formatInvoiceNumber(order) {
+  if (order && order.invoiceNumber) return String(order.invoiceNumber);
   const rawId = String(order && order.id ? order.id : '000000').replace(/[^A-Za-z0-9]/g, '');
   return 'FA_' + rawId;
 }
+
+function replaceOrderInState(updatedOrder) {
+  const index = state.orders.findIndex(entry => entry.id === updatedOrder.id);
+  if (index === -1) return;
+  state.orders[index] = updatedOrder;
+  localStorage.setItem(KEYS.orders, JSON.stringify(state.orders));
+}
+
+async function ensureOrderInvoice(orderId) {
+  const currentOrder = state.orders.find(entry => entry.id === orderId);
+  if (!currentOrder) {
+    toast('Commande introuvable', 'error');
+    return null;
+  }
+  if (currentOrder.invoiceNumber) {
+    return currentOrder;
+  }
+
+  const response = await fetch('/issue-invoice.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Admin-Token': SERVER_TOKEN,
+    },
+    body: JSON.stringify({ orderId }),
+  });
+  const payload = await response.json().catch(() => null);
+  if (!response.ok || !payload || payload.error) {
+    toast((payload && payload.error) || 'Emission de facture impossible', 'error');
+    return null;
+  }
+
+  if (payload.settings) {
+    const nextNumber = Number.parseInt(payload.settings.nextNumber, 10) || 1;
+    const currentMax = state.billingSettings && state.billingSettings.maxIssuedSequence ? state.billingSettings.maxIssuedSequence : 0;
+    state.billingSettings = normalizeBillingSettings({
+      format: payload.settings.format,
+      nextNumber,
+      maxIssuedSequence: Math.max(currentMax, nextNumber - 1),
+    });
+    localStorage.setItem(KEYS.billingSettings, JSON.stringify(state.billingSettings));
+  }
+
+  if (payload.order) {
+    replaceOrderInState(payload.order);
+    if (selectedOrderId === payload.order.id) {
+      renderOrderDetail(payload.order);
+      activatePanel('order-detail', {
+        activeNavPanel: 'orders',
+        title: 'Commande ' + payload.order.id,
+        actions: orderDetailTopbarActions(payload.order),
+      });
+    }
+    renderOrders();
+    renderDashboard();
+    updateBadges();
+    renderBillingSettings();
+    return payload.order;
+  }
+
+  return null;
+}
+
 function castaneasInvoiceCompany() {
   return {
     name: 'Castanéas',
     addressLines: ['1430 route Loyle', '82350 ALBIAS'],
     email: 'boutique@castaneas.fr',
+    vatNumber: 'FR91322315862',
     siret: '32231586200035',
   };
 }
@@ -3610,7 +3839,7 @@ function orderInvoiceHtml(order) {
   const company = castaneasInvoiceCompany();
   const logoUrl = location.origin + '/assets/Castaneas-logo%20(3).svg';
   const items = Array.isArray(order.items) ? order.items : [];
-  const invoiceDate = order.paidAt || order.updatedAt || order.createdAt || order.date || '';
+  const invoiceDate = order.invoiceIssuedAt || order.paidAt || order.updatedAt || order.createdAt || order.date || '';
   const orderDate = order.createdAt || order.date || '';
   const subtotal = Number(order.subtotal || 0) || items.reduce((sum, item) => sum + (Number(item.price || 0) * Number(item.qty || 0)), 0);
   const shippingAmount = order.shipping && Number.isFinite(Number(order.shipping.price)) ? Number(order.shipping.price) : 0;
@@ -3640,32 +3869,42 @@ function orderInvoiceHtml(order) {
     <title>Facture ${escapeHtml(formatInvoiceNumber(order))}</title>
     <style>
       * { box-sizing: border-box; }
-      body { margin: 0; padding: 34px 42px 42px; font-family: Arial, Helvetica, sans-serif; color: #151515; background: #fff; }
-      .page { max-width: 760px; margin: 0 auto; }
-      .head { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: start; margin-bottom: 28px; }
-      .brand-logo { width: 190px; height: auto; display: block; }
-      .company { font-size: 14px; line-height: 1.45; font-weight: 700; }
-      h1 { margin: 16px 0 22px; font-size: 23px; letter-spacing: .02em; }
-      .intro { display: grid; grid-template-columns: 1.2fr 1fr; gap: 34px; margin-bottom: 28px; }
-      .customer { font-size: 14px; line-height: 1.45; white-space: pre-line; }
-      .meta-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+      body { margin: 0; padding: 24px 20px 24px; font-family: Arial, Helvetica, sans-serif; color: #222; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .page { width: 708px; margin: 0 auto; min-height: 980px; position: relative; }
+      .head { display: grid; grid-template-columns: 1fr 208px; gap: 24px; align-items: start; margin-bottom: 54px; }
+      .brand-logo { width: 184px; height: auto; display: block; }
+      .company { font-size: 17px; line-height: 1.4; font-weight: 700; text-align: right; color: #1c1c1c; }
+      h1 { margin: 0 0 36px; font-size: 31px; letter-spacing: -.01em; font-weight: 800; color: #1b1b1b; }
+      .intro { display: grid; grid-template-columns: 1.04fr .96fr; gap: 48px; margin-bottom: 34px; }
+      .customer { font-size: 15px; line-height: 1.52; white-space: pre-line; color: #272727; }
+      .meta-table { width: 100%; border-collapse: collapse; font-size: 15px; line-height: 1.52; color: #2c2c2c; }
       .meta-table td { padding: 2px 0; vertical-align: top; }
-      .meta-label { width: 52%; padding-right: 18px; }
-      .lines { width: 100%; border-collapse: collapse; margin-top: 8px; }
-      .lines thead th { background: #000; color: #fff; text-align: left; padding: 8px 10px; font-size: 14px; }
-      .lines thead th.qty, .lines thead th.price, .lines td.qty, .lines td.price { text-align: right; width: 110px; }
-      .lines tbody td { padding: 10px 10px 8px; border-bottom: 1px solid #e6e6e6; vertical-align: top; font-size: 14px; }
-      .invoice-product-name { font-size: 14px; }
-      .invoice-product-meta { margin-top: 4px; font-size: 12px; color: #111; font-weight: 700; }
-      .invoice-product-sub { margin-top: 4px; font-size: 12px; color: #666; font-weight: 700; }
-      .totals { width: 290px; margin-left: auto; margin-top: 10px; }
-      .totals-row { display: grid; grid-template-columns: 1fr auto; gap: 18px; padding: 7px 0; border-bottom: 1px solid #ececec; font-size: 14px; }
-      .totals-row strong { font-size: 15px; }
-      .totals-row.total { border-top: 2px solid #202020; border-bottom: 2px solid #202020; margin-top: 4px; padding-top: 10px; padding-bottom: 10px; }
-      .shipping-note { display: block; margin-top: 4px; font-size: 12px; color: #666; max-width: 140px; text-align: left; }
-      .footer-note { margin-top: 26px; font-size: 12px; color: #666; }
-      @media print { body { padding: 18px 26px 24px; } .page { max-width: none; } }
+      .meta-label { width: 58%; padding-right: 14px; }
+      .meta-table td:last-child { text-align: left; white-space: nowrap; }
+      .lines { width: 100%; border-collapse: collapse; margin-top: 30px; }
+      .lines thead th { text-align: left; padding: 0 10px 13px; font-size: 15px; font-weight: 700; color: #bebebe; border: none; }
+      .lines thead th.qty, .lines thead th.price, .lines td.qty, .lines td.price { text-align: right; width: 118px; }
+      .lines tbody td { padding: 13px 10px 11px; border-bottom: 1px solid #e5e5e5; vertical-align: top; font-size: 15px; color: #232323; }
+      .invoice-product-name { font-size: 15px; line-height: 1.28; margin-bottom: 6px; }
+      .invoice-product-meta { font-size: 12px; color: #1f1f1f; font-weight: 700; line-height: 1.32; }
+      .invoice-product-sub { margin-top: 6px; font-size: 11px; color: #6d6d6d; font-weight: 700; line-height: 1.32; }
+      .totals { width: 280px; margin-left: auto; margin-top: 14px; }
+      .totals-row { display: grid; grid-template-columns: 1fr auto; gap: 18px; padding: 10px 0; border-top: 1px solid #ededed; font-size: 15px; color: #2a2a2a; align-items: start; }
+      .totals-row:first-child { border-top: none; }
+      .totals-row.total { margin-top: 10px; padding-top: 11px; padding-bottom: 11px; border-top: 4px solid #222; border-bottom: 4px solid #222; font-weight: 800; }
+      .totals-row.total strong { font-size: 16px; }
+      .shipping-note { display: block; margin-top: 4px; font-size: 10px; color: #7a7a7a; max-width: 118px; text-align: left; line-height: 1.28; }
+      .footer-note { position: absolute; left: 0; right: 0; bottom: 6px; padding-top: 10px; border-top: 1px solid #e5e5e5; font-size: 10px; line-height: 1.35; color: #444; text-align: center; }
+      @page { size: A4; margin: 12mm 10mm; }
+      @media print { body { padding: 0; } .page { width: auto; min-height: auto; } }
     </style>
+    <script>
+      window.addEventListener('load', function () {
+        setTimeout(function () {
+          window.print();
+        }, 300);
+      });
+    <\/script>
   </head>
   <body>
     <div class="page">
@@ -3704,11 +3943,12 @@ function orderInvoiceHtml(order) {
         <div class="totals-row"><span>Expédition</span><span>${formatMoney(shippingAmount)}<span class="shipping-note">${escapeHtml(shippingLabel)}</span></span></div>
         <div class="totals-row total"><strong>Total</strong><strong>${formatMoney(total)}</strong></div>
       </div>
-      <div class="footer-note">Document généré automatiquement depuis le back-office Castaneas.<br>${escapeHtml(company.name)} · SIRET ${escapeHtml(company.siret)} · ${escapeHtml(company.email)}</div>
+      <div class="footer-note">N° de TVA ${escapeHtml(company.vatNumber)}- SIRET N° ${escapeHtml(company.siret)}</div>
     </div>
   </body>
   </html>`;
 }
+
 function downloadHtmlDocument(filename, html) {
   const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
   const url = URL.createObjectURL(blob);
@@ -3720,6 +3960,7 @@ function downloadHtmlDocument(filename, html) {
   link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
+
 function orderDeliverySlipHtml(order) {
   const billing = order.billing || {};
   const rows = (order.items || []).map(item => `
@@ -3831,14 +4072,36 @@ function printOrderDeliverySlip(id) {
   popup.focus();
   setTimeout(() => popup.print(), 250);
 }
-function downloadOrderInvoice(id) {
-  const order = state.orders.find(entry => entry.id === id);
+async function downloadOrderInvoice(id) {
+  const popup = window.open('', '_blank', 'width=960,height=1100');
+  if (!popup) {
+    toast('Autorisez les popups pour imprimer la facture', 'error');
+    return;
+  }
+
+  popup.document.write('<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Préparation de la facture</title><style>body{font-family:Arial,Helvetica,sans-serif;padding:24px;color:#222}</style></head><body><p>Préparation de la facture…</p></body></html>');
+  popup.document.close();
+
+  let order = state.orders.find(entry => entry.id === id);
   if (!order) {
+    popup.close();
     toast('Commande introuvable', 'error');
     return;
   }
-  downloadHtmlDocument(`facture-${order.id}.html`, orderInvoiceHtml(order));
-  toast('Facture téléchargée', 'success');
+
+  if (!order.invoiceNumber) {
+    order = await ensureOrderInvoice(id);
+    if (!order) {
+      popup.close();
+      return;
+    }
+  }
+
+  popup.focus();
+  popup.document.open();
+  popup.document.write(orderInvoiceHtml(order));
+  popup.document.close();
+  toast('La fenêtre d\'impression de la facture est ouverte', 'success');
 }
 async function openSendcloudLabel(id) {
   const order = state.orders.find(entry => entry.id === id);
@@ -3871,11 +4134,33 @@ async function openSendcloudLabel(id) {
     toast('Le service Sendcloud est temporairement indisponible.', 'error');
   }
 }
-function updateOrderStatus(id, status) {
-  const order = state.orders.find(o => o.id === id);
+async function updateOrderStatus(id, status) {
+  let order = state.orders.find(o => o.id === id);
   if (order) {
+    const previousStatus = order.status;
+    const previousPaidAt = Object.prototype.hasOwnProperty.call(order, 'paidAt') ? order.paidAt : undefined;
     order.status = status;
-    save(KEYS.orders, state.orders);
+    if (status === 'paid' && !order.paidAt) {
+      order.paidAt = new Date().toISOString();
+    }
+    const saved = await save(KEYS.orders, state.orders);
+    if (!saved) {
+      order.status = previousStatus;
+      if (previousPaidAt === undefined) {
+        delete order.paidAt;
+      } else {
+        order.paidAt = previousPaidAt;
+      }
+      return;
+    }
+
+    if (status === 'paid' && !order.invoiceNumber) {
+      const refreshedOrder = await ensureOrderInvoice(id);
+      if (refreshedOrder) {
+        order = refreshedOrder;
+      }
+    }
+
     renderOrders();
     renderDashboard();
     updateBadges();
@@ -3892,6 +4177,11 @@ function updateOrderStatus(id, status) {
 function filterOrders(v) { renderOrders(v); }
 function deleteOrder(id) {
   if (!confirm('Supprimer cette commande ?')) return;
+  const confirmation = prompt('Deuxième validation : tapez la référence de la commande pour confirmer la suppression.', id);
+  if (confirmation !== id) {
+    toast('Suppression annulée', 'error');
+    return;
+  }
   state.orders = state.orders.filter(o => o.id !== id);
   save(KEYS.orders, state.orders); renderOrders(); renderDashboard(); updateBadges(); toast('Commande supprimée');
 }
@@ -4126,7 +4416,6 @@ function renderProductCompositionPreview() {
     if (!label && !title && !text) return;
     cards.push(`<div class="product-comp-preview__card is-info">
       ${label ? `<div class="product-comp-preview__pct">${escapeProductPreviewHtml(label)}</div>` : ''}
-      <div class="product-comp-preview__label">Information</div>
       <div class="product-comp-preview__name">${escapeProductPreviewHtml(title || 'Information produit')}</div>
       <p class="product-comp-preview__desc">${escapeProductPreviewHtml(text)}</p>
     </div>`);
@@ -4136,7 +4425,6 @@ function renderProductCompositionPreview() {
   if (rest) {
     cards.push(`<div class="product-comp-preview__card is-rest">
       <div class="product-comp-preview__label">Sans rien d'autre</div>
-      <div class="product-comp-preview__name">Tout le reste</div>
       <p class="product-comp-preview__desc">${escapeProductPreviewHtml(rest)}</p>
     </div>`);
   }

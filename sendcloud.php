@@ -463,6 +463,10 @@ function castaneas_sendcloud_item_weight_kg(array $item) {
     return 0.0;
 }
 
+function castaneas_sendcloud_min_item_weight_kg() {
+    return 0.001;
+}
+
 function castaneas_sendcloud_total_weight_kg(array $order) {
     $total = 0.0;
 
@@ -489,11 +493,16 @@ function castaneas_sendcloud_parcel_items(array $order) {
             continue;
         }
 
+        $itemWeightKg = castaneas_sendcloud_item_weight_kg($item);
+        if ($itemWeightKg < castaneas_sendcloud_min_item_weight_kg()) {
+            $itemWeightKg = castaneas_sendcloud_min_item_weight_kg();
+        }
+
         $items[] = [
             'description' => (string) ($item['name'] ?? 'Produit Castaneas'),
-            'quantity' => (int) ($item['qty'] ?? 0),
+            'quantity' => max(1, (int) ($item['qty'] ?? 0)),
             'value' => number_format((float) ($item['price'] ?? 0), 2, '.', ''),
-            'weight' => number_format(castaneas_sendcloud_item_weight_kg($item), 3, '.', ''),
+            'weight' => number_format($itemWeightKg, 3, '.', ''),
             'sku' => (string) ($item['id'] ?? ''),
             'origin_country' => 'FR',
         ];
@@ -535,8 +544,13 @@ function castaneas_sendcloud_payload(array $order) {
     if (!empty($billing['note'])) {
         $parcel['note'] = (string) $billing['note'];
     }
-    if (!empty($shipping['servicePoint']['id'])) {
-        $parcel['to_service_point'] = (int) $shipping['servicePoint']['id'];
+    $servicePoint = is_array($shipping['servicePoint'] ?? null) ? $shipping['servicePoint'] : [];
+    $servicePointId = trim((string) ($servicePoint['id'] ?? ''));
+    $carrierServicePointId = trim((string) ($servicePoint['carrierServicePointId'] ?? ''));
+    if ($servicePointId !== '') {
+        $parcel['to_service_point'] = $servicePointId;
+    } elseif ($carrierServicePointId !== '') {
+        $parcel['to_service_point'] = $carrierServicePointId;
     }
 
     if ($config['sender_address'] !== '') {

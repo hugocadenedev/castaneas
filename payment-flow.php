@@ -5,6 +5,7 @@ require_once __DIR__ . '/sendcloud.php';
 require_once __DIR__ . '/sucrine.php';
 require_once __DIR__ . '/integrations.php';
 require_once __DIR__ . '/storage.php';
+require_once __DIR__ . '/invoice-lib.php';
 
 function castaneas_payment_request_data() {
     $data = $_REQUEST;
@@ -148,6 +149,11 @@ function castaneas_payment_finalize_order($ref, $status, array $payload) {
     $order = castaneas_order_update_status($ref, $mappedStatus, $extra);
     if (!$order || $mappedStatus !== 'paid') {
         return $order;
+    }
+
+    $invoiceResult = castaneas_invoice_assign_order($ref, $extra['paidAt'] ?? null);
+    if (!empty($invoiceResult['ok']) && !empty($invoiceResult['order'])) {
+        $order = $invoiceResult['order'];
     }
 
     castaneas_payment_increment_promo_usage($order);

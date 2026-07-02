@@ -1343,7 +1343,6 @@
       <div class="ing is-rest">
         <span class="ing__pct">0<sup>%</sup></span>
         <div class="ing__origin">Sans rien d'autre</div>
-        <h3 class="ing__name">Tout le reste</h3>
         <p class="ing__desc">Sans gluten · sans huile de palme · sans pectine · sans conservateur.</p>
       </div>
     </div>
@@ -2102,7 +2101,6 @@ function updateSelectedVariant(pid) {
         if (!card || (!card.label && !card.title && !card.text)) return;
         cards.push('<div class="ing ing--info">'
           + (card.label ? '<span class="ing__pct">' + card.label + '</span>' : '')
-          + '<div class="ing__origin">Information</div>'
           + '<h3 class="ing__name">' + (card.title || 'Information produit') + '</h3>'
           + '<p class="ing__desc">' + (card.text || '') + '</p>'
           + '</div>');
@@ -2111,7 +2109,6 @@ function updateSelectedVariant(pid) {
       if (comp.restDesc) {
         cards.push('<div class="ing ing--info is-rest">'
           + '<div class="ing__origin">Sans rien d\'autre</div>'
-          + '<h3 class="ing__name">Tout le reste</h3>'
           + '<p class="ing__desc">' + comp.restDesc + '</p>'
           + '</div>');
       }
