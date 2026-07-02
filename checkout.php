@@ -453,6 +453,15 @@ function castaneas_checkout_selected_functionalities(array $option) {
     return $selected;
 }
 
+function castaneas_checkout_option_is_usable(array $option) {
+    $directContractOnly = !empty($option['functionalities']['direct_contract_only']);
+    if (!$directContractOnly) {
+        return true;
+    }
+
+    return !empty($option['contract']['id']);
+}
+
 function castaneas_checkout_present_shipping_option(array $option, $type) {
     $price = castaneas_checkout_quote_amount($option);
     if ($price === null) {
@@ -507,8 +516,13 @@ function castaneas_checkout_shipping_options(array $items, array $billing) {
 
     $home = [];
     $relay = [];
+    $skippedDirectContractOnly = 0;
     foreach (($response['data']['data'] ?? []) as $option) {
         if (!is_array($option)) {
+            continue;
+        }
+        if (!castaneas_checkout_option_is_usable($option)) {
+            $skippedDirectContractOnly++;
             continue;
         }
 
@@ -529,6 +543,14 @@ function castaneas_checkout_shipping_options(array $items, array $billing) {
 
     usort($home, static function ($left, $right) { return $left['price'] <=> $right['price']; });
     usort($relay, static function ($left, $right) { return $left['price'] <=> $right['price']; });
+
+    if (!$home && !$relay && $skippedDirectContractOnly > 0) {
+        return [
+            'ok' => false,
+            'error' => 'Les options de livraison retournées par Sendcloud exigent un contrat transporteur direct non configuré pour ce compte.',
+            'code' => 'sendcloud_direct_contract_required',
+        ];
+    }
 
     return [
         'ok' => true,
