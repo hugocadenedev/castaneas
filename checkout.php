@@ -784,6 +784,150 @@ function castaneas_up2pay_signature(array $fields, $algo, $key) {
     return strtoupper(hash_hmac(strtolower($algo), implode('&', $pairs), castaneas_up2pay_hmac_key($key)));
 }
 
+function castaneas_up2pay_xml_escape($value) {
+    return htmlspecialchars((string) $value, ENT_XML1 | ENT_COMPAT, 'UTF-8');
+}
+
+function castaneas_up2pay_limit($value, $maxLength) {
+    $value = trim((string) $value);
+    if ($maxLength <= 0 || $value === '') {
+        return $value;
+    }
+
+    if (function_exists('mb_substr')) {
+        return mb_substr($value, 0, $maxLength, 'UTF-8');
+    }
+
+    return substr($value, 0, $maxLength);
+}
+
+function castaneas_up2pay_country_numeric_code($value) {
+    $value = strtoupper(trim((string) $value));
+    if ($value === '') {
+        return '250';
+    }
+
+    if (ctype_digit($value)) {
+        return str_pad(substr($value, 0, 3), 3, '0', STR_PAD_LEFT);
+    }
+
+    $map = [
+        'FR' => '250',
+        'FRA' => '250',
+        'BE' => '056',
+        'BEL' => '056',
+        'CH' => '756',
+        'CHE' => '756',
+        'DE' => '276',
+        'DEU' => '276',
+        'ES' => '724',
+        'ESP' => '724',
+        'GB' => '826',
+        'GBR' => '826',
+        'IE' => '372',
+        'IRL' => '372',
+        'IT' => '380',
+        'ITA' => '380',
+        'LU' => '442',
+        'LUX' => '442',
+        'MC' => '492',
+        'MCO' => '492',
+        'NL' => '528',
+        'NLD' => '528',
+        'PT' => '620',
+        'PRT' => '620',
+    ];
+
+    return $map[$value] ?? '250';
+}
+
+function castaneas_up2pay_phone_parts($value, $country) {
+    $value = trim((string) $value);
+    if ($value === '') {
+        return [null, null];
+    }
+
+    $countryCode = '+';
+    if (preg_match('/^\+\d{1,3}/', $value, $matches)) {
+        $countryCode = $matches[0];
+        $digits = preg_replace('/\D+/', '', substr($value, strlen($matches[0])));
+    } else {
+        $digits = preg_replace('/\D+/', '', $value);
+        $countryCode = castaneas_up2pay_country_numeric_code($country) === '250' ? '+33' : null;
+    }
+
+    if ($digits === '') {
+        return [null, null];
+    }
+
+    if ($countryCode === '+33' && strncmp($digits, '33', 2) === 0) {
+        $digits = substr($digits, 2);
+    }
+    if ($countryCode === '+33' && strncmp($digits, '0', 1) === 0) {
+        $digits = substr($digits, 1);
+    }
+
+    $digits = substr($digits, 0, 10);
+    if ($digits === '') {
+        return [null, null];
+    }
+
+    return [$countryCode, $digits];
+}
+
+function castaneas_up2pay_billing_xml(array $order) {
+    $billing = is_array($order['billing'] ?? null) ? $order['billing'] : [];
+    $country = castaneas_up2pay_country_numeric_code($billing['pays'] ?? 'FR');
+    $address1 = trim((string) ($billing['adresse'] ?? ''));
+    $address2 = trim((string) ($billing['complement'] ?? ''));
+    [$phoneCountryCode, $phoneDigits] = castaneas_up2pay_phone_parts($billing['tel'] ?? '', $billing['pays'] ?? 'FR');
+
+    $xml = [
+        '<?xml version="1.0" encoding="utf-8"?>',
+        '<Billing>',
+        '<Address>',
+        '<FirstName>' . castaneas_up2pay_xml_escape(castaneas_up2pay_limit($billing['prenom'] ?? '', 22)) . '</FirstName>',
+        '<LastName>' . castaneas_up2pay_xml_escape(castaneas_up2pay_limit($billing['nom'] ?? '', 22)) . '</LastName>',
+        '<Address1>' . castaneas_up2pay_xml_escape(castaneas_up2pay_limit($address1, 50)) . '</Address1>',
+    ];
+
+    if ($address2 !== '') {
+        $xml[] = '<Address2>' . castaneas_up2pay_xml_escape(castaneas_up2pay_limit($address2, 50)) . '</Address2>';
+    }
+
+    $xml[] = '<ZipCode>' . castaneas_up2pay_xml_escape(castaneas_up2pay_limit($billing['cp'] ?? '', 16)) . '</ZipCode>';
+    $xml[] = '<City>' . castaneas_up2pay_xml_escape(castaneas_up2pay_limit($billing['ville'] ?? '', 50)) . '</City>';
+    $xml[] = '<CountryCode>' . $country . '</CountryCode>';
+
+    if ($phoneCountryCode !== null && $phoneDigits !== null) {
+        $xml[] = '<MobilePhone>' . castaneas_up2pay_xml_escape($phoneDigits) . '</MobilePhone>';
+        $xml[] = '<CountryCodeMobilePhone>' . castaneas_up2pay_xml_escape($phoneCountryCode) . '</CountryCodeMobilePhone>';
+    }
+
+    $xml[] = '</Address>';
+    $xml[] = '</Billing>';
+
+    return implode('', $xml);
+}
+
+function castaneas_up2pay_shopping_cart_xml(array $order) {
+    $totalQuantity = 0;
+    foreach (($order['items'] ?? []) as $item) {
+        if (!is_array($item)) {
+            continue;
+        }
+
+        $lineQty = max(1, (int) ($item['qty'] ?? 1)) * max(1, (int) ($item['offerQty'] ?? 1));
+        $totalQuantity += $lineQty;
+    }
+
+    $totalQuantity = max(1, min(99, $totalQuantity));
+
+    return '<?xml version="1.0" encoding="utf-8"?><shoppingcart><total><totalQuantity>'
+        . $totalQuantity
+        . '</totalQuantity></total></shoppingcart>';
+}
+
 function castaneas_checkout_payment_payload(array $order, array $options = []) {
     if (!empty($options['force_simulate']) || castaneas_payment_simulate()) {
         return [
@@ -810,9 +954,11 @@ function castaneas_checkout_payment_payload(array $order, array $options = []) {
         'PBX_DEVISE' => $config['currency'],
         'PBX_CMD' => $order['id'],
         'PBX_PORTEUR' => $order['email'],
-        'PBX_RETOUR' => 'Mt:M;Ref:R;Auto:A;Erreur:E;Trans:T',
+        'PBX_RETOUR' => 'Mt:M;Ref:R;Auto:A;Erreur:E;Trans:T;Auth3DS:F;Garant3DS:G;Enrole3DS:O;Proto3DS:v',
         'PBX_HASH' => strtoupper($config['hash_algo']),
         'PBX_TIME' => $time,
+        'PBX_BILLING' => castaneas_up2pay_billing_xml($order),
+        'PBX_SHOPPINGCART' => castaneas_up2pay_shopping_cart_xml($order),
         'PBX_EFFECTUE' => castaneas_url('payment-return.php?status=paid&ref=' . rawurlencode($order['id'])),
         'PBX_REFUSE' => castaneas_url('payment-return.php?status=refused&ref=' . rawurlencode($order['id'])),
         'PBX_ANNULE' => castaneas_url('payment-return.php?status=cancelled&ref=' . rawurlencode($order['id'])),
