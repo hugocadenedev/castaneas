@@ -28,7 +28,10 @@ function castaneas_sendcloud_label_sync_order(array $order, array $parcel, array
     $sendcloud['apiVersion'] = $apiVersion ?? ($sendcloud['apiVersion'] ?? null);
     $sendcloud['lastResult'] = ['ok' => true, 'status' => 'label_ready'];
 
-    $updated = castaneas_order_update_status((string) $order['id'], (string) ($order['status'] ?? 'paid'), ['sendcloud' => $sendcloud]);
+    $updated = castaneas_order_update_status((string) $order['id'], (string) ($order['status'] ?? 'paid'), [
+        'sendcloud' => $sendcloud,
+        'fulfillmentStatus' => 'completed',
+    ]);
     if (!$updated) {
         return null;
     }

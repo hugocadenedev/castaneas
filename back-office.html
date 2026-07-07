@@ -829,7 +829,7 @@ tbody tr:last-child td { border-bottom: none; }
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Référence</th><th>Produits</th><th>Client</th><th>Total</th><th>Statut</th></tr></thead>
+            <thead><tr><th>Référence</th><th>Produits</th><th>Client</th><th>Total</th><th>Paiement</th><th>Commande</th></tr></thead>
             <tbody id="dashboard-orders-tbody"></tbody>
           </table>
         </div>
@@ -883,7 +883,7 @@ tbody tr:last-child td { border-bottom: none; }
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Référence</th><th>Date</th><th>Client</th><th>Total</th><th>Statut</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Référence</th><th>Date</th><th>Client</th><th>Total</th><th>Statut de paiement</th><th>Statut de commande</th><th>Actions</th></tr></thead>
             <tbody id="orders-tbody"></tbody>
           </table>
         </div>
@@ -2483,7 +2483,8 @@ async function init() {
   // Load from server (already synced by serverLoadAll)
   state.categories        = load(KEYS.categories) || [];
   state.products          = load(KEYS.products)   || [];
-  state.orders            = load(KEYS.orders)     || [];
+  state.orders            = normalizeOrders(load(KEYS.orders) || []);
+  localStorage.setItem(KEYS.orders, JSON.stringify(state.orders));
   state.imageCatalogMain  = load(KEYS.imagesMain)  || [...DEFAULT_IMAGE_CATALOG];
   state.imageCatalogExtra = load(KEYS.imagesExtra) || [...DEFAULT_IMAGE_CATALOG];
   state.recipes           = load(KEYS.recipes)    || [];
@@ -2653,7 +2654,11 @@ function renderAll() {
 function updateBadges() {
   document.getElementById('products-badge').textContent = state.products.length;
   document.getElementById('cats-badge').textContent = state.categories.length;
-  const pending = state.orders.filter(o => ['pending', 'pending_payment', 'paid', 'processing'].includes(o.status)).length;
+  const pending = state.orders.filter(order => {
+    const paymentStatus = getOrderPaymentStatus(order);
+    const fulfillmentStatus = getOrderFulfillmentStatus(order);
+    return paymentStatus === 'pending_payment' || (paymentStatus === 'paid' && fulfillmentStatus !== 'completed');
+  }).length;
   const ob = document.getElementById('orders-badge');
   ob.textContent = pending || '';
   ob.style.display = pending ? '' : 'none';
@@ -3036,7 +3041,7 @@ function renderDashboard() {
 
   const tbody = document.getElementById('dashboard-orders-tbody');
   if (!state.orders.length) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--muted);">Aucune commande</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted);">Aucune commande</td></tr>';
     return;
   }
   tbody.innerHTML = [...state.orders].reverse().slice(0, 5).map(o => `
@@ -3045,7 +3050,8 @@ function renderDashboard() {
       <td>${o.items.map(i => i.name + ' ×' + i.qty).join(', ')}</td>
       <td>${o.customer}</td>
       <td class="td-price">${o.total.toFixed(2).replace('.', ',')}€</td>
-      <td>${statusBadge(o.status)}</td>
+      <td>${statusBadge(getOrderPaymentStatus(o))}</td>
+      <td>${fulfillmentStatusBadge(getOrderFulfillmentStatus(o))}</td>
     </tr>
   `).join('');
 }
@@ -3130,7 +3136,7 @@ function renderOrders(filter = '') {
   if (filter) list = list.filter(o => o.id.toLowerCase().includes(filter.toLowerCase()) || o.customer.toLowerCase().includes(filter.toLowerCase()));
 
   if (!list.length) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted);">Aucune commande</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted);">Aucune commande</td></tr>';
     return;
   }
   tbody.innerHTML = [...list].reverse().map(o => `
@@ -3142,9 +3148,8 @@ function renderOrders(filter = '') {
         <div style="font-size:12px;color:var(--muted);">${o.email}</div>
       </td>
       <td class="td-price">${o.total.toFixed(2).replace('.', ',')}€</td>
-      <td>
-        ${statusBadge(o.status)}
-      </td>
+      <td>${statusBadge(getOrderPaymentStatus(o))}</td>
+      <td>${fulfillmentStatusBadge(getOrderFulfillmentStatus(o))}</td>
       <td><div class="td-actions">
         <button class="btn-icon" onclick="event.stopPropagation();openOrderDetail('${o.id}')" title="Détail commande">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -3312,17 +3317,44 @@ function integrationDetailMessage(integration, emptyLabel) {
   if (integration.parcelId) return 'Colis ' + integration.parcelId;
   return emptyLabel;
 }
-function orderStatusSelectHtml(order) {
-  return `<select onchange="updateOrderStatus('${order.id}', this.value)" style="font-size:12px;font-weight:700;padding:7px 10px;border-radius:999px;border:1.5px solid var(--line);background:var(--cream-soft);cursor:pointer;">
-    <option value="pending_payment" ${order.status==='pending_payment'?'selected':''}>Paiement en attente</option>
-    <option value="paid" ${order.status==='paid'?'selected':''}>Payée</option>
-    <option value="pending" ${order.status==='pending'?'selected':''}>En attente</option>
-    <option value="processing" ${order.status==='processing'?'selected':''}>En préparation</option>
-    <option value="shipped" ${order.status==='shipped'?'selected':''}>Expédiée</option>
-    <option value="delivered" ${order.status==='delivered'?'selected':''}>Livrée</option>
-    <option value="payment_refused" ${order.status==='payment_refused'?'selected':''}>Paiement refusé</option>
-    <option value="payment_failed" ${order.status==='payment_failed'?'selected':''}>Paiement en erreur</option>
-    <option value="cancelled" ${order.status==='cancelled'?'selected':''}>Annulée</option>
+function getOrderPaymentStatus(order) {
+  const status = String(order && order.status ? order.status : '');
+  if (['pending_payment', 'paid', 'payment_refused', 'payment_failed', 'cancelled'].includes(status)) {
+    return status;
+  }
+  if (['pending', 'processing', 'shipped', 'delivered'].includes(status)) {
+    return order && (order.paidAt || (order.payment && order.payment.transactionId) || (order.sendcloud && order.sendcloud.createdAt))
+      ? 'paid'
+      : 'pending_payment';
+  }
+  return 'pending_payment';
+}
+function getOrderFulfillmentStatus(order) {
+  const explicit = String(order && order.fulfillmentStatus ? order.fulfillmentStatus : '');
+  if (['pending', 'processing', 'completed'].includes(explicit)) {
+    return explicit;
+  }
+
+  const legacyStatus = String(order && order.status ? order.status : '');
+  if (legacyStatus === 'processing') return 'processing';
+  if (legacyStatus === 'shipped' || legacyStatus === 'delivered') return 'completed';
+  return 'pending';
+}
+function normalizeOrderStatuses(order) {
+  const normalized = { ...(order || {}) };
+  normalized.status = getOrderPaymentStatus(order || {});
+  normalized.fulfillmentStatus = getOrderFulfillmentStatus(order || {});
+  return normalized;
+}
+function normalizeOrders(list) {
+  return Array.isArray(list) ? list.map(normalizeOrderStatuses) : [];
+}
+function orderFulfillmentSelectHtml(order) {
+  const fulfillmentStatus = getOrderFulfillmentStatus(order);
+  return `<select onchange="updateOrderFulfillmentStatus('${order.id}', this.value)" style="font-size:12px;font-weight:700;padding:7px 10px;border-radius:999px;border:1.5px solid var(--line);background:var(--cream-soft);cursor:pointer;">
+    <option value="pending" ${fulfillmentStatus==='pending'?'selected':''}>A traiter</option>
+    <option value="processing" ${fulfillmentStatus==='processing'?'selected':''}>En préparation</option>
+    <option value="completed" ${fulfillmentStatus==='completed'?'selected':''}>Commande traitée</option>
   </select>`;
 }
 function formatOrderFunctionalities(order) {
@@ -3393,7 +3425,8 @@ function renderOrderDetail(order) {
           <div class="order-detail-sub">Commande client</div>
           <h2 class="order-detail-title">${escapeHtml(order.id)}</h2>
           <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
-            ${statusBadge(order.status || '')}
+            ${statusBadge(getOrderPaymentStatus(order))}
+            ${fulfillmentStatusBadge(getOrderFulfillmentStatus(order))}
             <span class="badge badge-gray">${escapeHtml(formatPaymentMethod(order))}</span>
             ${shipping.name ? `<span class="badge badge-gray">${escapeHtml(shipping.name)}</span>` : ''}
           </div>
@@ -3556,8 +3589,12 @@ function renderOrderDetail(order) {
             <div class="order-card-body">
               <div class="order-meta-stack">
                 <div class="order-meta-row">
-                  <strong>Statut</strong>
-                  <span>${orderStatusSelectHtml(order)}</span>
+                  <strong>Statut de paiement</strong>
+                  <span>${statusBadge(getOrderPaymentStatus(order))}</span>
+                </div>
+                <div class="order-meta-row">
+                  <strong>Statut de commande</strong>
+                  <span>${orderFulfillmentSelectHtml(order)}</span>
                 </div>
                 <div class="order-meta-row">
                   <strong>Paiement</strong>
@@ -3676,10 +3713,25 @@ function formatInvoiceNumber(order) {
 }
 
 function replaceOrderInState(updatedOrder) {
-  const index = state.orders.findIndex(entry => entry.id === updatedOrder.id);
+  const normalizedOrder = normalizeOrderStatuses(updatedOrder);
+  const index = state.orders.findIndex(entry => entry.id === normalizedOrder.id);
   if (index === -1) return;
-  state.orders[index] = updatedOrder;
+  state.orders[index] = normalizedOrder;
   localStorage.setItem(KEYS.orders, JSON.stringify(state.orders));
+}
+
+async function reloadOrdersFromServer() {
+  const response = await fetch('/save.php?key=orders', {
+    headers: { 'X-Admin-Token': SERVER_TOKEN },
+  });
+  const payload = await response.json().catch(() => null);
+  if (!response.ok || (payload && payload.error)) {
+    throw new Error((payload && payload.error) || ('HTTP ' + response.status));
+  }
+
+  state.orders = normalizeOrders(payload === null ? [] : payload);
+  localStorage.setItem(KEYS.orders, JSON.stringify(state.orders));
+  return state.orders;
 }
 
 async function ensureOrderInvoice(orderId) {
@@ -4039,38 +4091,45 @@ async function openSendcloudLabel(id) {
     }
 
     const blob = await response.blob();
+    let refreshedOrder = null;
+    try {
+      await reloadOrdersFromServer();
+      refreshedOrder = state.orders.find(entry => entry.id === id) || null;
+    } catch (_) {
+      refreshedOrder = state.orders.find(entry => entry.id === id) || null;
+      if (refreshedOrder) {
+        refreshedOrder.fulfillmentStatus = 'completed';
+      }
+    }
     const url = URL.createObjectURL(blob);
     window.open(url, '_blank', 'noopener');
     toast('Etiquette Sendcloud prête', 'success');
+    renderOrders();
+    renderDashboard();
+    updateBadges();
+    if (selectedOrderId === id) {
+      if (refreshedOrder) {
+        renderOrderDetail(refreshedOrder);
+        activatePanel('order-detail', {
+          activeNavPanel: 'orders',
+          title: 'Commande ' + refreshedOrder.id,
+          actions: orderDetailTopbarActions(refreshedOrder),
+        });
+      }
+    }
   } catch (error) {
     toast('Le service Sendcloud est temporairement indisponible.', 'error');
   }
 }
-async function updateOrderStatus(id, status) {
+async function updateOrderFulfillmentStatus(id, fulfillmentStatus) {
   let order = state.orders.find(o => o.id === id);
   if (order) {
-    const previousStatus = order.status;
-    const previousPaidAt = Object.prototype.hasOwnProperty.call(order, 'paidAt') ? order.paidAt : undefined;
-    order.status = status;
-    if (status === 'paid' && !order.paidAt) {
-      order.paidAt = new Date().toISOString();
-    }
+    const previousFulfillmentStatus = order.fulfillmentStatus;
+    order.fulfillmentStatus = fulfillmentStatus;
     const saved = await save(KEYS.orders, state.orders);
     if (!saved) {
-      order.status = previousStatus;
-      if (previousPaidAt === undefined) {
-        delete order.paidAt;
-      } else {
-        order.paidAt = previousPaidAt;
-      }
+      order.fulfillmentStatus = previousFulfillmentStatus;
       return;
-    }
-
-    if (status === 'paid' && !order.invoiceNumber) {
-      const refreshedOrder = await ensureOrderInvoice(id);
-      if (refreshedOrder) {
-        order = refreshedOrder;
-      }
     }
 
     renderOrders();
@@ -4116,7 +4175,7 @@ function generateFakeOrder() {
     date: new Date().toISOString().slice(0, 10),
     customer: name,
     email: name.split(' ')[0].toLowerCase() + '@exemple.fr',
-    items, total, status: 'paid',
+    items, total, status: 'paid', fulfillmentStatus: 'pending',
   };
   state.orders.push(order);
   save(KEYS.orders, state.orders);
@@ -4135,6 +4194,14 @@ function statusBadge(status) {
     payment_refused: '<span class="badge badge-red">Paiement refusé</span>',
     payment_failed: '<span class="badge badge-red">Paiement en erreur</span>',
     cancelled: '<span class="badge badge-red">Annulée</span>'
+  };
+  return map[status] || status;
+}
+function fulfillmentStatusBadge(status) {
+  const map = {
+    pending: '<span class="badge badge-orange">A traiter</span>',
+    processing: '<span class="badge badge-gray">En préparation</span>',
+    completed: '<span class="badge badge-green">Commande traitée</span>'
   };
   return map[status] || status;
 }

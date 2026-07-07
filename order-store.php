@@ -79,6 +79,7 @@ function castaneas_order_public_payload(array $order) {
     return [
         'id' => $order['id'] ?? '',
         'status' => $order['status'] ?? 'pending_payment',
+        'fulfillmentStatus' => $order['fulfillmentStatus'] ?? 'pending',
         'total' => $order['total'] ?? 0,
         'customer' => $order['customer'] ?? '',
         'createdAt' => $order['createdAt'] ?? null,

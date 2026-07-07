@@ -454,9 +454,19 @@ function castaneas_sendcloud_v3_parcels(array $order) {
             ];
             }, castaneas_sendcloud_parcel_items($order));
 
+    $labelNotes = [];
+    $orderReference = trim((string) ($order['id'] ?? ''));
+    if ($orderReference !== '') {
+        $labelNotes[] = 'Commande ' . $orderReference;
+    }
+
     $billing = is_array($order['billing'] ?? null) ? $order['billing'] : [];
     if (!empty($billing['note'])) {
-        $parcel['label_notes'] = [trim((string) $billing['note'])];
+        $labelNotes[] = trim((string) $billing['note']);
+    }
+
+    if ($labelNotes !== []) {
+        $parcel['label_notes'] = $labelNotes;
     }
 
     return [$parcel];
@@ -493,6 +503,8 @@ function castaneas_sendcloud_v3_payload(array $order) {
         return null;
     }
 
+    $orderReference = trim((string) ($order['id'] ?? ''));
+
     $payload = [
         'label_details' => [
             'mime_type' => 'application/pdf',
@@ -506,8 +518,8 @@ function castaneas_sendcloud_v3_payload(array $order) {
             'type' => 'shipping_option_code',
             'properties' => $shippingProperties,
         ],
-        'order_number' => (string) ($order['id'] ?? ''),
-        'reference' => (string) ($order['id'] ?? ''),
+        'order_number' => $orderReference,
+        'reference' => $orderReference,
         'total_order_price' => [
             'value' => number_format((float) ($order['total'] ?? 0), 2, '.', ''),
             'currency' => 'EUR',
@@ -998,6 +1010,7 @@ function castaneas_sendcloud_payload(array $order) {
     $billing = $order['billing'] ?? [];
     $address = castaneas_sendcloud_split_address(($billing['adresse'] ?? '') . ' ' . ($billing['complement'] ?? ''));
     $config = castaneas_sendcloud_config();
+    $orderReference = trim((string) ($order['id'] ?? ''));
 
     $parcel = [
         'name' => trim((string) ($order['customer'] ?? 'Client Castaneas')),
@@ -1011,7 +1024,8 @@ function castaneas_sendcloud_payload(array $order) {
         'postal_code' => (string) ($billing['cp'] ?? ''),
         'country' => (string) ($billing['pays'] ?? 'FR'),
         'quantity' => 1,
-        'order_number' => (string) ($order['id'] ?? ''),
+        'order_number' => $orderReference,
+        'reference' => $orderReference,
         'weight' => number_format(castaneas_sendcloud_total_weight_kg($order), 3, '.', ''),
         'parcel_items' => castaneas_sendcloud_parcel_items($order),
         'total_order_value' => number_format((float) ($order['total'] ?? 0), 2, '.', ''),

@@ -1150,6 +1150,7 @@ $order = [
     ],
     'total' => $grandTotal,
     'status' => 'pending_payment',
+    'fulfillmentStatus' => 'pending',
     'billing' => $billing,
     'shipping' => $selectedShipping,
     'payment' => [
