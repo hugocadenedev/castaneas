@@ -3,6 +3,7 @@
 require_once __DIR__ . '/integrations.php';
 require_once __DIR__ . '/order-store.php';
 require_once __DIR__ . '/storage.php';
+require_once __DIR__ . '/shipping-lib.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -151,6 +152,28 @@ function castaneas_checkout_product_offer_qty(array $product, $offerId) {
     return 1;
 }
 
+function castaneas_checkout_parse_weight_g($rawWeight) {
+    $rawWeight = trim((string) $rawWeight);
+    if ($rawWeight === '') {
+        return 0;
+    }
+
+    $normalized = mb_strtolower(str_replace(',', '.', $rawWeight));
+    if (preg_match('/(\d+(?:\.\d+)?)\s*[x×]\s*(\d+(?:\.\d+)?)/u', $normalized, $matches)) {
+        $value = (float) $matches[1] * (float) $matches[2];
+    } elseif (preg_match('/(\d+(?:\.\d+)?)/', $normalized, $matches)) {
+        $value = (float) $matches[1];
+    } else {
+        return 0;
+    }
+
+    if (strpos($normalized, 'kg') !== false) {
+        return (int) round($value * 1000);
+    }
+
+    return (int) round($value);
+}
+
 function castaneas_checkout_normalize_product_shipping(array $product) {
     $shipping = is_array($product['shipping'] ?? null) ? $product['shipping'] : [];
 
@@ -160,6 +183,69 @@ function castaneas_checkout_normalize_product_shipping(array $product) {
         'widthCm' => max(0.0, (float) ($shipping['widthCm'] ?? 0)),
         'heightCm' => max(0.0, (float) ($shipping['heightCm'] ?? 0)),
     ];
+}
+
+function castaneas_checkout_resolve_product_shipping(array $product, array $products, array $seen = []) {
+    $productId = (string) ($product['id'] ?? '');
+    if ($productId !== '') {
+        if (isset($seen[$productId])) {
+            return [
+                'weightG' => 0,
+                'lengthCm' => 0.0,
+                'widthCm' => 0.0,
+                'heightCm' => 0.0,
+            ];
+        }
+
+        $seen[$productId] = true;
+    }
+
+    $resolved = castaneas_checkout_normalize_product_shipping($product);
+    if ($resolved['weightG'] > 0 && $resolved['lengthCm'] > 0 && $resolved['widthCm'] > 0 && $resolved['heightCm'] > 0) {
+        return $resolved;
+    }
+
+    $boxItems = is_array($product['boxItems'] ?? null) ? $product['boxItems'] : [];
+    foreach ($boxItems as $boxItem) {
+        if (!is_array($boxItem) || empty($boxItem['productId'])) {
+            continue;
+        }
+
+        $child = $products[(string) $boxItem['productId']] ?? null;
+        if (!is_array($child)) {
+            continue;
+        }
+
+        $childShipping = castaneas_checkout_resolve_product_shipping($child, $products, $seen);
+        $resolved['weightG'] += max(0, (int) ($childShipping['weightG'] ?? 0));
+        $resolved['lengthCm'] = max($resolved['lengthCm'], (float) ($childShipping['lengthCm'] ?? 0));
+        $resolved['widthCm'] = max($resolved['widthCm'], (float) ($childShipping['widthCm'] ?? 0));
+        $resolved['heightCm'] += max(0.0, (float) ($childShipping['heightCm'] ?? 0));
+    }
+
+    if ($resolved['weightG'] <= 0) {
+        $resolved['weightG'] = castaneas_checkout_parse_weight_g($product['weight'] ?? '');
+    }
+
+    return $resolved;
+}
+
+function castaneas_checkout_resolve_item_shipping(array $item, array $product, array $products) {
+    $resolved = is_array($product)
+        ? castaneas_checkout_resolve_product_shipping($product, $products)
+        : ['weightG' => 0, 'lengthCm' => 0.0, 'widthCm' => 0.0, 'heightCm' => 0.0];
+
+    if ($resolved['weightG'] <= 0) {
+        foreach ([$item['weight'] ?? '', $item['variant'] ?? ''] as $rawWeight) {
+            $parsedWeight = castaneas_checkout_parse_weight_g($rawWeight);
+            if ($parsedWeight > 0) {
+                $resolved['weightG'] = $parsedWeight;
+                break;
+            }
+        }
+    }
+
+    return $resolved;
 }
 
 function castaneas_checkout_normalize_items(array $items) {
@@ -189,7 +275,7 @@ function castaneas_checkout_normalize_items(array $items) {
             'weight' => isset($item['weight']) ? (string) $item['weight'] : (string) ($product['weight'] ?? ''),
             'offerId' => $offerId,
             'offerQty' => castaneas_checkout_product_offer_qty($product, $offerId),
-            'shipping' => castaneas_checkout_normalize_product_shipping($product),
+            'shipping' => castaneas_checkout_resolve_item_shipping($item, $product, $products),
             'sucrineId' => $product['sucrineId'] ?? null,
         ];
     }
@@ -238,70 +324,7 @@ function castaneas_checkout_address_payload(array $billing) {
 }
 
 function castaneas_checkout_estimate_shipment(array $items) {
-    $totalWeightG = 0;
-    $maxLength = 0.0;
-    $maxWidth = 0.0;
-    $maxHeight = 0.0;
-
-    foreach ($items as $item) {
-        if (!is_array($item)) {
-            continue;
-        }
-
-        $shipping = is_array($item['shipping'] ?? null) ? $item['shipping'] : [];
-        $bundleQty = max(1, (int) ($item['offerQty'] ?? 1));
-        $lineQty = max(1, (int) ($item['qty'] ?? 1)) * $bundleQty;
-
-        $weightG = max(0, (int) ($shipping['weightG'] ?? 0));
-        $totalWeightG += $weightG * $lineQty;
-
-        $maxLength = max($maxLength, (float) ($shipping['lengthCm'] ?? 0));
-        $maxWidth = max($maxWidth, (float) ($shipping['widthCm'] ?? 0));
-        $maxHeight = max($maxHeight, (float) ($shipping['heightCm'] ?? 0));
-    }
-
-    if ($totalWeightG <= 0) {
-        $totalWeightG = 250;
-    }
-
-    $selectedPackaging = null;
-    foreach (castaneas_checkout_packagings() as $packaging) {
-        $shipping = $packaging['shipping'] ?? [];
-        $fitsWeight = (int) ($shipping['maxWeightG'] ?? 0) <= 0 || $totalWeightG <= (int) $shipping['maxWeightG'];
-        $fitsSize = ((float) ($shipping['lengthCm'] ?? 0) <= 0 || (float) $shipping['lengthCm'] >= $maxLength)
-            && ((float) ($shipping['widthCm'] ?? 0) <= 0 || (float) $shipping['widthCm'] >= $maxWidth)
-            && ((float) ($shipping['heightCm'] ?? 0) <= 0 || (float) $shipping['heightCm'] >= $maxHeight);
-        if ($fitsWeight && $fitsSize) {
-            $selectedPackaging = $packaging;
-            break;
-        }
-    }
-
-    if ($selectedPackaging === null) {
-        $allPackagings = castaneas_checkout_packagings();
-        $selectedPackaging = $allPackagings ? end($allPackagings) : null;
-    }
-
-    $packagingShipping = is_array($selectedPackaging['shipping'] ?? null) ? $selectedPackaging['shipping'] : [];
-    $parcel = [
-        'weight' => [
-            'value' => number_format(max(0.05, ($totalWeightG + (int) ($packagingShipping['tareWeightG'] ?? 0)) / 1000), 3, '.', ''),
-            'unit' => 'kg',
-        ],
-        'dimensions' => [
-            'length' => number_format(max(10.0, (float) ($packagingShipping['lengthCm'] ?? $maxLength ?: 10)), 1, '.', ''),
-            'width' => number_format(max(8.0, (float) ($packagingShipping['widthCm'] ?? $maxWidth ?: 8)), 1, '.', ''),
-            'height' => number_format(max(4.0, (float) ($packagingShipping['heightCm'] ?? $maxHeight ?: 4)), 1, '.', ''),
-            'unit' => 'cm',
-        ],
-    ];
-
-    return [
-        'packaging' => $selectedPackaging,
-        'productWeightG' => $totalWeightG,
-        'parcel' => $parcel,
-        'parcels' => [$parcel],
-    ];
+    return castaneas_shipping_estimate_items($items);
 }
 
 function castaneas_sendcloud_v3_base_url() {
@@ -994,7 +1017,7 @@ if ($action === 'status') {
 }
 
 if ($action === 'quotes') {
-    castaneas_checkout_require_storage(['products', 'packagings']);
+    castaneas_checkout_require_storage(['products']);
 
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         castaneas_checkout_response(405, ['ok' => false, 'error' => 'Méthode non autorisée.']);

@@ -1574,57 +1574,6 @@ tbody tr:last-child td { border-bottom: none; }
               </div>
             </form>
           </div>
-          <div class="table-wrap" style="padding:24px 28px;max-width:960px;">
-            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:16px;">Types de conditionnement</h3>
-            <form class="form-grid full" id="packagings-form" onsubmit="savePackagings(event)">
-              <div class="form-field span2">
-                <label style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;">Conditionnements utilisés pour calculer l'expédition</label>
-                <div class="uses-card-row" style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;grid-template-columns:1.3fr .9fr .7fr .7fr .7fr .8fr .8fr;">
-                  <span>Nom</span><span>Code</span><span>L (cm)</span><span>l (cm)</span><span>H (cm)</span><span>Tare (g)</span><span>Max (g)</span>
-                </div>
-                <div class="uses-card-row" style="grid-template-columns:1.3fr .9fr .7fr .7fr .7fr .8fr .8fr;">
-                  <input type="text" id="pkg-0-name" placeholder="Petit carton">
-                  <input type="text" id="pkg-0-code" placeholder="small-box">
-                  <input type="number" id="pkg-0-length" min="0" step="0.1" placeholder="16">
-                  <input type="number" id="pkg-0-width" min="0" step="0.1" placeholder="12">
-                  <input type="number" id="pkg-0-height" min="0" step="0.1" placeholder="10">
-                  <input type="number" id="pkg-0-tare" min="0" step="1" placeholder="60">
-                  <input type="number" id="pkg-0-max" min="0" step="1" placeholder="1000">
-                </div>
-                <div class="uses-card-row" style="grid-template-columns:1.3fr .9fr .7fr .7fr .7fr .8fr .8fr;">
-                  <input type="text" id="pkg-1-name" placeholder="Carton moyen">
-                  <input type="text" id="pkg-1-code" placeholder="medium-box">
-                  <input type="number" id="pkg-1-length" min="0" step="0.1" placeholder="24">
-                  <input type="number" id="pkg-1-width" min="0" step="0.1" placeholder="18">
-                  <input type="number" id="pkg-1-height" min="0" step="0.1" placeholder="14">
-                  <input type="number" id="pkg-1-tare" min="0" step="1" placeholder="110">
-                  <input type="number" id="pkg-1-max" min="0" step="1" placeholder="3000">
-                </div>
-                <div class="uses-card-row" style="grid-template-columns:1.3fr .9fr .7fr .7fr .7fr .8fr .8fr;">
-                  <input type="text" id="pkg-2-name" placeholder="Grand carton">
-                  <input type="text" id="pkg-2-code" placeholder="large-box">
-                  <input type="number" id="pkg-2-length" min="0" step="0.1" placeholder="32">
-                  <input type="number" id="pkg-2-width" min="0" step="0.1" placeholder="24">
-                  <input type="number" id="pkg-2-height" min="0" step="0.1" placeholder="18">
-                  <input type="number" id="pkg-2-tare" min="0" step="1" placeholder="180">
-                  <input type="number" id="pkg-2-max" min="0" step="1" placeholder="5000">
-                </div>
-                <div class="uses-card-row" style="grid-template-columns:1.3fr .9fr .7fr .7fr .7fr .8fr .8fr;">
-                  <input type="text" id="pkg-3-name" placeholder="Coffret / colis spécial">
-                  <input type="text" id="pkg-3-code" placeholder="gift-box">
-                  <input type="number" id="pkg-3-length" min="0" step="0.1" placeholder="36">
-                  <input type="number" id="pkg-3-width" min="0" step="0.1" placeholder="28">
-                  <input type="number" id="pkg-3-height" min="0" step="0.1" placeholder="20">
-                  <input type="number" id="pkg-3-tare" min="0" step="1" placeholder="260">
-                  <input type="number" id="pkg-3-max" min="0" step="1" placeholder="8000">
-                </div>
-                <small>Ces conditionnements servent à estimer le colis expédié à partir des poids et dimensions saisis sur chaque produit.</small>
-              </div>
-              <div>
-                <button type="submit" class="btn btn-primary">Enregistrer les conditionnements</button>
-              </div>
-            </form>
-          </div>
         </div>
       </div>
 
@@ -2313,7 +2262,6 @@ const KEYS = {
   blogPosts: 'castaneas_blog_posts_v1',
   blogCategories: 'castaneas_blog_categories_v1',
   homepage: 'castaneas_homepage_v1',
-  packagings: 'castaneas_packagings_v1',
   promoCodes: 'castaneas_promo_codes_v1',
   billingSettings: 'castaneas_billing_settings_v1',
 };
@@ -2328,7 +2276,6 @@ const SERVER_KEYS = {
   [KEYS.blogPosts]:  'blog_posts',
   [KEYS.blogCategories]: 'blog_categories',
   [KEYS.homepage]:   'homepage',
-  [KEYS.packagings]: 'packagings',
   [KEYS.promoCodes]: 'promo_codes',
 };
 
@@ -2338,7 +2285,7 @@ const SERVER_KEYS = {
 
 /* ---------- State ---------- */
 const DEFAULT_IMAGE_CATALOG = [];
-let state = { products: [], categories: [], orders: [], imageCatalogMain: [], imageCatalogExtra: [], recipes: [], blogPosts: [], blogCategories: [], packagings: [], promoCodes: [], billingSettings: {}, customers: [], customerStats: {} };
+let state = { products: [], categories: [], orders: [], imageCatalogMain: [], imageCatalogExtra: [], recipes: [], blogPosts: [], blogCategories: [], promoCodes: [], billingSettings: {}, customers: [], customerStats: {} };
 let editingProduct = null;
 let editingCat = null;
 let editingRecipe = null;
@@ -2401,7 +2348,6 @@ function renderSettings() {
   document.getElementById('setting-user').value = creds ? creds.user : 'admin';
   updateAdminPromoBar(getPromoMessage());
   renderBillingSettings();
-  renderPackagingSettings();
 }
 
 function renderBillingSettings() {
@@ -2517,38 +2463,6 @@ function normalizePackaging(packaging, index) {
   };
 }
 
-function renderPackagingSettings() {
-  const list = Array.isArray(state.packagings) ? state.packagings.map(normalizePackaging) : [];
-  [0, 1, 2, 3].forEach(index => {
-    const packaging = list[index] || normalizePackaging({}, index);
-    document.getElementById(`pkg-${index}-name`).value = packaging.name || '';
-    document.getElementById(`pkg-${index}-code`).value = packaging.code || '';
-    document.getElementById(`pkg-${index}-length`).value = packaging.shipping.lengthCm || '';
-    document.getElementById(`pkg-${index}-width`).value = packaging.shipping.widthCm || '';
-    document.getElementById(`pkg-${index}-height`).value = packaging.shipping.heightCm || '';
-    document.getElementById(`pkg-${index}-tare`).value = packaging.shipping.tareWeightG || '';
-    document.getElementById(`pkg-${index}-max`).value = packaging.shipping.maxWeightG || '';
-  });
-}
-
-function savePackagings(event) {
-  event.preventDefault();
-  state.packagings = [0, 1, 2, 3].map(index => ({
-    id: `pkg-${index + 1}`,
-    name: document.getElementById(`pkg-${index}-name`).value.trim(),
-    code: document.getElementById(`pkg-${index}-code`).value.trim(),
-    shipping: {
-      lengthCm: parseFloat(document.getElementById(`pkg-${index}-length`).value) || 0,
-      widthCm: parseFloat(document.getElementById(`pkg-${index}-width`).value) || 0,
-      heightCm: parseFloat(document.getElementById(`pkg-${index}-height`).value) || 0,
-      tareWeightG: parseInt(document.getElementById(`pkg-${index}-tare`).value, 10) || 0,
-      maxWeightG: parseInt(document.getElementById(`pkg-${index}-max`).value, 10) || 0,
-    },
-  })).filter(packaging => packaging.name || packaging.code || packaging.shipping.lengthCm || packaging.shipping.widthCm || packaging.shipping.heightCm || packaging.shipping.tareWeightG || packaging.shipping.maxWeightG);
-  save(KEYS.packagings, state.packagings);
-  toast('Conditionnements mis à jour', 'success');
-}
-
 /* ---------- Hash admin password (Web Crypto SHA-256) ---------- */
 async function hashAdmin(pass) {
   const data = new TextEncoder().encode(pass + ':castaneas_admin');
@@ -2575,7 +2489,6 @@ async function init() {
   state.recipes           = load(KEYS.recipes)    || [];
   state.blogPosts         = load(KEYS.blogPosts) || [];
   state.blogCategories    = load(KEYS.blogCategories) || [];
-  state.packagings        = load(KEYS.packagings) || [];
   state.promoCodes        = load(KEYS.promoCodes) || [];
   state.billingSettings   = normalizeBillingSettings(load(KEYS.billingSettings) || {});
 
@@ -2607,7 +2520,6 @@ async function serverLoadAll() {
     { s: 'blog_posts', l: KEYS.blogPosts },
     { s: 'blog_categories', l: KEYS.blogCategories },
     { s: 'homepage',   l: KEYS.homepage },
-    { s: 'packagings', l: KEYS.packagings },
     { s: 'promo_codes', l: KEYS.promoCodes },
     { s: 'orders',     l: KEYS.orders },
   ];

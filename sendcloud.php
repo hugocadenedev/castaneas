@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/integrations.php';
 require_once __DIR__ . '/storage.php';
+require_once __DIR__ . '/shipping-lib.php';
 
 function castaneas_sendcloud_apply_ssl_options($ch, array $config) {
     if (!empty($config['ca_bundle'])) {
@@ -395,40 +396,10 @@ function castaneas_sendcloud_sender_address_id() {
 }
 
 function castaneas_sendcloud_parcel_dimensions(array $order) {
-    $length = 0.0;
-    $width = 0.0;
-    $height = 0.0;
+    $shipment = castaneas_shipping_estimate_order($order);
+    $dimensions = $shipment['parcel']['dimensions'] ?? null;
 
-    foreach (($order['items'] ?? []) as $item) {
-        if (!is_array($item)) {
-            continue;
-        }
-
-        $shipping = is_array($item['shipping'] ?? null) ? $item['shipping'] : [];
-        $itemLength = max(0.0, (float) ($shipping['lengthCm'] ?? 0));
-        $itemWidth = max(0.0, (float) ($shipping['widthCm'] ?? 0));
-        $itemHeight = max(0.0, (float) ($shipping['heightCm'] ?? 0));
-        $itemQty = max(1, (int) ($item['qty'] ?? 1));
-        $bundleQty = max(1, (int) ($item['offerQty'] ?? 1));
-        $lineQty = max(1, $itemQty * $bundleQty);
-
-        $length = max($length, $itemLength);
-        $width = max($width, $itemWidth);
-        if ($itemHeight > 0) {
-            $height += $itemHeight * $lineQty;
-        }
-    }
-
-    if ($length <= 0 || $width <= 0 || $height <= 0) {
-        return null;
-    }
-
-    return [
-        'length' => number_format($length, 2, '.', ''),
-        'width' => number_format($width, 2, '.', ''),
-        'height' => number_format($height, 2, '.', ''),
-        'unit' => 'cm',
-    ];
+    return is_array($dimensions) ? $dimensions : null;
 }
 
 function castaneas_sendcloud_v3_to_address(array $order) {
@@ -464,12 +435,9 @@ function castaneas_sendcloud_v3_service_point(array $order) {
 }
 
 function castaneas_sendcloud_v3_parcels(array $order) {
-    $parcel = [
-        'weight' => [
-            'value' => number_format(castaneas_sendcloud_total_weight_kg($order), 3, '.', ''),
-            'unit' => 'kg',
-        ],
-        'parcel_items' => array_map(static function (array $item) {
+    $shipment = castaneas_shipping_estimate_order($order);
+    $parcel = $shipment['parcel'];
+    $parcel['parcel_items'] = array_map(static function (array $item) {
             return [
                 'description' => (string) ($item['description'] ?? ''),
                 'quantity' => max(1, (int) ($item['quantity'] ?? 1)),
@@ -484,13 +452,7 @@ function castaneas_sendcloud_v3_parcels(array $order) {
                 'sku' => (string) ($item['sku'] ?? ''),
                 'origin_country' => (string) ($item['origin_country'] ?? 'FR'),
             ];
-        }, castaneas_sendcloud_parcel_items($order)),
-    ];
-
-    $dimensions = castaneas_sendcloud_parcel_dimensions($order);
-    if ($dimensions !== null) {
-        $parcel['dimensions'] = $dimensions;
-    }
+            }, castaneas_sendcloud_parcel_items($order));
 
     $billing = is_array($order['billing'] ?? null) ? $order['billing'] : [];
     if (!empty($billing['note'])) {
@@ -1001,21 +963,9 @@ function castaneas_sendcloud_min_item_weight_kg() {
 }
 
 function castaneas_sendcloud_total_weight_kg(array $order) {
-    $total = 0.0;
+    $shipment = castaneas_shipping_estimate_order($order);
 
-    foreach (($order['items'] ?? []) as $item) {
-        if (!is_array($item)) {
-            continue;
-        }
-
-        $total += castaneas_sendcloud_item_weight_kg($item) * (int) ($item['qty'] ?? 0);
-    }
-
-    if ($total <= 0) {
-        $total = 0.25;
-    }
-
-    return round($total, 3);
+    return round(((int) ($shipment['productWeightG'] ?? 250)) / 1000, 3);
 }
 
 function castaneas_sendcloud_parcel_items(array $order) {
