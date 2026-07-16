@@ -3806,9 +3806,13 @@ function orderInvoiceHtml(order) {
   const invoiceDate = order.invoiceIssuedAt || order.paidAt || order.updatedAt || order.createdAt || order.date || '';
   const orderDate = order.createdAt || order.date || '';
   const subtotal = Number(order.subtotal || 0) || items.reduce((sum, item) => sum + (Number(item.price || 0) * Number(item.qty || 0)), 0);
+  const discountAmount = Math.max(0, Number(order.discount || (order.promo && order.promo.discount) || 0));
   const shippingAmount = order.shipping && Number.isFinite(Number(order.shipping.price)) ? Number(order.shipping.price) : 0;
-  const total = Number(order.total || 0) || subtotal + shippingAmount;
+  const total = Number(order.total || 0) || Math.max(0, subtotal - discountAmount) + shippingAmount;
   const shippingLabel = order.shipping && order.shipping.name ? order.shipping.name : 'Livraison';
+  const promoLabel = order.promo && (order.promo.label || order.promo.code)
+    ? 'Remise (' + (order.promo.label || order.promo.code) + ')'
+    : 'Remise';
   const paymentLabel = formatPaymentMethod(order);
   const rows = items.map(item => {
     const variant = item.variant || item.weight || '';
@@ -3855,6 +3859,7 @@ function orderInvoiceHtml(order) {
       .totals { width: 280px; margin-left: auto; margin-top: 14px; }
       .totals-row { display: grid; grid-template-columns: 1fr auto; gap: 18px; padding: 10px 0; border-top: 1px solid #ededed; font-size: 15px; color: #2a2a2a; align-items: start; }
       .totals-row:first-child { border-top: none; }
+      .totals-row.discount { color: #2d8c5a; }
       .totals-row.total { margin-top: 10px; padding-top: 11px; padding-bottom: 11px; border-top: 4px solid #222; border-bottom: 4px solid #222; font-weight: 800; }
       .totals-row.total strong { font-size: 16px; }
       .shipping-note { display: block; margin-top: 4px; font-size: 10px; color: #7a7a7a; max-width: 118px; text-align: left; line-height: 1.28; }
@@ -3904,6 +3909,7 @@ function orderInvoiceHtml(order) {
       </table>
       <div class="totals">
         <div class="totals-row"><span>Sous-total</span><span>${formatMoney(subtotal)}</span></div>
+        ${discountAmount > 0 ? `<div class="totals-row discount"><span>${escapeHtml(promoLabel)}</span><span>- ${formatMoney(discountAmount)}</span></div>` : ''}
         <div class="totals-row"><span>Expédition</span><span>${formatMoney(shippingAmount)}<span class="shipping-note">${escapeHtml(shippingLabel)}</span></span></div>
         <div class="totals-row total"><strong>Total</strong><strong>${formatMoney(total)}</strong></div>
       </div>

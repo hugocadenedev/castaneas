@@ -47,6 +47,7 @@ function castaneas_integrations_config() {
             'catalogue_id' => getenv('CASTANEAS_SUCRINE_CATALOGUE_ID') ?: '',
             'order_source' => getenv('CASTANEAS_SUCRINE_ORDER_SOURCE') ?: 'castaneas',
             'skip_precise_supply_check' => !getenv('CASTANEAS_SUCRINE_ENFORCE_STOCK'),
+            'delivery_vat_rate' => (float) (getenv('CASTANEAS_SUCRINE_DELIVERY_VAT_RATE') ?: 20),
             'ca_bundle' => getenv('CASTANEAS_SUCRINE_CA_BUNDLE') ?: '',
             'skip_ssl_verify' => castaneas_bool_env(getenv('CASTANEAS_SUCRINE_SKIP_SSL_VERIFY') ?: ''),
             'delivery_point' => getenv('CASTANEAS_SUCRINE_DELIVERY_POINT') ?: '',

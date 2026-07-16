@@ -20,6 +20,7 @@ return [
         'catalogue_id' => 'ID_DU_CATALOGUE_SUCRINE',
         'order_source' => 'castaneas',
         'skip_precise_supply_check' => true,
+        'delivery_vat_rate' => 20,
         'ca_bundle' => '',
         'skip_ssl_verify' => false,
         'delivery_point' => '',

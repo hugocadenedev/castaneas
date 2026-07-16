@@ -371,6 +371,35 @@ function castaneas_sucrine_timeslot_end($start) {
     return gmdate('Y-m-d\\TH:i:s\\Z', $timestamp + 3600);
 }
 
+function castaneas_sucrine_delivery_vat_rate(array $config) {
+    $rate = isset($config['delivery_vat_rate']) ? (float) $config['delivery_vat_rate'] : 20.0;
+
+    return $rate >= 0 ? round($rate, 2) : 0.0;
+}
+
+function castaneas_sucrine_ttc_split($ttcAmount, $vatRate) {
+    $ttcAmount = round(max(0, (float) $ttcAmount), 2);
+    $vatRate = max(0, (float) $vatRate);
+    if ($ttcAmount <= 0 || $vatRate <= 0) {
+        return [
+            'amount' => $ttcAmount,
+            'dfAmount' => $ttcAmount,
+            'vatRate' => 0,
+            'vatAmount' => 0,
+        ];
+    }
+
+    $htAmount = round($ttcAmount / (1 + ($vatRate / 100)), 2);
+    $vatAmount = round($ttcAmount - $htAmount, 2);
+
+    return [
+        'amount' => $ttcAmount,
+        'dfAmount' => $htAmount,
+        'vatRate' => $vatRate,
+        'vatAmount' => $vatAmount,
+    ];
+}
+
 function castaneas_sucrine_payload(array $order, $deliveryPoint = null, array $items = null) {
     $billing = $order['billing'] ?? [];
     $config = castaneas_sucrine_config();
@@ -379,6 +408,7 @@ function castaneas_sucrine_payload(array $order, $deliveryPoint = null, array $i
     $shipping = is_array($order['shipping'] ?? null) ? $order['shipping'] : [];
     $shippingLabel = castaneas_sucrine_delivery_description($order);
     $shippingAmount = round((float) ($shipping['price'] ?? 0), 2);
+    $shippingVat = castaneas_sucrine_ttc_split($shippingAmount, castaneas_sucrine_delivery_vat_rate($config));
     $resolvedDeliveryPoint = $deliveryPoint !== null ? trim((string) $deliveryPoint) : castaneas_sucrine_delivery_point($order, $config);
     $timeSlot = castaneas_sucrine_timeslot_start();
 
@@ -396,10 +426,10 @@ function castaneas_sucrine_payload(array $order, $deliveryPoint = null, array $i
         'deliveryPoint' => $resolvedDeliveryPoint,
         'delivery' => [
             'description' => $shippingLabel,
-            'amount' => $shippingAmount,
-            'dfAmount' => $shippingAmount,
-            'vatRate' => 0,
-            'vatAmount' => 0,
+            'amount' => $shippingVat['amount'],
+            'dfAmount' => $shippingVat['dfAmount'],
+            'vatRate' => $shippingVat['vatRate'],
+            'vatAmount' => $shippingVat['vatAmount'],
         ],
         'deliveryAddress' => $deliveryAddress,
         'invoicingAddress' => $invoiceAddress,
