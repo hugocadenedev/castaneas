@@ -228,7 +228,11 @@ function castaneas_paypal_checkout_payload(array $order) {
     }
 
     $data = is_array($result['data'] ?? null) ? $result['data'] : [];
-    $approvalUrl = castaneas_paypal_extract_link(is_array($data['links'] ?? null) ? $data['links'] : [], 'approve');
+    $links = is_array($data['links'] ?? null) ? $data['links'] : [];
+    $approvalUrl = castaneas_paypal_extract_link($links, 'approve');
+    if ($approvalUrl === '') {
+        $approvalUrl = castaneas_paypal_extract_link($links, 'payer-action');
+    }
     if ($approvalUrl === '') {
         return [
             'ok' => false,
