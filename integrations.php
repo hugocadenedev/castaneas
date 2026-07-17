@@ -41,6 +41,17 @@ function castaneas_integrations_config() {
             'language' => getenv('CASTANEAS_UP2PAY_LANGUAGE') ?: 'FRA',
             'hash_algo' => getenv('CASTANEAS_UP2PAY_HASH_ALGO') ?: 'SHA512',
         ],
+        'paypal' => [
+            'client_id' => getenv('CASTANEAS_PAYPAL_CLIENT_ID') ?: '',
+            'secret' => getenv('CASTANEAS_PAYPAL_SECRET') ?: '',
+            'base_url' => getenv('CASTANEAS_PAYPAL_BASE_URL') ?: 'https://api-m.sandbox.paypal.com',
+            'currency' => getenv('CASTANEAS_PAYPAL_CURRENCY') ?: 'EUR',
+            'brand_name' => getenv('CASTANEAS_PAYPAL_BRAND_NAME') ?: 'Castaneas',
+            'locale' => getenv('CASTANEAS_PAYPAL_LOCALE') ?: 'fr-FR',
+            'webhook_id' => getenv('CASTANEAS_PAYPAL_WEBHOOK_ID') ?: '',
+            'ca_bundle' => getenv('CASTANEAS_PAYPAL_CA_BUNDLE') ?: '',
+            'skip_ssl_verify' => castaneas_bool_env(getenv('CASTANEAS_PAYPAL_SKIP_SSL_VERIFY') ?: ''),
+        ],
         'sucrine' => [
             'api_key' => getenv('CASTANEAS_SUCRINE_API_KEY') ?: '',
             'base_url' => getenv('CASTANEAS_SUCRINE_BASE_URL') ?: 'https://app.sucrine.club/api',
@@ -130,6 +141,20 @@ function castaneas_up2pay_is_ready() {
         && $config['identifiant'] !== ''
         && $config['hmac_key'] !== ''
         && $config['gateway_url'] !== '';
+}
+
+function castaneas_paypal_config() {
+    $config = castaneas_integrations_config();
+
+    return $config['paypal'];
+}
+
+function castaneas_paypal_is_ready() {
+    $config = castaneas_paypal_config();
+
+    return $config['client_id'] !== ''
+        && $config['secret'] !== ''
+        && $config['base_url'] !== '';
 }
 
 function castaneas_payment_simulate() {

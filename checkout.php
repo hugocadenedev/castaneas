@@ -4,6 +4,7 @@ require_once __DIR__ . '/integrations.php';
 require_once __DIR__ . '/order-store.php';
 require_once __DIR__ . '/storage.php';
 require_once __DIR__ . '/shipping-lib.php';
+require_once __DIR__ . '/paypal-lib.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -959,6 +960,31 @@ function castaneas_checkout_payment_payload(array $order, array $options = []) {
         ];
     }
 
+    $gateway = trim((string) ($order['payment']['gateway'] ?? 'up2pay'));
+    if ($gateway === 'paypal') {
+        $paypalPayload = castaneas_paypal_checkout_payload($order);
+        if ($paypalPayload === null) {
+            return null;
+        }
+        if (empty($paypalPayload['ok'])) {
+            return [
+                'mode' => 'error',
+                'provider' => 'paypal',
+                'error' => $paypalPayload['message'] ?? 'Impossible d\'initialiser PayPal.',
+                'code' => $paypalPayload['code'] ?? 'paypal_error',
+                'details' => $paypalPayload,
+            ];
+        }
+
+        return [
+            'mode' => 'redirect',
+            'url' => $paypalPayload['url'],
+            'provider' => 'paypal',
+            'paypalOrderId' => $paypalPayload['paypalOrderId'] ?? null,
+            'payload' => $paypalPayload['payload'] ?? [],
+        ];
+    }
+
     if (!castaneas_up2pay_is_ready()) {
         return null;
     }
@@ -1096,8 +1122,8 @@ foreach ($required as $field) {
     }
 }
 
-$paymentMethod = trim((string) ($body['payment'] ?? 'card'));
-if ($paymentMethod !== 'card') {
+$paymentMethod = trim((string) ($body['payment'] ?? ''));
+if (!in_array($paymentMethod, ['card', 'paypal'], true)) {
     castaneas_checkout_response(400, ['ok' => false, 'error' => 'Mode de paiement non supporté.']);
 }
 
@@ -1155,7 +1181,7 @@ $order = [
     'shipping' => $selectedShipping,
     'payment' => [
         'method' => $paymentMethod,
-        'gateway' => $forceSimulatePayment ? 'simulation' : 'up2pay',
+        'gateway' => $forceSimulatePayment ? 'simulation' : ($paymentMethod === 'paypal' ? 'paypal' : 'up2pay'),
         'createdAt' => gmdate('c'),
     ],
     'sucrine' => [
@@ -1174,9 +1200,23 @@ $paymentPayload = castaneas_checkout_payment_payload($order, ['force_simulate' =
 if ($paymentPayload === null) {
     castaneas_checkout_response(503, [
         'ok' => false,
-        'error' => 'Paiement Crédit Agricole non configuré.',
-        'code' => 'up2pay_not_configured',
+        'error' => $paymentMethod === 'paypal'
+            ? 'Paiement PayPal non configure.'
+            : 'Paiement Crédit Agricole non configuré.',
+        'code' => $paymentMethod === 'paypal' ? 'paypal_not_configured' : 'up2pay_not_configured',
     ]);
+}
+
+if (($paymentPayload['mode'] ?? '') === 'error') {
+    castaneas_checkout_response(502, [
+        'ok' => false,
+        'error' => (string) ($paymentPayload['error'] ?? 'Impossible d\'initialiser le paiement.'),
+        'code' => (string) ($paymentPayload['code'] ?? 'payment_gateway_error'),
+    ]);
+}
+
+if (($paymentPayload['provider'] ?? '') === 'paypal' && !empty($paymentPayload['paypalOrderId'])) {
+    $order['payment']['paypalOrderId'] = $paymentPayload['paypalOrderId'];
 }
 
 $order['payment']['request'] = $paymentPayload;

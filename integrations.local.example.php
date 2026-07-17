@@ -14,6 +14,17 @@ return [
         'language' => 'FRA',
         'hash_algo' => 'SHA512',
     ],
+    'paypal' => [
+        'client_id' => 'VOTRE_PAYPAL_CLIENT_ID',
+        'secret' => 'VOTRE_PAYPAL_SECRET',
+        'base_url' => 'https://api-m.sandbox.paypal.com',
+        'currency' => 'EUR',
+        'brand_name' => 'Castaneas',
+        'locale' => 'fr-FR',
+        'webhook_id' => 'VOTRE_PAYPAL_WEBHOOK_ID',
+        'ca_bundle' => '',
+        'skip_ssl_verify' => false,
+    ],
     'sucrine' => [
         'api_key' => 'VOTRE_CLE_API_SUCRINE',
         'base_url' => 'https://app.sucrine.club/api',

@@ -2,6 +2,52 @@
 
 ## Paiement Up2pay Crédit Agricole
 
+## Paiement PayPal
+
+Le checkout supporte maintenant deux passerelles :
+
+- `card` : flux Up2pay / Crédit Agricole
+- `paypal` : flux PayPal Checkout avec création serveur, redirection d'approbation, capture au retour, et webhook de secours
+
+### Configuration PayPal requise
+
+- `paypal.client_id`
+- `paypal.secret`
+- `paypal.base_url`
+- `paypal.webhook_id` pour verifier `payment-notify.php`
+
+Valeurs recommandees :
+
+- `paypal.base_url` : `https://api-m.sandbox.paypal.com` en recette, `https://api-m.paypal.com` en production
+- `paypal.currency` : `EUR`
+- `paypal.brand_name` : `Castaneas`
+- `paypal.locale` : `fr-FR`
+
+Exemple :
+
+```php
+'paypal' => [
+  'client_id' => 'VOTRE_PAYPAL_CLIENT_ID',
+  'secret' => 'VOTRE_PAYPAL_SECRET',
+  'base_url' => 'https://api-m.sandbox.paypal.com',
+  'currency' => 'EUR',
+  'brand_name' => 'Castaneas',
+  'locale' => 'fr-FR',
+  'webhook_id' => 'VOTRE_PAYPAL_WEBHOOK_ID',
+],
+```
+
+### URLs PayPal a declarer
+
+- Retour navigateur : `https://www.castaneas.fr/payment-return.php?gateway=paypal&ref=...`
+- Webhook : `https://www.castaneas.fr/payment-notify.php`
+
+### Comportement PayPal
+
+- `checkout.php?action=create` cree une commande PayPal puis renvoie l'URL d'approbation.
+- `payment-return.php` capture la commande PayPal cote serveur au retour client avant redirection vers `confirmation.html`.
+- `payment-notify.php` verifie la signature du webhook PayPal puis synchronise l'etat de la commande. Sur `CHECKOUT.ORDER.APPROVED`, le webhook tente aussi la capture serveur si le client ne revient pas au site.
+
 ### Domaine actuel a declarer
 
 La base URL de paiement a utiliser pour l'instant est :

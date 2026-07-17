@@ -6,6 +6,18 @@ require_once __DIR__ . '/sucrine.php';
 require_once __DIR__ . '/integrations.php';
 require_once __DIR__ . '/storage.php';
 require_once __DIR__ . '/invoice-lib.php';
+require_once __DIR__ . '/paypal-lib.php';
+
+function castaneas_payment_raw_body() {
+    static $raw = null;
+    if ($raw !== null) {
+        return $raw;
+    }
+
+    $raw = file_get_contents('php://input');
+
+    return is_string($raw) ? $raw : '';
+}
 
 function castaneas_payment_request_data() {
     $data = $_REQUEST;
@@ -13,7 +25,27 @@ function castaneas_payment_request_data() {
         $data = [];
     }
 
+    $contentType = strtolower(trim((string) ($_SERVER['CONTENT_TYPE'] ?? '')));
+    if (strpos($contentType, 'application/json') !== false) {
+        $decoded = json_decode(castaneas_payment_raw_body(), true);
+        if (is_array($decoded)) {
+            $data = array_replace_recursive($data, $decoded);
+        }
+    }
+
     return $data;
+}
+
+function castaneas_payment_array_get(array $data, array $path) {
+    $value = $data;
+    foreach ($path as $segment) {
+        if (!is_array($value) || !array_key_exists($segment, $value)) {
+            return null;
+        }
+        $value = $value[$segment];
+    }
+
+    return $value;
 }
 
 function castaneas_payment_resolve_ref(array $data) {
@@ -23,6 +55,10 @@ function castaneas_payment_resolve_ref(array $data) {
         $data['reference'] ?? null,
         $data['PBX_CMD'] ?? null,
         $data['cmd'] ?? null,
+        castaneas_payment_array_get($data, ['resource', 'purchase_units', 0, 'reference_id']),
+        castaneas_payment_array_get($data, ['resource', 'purchase_units', 0, 'custom_id']),
+        castaneas_payment_array_get($data, ['purchase_units', 0, 'reference_id']),
+        castaneas_payment_array_get($data, ['purchase_units', 0, 'custom_id']),
     ];
 
     foreach ($candidates as $candidate) {
@@ -41,6 +77,36 @@ function castaneas_payment_resolve_status(array $data) {
         return $status;
     }
 
+    $paypalEvent = strtoupper(trim((string) ($data['event_type'] ?? '')));
+    if ($paypalEvent === 'PAYMENT.CAPTURE.COMPLETED' || $paypalEvent === 'CHECKOUT.ORDER.COMPLETED') {
+        return 'paid';
+    }
+    if (in_array($paypalEvent, ['PAYMENT.CAPTURE.DECLINED', 'PAYMENT.CAPTURE.DENIED'], true)) {
+        return 'failed';
+    }
+
+    $paypalStatus = strtoupper(trim((string) (
+        castaneas_payment_array_get($data, ['resource', 'status'])
+        ?? castaneas_payment_array_get($data, ['status'])
+        ?? ''
+    )));
+    if ($paypalStatus === 'COMPLETED') {
+        return 'paid';
+    }
+    if ($paypalStatus === 'APPROVED' || $paypalEvent === 'CHECKOUT.ORDER.APPROVED') {
+        return 'pending_payment';
+    }
+    if (in_array($paypalStatus, ['VOIDED', 'DECLINED', 'DENIED', 'FAILED'], true)) {
+        return 'failed';
+    }
+    if ($paypalStatus === 'CANCELLED') {
+        return 'cancelled';
+    }
+
+    if ($paypalEvent !== '' || $paypalStatus !== '' || castaneas_payment_array_get($data, ['resource']) !== null) {
+        return 'pending_payment';
+    }
+
     $errorCode = trim((string) ($data['Erreur'] ?? $data['error'] ?? ''));
     if ($errorCode === '' || $errorCode === '00000') {
         return 'paid';
@@ -54,6 +120,9 @@ function castaneas_payment_transaction_id(array $data) {
         $data['transaction_id'] ?? null,
         $data['Trans'] ?? null,
         $data['Auto'] ?? null,
+        castaneas_payment_array_get($data, ['resource', 'id']),
+        castaneas_payment_array_get($data, ['resource', 'supplementary_data', 'related_ids', 'capture_id']),
+        castaneas_paypal_extract_capture_id($data),
     ];
 
     foreach ($candidates as $candidate) {
@@ -80,6 +149,10 @@ function castaneas_payment_notify_is_authorized(array $data) {
     $provided = trim((string) ($data['token'] ?? ''));
 
     return $provided !== '' && hash_equals($expected, $provided);
+}
+
+function castaneas_payment_order_gateway(array $order) {
+    return trim((string) ($order['payment']['gateway'] ?? ''));
 }
 
 function castaneas_payment_increment_promo_usage(array $order) {
@@ -126,6 +199,10 @@ function castaneas_payment_finalize_order($ref, $status, array $payload) {
         return null;
     }
 
+    if ($status === 'pending_payment') {
+        return $order;
+    }
+
     $mappedStatus = [
         'paid' => 'paid',
         'refused' => 'payment_refused',
@@ -134,7 +211,10 @@ function castaneas_payment_finalize_order($ref, $status, array $payload) {
     ][$status] ?? 'payment_failed';
 
     $payment = is_array($order['payment'] ?? null) ? $order['payment'] : [];
-    $payment['transactionId'] = castaneas_payment_transaction_id($payload);
+    $transactionId = castaneas_payment_transaction_id($payload);
+    if ($transactionId !== null) {
+        $payment['transactionId'] = $transactionId;
+    }
     $payment['gatewayReturn'] = $payload;
     $payment['updatedAt'] = gmdate('c');
 
@@ -142,7 +222,7 @@ function castaneas_payment_finalize_order($ref, $status, array $payload) {
         'payment' => $payment,
     ];
 
-    if ($mappedStatus === 'paid') {
+    if ($mappedStatus === 'paid' && empty($order['paidAt'])) {
         $extra['paidAt'] = gmdate('c');
     }
 
