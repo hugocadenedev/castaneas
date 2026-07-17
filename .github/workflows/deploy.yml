@@ -9,13 +9,16 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 40
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
       - name: Deploy via FTPS
-        timeout-minutes: 15
+        timeout-minutes: 35
         env:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
@@ -23,66 +26,64 @@ jobs:
         run: |
           set -euo pipefail
 
-          ftp_curl() {
-            curl \
-              --fail \
-              --silent \
-              --show-error \
-              --ipv4 \
-              --ssl-reqd \
-              --insecure \
-              --ftp-pasv \
-              --disable-epsv \
-              --ftp-create-dirs \
-              --retry 8 \
-              --retry-all-errors \
-              --retry-delay 3 \
-              --connect-timeout 20 \
-              --max-time 180 \
-              --user "$FTP_USERNAME:$FTP_PASSWORD" \
-              "$@"
+          lftp_exec() {
+            local commands="$1"
+            lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "ftp://$FTP_SERVER" -e "set cmd:fail-exit true; set net:timeout 45; set net:max-retries 10; set net:reconnect-interval-base 10; set net:reconnect-interval-max 60; set ftp:ssl-force true; set ftp:ssl-protect-data true; set ssl:verify-certificate false; set ftp:passive-mode true; set ftp:prefer-epsv false; set ftp:sync-mode off; set mirror:parallel-transfer-count 1; set xfer:clobber true; set xfer:use-temp-file false; $commands; bye"
           }
 
-          encode_remote_path() {
-            local value="$1"
-            value=${value//%/%25}
-            value=${value// /%20}
-            value=${value//#/%23}
-            value=${value//\?/%3F}
-            value=${value//\[/%5B}
-            value=${value//\]/%5D}
-            printf '%s' "$value"
+          detect_remote_base() {
+            local candidate
+            local listing
+
+            for candidate in "" "public_html"; do
+              local probe_path="/${candidate}"
+              if [ "$candidate" = "" ]; then
+                probe_path="/"
+              fi
+
+              if listing=$(lftp_exec "cls -1 $probe_path" 2>/dev/null); then
+                if printf '%s\n' "$listing" | grep -E '^(index\.html|Accueil\.html|Fiche Produit\.html|assets|styles\.css)$' >/dev/null; then
+                  printf '%s' "$candidate"
+                  return 0
+                fi
+              fi
+            done
+
+            printf ''
           }
 
-          REMOTE_BASE=""
-          echo "Deploy target: FTP session root (Hostinger upload path)"
+          REMOTE_BASE=$(detect_remote_base)
+          if [ -n "$REMOTE_BASE" ]; then
+            echo "Detected remote base: $REMOTE_BASE"
+          else
+            echo "Detected remote base: FTP root"
+          fi
 
-          upload_file() {
-            local file="$1"
-            local remote_path
-            if [ -n "$REMOTE_BASE" ]; then
-              remote_path=$(encode_remote_path "$REMOTE_BASE/$file")
-            else
-              remote_path=$(encode_remote_path "$file")
-            fi
+          DEPLOY_DIR="$RUNNER_TEMP/hostinger-deploy"
+          rm -rf "$DEPLOY_DIR"
+          mkdir -p "$DEPLOY_DIR"
 
-            if [ -n "$REMOTE_BASE" ]; then
-              echo "Uploading $file to $REMOTE_BASE"
-            else
-              echo "Uploading $file to FTP session root"
-            fi
+          rsync -a \
+            --prune-empty-dirs \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='db-config.local.php' \
+            --exclude='integrations.local.php' \
+            --exclude='node_modules' \
+            --exclude='uploads' \
+            --exclude='data/*.json' \
+            --exclude='data/' \
+            --exclude='storage/' \
+            ./ "$DEPLOY_DIR/"
 
-            ftp_curl \
-              --upload-file "$file" \
-              "ftp://$FTP_SERVER/$remote_path"
-          }
+          REMOTE_TARGET="."
+          if [ -n "$REMOTE_BASE" ]; then
+            REMOTE_TARGET="$REMOTE_BASE"
+          fi
 
-          while IFS= read -r file; do
-            case "$file" in
-              .git*|.github*|db-config.local.php|integrations.local.php|node_modules/*|uploads/*|data/*.json)
-                continue
-                ;;
-            esac
-
-            upload_file "$file"
-          done < <(git ls-files)
+          echo "Mirroring $DEPLOY_DIR to $REMOTE_TARGET"
+          if [ -n "$REMOTE_BASE" ]; then
+            lftp_exec "mkdir -p $REMOTE_TARGET; mirror -R --only-newer --verbose=1 $DEPLOY_DIR $REMOTE_TARGET"
+          else
+            lftp_exec "mirror -R --only-newer --verbose=1 $DEPLOY_DIR $REMOTE_TARGET"
+          fi
