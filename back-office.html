@@ -3236,12 +3236,17 @@ function formatOrderDateTime(value) {
   });
 }
 function formatPaymentMethod(order) {
-  const payment = (order && order.billing ? order.billing.payment : '') || (order && order.payment ? order.payment.method : '');
+  const payment = (order && order.payment ? order.payment.method : '')
+    || (order && order.payment ? order.payment.gateway : '')
+    || (order && order.billing ? order.billing.payment : '');
   const map = {
     credit_agricole: 'Crédit Agricole',
     card: 'Carte bancaire',
+    paypal: 'PayPal',
+    up2pay: 'Carte bancaire',
     cash: 'Paiement manuel',
     simulate: 'Paiement simulé',
+    simulation: 'Paiement simulé',
   };
   return map[payment] || payment || 'Non renseigné';
 }

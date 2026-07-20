@@ -278,7 +278,7 @@ function castaneas_paypal_capture_order($paypalOrderId) {
     return castaneas_paypal_request(
         'POST',
         '/v2/checkout/orders/' . rawurlencode($paypalOrderId) . '/capture',
-        null,
+        new stdClass(),
         ['Prefer: return=representation']
     );
 }
