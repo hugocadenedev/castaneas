@@ -2296,6 +2296,7 @@ let recipeSteps = [];
 let selectedOrderId = null;
 let selectedCustomerId = null;
 let serverStorageReady = false;
+const serverDataCache = {};
 
 function getDefaultPromoMessage() {
   return 'Livraison offerte dès 40€ d\'achat — récolte 2025 disponible 🌰';
@@ -2536,7 +2537,13 @@ async function serverLoadAll() {
         if (!r.ok || (data && data.error)) {
           throw new Error((data && data.error) || ('HTTP ' + r.status));
         }
-        localStorage.setItem(l, JSON.stringify(data === null ? [] : data));
+        const normalized = data === null ? [] : data;
+        serverDataCache[l] = normalized;
+        try {
+          localStorage.setItem(l, JSON.stringify(normalized));
+        } catch (_) {
+          // Best-effort browser cache only; server data remains authoritative.
+        }
       })),
       timeout,
     ]);
@@ -6000,25 +6007,60 @@ function saveHomepage(e) {
 }
 
 /* ---------- Storage helpers ---------- */
-function load(key) { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } }
+function load(key) {
+  if (Object.prototype.hasOwnProperty.call(serverDataCache, key)) {
+    return serverDataCache[key];
+  }
+
+  try {
+    return JSON.parse(localStorage.getItem(key));
+  } catch {
+    return null;
+  }
+}
 function save(key, val) {
   if (!serverStorageReady && SERVER_KEYS[key]) {
     toast('Sauvegarde bloquée: stockage serveur indisponible', 'error');
     return Promise.resolve(false);
   }
 
-  const previousRaw = localStorage.getItem(key);
-  localStorage.setItem(key, JSON.stringify(val));
   const serverKey = SERVER_KEYS[key];
+  const previousServerValue = Object.prototype.hasOwnProperty.call(serverDataCache, key)
+    ? serverDataCache[key]
+    : undefined;
+  const previousRaw = localStorage.getItem(key);
+
+  if (serverKey) {
+    serverDataCache[key] = val;
+  }
+
+  try {
+    localStorage.setItem(key, JSON.stringify(val));
+  } catch (_) {
+    // Keep browser cache optional for large server-backed payloads.
+    if (!serverKey) {
+      throw _;
+    }
+  }
+
   if (!serverKey) return Promise.resolve(true);
 
   return serverSync(serverKey, val).then(function () {
     return true;
   }).catch(function (error) {
+    if (previousServerValue === undefined) {
+      delete serverDataCache[key];
+    } else {
+      serverDataCache[key] = previousServerValue;
+    }
     if (previousRaw === null) {
       localStorage.removeItem(key);
     } else {
-      localStorage.setItem(key, previousRaw);
+      try {
+        localStorage.setItem(key, previousRaw);
+      } catch (_) {
+        // Ignore local cache restore failures; server state was rolled back above.
+      }
     }
     toast(error.message || 'Sync serveur échouée - modification locale annulée', 'error');
     return false;
