@@ -27,29 +27,6 @@ if ($post && !empty($post['primaryCategoryId'])) {
         }
     }
 }
-
-function castaneas_blog_render_content($content) {
-    $content = trim((string) $content);
-    if ($content === '') {
-        return '<p>Aucun contenu n\'a encore ete renseigne pour cet article.</p>';
-    }
-
-    if (preg_match('/<[^>]+>/', $content)) {
-        return $content;
-    }
-
-    $blocks = preg_split('/\n{2,}/', $content);
-    $html = [];
-    foreach ($blocks as $block) {
-        $line = trim((string) $block);
-        if ($line === '') {
-            continue;
-        }
-        $html[] = '<p>' . nl2br(htmlspecialchars($line, ENT_QUOTES, 'UTF-8')) . '</p>';
-    }
-
-    return implode("\n", $html);
-}
 ?>
 <!DOCTYPE html>
 <html lang="fr" class="site-shell-pending">
@@ -104,8 +81,14 @@ function castaneas_blog_render_content($content) {
   .article-content p + p { margin-top: 16px; }
   .article-content h2 { font-size: 30px; color: var(--brown-deep); margin: 34px 0 14px; }
   .article-content h3 { font-size: 23px; color: var(--brown-deep); margin: 26px 0 12px; }
+  .article-content h4 { font-size: 18px; color: var(--brown-deep); margin: 22px 0 10px; }
   .article-content ul, .article-content ol { padding-left: 22px; margin: 16px 0; }
   .article-content blockquote { margin: 22px 0; padding: 18px 22px; border-left: 3px solid var(--brown-chest); background: var(--cream-soft); color: var(--ink-soft); font-size: 17px; }
+  .article-content a { color: var(--brown-chest); text-decoration: underline; text-decoration-thickness: 1.5px; }
+  .article-content img { display:block; width:100%; height:auto; border-radius: 24px; margin: 26px 0 10px; }
+  .article-content figure { margin: 26px 0; }
+  .article-content figcaption { color: var(--muted); font-size: 13px; line-height: 1.6; }
+  .article-content hr { margin: 28px 0; border: none; border-top: 1px solid rgba(59,31,14,.14); }
   .related { margin-top: 42px; }
   .section-head { display:grid; grid-template-columns:1fr auto; gap:18px; align-items:end; margin-bottom:22px; }
   .section-head__title { font-size: clamp(28px,3vw,40px); line-height:1.08; color:var(--brown-deep); }

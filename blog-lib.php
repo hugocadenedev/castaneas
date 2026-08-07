@@ -169,9 +169,28 @@ function castaneas_blog_dataset() {
     ];
 }
 
+function castaneas_blog_is_publicly_visible(array $post, $nowTimestamp = null) {
+    if (($post['status'] ?? '') !== 'published') {
+        return false;
+    }
+
+    $publishedAt = trim((string) ($post['publishedAt'] ?? ''));
+    if ($publishedAt === '') {
+        return true;
+    }
+
+    $publishedTimestamp = strtotime($publishedAt);
+    if (!$publishedTimestamp) {
+        return true;
+    }
+
+    $now = $nowTimestamp ?: time();
+    return $publishedTimestamp <= $now;
+}
+
 function castaneas_blog_get_published_posts(array $dataset) {
     return array_values(array_filter($dataset['posts'], function ($post) {
-        return ($post['status'] ?? '') === 'published';
+        return castaneas_blog_is_publicly_visible($post);
     }));
 }
 
@@ -258,4 +277,160 @@ function castaneas_blog_public_url($path) {
     }
 
     return '/' . ltrim($path, '/');
+}
+
+function castaneas_blog_sanitize_url($value, array $options = []) {
+    $value = trim((string) $value);
+    if ($value === '') {
+        return '';
+    }
+
+    if (preg_match('#^https?://#i', $value)) {
+        return $value;
+    }
+
+    if (!empty($options['allow_mailto']) && preg_match('#^mailto:#i', $value)) {
+        return $value;
+    }
+
+    if (!empty($options['allow_tel']) && preg_match('#^tel:#i', $value)) {
+        return $value;
+    }
+
+    if ($value[0] === '/' || $value[0] === '#' || strpos($value, './') === 0 || strpos($value, '../') === 0) {
+        return $value;
+    }
+
+    return '';
+}
+
+function castaneas_blog_render_content($content) {
+    $content = trim((string) $content);
+    if ($content === '') {
+        return '<p>Aucun contenu n\'a encore ete renseigne pour cet article.</p>';
+    }
+
+    if (!preg_match('/<[^>]+>/', $content)) {
+        $blocks = preg_split('/\n{2,}/', $content);
+        $html = [];
+        foreach ($blocks as $block) {
+            $line = trim((string) $block);
+            if ($line === '') {
+                continue;
+            }
+            $html[] = '<p>' . nl2br(htmlspecialchars($line, ENT_QUOTES, 'UTF-8')) . '</p>';
+        }
+
+        return implode("\n", $html);
+    }
+
+    if (!class_exists('DOMDocument')) {
+        return strip_tags($content, '<p><br><strong><em><u><blockquote><ul><ol><li><h2><h3><h4><a><img><figure><figcaption><hr>');
+    }
+
+    $allowed = [
+        'p' => [],
+        'br' => [],
+        'strong' => [],
+        'em' => [],
+        'u' => [],
+        'blockquote' => [],
+        'ul' => [],
+        'ol' => [],
+        'li' => [],
+        'h2' => [],
+        'h3' => [],
+        'h4' => [],
+        'a' => ['href'],
+        'img' => ['src', 'alt'],
+        'figure' => [],
+        'figcaption' => [],
+        'hr' => [],
+    ];
+
+    $source = new DOMDocument('1.0', 'UTF-8');
+    libxml_use_internal_errors(true);
+    $source->loadHTML('<?xml encoding="utf-8" ?><div>' . $content . '</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+    libxml_clear_errors();
+
+    $wrapper = $source->getElementsByTagName('div')->item(0);
+    $output = new DOMDocument('1.0', 'UTF-8');
+    $root = $output->createElement('div');
+    $output->appendChild($root);
+
+    $sanitizeNode = function ($node) use (&$sanitizeNode, $output, $allowed) {
+        if ($node->nodeType === XML_TEXT_NODE) {
+            return $output->createTextNode($node->nodeValue);
+        }
+
+        if ($node->nodeType !== XML_ELEMENT_NODE) {
+            return null;
+        }
+
+        $tag = strtolower($node->nodeName);
+        if (in_array($tag, ['script', 'style', 'iframe', 'object'], true)) {
+            return null;
+        }
+
+        if (!isset($allowed[$tag])) {
+            $fragment = $output->createDocumentFragment();
+            foreach ($node->childNodes as $childNode) {
+                $cleanChild = $sanitizeNode($childNode);
+                if ($cleanChild) {
+                    $fragment->appendChild($cleanChild);
+                }
+            }
+            return $fragment;
+        }
+
+        $clean = $output->createElement($tag);
+
+        if ($tag === 'a') {
+            $href = castaneas_blog_sanitize_url($node->getAttribute('href'), ['allow_mailto' => true, 'allow_tel' => true]);
+            if ($href !== '') {
+                $clean->setAttribute('href', $href);
+                if (preg_match('#^https?://#i', $href)) {
+                    $clean->setAttribute('target', '_blank');
+                    $clean->setAttribute('rel', 'noopener noreferrer');
+                }
+            }
+        }
+
+        if ($tag === 'img') {
+            $src = castaneas_blog_sanitize_url($node->getAttribute('src'));
+            if ($src === '') {
+                return null;
+            }
+            $clean->setAttribute('src', $src);
+            $clean->setAttribute('alt', trim((string) $node->getAttribute('alt')));
+        }
+
+        foreach ($node->childNodes as $childNode) {
+            $cleanChild = $sanitizeNode($childNode);
+            if ($cleanChild) {
+                $clean->appendChild($cleanChild);
+            }
+        }
+
+        if ($tag === 'a' && !$clean->hasAttribute('href')) {
+            $fragment = $output->createDocumentFragment();
+            while ($clean->firstChild) {
+                $fragment->appendChild($clean->firstChild);
+            }
+            return $fragment;
+        }
+
+        return $clean;
+    };
+
+    if ($wrapper) {
+        foreach ($wrapper->childNodes as $childNode) {
+            $cleanNode = $sanitizeNode($childNode);
+            if ($cleanNode) {
+                $root->appendChild($cleanNode);
+            }
+        }
+    }
+
+    return trim((string) $output->saveHTML($root));
 }

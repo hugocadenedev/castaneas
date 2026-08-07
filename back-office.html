@@ -49,10 +49,13 @@ body {
   font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 a { text-decoration: none; color: inherit; }
 button { font-family: inherit; cursor: pointer; border: none; background: none; }
 img { display: block; max-width: 100%; }
+
+body.admin-sidebar-open { overflow: hidden; }
 
 /* ---- GUARD / LOGIN SCREEN ---- */
 #admin-guard {
@@ -87,6 +90,15 @@ img { display: block; max-width: 100%; }
 
 /* ---- LAYOUT ---- */
 #admin-app { display: flex; min-height: 100vh; }
+.admin-sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(42,24,16,.42);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+  z-index: 35;
+}
 .sidebar {
   width: 260px; flex-shrink: 0; background: #fff; border-right: 1.5px solid var(--line);
   display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh;
@@ -101,6 +113,19 @@ img { display: block; max-width: 100%; }
   font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
   background: var(--green-light); color: var(--green); padding: 3px 8px; border-radius: var(--r-pill);
 }
+.sidebar-close {
+  display: none;
+  margin-left: auto;
+  width: 38px;
+  height: 38px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: var(--cream-soft);
+  color: var(--ink-soft);
+  border: 1.5px solid var(--line);
+}
+.sidebar-close svg { width: 18px; height: 18px; }
 .sidebar-nav { padding: 16px 12px; flex: 1; }
 .sidebar-section { font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 12px 12px 6px; }
 .nav-item {
@@ -134,6 +159,19 @@ img { display: block; max-width: 100%; }
   padding: 16px 32px; background: #fff; border-bottom: 1.5px solid var(--line);
   display: flex; align-items: center; gap: 16px; position: sticky; top: 0; z-index: 20;
 }
+.mobile-menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: var(--cream-soft);
+  border: 1.5px solid var(--line);
+  color: var(--ink);
+  flex-shrink: 0;
+}
+.mobile-menu-btn svg { width: 18px; height: 18px; }
 .topbar-title { font-family: var(--serif); font-size: 22px; font-weight: 600; flex: 1; }
 .topbar-actions { display: flex; gap: 10px; align-items: center; }
 .btn {
@@ -157,6 +195,7 @@ img { display: block; max-width: 100%; }
 .btn-icon svg { width: 16px; height: 16px; display: block; }
 
 .content { flex: 1; padding: 32px; }
+.action-btns { display: flex; gap: 8px; flex-wrap: wrap; }
 
 /* ---- PANELS (tabs) ---- */
 .panel { display: none; }
@@ -276,6 +315,9 @@ tbody tr:last-child td { border-bottom: none; }
 .form-grid.full { grid-template-columns: 1fr; }
 .form-field { display: flex; flex-direction: column; gap: 6px; }
 .form-field.span2 { grid-column: span 2; }
+.admin-inline-grid { display: grid; gap: 14px; }
+.admin-inline-grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.admin-inline-grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .form-field label { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft); }
 .form-field input,
 .form-field select,
@@ -293,6 +335,101 @@ tbody tr:last-child td { border-bottom: none; }
 .form-field textarea { resize: vertical; min-height: 80px; }
 .form-field small { font-size: 11px; color: var(--muted); }
 .form-hint { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.admin-card-stack { display: grid; gap: 20px; max-width: 880px; }
+.admin-account-list { display: grid; gap: 12px; margin-top: 14px; }
+.admin-account-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 16px;
+  border: 1.5px solid var(--line);
+  border-radius: 18px;
+  background: var(--cream-light);
+}
+.admin-account-item.is-current { border-color: rgba(92,117,96,.35); background: var(--green-light); }
+.admin-account-meta { display: grid; gap: 4px; }
+.admin-account-name { font-size: 14px; font-weight: 800; color: var(--ink); }
+.admin-account-sub { font-size: 12px; color: var(--muted); }
+.admin-account-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.admin-inline-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.admin-muted-box {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: var(--cream-soft);
+  border: 1.5px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.blog-editor-shell {
+  border: 1.5px solid var(--line-strong);
+  border-radius: 20px;
+  background: #fff;
+  overflow: hidden;
+}
+.blog-editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+  background: var(--cream-soft);
+  border-bottom: 1.5px solid var(--line);
+}
+.blog-editor-toolbar .btn { min-width: auto; }
+.blog-editor-surface {
+  min-height: 360px;
+  padding: 18px 20px;
+  outline: none;
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--ink);
+}
+.blog-editor-surface:empty::before {
+  content: attr(data-placeholder);
+  color: var(--muted);
+}
+.blog-editor-surface h2,
+.blog-editor-surface h3,
+.blog-editor-surface h4 {
+  font-family: var(--serif);
+  color: var(--brown-deep);
+  margin: 1.2em 0 .55em;
+}
+.blog-editor-surface p { margin: 0 0 1em; }
+.blog-editor-surface ul,
+.blog-editor-surface ol { margin: 0 0 1em 1.4em; }
+.blog-editor-surface blockquote {
+  margin: 1.2em 0;
+  padding: 14px 18px;
+  border-left: 3px solid var(--brown-chest);
+  background: var(--cream-soft);
+  color: var(--ink-soft);
+}
+.blog-editor-surface a { color: var(--brown-chest); text-decoration: underline; }
+.blog-editor-surface img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 16px;
+  margin: 18px 0 8px;
+}
+.blog-editor-surface figure { margin: 1.4em 0; }
+.blog-editor-surface figcaption { color: var(--muted); font-size: 13px; }
+.blog-editor-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 14px;
+  border-top: 1.5px solid var(--line);
+  background: #fff;
+}
+.blog-editor-foot small { color: var(--muted); }
+.editor-asset-fields {
+  display: grid;
+  gap: 14px;
+}
 
 /* Image drop zone */
 .img-drop {
@@ -613,6 +750,8 @@ tbody tr:last-child td { border-bottom: none; }
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 12px;
 }
+.uses-card-row.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.uses-card-row.cols-2-tight { grid-template-columns: minmax(0, 1.5fr) minmax(0, .8fr); }
 
 @media (max-width: 1180px) {
   .order-detail-hero { flex-direction: column; }
@@ -647,17 +786,157 @@ tbody tr:last-child td { border-bottom: none; }
 
 /* ---- RESPONSIVE ---- */
 @media (max-width: 900px) {
-  .sidebar { width: 200px; }
+  #admin-app { display: block; }
+  #admin-app.sidebar-open .admin-sidebar-backdrop {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: min(84vw, 320px);
+    max-width: 320px;
+    height: 100vh;
+    z-index: 40;
+    transform: translateX(-100%);
+    transition: transform .22s ease;
+    box-shadow: var(--shadow-lg);
+  }
+  #admin-app.sidebar-open .sidebar { transform: translateX(0); }
+  .sidebar-close,
+  .mobile-menu-btn { display: inline-flex; }
+  .main { min-height: 100vh; }
+  .topbar {
+    padding: 14px 18px;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .topbar-title {
+    font-size: 20px;
+    min-width: 0;
+  }
+  .topbar-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .topbar-actions > * { flex: 1 1 220px; }
+  .content { padding: 22px 16px 28px; }
+  .section-header {
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .section-title { width: 100%; }
+  .search-box {
+    width: 100%;
+    min-width: 0;
+  }
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .table-wrap table,
+  .order-lines { min-width: 720px; }
   .stats-row { grid-template-columns: 1fr 1fr; }
   .form-grid { grid-template-columns: 1fr; }
   .form-field.span2 { grid-column: 1; }
+  .admin-inline-grid,
+  .uses-card-row.cols-3,
+  .uses-card-row.cols-2-tight { grid-template-columns: 1fr; }
+  .admin-account-item { grid-template-columns: 1fr; }
+  .admin-account-actions { justify-content: flex-start; }
+  .cat-grid { grid-template-columns: 1fr; }
+  .modal {
+    width: min(100vw - 20px, 760px);
+    max-height: calc(100vh - 20px);
+  }
+  #modal-product .modal {
+    width: min(100vw - 20px, 1120px);
+    max-height: calc(100vh - 20px);
+  }
+  .modal-head,
+  .modal-body,
+  .modal-foot {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+  .modal-foot {
+    flex-wrap: wrap;
+    justify-content: stretch;
+  }
+  .modal-foot .btn { flex: 1 1 220px; justify-content: center; }
+  .table-wrap[style*="padding:24px 28px"] { padding: 20px 18px !important; }
+  .table-wrap[style*="max-width:760px"] { max-width: 100% !important; }
+  .img-add-row,
+  .cat-card-actions,
+  .order-expand-inner { flex-wrap: wrap; }
+  .blog-editor-toolbar,
+  .blog-editor-foot,
+  .admin-inline-actions { flex-direction: column; }
+  .blog-editor-toolbar .btn,
+  .admin-inline-actions .btn { width: 100%; justify-content: center; }
+  .editor-asset-fields { gap: 12px; }
+  .comp-ing-row,
+  .uses-card-row,
+  .product-comp-preview__head { grid-template-columns: 1fr; }
   .product-comp-preview__head { grid-template-columns: 1fr; }
   .product-comp-preview__sub { white-space: normal; }
   .product-comp-preview__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .order-detail-kpis { grid-template-columns: 1fr; }
+  .order-card-head,
+  .order-meta-row { flex-direction: column; align-items: flex-start; }
+  .order-meta-row span { text-align: left; }
 }
 
 @media (max-width: 640px) {
+  .guard-card {
+    width: calc(100vw - 32px);
+    padding: 34px 22px 28px;
+  }
+  .stats-row { grid-template-columns: 1fr; }
+  .topbar-actions > * { flex-basis: 100%; }
+  .btn,
+  .btn-sm {
+    width: 100%;
+    justify-content: center;
+  }
+  .topbar-title { font-size: 18px; }
+  .content { padding-left: 12px; padding-right: 12px; }
+  .modal {
+    width: calc(100vw - 12px);
+    max-height: calc(100vh - 12px);
+    border-radius: 16px;
+  }
+  .table-wrap[style*="padding:24px 28px"] { padding: 16px 14px !important; }
+  .modal-head,
+  .modal-body,
+  .modal-foot {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+  .modal-head,
+  .order-card-head,
+  .order-card-body,
+  .order-detail-hero,
+  .order-expand-inner { padding-left: 14px; padding-right: 14px; }
+  .order-detail-hero { padding-top: 18px; padding-bottom: 18px; }
+  .table-wrap table { min-width: 560px; }
+  .order-lines { min-width: 480px; }
+  .img-add-row { flex-direction: column; }
+  .img-add-row button,
+  .img-add-row input,
+  .action-btns > * { width: 100%; }
+  .admin-toast {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    border-radius: 16px;
+    justify-content: center;
+  }
   .product-comp-preview__grid { grid-template-columns: 1fr; }
+  .product-comp-preview__title { font-size: 24px; }
 }
 
 /* ---- PAGE PREVIEW TAG ---- */
@@ -701,6 +980,9 @@ tbody tr:last-child td { border-bottom: none; }
     <div class="sidebar-brand">
       <img src="assets/Castaneas-logo (3).svg" alt="Castaneas">
       <span class="sidebar-brand-tag">Admin</span>
+      <button class="sidebar-close" type="button" aria-label="Fermer le menu" onclick="closeAdminSidebar()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/></svg>
+      </button>
     </div>
     <nav class="sidebar-nav">
       <p class="sidebar-section">Tableau de bord</p>
@@ -771,10 +1053,14 @@ tbody tr:last-child td { border-bottom: none; }
       </button>
     </div>
   </aside>
+  <button class="admin-sidebar-backdrop" type="button" aria-label="Fermer le menu" onclick="closeAdminSidebar()"></button>
 
   <!-- MAIN -->
   <div class="main">
     <header class="topbar">
+      <button id="admin-sidebar-toggle" class="mobile-menu-btn" type="button" aria-label="Ouvrir le menu" aria-controls="admin-app" aria-expanded="false" onclick="toggleAdminSidebar()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+      </button>
       <h1 class="topbar-title" id="topbar-title">Vue d'ensemble</h1>
       <div class="topbar-actions" id="topbar-actions">
         <a href="index.html" target="_blank" class="btn btn-secondary btn-sm">
@@ -1176,7 +1462,7 @@ tbody tr:last-child td { border-bottom: none; }
                 <input type="text" id="hp-cats-title-em" placeholder="un même chaudron de cuivre.">
               </div>
             </div>
-            <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
+            <div class="admin-inline-grid cols-3" style="margin-top:16px;">
               <div class="form-field"><label>Carte 1</label><select id="hp-cat-1"></select></div>
               <div class="form-field"><label>Carte 2</label><select id="hp-cat-2"></select></div>
               <div class="form-field"><label>Carte 3</label><select id="hp-cat-3"></select></div>
@@ -1204,7 +1490,7 @@ tbody tr:last-child td { border-bottom: none; }
                 <input type="text" id="hp-bs-lede" placeholder="Une sélection des pots les plus commandés…">
               </div>
             </div>
-            <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;">
+            <div class="admin-inline-grid cols-4" style="margin-top:16px;">
               <div class="form-field"><label>Produit 1</label><select id="hp-prod-1"></select></div>
               <div class="form-field"><label>Produit 2</label><select id="hp-prod-2"></select></div>
               <div class="form-field"><label>Produit 3</label><select id="hp-prod-3"></select></div>
@@ -1529,20 +1815,29 @@ tbody tr:last-child td { border-bottom: none; }
         <div class="section-header">
           <h2 class="section-title">Paramètres</h2>
         </div>
-        <div style="display:grid;gap:20px;max-width:600px;">
+        <div class="admin-card-stack">
           <div class="table-wrap" style="padding:24px 28px;">
-            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:16px;">Compte administrateur</h3>
-            <form class="form-grid full" id="settings-form" onsubmit="saveSettings(event)">
+            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:8px;">Comptes administrateur</h3>
+            <div class="admin-muted-box">Créez plusieurs accès back-office, modifiez un compte existant ou faites tourner la connexion active sans repasser par le code.</div>
+            <div id="admin-accounts-list" class="admin-account-list"></div>
+            <form class="form-grid" id="admin-account-form" onsubmit="saveAdminAccount(event)" style="margin-top:18px;">
+              <input type="hidden" id="setting-admin-id">
               <div class="form-field">
                 <label>Identifiant admin</label>
-                <input type="text" id="setting-user" value="">
+                <input type="text" id="setting-admin-user" value="" placeholder="admin-castaneas" autocomplete="off">
               </div>
               <div class="form-field">
-                <label>Nouveau mot de passe</label>
-                <input type="password" id="setting-pass" placeholder="Laisser vide pour ne pas changer">
+                <label>Nom affiché</label>
+                <input type="text" id="setting-admin-name" value="" placeholder="Equipe Castaneas">
               </div>
-              <div>
-                <button type="submit" class="btn btn-primary">Enregistrer</button>
+              <div class="form-field span2">
+                <label>Mot de passe</label>
+                <input type="password" id="setting-admin-pass" placeholder="8 caractères minimum pour un nouveau compte">
+                <small>Laissez vide uniquement si vous modifiez un compte sans changer son mot de passe.</small>
+              </div>
+              <div class="admin-inline-actions span2">
+                <button type="submit" class="btn btn-primary">Enregistrer le compte</button>
+                <button type="button" class="btn btn-secondary" onclick="resetAdminAccountForm()">Nouveau compte</button>
               </div>
             </form>
           </div>
@@ -1618,7 +1913,7 @@ tbody tr:last-child td { border-bottom: none; }
         </div>
         <div class="form-field span2">
           <label>Dimensions produit (cm)</label>
-          <div class="uses-card-row" style="grid-template-columns:1fr 1fr 1fr;">
+          <div class="uses-card-row cols-3">
             <input type="number" id="p-ship-length" min="0" step="0.1" placeholder="7">
             <input type="number" id="p-ship-width" min="0" step="0.1" placeholder="6.5">
             <input type="number" id="p-ship-height" min="0" step="0.1" placeholder="11.5">
@@ -1707,30 +2002,30 @@ tbody tr:last-child td { border-bottom: none; }
         </div>
         <div class="form-field span2" id="coffret-sales-fields" style="display:none;">
           <label>Composition du coffret <small style="font-weight:400;color:var(--muted)">— liste des produits inclus avec leur prix unitaire retenu</small></label>
-          <div class="uses-card-row" style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;grid-template-columns:1.5fr .8fr;">
+          <div class="uses-card-row cols-2-tight" style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">
             <span>Produit inclus</span><span>Prix unitaire (€)</span>
           </div>
-          <div class="uses-card-row" style="grid-template-columns:1.5fr .8fr;">
+          <div class="uses-card-row cols-2-tight">
             <select id="p-box-0-product"></select>
             <input type="number" id="p-box-0-unit-price" min="0" step="0.01" placeholder="7.50">
           </div>
-          <div class="uses-card-row" style="grid-template-columns:1.5fr .8fr;">
+          <div class="uses-card-row cols-2-tight">
             <select id="p-box-1-product"></select>
             <input type="number" id="p-box-1-unit-price" min="0" step="0.01" placeholder="7.50">
           </div>
-          <div class="uses-card-row" style="grid-template-columns:1.5fr .8fr;">
+          <div class="uses-card-row cols-2-tight">
             <select id="p-box-2-product"></select>
             <input type="number" id="p-box-2-unit-price" min="0" step="0.01" placeholder="7.50">
           </div>
-          <div class="uses-card-row" style="grid-template-columns:1.5fr .8fr;">
+          <div class="uses-card-row cols-2-tight">
             <select id="p-box-3-product"></select>
             <input type="number" id="p-box-3-unit-price" min="0" step="0.01" placeholder="7.50">
           </div>
-          <div class="uses-card-row" style="grid-template-columns:1.5fr .8fr;">
+          <div class="uses-card-row cols-2-tight">
             <select id="p-box-4-product"></select>
             <input type="number" id="p-box-4-unit-price" min="0" step="0.01" placeholder="7.50">
           </div>
-          <div class="uses-card-row" style="grid-template-columns:1.5fr .8fr;">
+          <div class="uses-card-row cols-2-tight">
             <select id="p-box-5-product"></select>
             <input type="number" id="p-box-5-unit-price" min="0" step="0.01" placeholder="7.50">
           </div>
@@ -2170,6 +2465,7 @@ tbody tr:last-child td { border-bottom: none; }
         <div class="form-field">
           <label>Date de publication</label>
           <input type="datetime-local" id="bp-published-at">
+          <small>Si l'article est en statut « Publié » avec une date future, il sera automatiquement programmé.</small>
         </div>
         <div class="form-field">
           <label>Statut</label>
@@ -2215,8 +2511,31 @@ tbody tr:last-child td { border-bottom: none; }
 
         <div class="form-field span2" style="border-top:1px solid var(--line);padding-top:16px;margin-top:4px;">
           <label>Contenu de l'article *</label>
-          <textarea id="bp-content" rows="16" placeholder="Vous pouvez coller du HTML simple ou écrire en texte brut avec des sauts de ligne." required></textarea>
-          <small>Le HTML simple est accepté: paragraphes, titres, listes, liens, blockquotes.</small>
+          <textarea id="bp-content" rows="16" style="display:none"></textarea>
+          <input type="file" id="bp-editor-img-upload" accept="image/*" style="display:none" onchange="uploadBlogInlineImage(this)">
+          <div class="blog-editor-shell">
+            <div class="blog-editor-toolbar">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="blogEditorSetBlock('p')">Paragraphe</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="blogEditorSetBlock('h2')">Titre H2</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="blogEditorSetBlock('h3')">Titre H3</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="blogEditorCommand('bold')">Gras</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="blogEditorCommand('italic')">Italique</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="blogEditorCommand('underline')">Souligné</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="blogEditorCommand('insertUnorderedList')">Liste</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="blogEditorCommand('insertOrderedList')">Liste num.</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="blogEditorCommand('formatBlock', 'blockquote')">Citation</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="blogEditorInsertLink()">Lien</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="blogEditorCommand('unlink')">Retirer lien</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="blogEditorInsertImage()">Photo URL</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('bp-editor-img-upload').click()">Photo upload</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="blogEditorInsertSeparator()">Séparateur</button>
+            </div>
+            <div id="bp-editor" class="blog-editor-surface" contenteditable="true" data-placeholder="Rédigez l'article ici, comme dans un vrai éditeur de blog."></div>
+            <div class="blog-editor-foot">
+              <small>Liens externes, titres, listes, citations et images sont conservés dans le rendu public.</small>
+              <small id="bp-editor-stats">0 mot</small>
+            </div>
+          </div>
         </div>
 
         <div class="form-field span2" style="border-top:1px solid var(--line);padding-top:16px;margin-top:4px;">
@@ -2242,6 +2561,34 @@ tbody tr:last-child td { border-bottom: none; }
   </div>
 </div>
 
+<div class="modal-overlay" id="modal-editor-asset">
+  <div class="modal" style="width:min(520px,calc(100vw - 32px));">
+    <div class="modal-head">
+      <h2 id="editor-asset-title">Insérer un élément</h2>
+      <button type="button" class="modal-close" onclick="closeEditorAssetModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="editor-asset-form" class="editor-asset-fields" onsubmit="submitEditorAssetForm(event)">
+        <p id="editor-asset-helper" class="form-hint"></p>
+        <div class="form-field">
+          <label id="editor-asset-primary-label">URL</label>
+          <input type="text" id="editor-asset-primary" autocomplete="off">
+        </div>
+        <div class="form-field" id="editor-asset-secondary-field">
+          <label id="editor-asset-secondary-label">Texte alternatif</label>
+          <input type="text" id="editor-asset-secondary" autocomplete="off">
+        </div>
+      </form>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-secondary" onclick="closeEditorAssetModal()">Annuler</button>
+      <button type="submit" form="editor-asset-form" class="btn btn-primary" id="editor-asset-submit">Insérer</button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="admin-toast" id="admin-toast"></div>
 
@@ -2253,6 +2600,7 @@ tbody tr:last-child td { border-bottom: none; }
 /* ---------- Storage keys ---------- */
 const KEYS = {
   admin: 'castaneas_admin_creds',
+  adminAccounts: 'castaneas_admin_accounts_v1',
   products: 'castaneas_admin_products',
   categories: 'castaneas_admin_categories',
   orders: 'castaneas_admin_orders',
@@ -2269,6 +2617,7 @@ const KEYS = {
 /* ---------- Server sync ---------- */
 const SERVER_TOKEN = 'cas_srv_9e4f2b8d3a7c1065';
 const SERVER_KEYS = {
+  [KEYS.adminAccounts]: 'admin_accounts',
   [KEYS.products]:   'products',
   [KEYS.categories]: 'categories',
   [KEYS.orders]:     'orders',
@@ -2285,18 +2634,25 @@ const SERVER_KEYS = {
 
 /* ---------- State ---------- */
 const DEFAULT_IMAGE_CATALOG = [];
-let state = { products: [], categories: [], orders: [], imageCatalogMain: [], imageCatalogExtra: [], recipes: [], blogPosts: [], blogCategories: [], promoCodes: [], billingSettings: {}, customers: [], customerStats: {} };
+const SESSION_KEYS = {
+  authenticated: 'castaneas_admin_session',
+  adminId: 'castaneas_admin_session_user_id',
+  adminUsername: 'castaneas_admin_session_username',
+};
+let state = { products: [], categories: [], orders: [], imageCatalogMain: [], imageCatalogExtra: [], recipes: [], blogPosts: [], blogCategories: [], promoCodes: [], billingSettings: {}, customers: [], customerStats: {}, adminAccounts: [] };
 let editingProduct = null;
 let editingCat = null;
 let editingRecipe = null;
 let editingBlogPost = null;
 let editingBlogCategory = null;
+let editingAdminAccount = null;
 let selectedExtraImages = [];
 let recipeSteps = [];
 let selectedOrderId = null;
 let selectedCustomerId = null;
 let serverStorageReady = false;
 const serverDataCache = {};
+let editorAssetDialogState = null;
 
 function getDefaultPromoMessage() {
   return 'Livraison offerte dès 40€ d\'achat — récolte 2025 disponible 🌰';
@@ -2345,8 +2701,8 @@ function updateAdminPromoBar(message) {
 }
 
 function renderSettings() {
-  const creds = load(KEYS.admin);
-  document.getElementById('setting-user').value = creds ? creds.user : 'admin';
+  renderAdminAccounts();
+  resetAdminAccountForm();
   updateAdminPromoBar(getPromoMessage());
   renderBillingSettings();
 }
@@ -2471,6 +2827,520 @@ async function hashAdmin(pass) {
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+function normalizeAdminAccount(account, index = 0) {
+  if (!account || typeof account !== 'object') return null;
+  const username = String(account.username || account.user || '').trim();
+  const pass = String(account.pass || '').trim();
+  if (!username || !pass) return null;
+  return {
+    id: String(account.id || ('admin-' + (index + 1))),
+    username,
+    displayName: String(account.displayName || account.name || username).trim() || username,
+    pass,
+    createdAt: String(account.createdAt || account.updatedAt || currentIsoString()),
+    updatedAt: String(account.updatedAt || account.createdAt || currentIsoString()),
+  };
+}
+
+function normalizeAdminAccounts(accounts) {
+  if (!Array.isArray(accounts)) return [];
+  const seen = new Set();
+  return accounts.map(normalizeAdminAccount).filter(account => {
+    if (!account) return false;
+    const key = account.username.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function getLegacyAdminCredentials() {
+  const creds = load(KEYS.admin);
+  if (!creds || typeof creds !== 'object') return null;
+  const user = String(creds.user || '').trim();
+  const pass = String(creds.pass || '').trim();
+  if (!user || !pass) return null;
+  return { user, pass };
+}
+
+async function ensureAdminAccountsSeeded() {
+  state.adminAccounts = normalizeAdminAccounts(load(KEYS.adminAccounts) || []);
+  if (state.adminAccounts.length) return;
+  const legacy = getLegacyAdminCredentials();
+  if (!legacy) return;
+  const migrated = [{
+    id: 'admin-' + Date.now(),
+    username: legacy.user,
+    displayName: legacy.user,
+    pass: legacy.pass,
+    createdAt: currentIsoString(),
+    updatedAt: currentIsoString(),
+  }];
+  state.adminAccounts = migrated;
+  await save(KEYS.adminAccounts, migrated);
+}
+
+function findAdminAccountByUsername(username) {
+  const needle = String(username || '').trim().toLowerCase();
+  return state.adminAccounts.find(account => account.username.toLowerCase() === needle) || null;
+}
+
+function getCurrentAdmin() {
+  const currentId = sessionStorage.getItem(SESSION_KEYS.adminId);
+  const currentUsername = sessionStorage.getItem(SESSION_KEYS.adminUsername);
+  return state.adminAccounts.find(account => account.id === currentId)
+    || state.adminAccounts.find(account => account.username === currentUsername)
+    || null;
+}
+
+function applyCurrentAdminUi() {
+  const currentAdmin = getCurrentAdmin();
+  const displayName = currentAdmin ? (currentAdmin.displayName || currentAdmin.username) : 'Admin';
+  const avatar = displayName.trim().charAt(0).toUpperCase() || 'A';
+  document.getElementById('sidebar-name').textContent = displayName;
+  document.getElementById('sidebar-avatar').textContent = avatar;
+}
+
+function setCurrentAdminSession(account) {
+  sessionStorage.setItem(SESSION_KEYS.authenticated, 'ok');
+  sessionStorage.setItem(SESSION_KEYS.adminId, account.id);
+  sessionStorage.setItem(SESSION_KEYS.adminUsername, account.username);
+}
+
+function resetAdminAccountForm() {
+  editingAdminAccount = null;
+  const form = document.getElementById('admin-account-form');
+  if (form) form.reset();
+  const idInput = document.getElementById('setting-admin-id');
+  const userInput = document.getElementById('setting-admin-user');
+  const nameInput = document.getElementById('setting-admin-name');
+  const passInput = document.getElementById('setting-admin-pass');
+  if (idInput) idInput.value = '';
+  if (userInput) userInput.value = '';
+  if (nameInput) nameInput.value = '';
+  if (passInput) passInput.value = '';
+}
+
+function renderAdminAccounts() {
+  const list = document.getElementById('admin-accounts-list');
+  if (!list) return;
+  const currentAdmin = getCurrentAdmin();
+  if (!state.adminAccounts.length) {
+    list.innerHTML = '<div class="admin-muted-box">Aucun compte admin enregistré. Le premier accès crée automatiquement le premier compte.</div>';
+    return;
+  }
+  list.innerHTML = state.adminAccounts.map(account => {
+    const isCurrent = currentAdmin && currentAdmin.id === account.id;
+    return `<div class="admin-account-item${isCurrent ? ' is-current' : ''}">
+      <div class="admin-account-meta">
+        <div class="admin-account-name">${escapeHtml(account.displayName || account.username)}${isCurrent ? ' <span class="badge badge-green">Connecté</span>' : ''}</div>
+        <div class="admin-account-sub">@${escapeHtml(account.username)} · mis à jour le ${escapeHtml(formatDateTime(account.updatedAt || account.createdAt || ''))}</div>
+      </div>
+      <div class="admin-account-actions">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="openAdminAccountEditor('${account.id}')">Modifier</button>
+        <button type="button" class="btn btn-danger btn-sm" onclick="deleteAdminAccount('${account.id}')" ${isCurrent ? 'disabled' : ''}>Supprimer</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openAdminAccountEditor(id) {
+  const account = state.adminAccounts.find(entry => entry.id === id);
+  if (!account) return;
+  editingAdminAccount = id;
+  document.getElementById('setting-admin-id').value = account.id;
+  document.getElementById('setting-admin-user').value = account.username || '';
+  document.getElementById('setting-admin-name').value = account.displayName || '';
+  document.getElementById('setting-admin-pass').value = '';
+}
+
+async function saveAdminAccount(e) {
+  e.preventDefault();
+  const id = editingAdminAccount || document.getElementById('setting-admin-id').value || ('admin-' + Date.now());
+  const username = document.getElementById('setting-admin-user').value.trim();
+  const displayName = document.getElementById('setting-admin-name').value.trim() || username;
+  const pass = document.getElementById('setting-admin-pass').value;
+  const existing = state.adminAccounts.find(entry => entry.id === id) || null;
+
+  if (!username) {
+    toast('Identifiant admin requis.', 'error');
+    return;
+  }
+  if (!existing && pass.length < 8) {
+    toast('Le mot de passe doit contenir au moins 8 caractères.', 'error');
+    return;
+  }
+  if (existing && pass && pass.length < 8) {
+    toast('Le nouveau mot de passe doit contenir au moins 8 caractères.', 'error');
+    return;
+  }
+  const duplicate = state.adminAccounts.find(entry => entry.id !== id && entry.username.toLowerCase() === username.toLowerCase());
+  if (duplicate) {
+    toast('Cet identifiant admin existe déjà.', 'error');
+    return;
+  }
+
+  const previous = state.adminAccounts.map(account => ({ ...account }));
+  const hashedPass = pass ? await hashAdmin(pass) : (existing ? existing.pass : '');
+  const account = {
+    id,
+    username,
+    displayName,
+    pass: hashedPass,
+    createdAt: existing ? existing.createdAt : currentIsoString(),
+    updatedAt: currentIsoString(),
+  };
+
+  const idx = state.adminAccounts.findIndex(entry => entry.id === id);
+  if (idx >= 0) state.adminAccounts[idx] = account;
+  else state.adminAccounts.push(account);
+
+  const ok = await save(KEYS.adminAccounts, state.adminAccounts);
+  if (!ok) {
+    state.adminAccounts = previous;
+    renderAdminAccounts();
+    return;
+  }
+
+  const currentAdmin = getCurrentAdmin();
+  if (currentAdmin && currentAdmin.id === id) {
+    setCurrentAdminSession(account);
+    applyCurrentAdminUi();
+  }
+
+  renderAdminAccounts();
+  resetAdminAccountForm();
+  toast(existing ? 'Compte administrateur mis à jour' : 'Compte administrateur créé', 'success');
+}
+
+async function deleteAdminAccount(id) {
+  const currentAdmin = getCurrentAdmin();
+  if (currentAdmin && currentAdmin.id === id) {
+    toast('Vous ne pouvez pas supprimer le compte actuellement connecté.', 'error');
+    return;
+  }
+  if (state.adminAccounts.length <= 1) {
+    toast('Conservez au moins un compte administrateur.', 'error');
+    return;
+  }
+  if (!confirm('Supprimer ce compte administrateur ?')) return;
+  const previous = state.adminAccounts.map(account => ({ ...account }));
+  state.adminAccounts = state.adminAccounts.filter(entry => entry.id !== id);
+  const ok = await save(KEYS.adminAccounts, state.adminAccounts);
+  if (!ok) {
+    state.adminAccounts = previous;
+    renderAdminAccounts();
+    return;
+  }
+  renderAdminAccounts();
+  resetAdminAccountForm();
+  toast('Compte administrateur supprimé', 'success');
+}
+
+function blogContentLooksLikeHtml(content) {
+  return /<[^>]+>/.test(String(content || ''));
+}
+
+function escapeBlogEditorText(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function plainTextToBlogHtml(content) {
+  const blocks = String(content || '').trim().split(/\n{2,}/).map(block => block.trim()).filter(Boolean);
+  return blocks.map(block => '<p>' + escapeBlogEditorText(block).replace(/\n/g, '<br>') + '</p>').join('');
+}
+
+function sanitizeBlogUrl(url, options = {}) {
+  const raw = String(url || '').trim();
+  if (!raw) return '';
+  if (/^https?:\/\//i.test(raw)) return raw;
+  if (options.allowMailto && /^mailto:/i.test(raw)) return raw;
+  if (options.allowTel && /^tel:/i.test(raw)) return raw;
+  if (raw.startsWith('/') || raw.startsWith('./') || raw.startsWith('../') || raw.startsWith('#')) return raw;
+  return '';
+}
+
+function sanitizeBlogHtml(html) {
+  const source = String(html || '').trim();
+  if (!source) return '';
+  const parser = new DOMParser();
+  const parsed = parser.parseFromString('<div>' + source + '</div>', 'text/html');
+  const container = parsed.body.firstElementChild;
+  const allowed = {
+    a: ['href'],
+    blockquote: [],
+    br: [],
+    em: [],
+    figcaption: [],
+    figure: [],
+    h2: [],
+    h3: [],
+    h4: [],
+    hr: [],
+    i: [],
+    img: ['src', 'alt'],
+    li: [],
+    ol: [],
+    p: [],
+    strong: [],
+    u: [],
+    ul: [],
+  };
+
+  function cleanNode(node, doc) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      return doc.createTextNode(node.textContent || '');
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+      return null;
+    }
+
+    const tag = node.tagName.toLowerCase();
+    if (tag === 'script' || tag === 'style' || tag === 'iframe' || tag === 'object') {
+      return null;
+    }
+    if (!allowed[tag]) {
+      const fragment = doc.createDocumentFragment();
+      Array.from(node.childNodes).forEach(child => {
+        const cleanChild = cleanNode(child, doc);
+        if (cleanChild) fragment.appendChild(cleanChild);
+      });
+      return fragment;
+    }
+
+    const el = doc.createElement(tag);
+    if (tag === 'a') {
+      const href = sanitizeBlogUrl(node.getAttribute('href'), { allowMailto: true, allowTel: true });
+      if (href) {
+        el.setAttribute('href', href);
+        if (/^https?:\/\//i.test(href)) {
+          el.setAttribute('target', '_blank');
+          el.setAttribute('rel', 'noopener noreferrer');
+        }
+      }
+    }
+    if (tag === 'img') {
+      const src = sanitizeBlogUrl(node.getAttribute('src'));
+      if (!src) return null;
+      el.setAttribute('src', src);
+      el.setAttribute('alt', String(node.getAttribute('alt') || '').trim());
+    }
+
+    Array.from(node.childNodes).forEach(child => {
+      const cleanChild = cleanNode(child, doc);
+      if (cleanChild) el.appendChild(cleanChild);
+    });
+
+    if (tag === 'a' && !el.getAttribute('href')) {
+      const fragment = doc.createDocumentFragment();
+      while (el.firstChild) fragment.appendChild(el.firstChild);
+      return fragment;
+    }
+    return el;
+  }
+
+  const cleanDoc = document.implementation.createHTMLDocument('');
+  const cleanRoot = cleanDoc.createElement('div');
+  Array.from(container.childNodes).forEach(child => {
+    const cleanChild = cleanNode(child, cleanDoc);
+    if (cleanChild) cleanRoot.appendChild(cleanChild);
+  });
+  return cleanRoot.innerHTML.trim();
+}
+
+function getBlogEditor() {
+  return document.getElementById('bp-editor');
+}
+
+function updateBlogEditorStats() {
+  const textarea = document.getElementById('bp-content');
+  const statEl = document.getElementById('bp-editor-stats');
+  if (!textarea || !statEl) return;
+  const plain = textarea.value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  const words = plain ? plain.split(' ').length : 0;
+  statEl.textContent = words + ' mot' + (words > 1 ? 's' : '');
+}
+
+function syncBlogEditorToTextarea() {
+  const editor = getBlogEditor();
+  const textarea = document.getElementById('bp-content');
+  if (!editor || !textarea) return '';
+  const sanitized = sanitizeBlogHtml(editor.innerHTML);
+  textarea.value = sanitized;
+  updateBlogEditorStats();
+  return sanitized;
+}
+
+function setBlogEditorContent(content) {
+  const editor = getBlogEditor();
+  const textarea = document.getElementById('bp-content');
+  if (!editor || !textarea) return;
+  const html = blogContentLooksLikeHtml(content) ? sanitizeBlogHtml(content) : plainTextToBlogHtml(content);
+  editor.innerHTML = html;
+  textarea.value = html;
+  updateBlogEditorStats();
+}
+
+function focusBlogEditor() {
+  const editor = getBlogEditor();
+  if (editor) editor.focus();
+}
+
+function blogEditorCommand(command, value = null) {
+  focusBlogEditor();
+  document.execCommand(command, false, value);
+  syncBlogEditorToTextarea();
+}
+
+function blogEditorSetBlock(tag) {
+  blogEditorCommand('formatBlock', tag);
+}
+
+function openEditorAssetModal(options) {
+  editorAssetDialogState = options || null;
+  document.getElementById('editor-asset-title').textContent = options.title || 'Insérer un élément';
+  document.getElementById('editor-asset-helper').textContent = options.helper || '';
+  document.getElementById('editor-asset-primary-label').textContent = options.primaryLabel || 'URL';
+  document.getElementById('editor-asset-primary').value = options.primaryValue || '';
+  document.getElementById('editor-asset-primary').placeholder = options.primaryPlaceholder || '';
+  const secondaryField = document.getElementById('editor-asset-secondary-field');
+  const secondaryInput = document.getElementById('editor-asset-secondary');
+  if (options.secondaryHidden) {
+    secondaryField.hidden = true;
+    secondaryInput.value = '';
+  } else {
+    secondaryField.hidden = false;
+    document.getElementById('editor-asset-secondary-label').textContent = options.secondaryLabel || 'Texte';
+    secondaryInput.value = options.secondaryValue || '';
+    secondaryInput.placeholder = options.secondaryPlaceholder || '';
+  }
+  document.getElementById('editor-asset-submit').textContent = options.submitLabel || 'Insérer';
+  openModal('modal-editor-asset');
+  setTimeout(function () {
+    document.getElementById('editor-asset-primary').focus();
+  }, 0);
+}
+
+function closeEditorAssetModal() {
+  editorAssetDialogState = null;
+  closeModal('modal-editor-asset');
+}
+
+function submitEditorAssetForm(event) {
+  event.preventDefault();
+  if (!editorAssetDialogState || typeof editorAssetDialogState.onSubmit !== 'function') {
+    closeEditorAssetModal();
+    return;
+  }
+  const primaryValue = document.getElementById('editor-asset-primary').value.trim();
+  const secondaryValue = document.getElementById('editor-asset-secondary').value.trim();
+  const result = editorAssetDialogState.onSubmit({ primaryValue, secondaryValue });
+  if (result === false) return;
+  closeEditorAssetModal();
+}
+
+function blogEditorInsertLink() {
+  openEditorAssetModal({
+    title: 'Insérer un lien',
+    helper: 'Accepte les URLs internes, externes, mailto et tel.',
+    primaryLabel: 'URL du lien',
+    primaryPlaceholder: 'https://... ou /actualites/...',
+    secondaryHidden: true,
+    submitLabel: 'Insérer le lien',
+    onSubmit: function ({ primaryValue }) {
+      const safeUrl = sanitizeBlogUrl(primaryValue, { allowMailto: true, allowTel: true });
+      if (!safeUrl) {
+        toast('URL de lien invalide.', 'error');
+        return false;
+      }
+      blogEditorCommand('createLink', safeUrl);
+      return true;
+    },
+  });
+}
+
+function insertBlogEditorHtml(html) {
+  focusBlogEditor();
+  document.execCommand('insertHTML', false, sanitizeBlogHtml(html));
+  syncBlogEditorToTextarea();
+}
+
+function blogEditorInsertImage() {
+  openEditorAssetModal({
+    title: 'Insérer une image',
+    helper: 'Utilisez une URL publique ou un chemin du site.',
+    primaryLabel: 'URL de l\'image',
+    primaryPlaceholder: 'https://... ou /uploads/...',
+    secondaryLabel: 'Texte alternatif',
+    secondaryPlaceholder: 'Décrivez brièvement l\'image',
+    submitLabel: 'Insérer l\'image',
+    onSubmit: function ({ primaryValue, secondaryValue }) {
+      const safeUrl = sanitizeBlogUrl(primaryValue);
+      if (!safeUrl) {
+        toast('URL d\'image invalide.', 'error');
+        return false;
+      }
+      insertBlogEditorHtml(`<figure><img src="${escapeHtml(safeUrl)}" alt="${escapeHtml(secondaryValue)}"></figure>`);
+      return true;
+    },
+  });
+}
+
+function blogEditorInsertSeparator() {
+  insertBlogEditorHtml('<hr>');
+}
+
+async function uploadBlogInlineImage(inputEl) {
+  const file = inputEl.files[0];
+  if (!file) return;
+  inputEl.value = '';
+  try {
+    const fd = new FormData();
+    fd.append('file', file);
+    const res = await fetch('/upload.php', { method: 'POST', headers: { 'X-Admin-Token': SERVER_TOKEN }, body: fd });
+    const data = await res.json().catch(() => null);
+    if (!res.ok || !data || data.error) throw new Error((data && data.error) || 'Erreur serveur');
+    const defaultAlt = file.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').trim();
+    openEditorAssetModal({
+      title: 'Image téléversée',
+      helper: 'Ajoutez un texte alternatif avant insertion dans l\'article.',
+      primaryLabel: 'URL de l\'image',
+      primaryValue: data.url,
+      secondaryLabel: 'Texte alternatif',
+      secondaryValue: defaultAlt,
+      submitLabel: 'Insérer l\'image',
+      onSubmit: function ({ primaryValue, secondaryValue }) {
+        insertBlogEditorHtml(`<figure><img src="${escapeHtml(primaryValue)}" alt="${escapeHtml(secondaryValue)}"></figure>`);
+        toast('Image insérée dans l\'article', 'success');
+        return true;
+      },
+    });
+  } catch (error) {
+    toast('Impossible d\'insérer l\'image : ' + error.message, 'error');
+  }
+}
+
+function parseBlogDate(value) {
+  const timestamp = new Date(value || '').getTime();
+  return Number.isFinite(timestamp) ? timestamp : 0;
+}
+
+function getBlogAdminStatusMeta(post) {
+  const status = String(post && post.status || 'draft');
+  const publishedAt = parseBlogDate(post && post.publishedAt);
+  if (status === 'published' && publishedAt && publishedAt > Date.now()) {
+    return { code: 'scheduled', label: 'Programmé', className: 'badge-orange' };
+  }
+  if (status === 'published') {
+    return { code: 'published', label: 'Publié', className: 'badge-green' };
+  }
+  return { code: 'draft', label: 'Brouillon', className: 'badge-gray' };
+}
+
 /* ---------- Init ---------- */
 async function init() {
   serverStorageReady = await serverLoadAll();
@@ -2493,6 +3363,9 @@ async function init() {
   state.blogCategories    = load(KEYS.blogCategories) || [];
   state.promoCodes        = load(KEYS.promoCodes) || [];
   state.billingSettings   = normalizeBillingSettings(load(KEYS.billingSettings) || {});
+  state.adminAccounts     = normalizeAdminAccounts(load(KEYS.adminAccounts) || []);
+
+  await ensureAdminAccountsSeeded();
 
   try {
     await loadBillingSettings();
@@ -2502,13 +3375,12 @@ async function init() {
     return;
   }
 
-  const creds = load(KEYS.admin);
-  if (!creds) {
-    document.getElementById('guard-error').textContent = 'Première connexion — choisissez vos identifiants et enregistrez-les.';
+  if (!state.adminAccounts.length) {
+    document.getElementById('guard-error').textContent = 'Première connexion — créez le premier compte administrateur.';
   }
 
   // Check session
-  const session = sessionStorage.getItem('castaneas_admin_session');
+  const session = sessionStorage.getItem(SESSION_KEYS.authenticated);
   if (session === 'ok') {
     showApp();
   }
@@ -2521,6 +3393,7 @@ async function serverLoadAll() {
     { s: 'recipes',    l: KEYS.recipes },
     { s: 'blog_posts', l: KEYS.blogPosts },
     { s: 'blog_categories', l: KEYS.blogCategories },
+    { s: 'admin_accounts', l: KEYS.adminAccounts },
     { s: 'homepage',   l: KEYS.homepage },
     { s: 'promo_codes', l: KEYS.promoCodes },
     { s: 'orders',     l: KEYS.orders },
@@ -2556,40 +3429,56 @@ async function serverLoadAll() {
 /* ---------- Guard ---------- */
 document.getElementById('guard-form').addEventListener('submit', async function(e) {
   e.preventDefault();
-  const creds = load(KEYS.admin);
   const user = document.getElementById('guard-user').value.trim();
   const pass = document.getElementById('guard-pass').value;
   const hashed = await hashAdmin(pass);
+  let account = findAdminAccountByUsername(user);
 
-  if (!creds) {
-    // Première connexion : enregistrer les identifiants
+  if (!state.adminAccounts.length) {
     if (!user || pass.length < 8) {
       document.getElementById('guard-error').textContent = 'Choisissez un nom d\'utilisateur et un mot de passe (8 caractères min).';
       return;
     }
-    save(KEYS.admin, { user, pass: hashed });
-  } else if (user !== creds.user || hashed !== creds.pass) {
+    const created = {
+      id: 'admin-' + Date.now(),
+      username: user,
+      displayName: user,
+      pass: hashed,
+      createdAt: currentIsoString(),
+      updatedAt: currentIsoString(),
+    };
+    const previous = state.adminAccounts.map(entry => ({ ...entry }));
+    state.adminAccounts = [created];
+    const ok = await save(KEYS.adminAccounts, state.adminAccounts);
+    if (!ok) {
+      state.adminAccounts = previous;
+      return;
+    }
+    account = created;
+    localStorage.setItem(KEYS.admin, JSON.stringify({ user, pass: hashed }));
+  } else if (!account || hashed !== account.pass) {
     document.getElementById('guard-error').textContent = 'Identifiant ou mot de passe incorrect.';
     return;
   }
 
-  sessionStorage.setItem('castaneas_admin_session', 'ok');
-  document.getElementById('sidebar-name').textContent = user.charAt(0).toUpperCase() + user.slice(1);
-  document.getElementById('sidebar-avatar').textContent = user.charAt(0).toUpperCase();
-  document.getElementById('setting-user').value = user;
+  setCurrentAdminSession(account);
+  applyCurrentAdminUi();
   showApp();
 });
 
 function showApp() {
   document.getElementById('admin-guard').style.display = 'none';
   document.getElementById('admin-app').style.display = 'flex';
+  applyCurrentAdminUi();
   renderSettings();
   renderAll();
   loadCustomersFromServer();
 }
 
 function logout() {
-  sessionStorage.removeItem('castaneas_admin_session');
+  sessionStorage.removeItem(SESSION_KEYS.authenticated);
+  sessionStorage.removeItem(SESSION_KEYS.adminId);
+  sessionStorage.removeItem(SESSION_KEYS.adminUsername);
   location.reload();
 }
 
@@ -2639,10 +3528,41 @@ function activatePanel(panel, options = {}) {
   runPanelRenderHooks(panel);
 }
 
+const ADMIN_MOBILE_MEDIA = window.matchMedia('(max-width: 900px)');
+
+function setAdminSidebarOpen(isOpen) {
+  const app = document.getElementById('admin-app');
+  if (!app) return;
+  const shouldOpen = !!isOpen && ADMIN_MOBILE_MEDIA.matches;
+  app.classList.toggle('sidebar-open', shouldOpen);
+  document.body.classList.toggle('admin-sidebar-open', shouldOpen);
+  const toggle = document.getElementById('admin-sidebar-toggle');
+  if (toggle) toggle.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+}
+
+function closeAdminSidebar() {
+  setAdminSidebarOpen(false);
+}
+
+function toggleAdminSidebar() {
+  const app = document.getElementById('admin-app');
+  if (!app || !ADMIN_MOBILE_MEDIA.matches) return;
+  setAdminSidebarOpen(!app.classList.contains('sidebar-open'));
+}
+
+ADMIN_MOBILE_MEDIA.addEventListener('change', event => {
+  if (!event.matches) closeAdminSidebar();
+});
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') closeAdminSidebar();
+});
+
 function switchPanel(el) {
   const panel = el.dataset.panel;
   if (panel !== 'order-detail') selectedOrderId = null;
   activatePanel(panel);
+  closeAdminSidebar();
 }
 
 /* ---------- Render ALL ---------- */
@@ -5179,9 +6099,8 @@ function renderBlogPosts() {
     return rightDate - leftDate;
   }).map(post => {
     const primaryCategory = categoriesById[post.primaryCategoryId] || categoriesById[(post.categoryIds || [])[0]] || null;
-    const statusLabel = post.status === 'published'
-      ? '<span class="badge badge-green">Publié</span>'
-      : '<span class="badge badge-gray">Brouillon</span>';
+    const statusMeta = getBlogAdminStatusMeta(post);
+    const statusLabel = '<span class="badge ' + statusMeta.className + '">' + statusMeta.label + '</span>';
     const seoLabel = post.metaDescription ? 'Meta OK' : 'Meta à compléter';
     return `<tr>
       <td>
@@ -5390,11 +6309,13 @@ function openBlogPostModal(id = null) {
     document.getElementById('bp-featured').value = post.featured ? '1' : '0';
     document.getElementById('bp-excerpt').value = post.excerpt || '';
     document.getElementById('bp-cover-image').value = post.coverImage || '';
-    document.getElementById('bp-content').value = post.content || '';
+    setBlogEditorContent(post.content || '');
     document.getElementById('bp-meta-title').value = post.metaTitle || '';
     document.getElementById('bp-meta-description').value = post.metaDescription || '';
     selectedIds = Array.isArray(post.categoryIds) ? [...post.categoryIds] : [];
     preferredPrimary = post.primaryCategoryId || selectedIds[0] || '';
+  } else {
+    setBlogEditorContent('');
   }
 
   renderBlogPostImagePicker();
@@ -5404,7 +6325,7 @@ function openBlogPostModal(id = null) {
   openModal('modal-blog-post');
 }
 
-function saveBlogPost(e) {
+async function saveBlogPost(e) {
   e.preventDefault();
   const id = editingBlogPost || 'blog-post-' + Date.now();
   const title = document.getElementById('bp-title').value.trim();
@@ -5423,7 +6344,11 @@ function saveBlogPost(e) {
 
   const status = document.getElementById('bp-status').value;
   const publishedAt = fromDatetimeLocalValue(document.getElementById('bp-published-at').value) || (status === 'published' ? currentIsoString() : '');
-  const content = document.getElementById('bp-content').value.trim();
+  const content = syncBlogEditorToTextarea().trim();
+  if (!content) {
+    toast('Le contenu de l\'article ne peut pas être vide.', 'error');
+    return;
+  }
   const readingMinutes = parseInt(document.getElementById('bp-reading-minutes').value, 10) || estimateReadingMinutes(content);
   const post = {
     id,
@@ -5445,10 +6370,15 @@ function saveBlogPost(e) {
     metaDescription: document.getElementById('bp-meta-description').value.trim(),
   };
 
+  const previous = state.blogPosts.map(entry => ({ ...entry }));
   const idx = state.blogPosts.findIndex(entry => entry.id === id);
   if (idx >= 0) state.blogPosts[idx] = post;
   else state.blogPosts.push(post);
-  save(KEYS.blogPosts, state.blogPosts);
+  const ok = await save(KEYS.blogPosts, state.blogPosts);
+  if (!ok) {
+    state.blogPosts = previous;
+    return;
+  }
   closeModal('modal-blog-post');
   renderBlog();
   updateBadges();
