@@ -326,7 +326,6 @@ tbody tr:last-child td { border-bottom: none; }
   font-family: var(--sans); font-size: 14px; outline: none; background: var(--cream-soft);
   color: var(--ink); transition: border .15s, box-shadow .15s;
 }
-.form-field input:focus,
 .form-field select:focus,
 .form-field textarea:focus {
   border-color: var(--green); box-shadow: 0 0 0 3px rgba(92,117,96,.12);
@@ -351,7 +350,6 @@ tbody tr:last-child td { border-bottom: none; }
 .admin-account-meta { display: grid; gap: 4px; }
 .admin-account-name { font-size: 14px; font-weight: 800; color: var(--ink); }
 .admin-account-sub { font-size: 12px; color: var(--muted); }
-.admin-account-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .admin-inline-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 .admin-muted-box {
   padding: 14px 16px;
@@ -438,11 +436,8 @@ tbody tr:last-child td { border-bottom: none; }
   background: var(--cream-soft);
 }
 .img-drop:hover, .img-drop.drag { border-color: var(--green); background: var(--green-light); }
-.img-drop svg { width: 32px; height: 32px; color: var(--muted); margin: 0 auto 8px; }
 .img-drop p { font-size: 13px; color: var(--muted); }
 .img-drop strong { color: var(--green); }
-.img-preview-wrap { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
-.img-slot { position: relative; display: inline-flex; }
 .img-remove {
   display: none; position: absolute; top: -5px; right: -5px;
   width: 18px; height: 18px; border-radius: 50%;
@@ -491,9 +486,7 @@ tbody tr:last-child td { border-bottom: none; }
 .comp-mode-panels { display: flex; flex-direction: column; gap: 10px; }
 .comp-mode-panel[hidden] { display: none !important; }
 .product-comp-preview {
-  margin-top: 10px;
   padding: 18px;
-  border-radius: 18px;
   border: 1.5px solid var(--line);
   background: linear-gradient(180deg, #f7efe4 0%, #f3e7d6 100%);
   display: flex;
@@ -609,22 +602,14 @@ tbody tr:last-child td { border-bottom: none; }
 .emoji-btn:hover { background: var(--cream-soft); }
 .emoji-btn.selected { border-color: var(--green); background: var(--green-light); }
 
-/* ---- ORDERS ---- */
 .order-row-expand { background: var(--cream-soft); }
 .order-row-expand td { padding: 0; }
-.order-expand-inner { padding: 16px 24px; display: flex; gap: 16px; flex-wrap: wrap; }
-.order-item { display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 10px; padding: 10px 14px; border: 1.5px solid var(--line); }
 .order-item img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
 .order-item-name { font-size: 13px; font-weight: 700; }
 .order-item-meta { font-size: 11px; color: var(--muted); }
-.order-item-price { font-weight: 700; margin-left: 16px; font-family: var(--serif); font-size: 15px; }
 
 .order-detail-shell { display: grid; gap: 20px; }
 .order-detail-hero {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 18px;
   padding: 24px 28px;
   background: linear-gradient(135deg, #fff 0%, #f7efe4 100%);
   border: 1.5px solid var(--line);
@@ -2832,10 +2817,12 @@ function normalizeAdminAccount(account, index = 0) {
   const username = String(account.username || account.user || '').trim();
   const pass = String(account.pass || '').trim();
   if (!username || !pass) return null;
+  const role = String(account.role || '').trim() === 'super_admin' ? 'super_admin' : (index === 0 ? 'super_admin' : 'editor');
   return {
     id: String(account.id || ('admin-' + (index + 1))),
     username,
     displayName: String(account.displayName || account.name || username).trim() || username,
+    role,
     pass,
     createdAt: String(account.createdAt || account.updatedAt || currentIsoString()),
     updatedAt: String(account.updatedAt || account.createdAt || currentIsoString()),
@@ -2845,13 +2832,17 @@ function normalizeAdminAccount(account, index = 0) {
 function normalizeAdminAccounts(accounts) {
   if (!Array.isArray(accounts)) return [];
   const seen = new Set();
-  return accounts.map(normalizeAdminAccount).filter(account => {
+  const normalized = accounts.map(normalizeAdminAccount).filter(account => {
     if (!account) return false;
     const key = account.username.toLowerCase();
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
   });
+  if (normalized.length && !normalized.some(account => account.role === 'super_admin')) {
+    normalized[0].role = 'super_admin';
+  }
+  return normalized;
 }
 
 function getLegacyAdminCredentials() {
@@ -2872,6 +2863,7 @@ async function ensureAdminAccountsSeeded() {
     id: 'admin-' + Date.now(),
     username: legacy.user,
     displayName: legacy.user,
+    role: 'super_admin',
     pass: legacy.pass,
     createdAt: currentIsoString(),
     updatedAt: currentIsoString(),
@@ -2893,12 +2885,38 @@ function getCurrentAdmin() {
     || null;
 }
 
+function isSuperAdmin(account = null) {
+  const target = account || getCurrentAdmin();
+  return !!target && target.role === 'super_admin';
+}
+
+function getAdminRoleLabel(account = null) {
+  return isSuperAdmin(account) ? 'Administrateur principal' : 'Editeur';
+}
+
+function canManageAdminAccounts() {
+  return isSuperAdmin();
+}
+
+function canDeleteResource(resourceType) {
+  if (resourceType === 'blog_post') return true;
+  return isSuperAdmin();
+}
+
+function assertDeletePermission(resourceType) {
+  if (canDeleteResource(resourceType)) return true;
+  toast('Ce compte ne peut supprimer que des articles de blog.', 'error');
+  return false;
+}
+
 function applyCurrentAdminUi() {
   const currentAdmin = getCurrentAdmin();
   const displayName = currentAdmin ? (currentAdmin.displayName || currentAdmin.username) : 'Admin';
   const avatar = displayName.trim().charAt(0).toUpperCase() || 'A';
   document.getElementById('sidebar-name').textContent = displayName;
   document.getElementById('sidebar-avatar').textContent = avatar;
+  const roleEl = document.getElementById('sidebar-role');
+  if (roleEl) roleEl.textContent = getAdminRoleLabel(currentAdmin);
 }
 
 function setCurrentAdminSession(account) {
@@ -2921,6 +2939,29 @@ function resetAdminAccountForm() {
   if (passInput) passInput.value = '';
 }
 
+function syncAdminAccountFormAccess() {
+  const canManage = canManageAdminAccounts();
+  const form = document.getElementById('admin-account-form');
+  if (!form) return;
+  form.querySelectorAll('input, button').forEach(el => {
+    if (el.id === 'setting-admin-id') return;
+    el.disabled = !canManage;
+  });
+  const helperId = 'admin-account-access-note';
+  let note = document.getElementById(helperId);
+  if (!canManage) {
+    if (!note) {
+      note = document.createElement('div');
+      note.id = helperId;
+      note.className = 'admin-muted-box';
+      form.before(note);
+    }
+    note.textContent = 'Les comptes éditeurs ne peuvent pas gérer les comptes administrateur.';
+  } else if (note) {
+    note.remove();
+  }
+}
+
 function renderAdminAccounts() {
   const list = document.getElementById('admin-accounts-list');
   if (!list) return;
@@ -2931,20 +2972,26 @@ function renderAdminAccounts() {
   }
   list.innerHTML = state.adminAccounts.map(account => {
     const isCurrent = currentAdmin && currentAdmin.id === account.id;
+    const canManage = canManageAdminAccounts();
     return `<div class="admin-account-item${isCurrent ? ' is-current' : ''}">
       <div class="admin-account-meta">
         <div class="admin-account-name">${escapeHtml(account.displayName || account.username)}${isCurrent ? ' <span class="badge badge-green">Connecté</span>' : ''}</div>
-        <div class="admin-account-sub">@${escapeHtml(account.username)} · mis à jour le ${escapeHtml(formatDateTime(account.updatedAt || account.createdAt || ''))}</div>
+        <div class="admin-account-sub">@${escapeHtml(account.username)} · ${escapeHtml(getAdminRoleLabel(account))} · mis à jour le ${escapeHtml(formatDateTime(account.updatedAt || account.createdAt || ''))}</div>
       </div>
       <div class="admin-account-actions">
-        <button type="button" class="btn btn-secondary btn-sm" onclick="openAdminAccountEditor('${account.id}')">Modifier</button>
-        <button type="button" class="btn btn-danger btn-sm" onclick="deleteAdminAccount('${account.id}')" ${isCurrent ? 'disabled' : ''}>Supprimer</button>
+        ${canManage ? `<button type="button" class="btn btn-secondary btn-sm" onclick="openAdminAccountEditor('${account.id}')">Modifier</button>
+        <button type="button" class="btn btn-danger btn-sm" onclick="deleteAdminAccount('${account.id}')" ${isCurrent ? 'disabled' : ''}>Supprimer</button>` : ''}
       </div>
     </div>`;
   }).join('');
+  syncAdminAccountFormAccess();
 }
 
 function openAdminAccountEditor(id) {
+  if (!canManageAdminAccounts()) {
+    toast('Seul l\'administrateur principal peut modifier les comptes admin.', 'error');
+    return;
+  }
   const account = state.adminAccounts.find(entry => entry.id === id);
   if (!account) return;
   editingAdminAccount = id;
@@ -2956,6 +3003,10 @@ function openAdminAccountEditor(id) {
 
 async function saveAdminAccount(e) {
   e.preventDefault();
+  if (!canManageAdminAccounts()) {
+    toast('Seul l\'administrateur principal peut gérer les comptes admin.', 'error');
+    return;
+  }
   const id = editingAdminAccount || document.getElementById('setting-admin-id').value || ('admin-' + Date.now());
   const username = document.getElementById('setting-admin-user').value.trim();
   const displayName = document.getElementById('setting-admin-name').value.trim() || username;
@@ -2986,6 +3037,7 @@ async function saveAdminAccount(e) {
     id,
     username,
     displayName,
+    role: existing ? existing.role : 'editor',
     pass: hashedPass,
     createdAt: existing ? existing.createdAt : currentIsoString(),
     updatedAt: currentIsoString(),
@@ -3014,6 +3066,10 @@ async function saveAdminAccount(e) {
 }
 
 async function deleteAdminAccount(id) {
+  if (!canManageAdminAccounts()) {
+    toast('Seul l\'administrateur principal peut supprimer un compte admin.', 'error');
+    return;
+  }
   const currentAdmin = getCurrentAdmin();
   if (currentAdmin && currentAdmin.id === id) {
     toast('Vous ne pouvez pas supprimer le compte actuellement connecté.', 'error');
@@ -3443,6 +3499,7 @@ document.getElementById('guard-form').addEventListener('submit', async function(
       id: 'admin-' + Date.now(),
       username: user,
       displayName: user,
+      role: 'super_admin',
       pass: hashed,
       createdAt: currentIsoString(),
       updatedAt: currentIsoString(),
@@ -3852,6 +3909,7 @@ function renderPromoCodes() {
   const tbody = document.getElementById('promo-codes-tbody');
   if (!tbody) return;
   state.promoCodes = (Array.isArray(state.promoCodes) ? state.promoCodes : []).map(normalizePromoCodeRecord);
+  const canDeletePromo = canDeleteResource('promo_code');
   if (!state.promoCodes.length) {
     tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.59 13.41 12 22l-8.59-8.59A2 2 0 0 1 3 12V5a2 2 0 0 1 2-2h7a2 2 0 0 1 1.41.59L22 12a2 2 0 0 1 0 2.82Z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg><h3>Aucun code promo</h3><p>Créez votre premier code promo pour l’activer sur le panier.</p></div></td></tr>';
     updateBadges();
@@ -3866,7 +3924,7 @@ function renderPromoCodes() {
       <td>${escapeHtml(promoPeriodLabel(promo))}</td>
       <td>${promo.usedCount || 0}${promo.usageLimit ? ' / ' + promo.usageLimit : ''}</td>
       <td>${promoStatusBadge(promo)}</td>
-      <td><div class="td-actions"><button class="btn-icon" onclick="editPromoCode('${promo.id}')" title="Modifier"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="btn-icon" onclick="deletePromoCode('${promo.id}')" title="Supprimer" style="color:var(--corail);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></td>
+      <td><div class="td-actions"><button class="btn-icon" onclick="editPromoCode('${promo.id}')" title="Modifier"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>${canDeletePromo ? `<button class="btn-icon" onclick="deletePromoCode('${promo.id}')" title="Supprimer" style="color:var(--corail);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>` : ''}</div></td>
     </tr>`).join('');
   updateBadges();
   renderPromoPreview();
@@ -3946,6 +4004,7 @@ function savePromoCode(event) {
 }
 
 function deletePromoCode(id) {
+  if (!assertDeletePermission('promo_code')) return;
   const promo = state.promoCodes.find(item => item.id === id);
   if (!promo) return;
   if (!confirm(`Supprimer le code promo ${promo.code} ?`)) return;
@@ -3987,6 +4046,7 @@ function renderDashboard() {
 function renderProducts(filter = '') {
   const tbody = document.getElementById('products-tbody');
   let list = state.products;
+  const canDeleteProduct = canDeleteResource('product');
   if (filter) list = list.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
 
   if (!list.length) {
@@ -4010,9 +4070,9 @@ function renderProducts(filter = '') {
         <button class="btn-icon" onclick="editProduct('${p.id}')" title="Modifier">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
         </button>
-        <button class="btn-icon" onclick="deleteProduct('${p.id}')" title="Supprimer" style="color:var(--corail);">
+        ${canDeleteProduct ? `<button class="btn-icon" onclick="deleteProduct('${p.id}')" title="Supprimer" style="color:var(--corail);">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-        </button>
+        </button>` : ''}
       </div></td>
     </tr>`;
   }).join('');
@@ -4023,6 +4083,7 @@ function filterProducts(v) { renderProducts(v); }
 /* ---------- Categories ---------- */
 function renderCategories() {
   const grid = document.getElementById('cat-grid');
+  const canDeleteCategory = canDeleteResource('category');
   if (!state.categories.length) {
     grid.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><h3>Aucune catégorie</h3><p>Créez votre première catégorie pour générer une page</p><button class="btn btn-primary" onclick="openCatModal()">+ Nouvelle catégorie</button></div>';
     return;
@@ -4047,9 +4108,9 @@ function renderCategories() {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             Aperçu
           </button>
-          <button class="btn btn-danger btn-sm" onclick="deleteCat('${c.id}')">
+          ${canDeleteCategory ? `<button class="btn btn-danger btn-sm" onclick="deleteCat('${c.id}')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
-          </button>
+          </button>` : ''}
         </div>
       </div>
     </div>`;
@@ -4060,6 +4121,7 @@ function renderCategories() {
 function renderOrders(filter = '') {
   const tbody = document.getElementById('orders-tbody');
   let list = state.orders;
+  const canDeleteOrder = canDeleteResource('order');
   if (filter) list = list.filter(o => o.id.toLowerCase().includes(filter.toLowerCase()) || o.customer.toLowerCase().includes(filter.toLowerCase()));
 
   if (!list.length) {
@@ -4090,9 +4152,9 @@ function renderOrders(filter = '') {
         <button class="btn-icon" onclick="event.stopPropagation();printOrderDeliverySlip('${o.id}')" title="Bon de livraison">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/><line x1="8" y1="17" x2="16" y2="17"/><line x1="8" y1="20" x2="13" y2="20"/></svg>
         </button>
-        <button class="btn-icon" onclick="event.stopPropagation();deleteOrder('${o.id}')" title="Supprimer" style="color:var(--corail);">
+        ${canDeleteOrder ? `<button class="btn-icon" onclick="event.stopPropagation();deleteOrder('${o.id}')" title="Supprimer" style="color:var(--corail);">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
-        </button>
+        </button>` : ''}
       </div></td>
     </tr>
   `).join('');
@@ -5085,6 +5147,7 @@ async function updateOrderFulfillmentStatus(id, fulfillmentStatus) {
 }
 function filterOrders(v) { renderOrders(v); }
 function deleteOrder(id) {
+  if (!assertDeletePermission('order')) return;
   if (!confirm('Supprimer cette commande ?')) return;
   const confirmation = prompt('Deuxième validation : tapez la référence de la commande pour confirmer la suppression.', id);
   if (confirmation !== id) {
@@ -5507,6 +5570,7 @@ function saveProduct(e) {
 }
 
 function deleteProduct(id) {
+  if (!assertDeletePermission('product')) return;
   if (!confirm('Supprimer ce produit définitivement ?')) return;
   state.products = state.products.filter(p => p.id !== id);
   save(KEYS.products, state.products);
@@ -5813,6 +5877,7 @@ function saveCat(e) {
 }
 
 function deleteCat(id) {
+  if (!assertDeletePermission('category')) return;
   const cat = state.categories.find(c => c.id === id);
   if (!cat) return;
   const count = state.products.filter(p => p.category === id).length;
@@ -6051,6 +6116,7 @@ function renderBlog() {
 function renderBlogCategories() {
   const tbody = document.getElementById('blog-categories-tbody');
   if (!tbody) return;
+  const canDeleteBlogCategory = canDeleteResource('blog_category');
   if (!state.blogCategories.length) {
     tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--muted);">Aucune catégorie de blog — créez la première.</td></tr>';
     return;
@@ -6077,7 +6143,7 @@ function renderBlogCategories() {
         <div class="action-btns">
           <a href="/actualites/categorie/${encodeURIComponent(category.slug)}" target="_blank" class="btn btn-secondary btn-sm">Voir</a>
           <button class="btn btn-secondary btn-sm" onclick="openBlogCategoryModal('${category.id}')">Modifier</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteBlogCategory('${category.id}')">Supprimer</button>
+          ${canDeleteBlogCategory ? `<button class="btn btn-danger btn-sm" onclick="deleteBlogCategory('${category.id}')">Supprimer</button>` : ''}
         </div>
       </td>
     </tr>`;
@@ -6179,6 +6245,7 @@ function saveBlogCategory(e) {
 }
 
 function deleteBlogCategory(id) {
+  if (!assertDeletePermission('blog_category')) return;
   if (state.blogPosts.some(post => (post.categoryIds || []).includes(id))) {
     toast('Cette catégorie est encore utilisée par des articles.', 'error');
     return;
@@ -6386,6 +6453,7 @@ async function saveBlogPost(e) {
 }
 
 function deleteBlogPost(id) {
+  if (!assertDeletePermission('blog_post')) return;
   if (!confirm('Supprimer cet article définitivement ?')) return;
   state.blogPosts = state.blogPosts.filter(entry => entry.id !== id);
   save(KEYS.blogPosts, state.blogPosts);
@@ -6398,6 +6466,7 @@ function deleteBlogPost(id) {
 function renderRecipes() {
   const tbody = document.getElementById('recipes-tbody');
   if (!tbody) return;
+  const canDeleteRecipe = canDeleteResource('recipe');
   if (!state.recipes.length) {
     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted);">Aucune recette — créez la première !</td></tr>';
     return;
@@ -6423,7 +6492,7 @@ function renderRecipes() {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </a>
           <button class="btn btn-secondary btn-sm" onclick="editRecipe('${r.id}')">Modifier</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteRecipe('${r.id}')">Supprimer</button>
+          ${canDeleteRecipe ? `<button class="btn btn-danger btn-sm" onclick="deleteRecipe('${r.id}')">Supprimer</button>` : ''}
         </div>
       </td>
     </tr>`;
@@ -6560,6 +6629,7 @@ function saveRecipe(e) {
 }
 
 function deleteRecipe(id) {
+  if (!assertDeletePermission('recipe')) return;
   if (!confirm('Supprimer cette recette définitivement ?')) return;
   state.recipes = state.recipes.filter(r => r.id !== id);
   save(KEYS.recipes, state.recipes);
