@@ -325,13 +325,14 @@ function castaneas_blog_render_content($content) {
     }
 
     if (!class_exists('DOMDocument')) {
-        return strip_tags($content, '<p><br><strong><em><u><blockquote><ul><ol><li><h2><h3><h4><a><img><figure><figcaption><hr>');
+        return strip_tags($content, '<p><br><strong><b><em><u><blockquote><ul><ol><li><h2><h3><h4><a><img><figure><figcaption><hr>');
     }
 
     $allowed = [
         'p' => [],
         'br' => [],
         'strong' => [],
+        'b' => [],
         'em' => [],
         'u' => [],
         'blockquote' => [],
@@ -347,6 +348,7 @@ function castaneas_blog_render_content($content) {
         'figcaption' => [],
         'hr' => [],
     ];
+    $alignable = ['p' => true, 'h2' => true, 'h3' => true, 'h4' => true, 'li' => true, 'blockquote' => true];
 
     $source = new DOMDocument('1.0', 'UTF-8');
     libxml_use_internal_errors(true);
@@ -403,6 +405,13 @@ function castaneas_blog_render_content($content) {
             }
             $clean->setAttribute('src', $src);
             $clean->setAttribute('alt', trim((string) $node->getAttribute('alt')));
+        }
+
+        if (isset($alignable[$tag])) {
+            $align = strtolower(trim((string) $node->getAttribute('style')));
+            if (preg_match('/text-align:\s*(left|right|center|justify)/', $align, $m)) {
+                $clean->setAttribute('style', 'text-align: ' . $m[1] . ';');
+            }
         }
 
         foreach ($node->childNodes as $childNode) {

@@ -394,6 +394,9 @@ tbody tr:last-child td { border-bottom: none; }
   color: var(--brown-deep);
   margin: 1.2em 0 .55em;
 }
+.blog-editor-surface h2 { font-size: 30px; }
+.blog-editor-surface h3 { font-size: 23px; }
+.blog-editor-surface h4 { font-size: 18px; }
 .blog-editor-surface p { margin: 0 0 1em; }
 .blog-editor-surface ul,
 .blog-editor-surface ol { margin: 0 0 1em 1.4em; }
@@ -2509,6 +2512,7 @@ tbody tr:last-child td { border-bottom: none; }
               <button type="button" class="btn btn-secondary btn-sm" onclick="blogEditorCommand('insertUnorderedList')">Liste</button>
               <button type="button" class="btn btn-secondary btn-sm" onclick="blogEditorCommand('insertOrderedList')">Liste num.</button>
               <button type="button" class="btn btn-secondary btn-sm" onclick="blogEditorCommand('formatBlock', 'blockquote')">Citation</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="blogEditorCommand('justifyFull')">Justifier</button>
               <button type="button" class="btn btn-secondary btn-sm" onclick="blogEditorInsertLink()">Lien</button>
               <button type="button" class="btn btn-secondary btn-sm" onclick="blogEditorCommand('unlink')">Retirer lien</button>
               <button type="button" class="btn btn-secondary btn-sm" onclick="blogEditorInsertImage()">Photo URL</button>
@@ -3128,6 +3132,7 @@ function sanitizeBlogHtml(html) {
   const container = parsed.body.firstElementChild;
   const allowed = {
     a: ['href'],
+    b: [],
     blockquote: [],
     br: [],
     em: [],
@@ -3146,6 +3151,11 @@ function sanitizeBlogHtml(html) {
     u: [],
     ul: [],
   };
+  const alignable = new Set(['p', 'h2', 'h3', 'h4', 'li', 'blockquote']);
+  function sanitizeTextAlign(value) {
+    const v = String(value || '').trim().toLowerCase();
+    return ['left', 'right', 'center', 'justify'].includes(v) ? v : '';
+  }
 
   function cleanNode(node, doc) {
     if (node.nodeType === Node.TEXT_NODE) {
@@ -3184,6 +3194,10 @@ function sanitizeBlogHtml(html) {
       if (!src) return null;
       el.setAttribute('src', src);
       el.setAttribute('alt', String(node.getAttribute('alt') || '').trim());
+    }
+    if (alignable.has(tag)) {
+      const align = sanitizeTextAlign(node.style && node.style.textAlign);
+      if (align) el.style.textAlign = align;
     }
 
     Array.from(node.childNodes).forEach(child => {
@@ -3299,7 +3313,28 @@ function submitEditorAssetForm(event) {
   closeEditorAssetModal();
 }
 
+function restoreBlogEditorSelection(range) {
+  const editor = getBlogEditor();
+  if (!editor || !range) return false;
+  editor.focus();
+  const selection = window.getSelection();
+  if (!selection) return false;
+  selection.removeAllRanges();
+  selection.addRange(range);
+  return true;
+}
+
 function blogEditorInsertLink() {
+  const editor = getBlogEditor();
+  const selection = window.getSelection();
+  const hasSelectionInEditor = editor && selection && selection.rangeCount > 0
+    && !selection.isCollapsed
+    && editor.contains(selection.anchorNode);
+  if (!hasSelectionInEditor) {
+    toast('Sélectionnez d\'abord le texte à transformer en lien.', 'error');
+    return;
+  }
+  const savedRange = selection.getRangeAt(0).cloneRange();
   openEditorAssetModal({
     title: 'Insérer un lien',
     helper: 'Accepte les URLs internes, externes, mailto et tel.',
@@ -3313,7 +3348,12 @@ function blogEditorInsertLink() {
         toast('URL de lien invalide.', 'error');
         return false;
       }
-      blogEditorCommand('createLink', safeUrl);
+      if (!restoreBlogEditorSelection(savedRange)) {
+        toast('La sélection a été perdue, réessayez.', 'error');
+        return false;
+      }
+      document.execCommand('createLink', false, safeUrl);
+      syncBlogEditorToTextarea();
       return true;
     },
   });
@@ -3455,7 +3495,9 @@ async function serverLoadAll() {
     { s: 'orders',     l: KEYS.orders },
   ];
 
-  const timeout = new Promise(r => setTimeout(r, 5000));
+  // Timeout must reject: if it wins the race, some keys may still be unloaded
+  // and callers must not treat that as a successful full load (data loss risk on save).
+  const timeout = new Promise((resolve, reject) => setTimeout(() => reject(new Error('timeout')), 12000));
   try {
     await Promise.race([
       Promise.all(allKeys.map(async ({ s, l }) => {
