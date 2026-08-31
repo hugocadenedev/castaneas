@@ -1148,7 +1148,7 @@ tbody tr:last-child td { border-bottom: none; }
           <h2 class="section-title">Commandes</h2>
           <div class="search-box">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" placeholder="Rechercher par référence…" oninput="filterOrders(this.value)">
+            <input type="text" id="orders-search" placeholder="Rechercher par référence…" oninput="filterOrders(this.value)">
           </div>
           <button class="btn btn-secondary btn-sm" onclick="generateFakeOrder()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -2640,6 +2640,10 @@ let recipeSteps = [];
 let selectedOrderId = null;
 let selectedCustomerId = null;
 let serverStorageReady = false;
+const ORDER_REFRESH_INTERVAL_MS = 10000;
+let ordersRefreshTimer = null;
+let ordersRefreshInFlight = false;
+let lastOrdersSignature = '';
 const serverDataCache = {};
 let editorAssetDialogState = null;
 
@@ -3452,6 +3456,7 @@ async function init() {
   state.products          = load(KEYS.products)   || [];
   state.orders            = normalizeOrders(load(KEYS.orders) || []);
   localStorage.setItem(KEYS.orders, JSON.stringify(state.orders));
+  lastOrdersSignature = ordersSignature(state.orders);
   state.imageCatalogMain  = load(KEYS.imagesMain)  || [...DEFAULT_IMAGE_CATALOG];
   state.imageCatalogExtra = load(KEYS.imagesExtra) || [...DEFAULT_IMAGE_CATALOG];
   state.recipes           = load(KEYS.recipes)    || [];
@@ -3572,9 +3577,11 @@ function showApp() {
   renderSettings();
   renderAll();
   loadCustomersFromServer();
+  startOrdersAutoRefresh();
 }
 
 function logout() {
+  stopOrdersAutoRefresh();
   sessionStorage.removeItem(SESSION_KEYS.authenticated);
   sessionStorage.removeItem(SESSION_KEYS.adminId);
   sessionStorage.removeItem(SESSION_KEYS.adminUsername);
@@ -3993,7 +4000,7 @@ function editPromoCode(id) {
   activatePanel('promo-codes');
 }
 
-function savePromoCode(event) {
+async function savePromoCode(event) {
   event.preventDefault();
   const id = document.getElementById('promo-id').value || null;
   const previous = id ? state.promoCodes.find(item => item.id === id) : null;
@@ -4035,23 +4042,29 @@ function savePromoCode(event) {
     return;
   }
 
-  state.promoCodes = id
+  const nextPromoCodes = id
     ? state.promoCodes.map(item => item.id === id ? Object.assign({}, item, record) : item)
     : [record].concat(state.promoCodes);
 
-  save(KEYS.promoCodes, state.promoCodes);
+  const saved = await save(KEYS.promoCodes, nextPromoCodes);
+  if (!saved) return;
+
+  state.promoCodes = nextPromoCodes;
   renderPromoCodes();
   resetPromoForm();
   toast('Code promo enregistré', 'success');
 }
 
-function deletePromoCode(id) {
+async function deletePromoCode(id) {
   if (!assertDeletePermission('promo_code')) return;
   const promo = state.promoCodes.find(item => item.id === id);
   if (!promo) return;
   if (!confirm(`Supprimer le code promo ${promo.code} ?`)) return;
-  state.promoCodes = state.promoCodes.filter(item => item.id !== id);
-  save(KEYS.promoCodes, state.promoCodes);
+  const nextPromoCodes = state.promoCodes.filter(item => item.id !== id);
+  const saved = await save(KEYS.promoCodes, nextPromoCodes);
+  if (!saved) return;
+
+  state.promoCodes = nextPromoCodes;
   renderPromoCodes();
   resetPromoForm();
   toast('Code promo supprimé', 'success');
@@ -4384,6 +4397,26 @@ function normalizeOrderStatuses(order) {
 }
 function normalizeOrders(list) {
   return Array.isArray(list) ? list.map(normalizeOrderStatuses) : [];
+}
+function ordersSignature(orders) {
+  return JSON.stringify((Array.isArray(orders) ? orders : []).map(order => ({
+    id: order.id,
+    status: getOrderPaymentStatus(order),
+    fulfillmentStatus: getOrderFulfillmentStatus(order),
+    total: Number(order.total || 0),
+    updatedAt: order.updatedAt || '',
+    invoiceNumber: order.invoiceNumber || '',
+    sendcloud: order.sendcloud || null,
+    sucrine: order.sucrine || null,
+  })));
+}
+function getOrdersFilter() {
+  const input = document.getElementById('orders-search');
+  return input ? input.value : '';
+}
+function activePanelId() {
+  const active = document.querySelector('.panel.active');
+  return active ? active.id.replace(/^panel-/, '') : '';
 }
 function orderFulfillmentSelectHtml(order) {
   const fulfillmentStatus = getOrderFulfillmentStatus(order);
@@ -4766,9 +4799,77 @@ async function reloadOrdersFromServer() {
   }
 
   state.orders = normalizeOrders(payload === null ? [] : payload);
+  serverDataCache[KEYS.orders] = state.orders;
   localStorage.setItem(KEYS.orders, JSON.stringify(state.orders));
   return state.orders;
 }
+
+async function refreshOrdersFromServer(options = {}) {
+  if (!serverStorageReady || ordersRefreshInFlight) return false;
+  ordersRefreshInFlight = true;
+  const previousCount = state.orders.length;
+  const previousSignature = lastOrdersSignature || ordersSignature(state.orders);
+
+  try {
+    await reloadOrdersFromServer();
+    const nextSignature = ordersSignature(state.orders);
+    if (nextSignature === previousSignature) return false;
+
+    lastOrdersSignature = nextSignature;
+    const panel = activePanelId();
+    if (panel === 'orders') renderOrders(getOrdersFilter());
+    if (selectedOrderId) {
+      const selectedOrder = state.orders.find(entry => entry.id === selectedOrderId);
+      if (selectedOrder) {
+        renderOrderDetail(selectedOrder);
+        if (panel === 'order-detail') {
+          activatePanel('order-detail', {
+            activeNavPanel: 'orders',
+            title: 'Commande ' + selectedOrder.id,
+            actions: orderDetailTopbarActions(selectedOrder),
+          });
+        }
+      } else if (panel === 'order-detail') {
+        closeOrderDetail();
+      }
+    }
+    renderDashboard();
+    updateBadges();
+
+    if (!options.silent && state.orders.length > previousCount) {
+      toast('Nouvelle commande reçue', 'success');
+    }
+    return true;
+  } catch (error) {
+    if (!options.silent) {
+      toast(error.message || 'Actualisation des commandes impossible', 'error');
+    }
+    return false;
+  } finally {
+    ordersRefreshInFlight = false;
+  }
+}
+
+function startOrdersAutoRefresh() {
+  stopOrdersAutoRefresh();
+  if (!serverStorageReady) return;
+  refreshOrdersFromServer({ silent: true });
+  ordersRefreshTimer = setInterval(function () {
+    refreshOrdersFromServer({ silent: document.visibilityState !== 'visible' });
+  }, ORDER_REFRESH_INTERVAL_MS);
+}
+
+function stopOrdersAutoRefresh() {
+  if (!ordersRefreshTimer) return;
+  clearInterval(ordersRefreshTimer);
+  ordersRefreshTimer = null;
+}
+
+document.addEventListener('visibilitychange', function () {
+  if (document.visibilityState === 'visible') {
+    refreshOrdersFromServer({ silent: true });
+  }
+});
 
 async function ensureOrderInvoice(orderId) {
   const currentOrder = state.orders.find(entry => entry.id === orderId);

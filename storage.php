@@ -24,7 +24,14 @@ function castaneas_storage_bool_env($value) {
 }
 
 function castaneas_storage_json_fallback_allowed() {
-    return castaneas_storage_bool_env(getenv('CASTANEAS_ALLOW_JSON_FALLBACK') ?: '');
+    $envValue = getenv('CASTANEAS_ALLOW_JSON_FALLBACK');
+    if ($envValue !== false && trim((string) $envValue) !== '') {
+        return castaneas_storage_bool_env($envValue);
+    }
+
+    $config = castaneas_db_config();
+
+    return castaneas_storage_bool_env($config['allow_json_fallback'] ?? false);
 }
 
 function castaneas_storage_requires_mysql($key) {

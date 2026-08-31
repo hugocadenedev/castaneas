@@ -416,25 +416,6 @@
     font-weight: 700;
     letter-spacing: 0.04em;
   }
-  .bs-card__fav {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    z-index: 2;
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.95);
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: var(--brown-chest);
-    transition: background .15s, color .15s;
-  }
-  .bs-card__fav:hover { color: #c0392b; }
-  .bs-card__fav svg { width: 16px; height: 16px; }
   .bs-card__name {
     font-family: var(--serif);
     font-size: 22px;
@@ -877,9 +858,6 @@
       <a href="Fiche Produit.html" class="bs-card">
         <div class="bs-card__media">
           <span class="bs-card__badge">Bestseller</span>
-          <button class="bs-card__fav" aria-label="Favoris" onclick="event.preventDefault();">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10Z" stroke-linejoin="round"></path></svg>
-          </button>
           <img src="assets/product-pate-tartiner.png" alt="Crème Nature">
         </div>
         <h3 class="bs-card__name">Crème de châtaigne</h3>
@@ -895,9 +873,6 @@
       <a href="Fiche Produit.html" class="bs-card">
         <div class="bs-card__media">
           <span class="bs-card__badge">Coup de cœur</span>
-          <button class="bs-card__fav" aria-label="Favoris" onclick="event.preventDefault();">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10Z" stroke-linejoin="round"></path></svg>
-          </button>
           <img src="assets/product-huile-noisettes.png" alt="Crème Vanillée">
         </div>
         <h3 class="bs-card__name">Châtaigne vanillée</h3>
@@ -913,9 +888,6 @@
       <a href="Fiche Produit.html" class="bs-card">
         <div class="bs-card__media">
           <span class="bs-card__badge">Nouveauté</span>
-          <button class="bs-card__fav" aria-label="Favoris" onclick="event.preventDefault();">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10Z" stroke-linejoin="round"></path></svg>
-          </button>
           <img src="assets/product-noisettes-crues.png" alt="Crème Noisette">
         </div>
         <h3 class="bs-card__name">Pâte de noisette</h3>
@@ -931,9 +903,6 @@
       <a href="Fiche Produit.html" class="bs-card">
         <div class="bs-card__media">
           <span class="bs-card__badge">🎁 Coffret</span>
-          <button class="bs-card__fav" aria-label="Favoris" onclick="event.preventDefault();">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10Z" stroke-linejoin="round"></path></svg>
-          </button>
           <img src="assets/product-pate-tartiner.png" alt="Coffret Dégustation">
         </div>
         <h3 class="bs-card__name">Coffret Quercy</h3>
@@ -1055,7 +1024,7 @@
   </div>
 </aside>
 
-<script src="data.php?v=2"></script><script src="site-data.js?v=5"></script>
+<script src="data.php?v=2"></script><script src="site-data.js?v=6"></script>
 <script src="cart.js"></script>
 <script>
 (function () {
@@ -1251,7 +1220,6 @@
   if (prodIds.length && typeof SiteData !== 'undefined') {
     var bsGrid = document.getElementById('hp-bs-grid');
     if (bsGrid) {
-      var favSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10Z" stroke-linejoin="round"></path></svg>';
       var addSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5v14" stroke-linecap="round"></path></svg>';
       var pHtml = prodIds.map(function(prodId) {
         var p = SiteData.products.find(function(x) { return x.id === prodId; });
@@ -1262,7 +1230,6 @@
         return '<a href="' + esc(href) + '" class="bs-card">'
           + '<div class="bs-card__media">'
           + (p.badge ? '<span class="bs-card__badge">' + esc(p.badge) + '</span>' : '')
-          + '<button class="bs-card__fav" aria-label="Favoris" onclick="event.preventDefault();">' + favSvg + '</button>'
           + '<img src="' + esc(img) + '" alt="' + esc(p.name) + '" onerror="this.onerror=null;this.src=\'assets/product-pate-tartiner.png\'">'
           + '</div>'
           + '<h3 class="bs-card__name">' + esc(p.name) + '</h3>'

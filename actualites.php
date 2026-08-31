@@ -230,7 +230,7 @@ function castaneas_blog_listing_count(array $dataset, $categoryId) {
     </div>
   </div>
 </footer>
-<script src="/data.php?v=2"></script><script src="/site-data.js?v=5"></script>
+<script src="/data.php?v=2"></script><script src="/site-data.js?v=6"></script>
 <script src="/cart.js"></script>
 <script>
 (function () {

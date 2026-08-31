@@ -183,10 +183,6 @@
     return '<article class="product-card" data-price="' + startingPrice + '" style="cursor:pointer;">'
       + '<div class="product-img ' + bg + '">'
       + badge
-      + '<button type="button" class="fav-btn" aria-label="Ajouter aux favoris">'
-      + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">'
-      + '<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10Z" stroke-linejoin="round"/></svg>'
-      + '</button>'
       + '<img class="jar" src="' + p.image + '" alt="' + p.name + '" loading="lazy" style="object-fit:cover;" onerror="this.onerror=null;this.src=\'assets/product-pate-tartiner.png\'">'
       + stock
       + '</div>'
@@ -236,15 +232,8 @@
   /* -- Rendu initial -- */
   renderGrid(catProducts);
 
-  /* -- Délégation sur la grille (fav + clic carte) -- */
+  /* -- Délégation sur la grille (clic carte) -- */
   grid.addEventListener('click', function (e) {
-    var fav = e.target.closest('.fav-btn');
-    if (fav) {
-      e.stopPropagation();
-      fav.classList.toggle('active');
-      fav.querySelector('svg').setAttribute('fill', fav.classList.contains('active') ? 'currentColor' : 'none');
-      return;
-    }
     var card = e.target.closest('.product-card');
     if (card && !e.target.closest('button, a')) {
       var addBtn = card.querySelector('[data-add]');

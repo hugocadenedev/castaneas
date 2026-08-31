@@ -266,20 +266,6 @@
     color: var(--brown-chest);
     font-weight: 700;
   }
-  .info__fav {
-    width: 38px; height: 38px;
-    border-radius: 50%;
-    background: var(--cream-soft);
-    border: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--brown-chest);
-    cursor: pointer;
-    transition: color .15s;
-  }
-  .info__fav:hover { color: var(--corail); }
-  .info__fav svg { width: 18px; height: 18px; }
 
   .info__title {
     font-family: var(--serif);
@@ -667,21 +653,6 @@
     color: var(--brown-chest);
     font-weight: 700;
   }
-  .ing__desc {
-    font-size: 13px;
-    color: var(--ink-soft);
-    line-height: 1.5;
-    font-weight: 500;
-    margin-top: 4px;
-  }
-  .ing.is-rest { background: var(--sauge); }
-  .ing.is-rest .ing__pct { color: var(--brown-deep); }
-  .ing.is-rest .ing__origin { color: var(--brown-deep); }
-
-  .ing--info .ing__pct {
-    font-family: var(--mono);
-    font-style: normal;
-    font-size: 12px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--brown-chest);
@@ -1249,9 +1220,6 @@
     <aside class="info">
       <div class="info__header">
         <span class="info__cat">Cahier nº 01 · Crèmes</span>
-        <button class="info__fav" aria-label="Favoris">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10Z" stroke-linejoin="round"/></svg>
-        </button>
       </div>
 
       <h1 class="info__title">Châtaigne<br><em>vanillée.</em></h1>
@@ -1517,7 +1485,7 @@
   <img id="zoom-img" src="" alt="" style="max-width:90vw;max-height:90vh;border-radius:16px;object-fit:contain;">
 </div>
 
-<script src="/data.php?v=2"></script><script src="/site-data.js?v=5"></script>
+<script src="/data.php?v=2"></script><script src="/site-data.js?v=6"></script>
 <script src="/cart.js"></script>
 <script>
 // ---- État global ----
@@ -2338,13 +2306,6 @@ document.getElementById('buy-cta').addEventListener('click', function () {
   updateBuyCta();
 });
 
-// ========== FAVORI ==========
-var favBtn = document.querySelector('.info__fav');
-favBtn.addEventListener('click', function () {
-  favBtn.classList.toggle('active');
-  favBtn.querySelector('svg').setAttribute('fill', favBtn.classList.contains('active') ? 'currentColor' : 'none');
-  favBtn.style.color = favBtn.classList.contains('active') ? 'var(--corail)' : '';
-});
 </script>
 </body>
 </html>

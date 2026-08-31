@@ -9,6 +9,24 @@
 (function () {
   'use strict';
 
+  var GOOGLE_ANALYTICS_ID = 'G-LSRBPVRZWX';
+
+  function injectGoogleAnalytics() {
+    if (!GOOGLE_ANALYTICS_ID || window.__castaneasGoogleAnalyticsLoaded) return;
+    window.__castaneasGoogleAnalyticsLoaded = true;
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('config', GOOGLE_ANALYTICS_ID);
+
+    var script = document.createElement('script');
+    script.async = true;
+    script.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(GOOGLE_ANALYTICS_ID);
+    document.head.appendChild(script);
+  }
+
+  injectGoogleAnalytics();
+
   /* ---------- Clés localStorage (partagées avec le back-office) ---------- */
   var KEYS = {
     products:   'castaneas_admin_products',
@@ -498,7 +516,7 @@
     blogPosts: _blogPostsData,
     homepage: (_srv.homepage && typeof _srv.homepage === 'object') ? _srv.homepage : (loadStorageObject(KEYS.homepage) || {}),
     packagings: normalizePackagingList((_srv.packagings && _srv.packagings.length > 0) ? _srv.packagings : (loadStorage(KEYS.packagings) || [])),
-    promoCodes: normalizePromoCodes((_srv.promo_codes && _srv.promo_codes.length > 0) ? _srv.promo_codes : (loadStorage(KEYS.promoCodes) || [])),
+    promoCodes: normalizePromoCodes(Object.prototype.hasOwnProperty.call(_srv, 'promo_codes') ? _srv.promo_codes : (loadStorage(KEYS.promoCodes) || [])),
 
     /** Toutes les catégories visibles dans le header */
     getHeaderCategories: function () {
