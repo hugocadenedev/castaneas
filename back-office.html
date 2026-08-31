@@ -3455,7 +3455,7 @@ async function init() {
   state.categories        = load(KEYS.categories) || [];
   state.products          = load(KEYS.products)   || [];
   state.orders            = normalizeOrders(load(KEYS.orders) || []);
-  localStorage.setItem(KEYS.orders, JSON.stringify(state.orders));
+  cacheLocal(KEYS.orders, state.orders);
   lastOrdersSignature = ordersSignature(state.orders);
   state.imageCatalogMain  = load(KEYS.imagesMain)  || [...DEFAULT_IMAGE_CATALOG];
   state.imageCatalogExtra = load(KEYS.imagesExtra) || [...DEFAULT_IMAGE_CATALOG];
@@ -4786,7 +4786,7 @@ function replaceOrderInState(updatedOrder) {
   const index = state.orders.findIndex(entry => entry.id === normalizedOrder.id);
   if (index === -1) return;
   state.orders[index] = normalizedOrder;
-  localStorage.setItem(KEYS.orders, JSON.stringify(state.orders));
+  cacheLocal(KEYS.orders, state.orders);
 }
 
 async function reloadOrdersFromServer() {
@@ -4800,7 +4800,7 @@ async function reloadOrdersFromServer() {
 
   state.orders = normalizeOrders(payload === null ? [] : payload);
   serverDataCache[KEYS.orders] = state.orders;
-  localStorage.setItem(KEYS.orders, JSON.stringify(state.orders));
+  cacheLocal(KEYS.orders, state.orders);
   return state.orders;
 }
 
@@ -7161,6 +7161,15 @@ function load(key) {
     return null;
   }
 }
+function cacheLocal(key, val) {
+  try {
+    localStorage.setItem(key, JSON.stringify(val));
+    return true;
+  } catch (_) {
+    try { localStorage.removeItem(key); } catch (e) {}
+    return false;
+  }
+}
 function save(key, val) {
   if (!serverStorageReady && SERVER_KEYS[key]) {
     toast('Sauvegarde bloquée: stockage serveur indisponible', 'error');
@@ -7177,13 +7186,10 @@ function save(key, val) {
     serverDataCache[key] = val;
   }
 
-  try {
-    localStorage.setItem(key, JSON.stringify(val));
-  } catch (_) {
-    // Keep browser cache optional for large server-backed payloads.
-    if (!serverKey) {
-      throw _;
-    }
+  const cached = cacheLocal(key, val);
+  if (!cached && !serverKey) {
+    toast('Stockage local du navigateur plein', 'error');
+    return Promise.resolve(false);
   }
 
   if (!serverKey) return Promise.resolve(true);
