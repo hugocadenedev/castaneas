@@ -2645,6 +2645,7 @@ let ordersRefreshTimer = null;
 let ordersRefreshInFlight = false;
 let lastOrdersSignature = '';
 const serverDataCache = {};
+const serverDataVersions = {};
 let editorAssetDialogState = null;
 
 function getDefaultPromoMessage() {
@@ -3515,6 +3516,7 @@ async function serverLoadAll() {
         }
         const normalized = data === null ? [] : data;
         serverDataCache[l] = normalized;
+        serverDataVersions[l] = r.headers.get('ETag') || '';
         try {
           localStorage.setItem(l, JSON.stringify(normalized));
         } catch (_) {
@@ -7218,13 +7220,21 @@ function save(key, val) {
 function serverSync(serverKey, val) {
   return fetch('/save.php?key=' + serverKey, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-Admin-Token': SERVER_TOKEN },
     body: JSON.stringify(val),
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Admin-Token': SERVER_TOKEN,
+      ...(serverDataVersions[Object.keys(SERVER_KEYS).find(key => SERVER_KEYS[key] === serverKey)]
+        ? { 'If-Match': serverDataVersions[Object.keys(SERVER_KEYS).find(key => SERVER_KEYS[key] === serverKey)] }
+        : {}),
+    },
   }).then(function (r) {
     return r.json().catch(function () { return null; }).then(function (payload) {
       if (!r.ok || (payload && payload.error)) {
         throw new Error((payload && payload.error) || ('Sync serveur échouée (' + r.status + ')'));
       }
+      const localKey = Object.keys(SERVER_KEYS).find(key => SERVER_KEYS[key] === serverKey);
+      if (localKey) serverDataVersions[localKey] = r.headers.get('ETag') || serverDataVersions[localKey] || '';
       return payload;
     });
   });

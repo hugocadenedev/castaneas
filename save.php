@@ -49,8 +49,10 @@ $method = $_SERVER['REQUEST_METHOD'];
 if ($method === 'GET') {
     $raw = castaneas_storage_read_raw($key);
     if ($raw !== null) {
+        header('ETag: "' . hash('sha256', $raw) . '"');
         echo $raw;
     } else {
+        header('ETag: "empty"');
         echo 'null';
     }
 
@@ -71,12 +73,29 @@ if ($method === 'GET') {
         exit;
     }
 
+    $protectedKeys = ['admin_accounts', 'promo_codes'];
+    if (in_array($key, $protectedKeys, true)) {
+        $expectedVersion = trim((string) ($_SERVER['HTTP_IF_MATCH'] ?? ''));
+        $currentRaw = castaneas_storage_read_raw($key);
+        $currentVersion = '"' . ($currentRaw === null ? 'empty' : hash('sha256', $currentRaw)) . '"';
+
+        if ($expectedVersion === '' || !hash_equals($currentVersion, $expectedVersion)) {
+            http_response_code(409);
+            echo json_encode([
+                'error' => 'Data changed on the server. Reload before saving.',
+                'code' => 'stale_data',
+            ]);
+            exit;
+        }
+    }
+
     if (!castaneas_storage_write_raw($key, $body)) {
         http_response_code(500);
         echo json_encode(['error' => 'Storage write failed']);
         exit;
     }
 
+    header('ETag: "' . hash('sha256', $body) . '"');
     echo json_encode(['ok' => true, 'key' => $key, 'backend' => castaneas_storage_backend()]);
 
 } else {

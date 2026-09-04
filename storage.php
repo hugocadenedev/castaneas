@@ -200,6 +200,30 @@ function castaneas_db_write_raw($key, $rawJson) {
     ]);
 }
 
+function castaneas_db_backup_raw($key, $rawJson) {
+    $pdo = castaneas_db();
+    if (!$pdo) {
+        return false;
+    }
+
+    $pdo->exec(
+        'CREATE TABLE IF NOT EXISTS content_store_backups (' .
+        'id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,' .
+        'store_key VARCHAR(50) NOT NULL,' .
+        'payload_json LONGTEXT NOT NULL,' .
+        'archived_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,' .
+        'KEY idx_content_store_backups_key_date (store_key, archived_at)' .
+        ') ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
+    );
+
+    $stmt = $pdo->prepare('INSERT INTO content_store_backups (store_key, payload_json) VALUES (:store_key, :payload_json)');
+
+    return $stmt->execute([
+        'store_key' => $key,
+        'payload_json' => $rawJson,
+    ]);
+}
+
 function castaneas_json_directories() {
     $configDir = getenv('CASTANEAS_DATA_DIR');
     $dirs = [
@@ -285,6 +309,22 @@ function castaneas_storage_write_raw($key, $rawJson) {
         return false;
     }
 
+    if ($key === 'admin_accounts') {
+        $previousRaw = castaneas_storage_read_raw($key);
+        if ($previousRaw !== null && $previousRaw !== $rawJson) {
+            if (!castaneas_db_backup_raw($key, $previousRaw)) {
+                castaneas_admin_accounts_backup($previousRaw);
+            }
+        }
+    }
+
+    if ($key === 'promo_codes') {
+        $previousRaw = castaneas_storage_read_raw($key);
+        if ($previousRaw !== null && $previousRaw !== $rawJson) {
+            castaneas_db_backup_raw($key, $previousRaw);
+        }
+    }
+
     if (castaneas_db()) {
         return castaneas_db_write_raw($key, $rawJson);
     }
@@ -294,6 +334,27 @@ function castaneas_storage_write_raw($key, $rawJson) {
     }
 
     return castaneas_json_write_raw($key, $rawJson);
+}
+
+function castaneas_admin_accounts_backup($rawJson) {
+    foreach (castaneas_json_directories() as $dir) {
+        $backupDir = $dir . '/admin_accounts_backups';
+        if (!is_dir($backupDir) && !@mkdir($backupDir, 0755, true) && !is_dir($backupDir)) {
+            continue;
+        }
+        if (!is_writable($backupDir)) {
+            continue;
+        }
+
+        try {
+            $suffix = bin2hex(random_bytes(4));
+        } catch (Throwable $e) {
+            $suffix = uniqid('', true);
+        }
+        $filename = 'admin_accounts_' . gmdate('Ymd_His') . '_' . $suffix . '.json';
+        file_put_contents($backupDir . '/' . $filename, $rawJson, LOCK_EX);
+        return;
+    }
 }
 
 function castaneas_storage_status() {
