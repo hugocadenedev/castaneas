@@ -342,6 +342,24 @@ function castaneas_paypal_extract_reference_from_order(array $paypalOrder) {
     return '';
 }
 
+/** Vérifie qu'un paiement PayPal correspond bien à cette commande (référence et montant). */
+function castaneas_paypal_order_matches(array $paypalOrder, array $order) {
+    if (castaneas_paypal_extract_reference_from_order($paypalOrder) !== (string) ($order['id'] ?? '')) {
+        return false;
+    }
+
+    $amount = null;
+    foreach (($paypalOrder['purchase_units'] ?? []) as $unit) {
+        if (!is_array($unit)) {
+            continue;
+        }
+        $amount = $unit['payments']['captures'][0]['amount']['value'] ?? ($unit['amount']['value'] ?? null);
+        break;
+    }
+
+    return is_numeric($amount) && abs((float) $amount - (float) ($order['total'] ?? 0)) < 0.01;
+}
+
 function castaneas_paypal_extract_capture_id(array $payload) {
     foreach (($payload['purchase_units'] ?? []) as $unit) {
         if (!is_array($unit)) {

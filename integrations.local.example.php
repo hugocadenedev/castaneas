@@ -35,6 +35,11 @@ return [
         'ca_bundle' => '',
         'skip_ssl_verify' => false,
         'delivery_point' => '',
+        'contact_group_id' => '',
+        'contact_group_name' => 'CLIENT WEB',
+        'order_state' => 'terminated',
+        'register_payment' => true,
+        'payment_mean' => '',
     ],
     'sendcloud' => [
         'public_key' => 'VOTRE_CLE_PUBLIQUE_SENDCLOUD',

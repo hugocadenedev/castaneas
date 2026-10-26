@@ -118,6 +118,11 @@ Usage recommandé :
 - `POST /professional/contacts`
 - `GET /professional/contacts`
 
+### Groupes de contacts
+
+- `GET /professional/contacts/groups`
+- `POST /professional/contacts/groups/{groupId}/addToGroup` (body : `{ "contacts": ["<contactId>"] }`)
+
 ## Mapping produits : référence Castaneas -> référence Sucrine
 
 ### Règle métier retenue
@@ -237,6 +242,46 @@ Résultat :
 
 - on évite un échec définitif de la commande pour simple collision de contact
 - les commandes d'un client déjà connu passent correctement
+
+## Lots, Duo / Trio et coffrets
+
+- Lot « par 2 / par 3 » d'un produit : envoyé comme N × l'article unitaire au prix unitaire du lot (ex. 1 lot par 2 de pâte à tartiner = 2 × AR00105 à 6,90 €).
+- Produit qui a sa propre référence Sucrine (Duo Gourmand AR00134, Trio Gourmand AR00152…) : seul cet article est envoyé. Sucrine connaît sa composition ; ses `boxItems` côté site ne sont pas envoyés en plus (sinon produits et montant en double).
+- Coffret sans référence Sucrine propre : ses composants sont envoyés à leur prix de coffret.
+- Même article sur plusieurs lignes (unité + lot) : une seule ligne Sucrine avec le prix unitaire moyen (Sucrine n'accepte qu'un prix par article), le total reste identique.
+
+## État et paiement des commandes
+
+Les commandes du site sont déjà payées quand elles partent vers Sucrine. Elles arrivent donc prêtes à facturer :
+
+- `defaultOrderState` = `sucrine.order_state` (`terminated` par défaut : validée, préparée, distribuée)
+- puis `POST /professional/payments/orders/{orderId}/payment/registerPayment` avec `amount` = total TTC payé, `paid: true`, et dans `payload` la référence Castaneas, la passerelle et l'id de transaction
+- `paymentMean` n'est envoyé que si `sucrine.payment_mean` est renseigné (valeurs acceptées non documentées par Sucrine)
+- `sucrine.register_payment = false` désactive l'enregistrement du paiement
+
+Résultat stocké dans `sucrine.lastResult.payment` ; un échec n'empêche pas l'envoi de la commande.
+
+Endpoints liés : `POST /professional/orders/{orderId}/validate`, `POST /professional/orders/{orderId}/endPreparation`, `GET /professional/payments/orders/{orderId}`.
+
+## Codes promo (remises)
+
+La remise de la commande (`order.discount`, code dans `order.promo.code`) est envoyée dans `discounts` :
+
+- une ligne `type: amount` par taux de TVA, répartie au prorata du TTC des articles envoyés
+- taux de TVA lus dans le catalogue Sucrine (`vatRate` de chaque article), `sucrine.default_vat_rate` (5,5 par défaut) si inconnu
+- `comment` : `Code promo <CODE>` ; le code est aussi ajouté au `message` de la commande
+
+## Groupe « CLIENT WEB »
+
+Demande Sucrine : tous les clients du site doivent être rattachés au groupe de contacts `CLIENT WEB`.
+
+`newContact` (dans la création de commande) n'accepte pas de groupe. Après chaque commande envoyée avec succès, `castaneas_sucrine_attach_contact_group()` :
+
+1. résout le groupe : `sucrine.contact_group_id` s'il est défini, sinon recherche par nom (`sucrine.contact_group_name`, `CLIENT WEB` par défaut)
+2. récupère l'id du contact : contact existant (`ContactExistingError`), sinon réponse de la commande, sinon recherche par e-mail dans les contacts les plus récents (`GET /professional/contacts`, 3 pages de 50)
+3. appelle `addToGroup`
+
+Le résultat est stocké dans `sucrine.lastResult.contactGroup` de la commande. Un échec à cette étape ne fait jamais échouer l'envoi de la commande.
 
 ## Ce qui a changé par rapport aux premières pistes
 

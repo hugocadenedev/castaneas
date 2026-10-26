@@ -203,6 +203,11 @@ function castaneas_payment_finalize_order($ref, $status, array $payload) {
         return $order;
     }
 
+    // Une commande déjà payée ne repasse jamais en annulée/échouée via un retour de paiement
+    if (!empty($order['paidAt']) && $status !== 'paid') {
+        return $order;
+    }
+
     $mappedStatus = [
         'paid' => 'paid',
         'refused' => 'payment_refused',
@@ -271,7 +276,7 @@ function castaneas_payment_finalize_order($ref, $status, array $payload) {
     $sucrine['lastResult'] = $sucrineResult;
     if (!empty($sucrineResult['ok'])) {
         $sucrine['sentAt'] = gmdate('c');
-        $sucrine['orderId'] = $sucrineResult['data']['id'] ?? $sucrineResult['data']['orderId'] ?? null;
+        $sucrine['orderId'] = $sucrineResult['sucrineOrderId'] ?? $sucrineResult['data']['id'] ?? $sucrineResult['data']['orderId'] ?? null;
     }
 
     return castaneas_order_update_status($ref, $mappedStatus, ['sucrine' => $sucrine]);

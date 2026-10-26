@@ -153,6 +153,35 @@ function castaneas_checkout_product_offer_qty(array $product, $offerId) {
     return 1;
 }
 
+/** Prix TTC d'une ligne de panier, mêmes règles que getProductOffers() dans site-data.js. */
+function castaneas_checkout_product_offer_price(array $product, $offerId) {
+    $basePrice = round((float) ($product['price'] ?? 0), 2);
+
+    if (($product['kind'] ?? '') === 'coffret') {
+        $total = 0.0;
+        foreach (($product['boxItems'] ?? []) as $boxItem) {
+            if (is_array($boxItem) && !empty($boxItem['productId']) && is_numeric($boxItem['unitPrice'] ?? null)) {
+                $total += (float) $boxItem['unitPrice'];
+            }
+        }
+
+        return $total > 0 ? round($total, 2) : $basePrice;
+    }
+
+    $offerId = trim((string) $offerId);
+    foreach (($product['quantityOffers'] ?? []) as $index => $offer) {
+        if (!is_array($offer) || $offerId !== (string) ($product['id'] ?? '') . '__pack_' . $index) {
+            continue;
+        }
+        $qty = (int) ($offer['qty'] ?? 0);
+        if ($qty > 1 && is_numeric($offer['unitPrice'] ?? null)) {
+            return round($qty * (float) $offer['unitPrice'], 2);
+        }
+    }
+
+    return $basePrice;
+}
+
 function castaneas_checkout_parse_weight_g($rawWeight) {
     $rawWeight = trim((string) $rawWeight);
     if ($rawWeight === '') {
@@ -259,13 +288,14 @@ function castaneas_checkout_normalize_items(array $items) {
         }
 
         $qty = (int) ($item['qty'] ?? 0);
-        $price = round((float) ($item['price'] ?? 0), 2);
-        if ($qty <= 0 || $price < 0) {
+        $product = $products[$item['id']] ?? null;
+        if ($qty <= 0 || !$product || ($product['status'] ?? 'active') !== 'active') {
             continue;
         }
 
-        $product = $products[$item['id']] ?? [];
         $offerId = isset($item['offerId']) ? (string) $item['offerId'] : '';
+        // Prix toujours recalculé depuis le catalogue : jamais celui envoyé par le navigateur
+        $price = castaneas_checkout_product_offer_price($product, $offerId);
         $normalized[] = [
             'id' => (string) $item['id'],
             'name' => (string) ($item['name'] ?? ($product['name'] ?? 'Produit')),
@@ -787,6 +817,68 @@ function castaneas_checkout_total(array $items) {
     return round($total, 2);
 }
 
+/** Vérifie un code promo côté serveur, mêmes règles que evaluatePromoCode() dans site-data.js. */
+function castaneas_checkout_evaluate_promo($code, $subtotal) {
+    $code = strtoupper(trim((string) $code));
+    $raw = castaneas_storage_read_raw('promo_codes');
+    $codes = $raw ? json_decode($raw, true) : [];
+
+    $promo = null;
+    foreach ((is_array($codes) ? $codes : []) as $candidate) {
+        if (is_array($candidate) && strtoupper(trim((string) ($candidate['code'] ?? ''))) === $code) {
+            $promo = $candidate;
+            break;
+        }
+    }
+    if ($code === '' || $promo === null) {
+        return ['ok' => false, 'reason' => 'invalid'];
+    }
+
+    $now = time();
+    $startsAt = !empty($promo['startsAt']) ? strtotime((string) $promo['startsAt']) : false;
+    $endsAt = !empty($promo['endsAt']) ? strtotime((string) $promo['endsAt']) : false;
+    $usageLimit = (int) ($promo['usageLimit'] ?? 0);
+    $usedCount = (int) ($promo['usedCount'] ?? 0);
+    if (array_key_exists('active', $promo) && !$promo['active']) {
+        return ['ok' => false, 'reason' => 'inactive'];
+    }
+    if ($startsAt && $startsAt > $now) {
+        return ['ok' => false, 'reason' => 'scheduled'];
+    }
+    if ($endsAt && $endsAt < $now) {
+        return ['ok' => false, 'reason' => 'expired'];
+    }
+    if ($usageLimit > 0 && $usedCount >= $usageLimit) {
+        return ['ok' => false, 'reason' => 'limit_reached'];
+    }
+    if ($subtotal < (float) ($promo['minSubtotal'] ?? 0)) {
+        return ['ok' => false, 'reason' => 'minimum'];
+    }
+
+    $type = (string) ($promo['type'] ?? 'percent');
+    $value = (float) ($promo['value'] ?? 0);
+    $discount = 0.0;
+    if ($type === 'percent') {
+        $discount = $subtotal * $value / 100;
+    } elseif ($type === 'fixed') {
+        $discount = min($subtotal, $value);
+    }
+
+    $pickup = trim((string) ($promo['deliveryMode'] ?? '')) === 'pickup';
+
+    return [
+        'ok' => true,
+        'code' => $code,
+        'type' => $type,
+        'label' => trim((string) ($promo['label'] ?? '')),
+        'discount' => round(max(0, $discount), 2),
+        'freeShipping' => $type === 'free_shipping',
+        'pickup' => $pickup,
+        'pickupLabel' => $pickup ? (trim((string) ($promo['pickupLabel'] ?? '')) ?: 'Retrait sur place') : '',
+        'pickupAddress' => $pickup ? trim((string) ($promo['pickupAddress'] ?? '')) : '',
+    ];
+}
+
 function castaneas_up2pay_hmac_key($value) {
     $value = trim((string) $value);
     if ($value !== '' && ctype_xdigit($value) && strlen($value) % 2 === 0) {
@@ -952,8 +1044,8 @@ function castaneas_up2pay_shopping_cart_xml(array $order) {
         . '</totalQuantity></total></shoppingcart>';
 }
 
-function castaneas_checkout_payment_payload(array $order, array $options = []) {
-    if (!empty($options['force_simulate']) || castaneas_payment_simulate()) {
+function castaneas_checkout_payment_payload(array $order) {
+    if (castaneas_payment_simulate()) {
         return [
             'mode' => 'redirect',
             'url' => castaneas_url('payment-return.php?status=paid&ref=' . rawurlencode($order['id']) . '&simulate=1'),
@@ -1109,9 +1201,16 @@ if ($body === null) {
     castaneas_checkout_response(400, ['ok' => false, 'error' => 'JSON invalide.']);
 }
 
-$items = castaneas_checkout_normalize_items($body['items'] ?? []);
+$rawItems = is_array($body['items'] ?? null) ? $body['items'] : [];
+$items = castaneas_checkout_normalize_items($rawItems);
 if (!$items) {
     castaneas_checkout_response(400, ['ok' => false, 'error' => 'Panier vide.']);
+}
+$submittedItems = array_filter($rawItems, static function ($item) {
+    return is_array($item) && !empty($item['id']) && (int) ($item['qty'] ?? 0) > 0;
+});
+if (count($items) < count($submittedItems)) {
+    castaneas_checkout_response(400, ['ok' => false, 'error' => 'Un produit de votre panier n\'est plus disponible. Merci de mettre à jour votre panier.']);
 }
 
 $billing = is_array($body['billing'] ?? null) ? $body['billing'] : [];
@@ -1127,31 +1226,83 @@ if (!in_array($paymentMethod, ['card', 'paypal'], true)) {
     castaneas_checkout_response(400, ['ok' => false, 'error' => 'Mode de paiement non supporté.']);
 }
 
+$total = castaneas_checkout_total($items);
+
+// Code promo : seul le code vient du navigateur, la remise est recalculée ici
 $promo = is_array($body['promo'] ?? null) ? $body['promo'] : [];
 $promoCode = strtoupper(trim((string) ($promo['code'] ?? '')));
-$promoDiscount = round((float) ($promo['discount'] ?? 0), 2);
-$promoDeliveryMode = trim((string) ($promo['deliveryMode'] ?? ''));
-$promoPickupLabel = trim((string) ($promo['pickupLabel'] ?? ''));
-$promoPickupAddress = trim((string) ($promo['pickupAddress'] ?? ''));
+$promoResult = null;
+if ($promoCode !== '') {
+    $promoResult = castaneas_checkout_evaluate_promo($promoCode, $total);
+    if (empty($promoResult['ok'])) {
+        castaneas_checkout_response(400, ['ok' => false, 'error' => 'Le code promo ' . $promoCode . ' n\'est plus valable pour cette commande.']);
+    }
+}
+$promoDiscount = $promoResult ? $promoResult['discount'] : 0.0;
 
-$total = castaneas_checkout_total($items);
+// Livraison : le prix vient du devis Sendcloud recalculé ici, jamais du navigateur
 $shipping = is_array($body['shipping'] ?? null) ? $body['shipping'] : [];
-$forceSimulatePayment = !empty($body['bypassPayment']) || !empty($body['forceSimulatePayment']);
 $shippingType = trim((string) ($shipping['type'] ?? ''));
-$shippingPrice = $shippingType === 'pickup' ? 0.0 : round((float) ($shipping['price'] ?? 0), 2);
+$shippingCode = trim((string) ($shipping['code'] ?? ''));
 $selectedServicePoint = is_array($shipping['servicePoint'] ?? null) ? $shipping['servicePoint'] : null;
-$selectedShipping = [
-    'type' => $shippingType,
-    'code' => trim((string) ($shipping['code'] ?? '')),
-    'name' => trim((string) ($shipping['name'] ?? '')),
-    'carrier' => is_array($shipping['carrier'] ?? null) ? $shipping['carrier'] : [],
-    'contract' => is_array($shipping['contract'] ?? null) ? $shipping['contract'] : [],
-    'product' => is_array($shipping['product'] ?? null) ? $shipping['product'] : [],
-    'selectedFunctionalities' => is_array($shipping['selectedFunctionalities'] ?? null) ? $shipping['selectedFunctionalities'] : [],
-    'price' => $shippingPrice,
-    'servicePoint' => $selectedServicePoint,
-    'pickupAddress' => trim((string) ($shipping['pickupAddress'] ?? '')),
-];
+
+if ($promoResult && $promoResult['pickup']) {
+    $selectedShipping = [
+        'type' => 'pickup',
+        'code' => 'promo_pickup',
+        'name' => $promoResult['pickupLabel'],
+        'carrier' => ['code' => 'pickup', 'name' => 'Retrait sur place'],
+        'contract' => [],
+        'product' => ['code' => 'pickup', 'name' => 'Retrait sur place'],
+        'selectedFunctionalities' => [],
+        'price' => 0.0,
+        'servicePoint' => null,
+        'pickupAddress' => $promoResult['pickupAddress'],
+    ];
+} else {
+    if (!in_array($shippingType, ['home', 'relay'], true) || $shippingCode === '') {
+        castaneas_checkout_response(400, ['ok' => false, 'error' => 'Sélectionnez un mode de livraison.']);
+    }
+    if (!castaneas_sendcloud_is_ready()) {
+        castaneas_checkout_response(503, ['ok' => false, 'error' => 'Livraison Sendcloud non configurée.']);
+    }
+
+    $quotes = castaneas_checkout_shipping_options($items, $billing);
+    if (empty($quotes['ok'])) {
+        castaneas_checkout_response(502, ['ok' => false, 'error' => $quotes['error'] ?? 'Impossible de vérifier le mode de livraison.']);
+    }
+
+    $quotedOption = null;
+    foreach (($quotes[$shippingType] ?? []) as $option) {
+        if (is_array($option) && (string) ($option['code'] ?? '') === $shippingCode) {
+            $quotedOption = $option;
+            break;
+        }
+    }
+    if ($quotedOption === null) {
+        castaneas_checkout_response(400, ['ok' => false, 'error' => 'Ce mode de livraison n\'est plus disponible. Merci de le sélectionner à nouveau.']);
+    }
+    if ($shippingType === 'relay' && !$selectedServicePoint) {
+        castaneas_checkout_response(400, ['ok' => false, 'error' => 'Sélectionnez un point relais.']);
+    }
+
+    $selectedShipping = [
+        'type' => $shippingType,
+        'code' => $shippingCode,
+        'name' => (string) ($quotedOption['name'] ?? ''),
+        'carrier' => is_array($quotedOption['carrier'] ?? null) ? $quotedOption['carrier'] : [],
+        'contract' => is_array($quotedOption['contract'] ?? null) ? $quotedOption['contract'] : [],
+        'product' => is_array($quotedOption['product'] ?? null) ? $quotedOption['product'] : [],
+        'selectedFunctionalities' => is_array($quotedOption['selectedFunctionalities'] ?? null) ? $quotedOption['selectedFunctionalities'] : [],
+        'price' => ($promoResult && $promoResult['freeShipping']) ? 0.0 : round((float) ($quotedOption['price'] ?? 0), 2),
+        'servicePoint' => $shippingType === 'relay' ? $selectedServicePoint : null,
+        'pickupAddress' => '',
+    ];
+}
+$shippingPrice = $selectedShipping['price'];
+
+// Paiement simulé : uniquement si activé dans la configuration serveur (jamais via la requête)
+$simulatePayment = castaneas_payment_simulate();
 
 $grandTotal = round(max(0, $total - $promoDiscount) + $shippingPrice, 2);
 $ref = castaneas_order_generate_ref();
@@ -1166,12 +1317,12 @@ $order = [
     'subtotal' => $total,
     'discount' => $promoDiscount,
     'promo' => [
-        'code' => $promoCode,
-        'type' => trim((string) ($promo['type'] ?? '')),
-        'label' => trim((string) ($promo['label'] ?? '')),
-        'deliveryMode' => $promoDeliveryMode,
-        'pickupLabel' => $promoPickupLabel,
-        'pickupAddress' => $promoPickupAddress,
+        'code' => $promoResult ? $promoResult['code'] : '',
+        'type' => $promoResult ? $promoResult['type'] : '',
+        'label' => $promoResult ? $promoResult['label'] : '',
+        'deliveryMode' => ($promoResult && $promoResult['pickup']) ? 'pickup' : '',
+        'pickupLabel' => $promoResult ? $promoResult['pickupLabel'] : '',
+        'pickupAddress' => $promoResult ? $promoResult['pickupAddress'] : '',
         'discount' => $promoDiscount,
     ],
     'total' => $grandTotal,
@@ -1181,7 +1332,7 @@ $order = [
     'shipping' => $selectedShipping,
     'payment' => [
         'method' => $paymentMethod,
-        'gateway' => $forceSimulatePayment ? 'simulation' : ($paymentMethod === 'paypal' ? 'paypal' : 'up2pay'),
+        'gateway' => $simulatePayment ? 'simulation' : ($paymentMethod === 'paypal' ? 'paypal' : 'up2pay'),
         'createdAt' => gmdate('c'),
     ],
     'sucrine' => [
@@ -1196,7 +1347,7 @@ $order = [
     ],
 ];
 
-$paymentPayload = castaneas_checkout_payment_payload($order, ['force_simulate' => $forceSimulatePayment]);
+$paymentPayload = castaneas_checkout_payment_payload($order);
 if ($paymentPayload === null) {
     castaneas_checkout_response(503, [
         'ok' => false,

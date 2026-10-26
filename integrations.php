@@ -62,6 +62,14 @@ function castaneas_integrations_config() {
             'ca_bundle' => getenv('CASTANEAS_SUCRINE_CA_BUNDLE') ?: '',
             'skip_ssl_verify' => castaneas_bool_env(getenv('CASTANEAS_SUCRINE_SKIP_SSL_VERIFY') ?: ''),
             'delivery_point' => getenv('CASTANEAS_SUCRINE_DELIVERY_POINT') ?: '',
+            // Groupe de contacts auquel rattacher les clients du site (id prioritaire, sinon recherche par nom)
+            'contact_group_id' => getenv('CASTANEAS_SUCRINE_CONTACT_GROUP_ID') ?: '',
+            'contact_group_name' => getenv('CASTANEAS_SUCRINE_CONTACT_GROUP_NAME') ?: 'CLIENT WEB',
+            // État de création des commandes : new, prevalidated, validated, preparing, prepared, terminated (prête à facturer)
+            'order_state' => getenv('CASTANEAS_SUCRINE_ORDER_STATE') ?: 'terminated',
+            // Enregistre le règlement sur la commande Sucrine une fois créée (paiement déjà encaissé sur le site)
+            'register_payment' => getenv('CASTANEAS_SUCRINE_REGISTER_PAYMENT') === false ? true : castaneas_bool_env(getenv('CASTANEAS_SUCRINE_REGISTER_PAYMENT')),
+            'payment_mean' => getenv('CASTANEAS_SUCRINE_PAYMENT_MEAN') ?: '',
         ],
         'sendcloud' => [
             'public_key' => getenv('CASTANEAS_SENDCLOUD_PUBLIC_KEY') ?: '',
