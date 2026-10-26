@@ -98,7 +98,7 @@ window.renderShell = function (activePage) {
         <ul>
           <li><a href="/livraison-retours">Livraison</a></li>
           <li><a href="/livraison-retours#retours">Retours</a></li>
-          <li><a href="mailto:contact@castaneas.fr">Contact</a></li>
+          <li><a href="mailto:boutique@castaneas.fr">Contact</a></li>
           <li><a href="#">CGV</a></li>
         </ul>
       </div>

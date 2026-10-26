@@ -776,7 +776,24 @@
     html += '<a href="/actualites"' + (isActive('/actualites') ? ' class="active"' : '') + '>Actualités</a>';
     html += '<a href="/histoire"' + (isActive('/histoire') ? ' class="active"' : '') + '>Notre histoire</a>';
 
-    navEl.innerHTML = html;
+    /* Desktop : les catégories s'ouvrent dans le panneau « Boutique » */
+    var desktopHtml = '<a href="/accueil"' + (isActive('/accueil') ? ' class="active"' : '') + '>Accueil</a>';
+    if (cats.length) {
+      var shopActive = cats.some(function (c) { return isActive(SiteData.getCategoryHref(c)); });
+      desktopHtml +=
+        '<button type="button" class="nav-shop-btn' + (shopActive ? ' active' : '') + '" aria-haspopup="dialog" aria-controls="shop-panel" aria-expanded="false">' +
+          'Boutique' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>' +
+        '</button>';
+    }
+    desktopHtml += '<a href="/recettes"' + (isActive('/recettes') ? ' class="active"' : '') + '>Recettes</a>';
+    desktopHtml += '<a href="/actualites"' + (isActive('/actualites') ? ' class="active"' : '') + '>Actualités</a>';
+    desktopHtml += '<a href="/histoire"' + (isActive('/histoire') ? ' class="active"' : '') + '>Notre histoire</a>';
+
+    navEl.innerHTML = desktopHtml;
+
+    var shopBtn = navEl.querySelector('.nav-shop-btn');
+    if (shopBtn) injectShopPanel(cats, isActive, shopBtn);
 
     /* ---- Hamburger button (mobile only) ---- */
     var actionsEl = document.querySelector('.nav-actions');
@@ -846,6 +863,82 @@
         if (e.key === 'Escape' && overlay.classList.contains('open')) closeMenu();
       });
     }
+  }
+
+  /* ---------- Panneau « Boutique » (desktop) : glisse depuis la gauche ---------- */
+  function injectShopPanel(cats, isActive, openBtn) {
+    if (document.getElementById('shop-panel')) return;
+
+    var itemsHtml = '';
+    cats.forEach(function (c) {
+      var href = SiteData.getCategoryHref(c);
+      var count = SiteData.getProductsByCategory(c.id).length;
+      var thumb = c.banner
+        ? '<img src="/' + String(c.banner).replace(/^\/+/, '') + '" alt="" loading="lazy">'
+        : '<span aria-hidden="true">' + (c.emoji || '🌰') + '</span>';
+      itemsHtml +=
+        '<a href="' + href + '" class="shop-panel__item' + (isActive(href) ? ' active' : '') + '">' +
+          '<span class="shop-panel__thumb" style="background:' + (c.color || '#F4EEE6') + '">' + thumb + '</span>' +
+          '<span class="shop-panel__text">' +
+            '<span class="shop-panel__name">' + c.name + '</span>' +
+            '<span class="shop-panel__count">' + count + ' produit' + (count > 1 ? 's' : '') + '</span>' +
+          '</span>' +
+          '<svg class="shop-panel__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>' +
+        '</a>';
+    });
+
+    var backdrop = document.createElement('div');
+    backdrop.className = 'shop-backdrop';
+
+    var panel = document.createElement('aside');
+    panel.className = 'shop-panel';
+    panel.id = 'shop-panel';
+    panel.setAttribute('role', 'dialog');
+    panel.setAttribute('aria-modal', 'true');
+    panel.setAttribute('aria-labelledby', 'shop-panel-title');
+    panel.setAttribute('aria-hidden', 'true');
+    panel.innerHTML =
+      '<div class="shop-panel__head">' +
+        '<div>' +
+          '<p class="shop-panel__eyebrow">Nos produits</p>' +
+          '<h3 id="shop-panel-title">La boutique</h3>' +
+        '</div>' +
+        '<button type="button" class="cart-close shop-panel__close" aria-label="Fermer la boutique">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+        '</button>' +
+      '</div>' +
+      '<nav class="shop-panel__list" aria-label="Catégories">' + itemsHtml + '</nav>';
+
+    document.body.appendChild(backdrop);
+    document.body.appendChild(panel);
+
+    var closeBtn = panel.querySelector('.shop-panel__close');
+
+    function openPanel() {
+      backdrop.classList.add('open');
+      panel.classList.add('open');
+      panel.setAttribute('aria-hidden', 'false');
+      openBtn.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+      closeBtn.focus();
+    }
+
+    function closePanel() {
+      if (!panel.classList.contains('open')) return;
+      backdrop.classList.remove('open');
+      panel.classList.remove('open');
+      panel.setAttribute('aria-hidden', 'true');
+      openBtn.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+      openBtn.focus();
+    }
+
+    openBtn.addEventListener('click', openPanel);
+    closeBtn.addEventListener('click', closePanel);
+    backdrop.addEventListener('click', closePanel);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closePanel();
+    });
   }
 
   function injectMobileCats() {

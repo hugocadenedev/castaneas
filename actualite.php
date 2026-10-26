@@ -41,7 +41,7 @@ if ($post && !empty($post['primaryCategoryId'])) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css?v=7">
+<link rel="stylesheet" href="/styles.css?v=8">
 <style>
   :root {
     --serif: 'Fraunces', Georgia, serif;
@@ -207,11 +207,11 @@ if ($post && !empty($post['primaryCategoryId'])) {
       <div><div class="footer-brand"><img src="/assets/Castaneas-logo (3).svg" alt="Castaneas" class="footer-brand-logo"></div></div>
       <div><h4>Boutique</h4><ul><li><a href="/categorie/cremes">Cremes de chataigne</a></li><li><a href="/coffrets">Coffrets</a></li></ul></div>
       <div><ul><li><a href="/histoire">Notre histoire</a></li><li><a href="/recettes">Recettes</a></li><li><a href="/actualites">Actualites</a></li></ul></div>
-      <div><h4>Informations</h4><ul><li><a href="/livraison-retours">Livraison</a></li><li><a href="/cgv">CGV</a></li><li><a href="mailto:contact@castaneas.fr">Nous contacter</a></li></ul></div>
+      <div><h4>Informations</h4><ul><li><a href="/livraison-retours">Livraison</a></li><li><a href="/cgv">CGV</a></li><li><a href="mailto:boutique@castaneas.fr">Nous contacter</a></li></ul></div>
     </div>
   </div>
 </footer>
-<script src="/data.php?v=2"></script><script src="/site-data.js?v=6"></script>
+<script src="/data.php?v=2"></script><script src="/site-data.js?v=7"></script>
 <script src="/cart.js"></script>
 </body>
 </html>
