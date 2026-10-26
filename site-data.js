@@ -873,8 +873,11 @@
     cats.forEach(function (c) {
       var href = SiteData.getCategoryHref(c);
       var count = SiteData.getProductsByCategory(c.id).length;
-      var thumb = c.banner
-        ? '<img src="/' + String(c.banner).replace(/^\/+/, '') + '" alt="" loading="lazy">'
+      var banner = String(c.banner || '');
+      /* bannière : image intégrée (data:), URL absolue ou chemin relatif au site */
+      var bannerSrc = /^(data:|https?:|\/)/i.test(banner) ? banner : '/' + banner;
+      var thumb = banner
+        ? '<img src="' + bannerSrc + '" alt="" loading="lazy">'
         : '<span aria-hidden="true">' + (c.emoji || '🌰') + '</span>';
       itemsHtml +=
         '<a href="' + href + '" class="shop-panel__item' + (isActive(href) ? ' active' : '') + '">' +

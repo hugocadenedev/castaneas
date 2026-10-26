@@ -211,7 +211,7 @@ if ($post && !empty($post['primaryCategoryId'])) {
     </div>
   </div>
 </footer>
-<script src="/data.php?v=2"></script><script src="/site-data.js?v=7"></script>
+<script src="/data.php?v=2"></script><script src="/site-data.js?v=8"></script>
 <script src="/cart.js"></script>
 </body>
 </html>
