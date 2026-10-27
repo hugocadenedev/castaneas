@@ -301,7 +301,7 @@ function castaneas_checkout_normalize_items(array $items) {
             'name' => (string) ($item['name'] ?? ($product['name'] ?? 'Produit')),
             'qty' => $qty,
             'price' => $price,
-            'image' => (string) ($item['image'] ?? ($product['image'] ?? 'assets/product-pate-tartiner.png')),
+            'image' => (string) ($item['image'] ?? ($product['image'] ?? 'assets/product-pate-tartiner.jpg')),
             'variant' => isset($item['variant']) ? (string) $item['variant'] : '',
             'weight' => isset($item['weight']) ? (string) $item['weight'] : (string) ($product['weight'] ?? ''),
             'offerId' => $offerId,

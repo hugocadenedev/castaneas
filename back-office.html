@@ -1830,6 +1830,14 @@ tbody tr:last-child td { border-bottom: none; }
             </form>
           </div>
           <div class="table-wrap" style="padding:24px 28px;max-width:760px;">
+            <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:8px;">Optimisation des images</h3>
+            <div class="admin-muted-box">Réduit le poids des photos déjà en ligne (largeur max 1600 px, même nom et même format). Chaque original est conservé sur le serveur dans <code>uploads/_originals</code>. Les nouvelles photos sont optimisées automatiquement à l'envoi.</div>
+            <div class="admin-inline-actions" style="margin-top:14px;">
+              <button type="button" class="btn btn-primary" id="optimize-images-btn" onclick="optimizeExistingImages()">Optimiser les images</button>
+              <span id="optimize-images-status" class="admin-muted-box" style="margin:0;"></span>
+            </div>
+          </div>
+          <div class="table-wrap" style="padding:24px 28px;max-width:760px;">
             <h3 style="font-family:var(--serif);font-size:17px;margin-bottom:16px;">Facturation</h3>
             <form class="form-grid full" id="billing-settings-form" onsubmit="saveBillingSettings(event)">
               <div class="form-field span2">
@@ -3442,6 +3450,34 @@ function getBlogAdminStatusMeta(post) {
   return { code: 'draft', label: 'Brouillon', className: 'badge-gray' };
 }
 
+/* ---------- Optimisation des photos déjà en ligne (par lots) ---------- */
+async function optimizeExistingImages() {
+  const btn = document.getElementById('optimize-images-btn');
+  const status = document.getElementById('optimize-images-status');
+  btn.disabled = true;
+  let processed = 0;
+  let saved = 0;
+  try {
+    for (let round = 0; round < 200; round++) {
+      const response = await fetch('/optimize-images.php', { method: 'POST', headers: { 'X-Castaneas-Admin': '1' } });
+      const payload = await response.json().catch(() => null);
+      if (!response.ok || !payload || !payload.ok) {
+        throw new Error((payload && payload.error) || ('HTTP ' + response.status));
+      }
+      processed += payload.processed;
+      saved += payload.savedBytes;
+      status.textContent = processed + ' image(s) traitée(s) · ' + (saved / 1048576).toFixed(1) + ' Mo gagnés · reste ' + payload.remaining;
+      if (!payload.remaining) break;
+    }
+    toast('Images optimisées : ' + (saved / 1048576).toFixed(1) + ' Mo gagnés', 'success');
+  } catch (error) {
+    status.textContent = 'Erreur : ' + error.message;
+    toast('Optimisation interrompue : ' + error.message, 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
 /* ---------- Session admin (serveur) ---------- */
 let adminSetupRequired = false;
 
@@ -4130,7 +4166,7 @@ function renderProducts(filter = '') {
     const cat = state.categories.find(c => c.id === p.category);
     const stockBadge = { in_stock: '<span class="badge badge-green">En stock</span>', low_stock: '<span class="badge badge-orange">Stock faible</span>', out_of_stock: '<span class="badge badge-red">Rupture</span>' }[p.stock] || '';
     return `<tr>
-      <td><img class="td-img" src="${p.image || 'assets/product-pate-tartiner.png'}" alt="" onerror="this.onerror=null;this.src='assets/product-pate-tartiner.png'"></td>
+      <td><img class="td-img" src="${p.image || 'assets/product-pate-tartiner.jpg'}" alt="" onerror="this.onerror=null;this.src='assets/product-pate-tartiner.jpg'"></td>
       <td>
         <div class="td-name">${p.name}</div>
         <div class="td-sub">${p.weight || ''} ${p.badge ? '· <span style="color:var(--corail)">' + p.badge + '</span>' : ''}</div>
@@ -4558,7 +4594,7 @@ function renderOrderDetail(order) {
                     <tr>
                       <td>
                         <div class="order-line-product">
-                          <img src="${escapeHtml(item.image || 'assets/product-pate-tartiner.png')}" alt="" onerror="this.onerror=null;this.src='assets/product-pate-tartiner.png'">
+                          <img src="${escapeHtml(item.image || 'assets/product-pate-tartiner.jpg')}" alt="" onerror="this.onerror=null;this.src='assets/product-pate-tartiner.jpg'">
                           <div>
                             <div class="order-line-name">${escapeHtml(item.name || 'Produit')}</div>
                             <div class="order-line-sub">${escapeHtml(item.variant || item.weight || item.offerLabel || '—')}</div>
@@ -5687,7 +5723,7 @@ function saveProduct(e) {
     },
     stock:       document.getElementById('p-stock').value,
     desc:        document.getElementById('p-desc').value.trim(),
-    image:       document.getElementById('p-image').value.trim() || 'assets/product-pate-tartiner.png',
+    image:       document.getElementById('p-image').value.trim() || 'assets/product-pate-tartiner.jpg',
     images:      [...selectedExtraImages],
     badge:       document.getElementById('p-badge').value.trim(),
     caption:     document.getElementById('p-caption').value.trim(),
@@ -5753,7 +5789,7 @@ function renderImagePickers() {
     const clickFn = isMain ? 'pickImgMain(this)' : 'pickImgExtra(this)';
     const esc = src.replace(/"/g, '&quot;').replace(/'/g, "\\'");
     const flag = isMain ? 'true' : 'false';
-    return `<div class="img-slot"><img class="img-preview${cls}" data-src="${src}" src="${src}" alt="" onerror="this.onerror=null;this.src='assets/product-pate-tartiner.png'" onclick="${clickFn}"><button type="button" class="img-remove" onclick="removeImgFromCatalog('${esc}',${flag},event)">×</button></div>`;
+    return `<div class="img-slot"><img class="img-preview${cls}" data-src="${src}" src="${src}" alt="" onerror="this.onerror=null;this.src='assets/product-pate-tartiner.jpg'" onclick="${clickFn}"><button type="button" class="img-remove" onclick="removeImgFromCatalog('${esc}',${flag},event)">×</button></div>`;
   };
   mainPicker.innerHTML = currentMain
     ? makeSlot(currentMain, true)
@@ -6176,7 +6212,7 @@ function buildCatPageHTML(cat, products) {
 <script>var CAT_SLUG = '${cat.slug}';<\/script>
 <script src="site-data.js"><\/script>
 <script src="cart.js"><\/script>
-<script src="categorie-page.js?v=3"><\/script>
+<script src="categorie-page.js?v=4"><\/script>
 </body>
 </html>`;
 }
@@ -6641,7 +6677,7 @@ function renderRecipes() {
       ? '<span class="badge badge-green">Publié</span>'
       : '<span class="badge badge-gray">Brouillon</span>';
     return `<tr>
-      <td><img src="${r.image || 'assets/product-pate-tartiner.png'}" onerror="this.onerror=null;this.src='assets/product-pate-tartiner.png'" style="width:52px;height:52px;object-fit:cover;border-radius:10px;"></td>
+      <td><img src="${r.image || 'assets/product-pate-tartiner.jpg'}" onerror="this.onerror=null;this.src='assets/product-pate-tartiner.jpg'" style="width:52px;height:52px;object-fit:cover;border-radius:10px;"></td>
       <td style="font-weight:700;">${r.title}${r.titleEm ? ' <em>' + r.titleEm + '</em>' : ''}</td>
       <td>${r.time || '—'}</td>
       <td>${r.servings || '—'}</td>
@@ -6697,7 +6733,7 @@ function renderRecipeImgPicker() {
     picker.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:10px 2px;">Aucune image sélectionnée pour cette recette.</div>';
     return;
   }
-  picker.innerHTML = `<div class="img-slot"><img class="img-preview selected" data-src="${currentImg}" src="${currentImg}" style="width:72px;height:72px;object-fit:cover;border-radius:12px;cursor:pointer;border:2px solid var(--brown-deep)" onerror="this.onerror=null;this.src='assets/product-pate-tartiner.png'" onclick="pickRecipeImg(this)"></div>`;
+  picker.innerHTML = `<div class="img-slot"><img class="img-preview selected" data-src="${currentImg}" src="${currentImg}" style="width:72px;height:72px;object-fit:cover;border-radius:12px;cursor:pointer;border:2px solid var(--brown-deep)" onerror="this.onerror=null;this.src='assets/product-pate-tartiner.jpg'" onclick="pickRecipeImg(this)"></div>`;
 }
 
 function pickRecipeImg(el) {
@@ -6775,7 +6811,7 @@ function saveRecipe(e) {
     servings: document.getElementById('r-servings').value.trim(),
     intro:    document.getElementById('r-intro').value.trim(),
     desc:     document.getElementById('r-desc').value.trim(),
-    image:    document.getElementById('r-image').value.trim() || 'assets/product-pate-tartiner.png',
+    image:    document.getElementById('r-image').value.trim() || 'assets/product-pate-tartiner.jpg',
     products: selectedProducts,
     steps:    recipeSteps.filter(s => s.text.trim()),
     status:   document.getElementById('r-status').value,

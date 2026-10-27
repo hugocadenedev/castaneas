@@ -709,7 +709,7 @@
           customer: [session.prenom, session.nom].filter(Boolean).join(' ') || 'Client',
           email:    session.email || 'client@exemple.fr',
           items:    items.map(function (i) {
-            return { id: i.id, name: i.name, qty: i.qty, price: i.price, image: i.image || 'assets/product-pate-tartiner.png' };
+            return { id: i.id, name: i.name, qty: i.qty, price: i.price, image: i.image || 'assets/product-pate-tartiner.jpg' };
           }),
           total:    Math.round(total * 100) / 100,
           status:   'pending',
@@ -877,7 +877,8 @@
       /* bannière : image intégrée (data:), URL absolue ou chemin relatif au site */
       var bannerSrc = /^(data:|https?:|\/)/i.test(banner) ? banner : '/' + banner;
       var thumb = banner
-        ? '<img src="' + bannerSrc + '" alt="" loading="lazy">'
+        /* data-src : la vignette n'est téléchargée qu'à l'ouverture du panneau */
+        ? '<img data-src="' + bannerSrc + '" alt="">'
         : '<span aria-hidden="true">' + (c.emoji || '🌰') + '</span>';
       itemsHtml +=
         '<a href="' + href + '" class="shop-panel__item' + (isActive(href) ? ' active' : '') + '">' +
@@ -918,6 +919,10 @@
     var closeBtn = panel.querySelector('.shop-panel__close');
 
     function openPanel() {
+      Array.prototype.forEach.call(panel.querySelectorAll('img[data-src]'), function (img) {
+        img.src = img.getAttribute('data-src');
+        img.removeAttribute('data-src');
+      });
       backdrop.classList.add('open');
       panel.classList.add('open');
       panel.setAttribute('aria-hidden', 'false');

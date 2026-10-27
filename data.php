@@ -3,14 +3,14 @@
  * CASTANEAS — data.php
  * Injecte les données produits/catégories/recettes comme variable JS globale.
  * Appelé via <script src="data.php"></script> avant site-data.js.
- * Jamais mis en cache (no-store).
+ * Revalidé à chaque page (no-cache + ETag) : réponse 304 sans contenu tant que les données ne changent pas.
  */
 header('Content-Type: application/javascript; charset=utf-8');
-header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
-header('Pragma: no-cache');
-header('Expires: 0');
+header('Cache-Control: no-cache, must-revalidate, max-age=0');
 
 require_once __DIR__ . '/storage.php';
+require_once __DIR__ . '/inline-images.php';
+require_once __DIR__ . '/image-optimize.php';
 
 $keys = ['products', 'categories', 'recipes', 'homepage', 'packagings', 'promo_codes', 'blog_posts', 'blog_categories'];
 $storageFailures = [];
@@ -46,8 +46,18 @@ foreach ($keys as $key) {
 
     $data = json_decode($raw);
     if ($data !== null) {
-        $output[$key] = $data;
+        // Images intégrées (bannières, accueil) servies en fichiers : data.php passe de ~4 Mo à ~150 Ko
+        // + photos PNG servies dans leur version JPEG allégée (voir optimize-images.php)
+        $output[$key] = castaneas_apply_converted_images(castaneas_externalize_inline_images($data));
     }
 }
 
-echo 'window.CASTANEAS_DATA=' . json_encode($output, JSON_UNESCAPED_UNICODE) . ';';
+$body = 'window.CASTANEAS_DATA=' . json_encode($output, JSON_UNESCAPED_UNICODE) . ';';
+$etag = '"' . md5($body) . '"';
+header('ETag: ' . $etag);
+if (trim((string) ($_SERVER['HTTP_IF_NONE_MATCH'] ?? '')) === $etag) {
+    http_response_code(304);
+    exit;
+}
+
+echo $body;

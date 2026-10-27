@@ -114,10 +114,10 @@ DirectoryIndex index.html
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^back-office/?$ back-office.html [L,QSA]
 
-    # Route /categorie/<slug> → categorie.html?cat=<slug>
+    # Route /categorie/<slug> → categorie.php?cat=<slug> (SEO rendu serveur, modèle categorie.html)
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^categorie/([^/]+)/?$ categorie.html?cat=$1 [L,QSA]
+    RewriteRule ^categorie/([^/]+)/?$ categorie.php?cat=$1 [L,QSA]
 
     # Routes blog
     RewriteCond %{REQUEST_FILENAME} !-f
@@ -137,12 +137,9 @@ DirectoryIndex index.html
     RewriteRule ^sitemap\.xml$ sitemap.php [L,QSA]
 </IfModule>
 
-# ── 5. data.php : jamais mis en cache (données dynamiques) ──
+# ── 5. data.php : revalidé à chaque page (ETag → 304 si inchangé) ──
 <FilesMatch "^data\.php$">
-    Header always set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
-    Header always set Pragma "no-cache"
-    Header always set Expires "0"
-    Header always set Surrogate-Control "no-store"
+    Header always set Cache-Control "no-cache, must-revalidate, max-age=0"
 </FilesMatch>
 
 <FilesMatch "^(back-office|login|register|mon-compte|panier|facturation|confirmation|maintenance)\.html$">

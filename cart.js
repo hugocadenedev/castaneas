@@ -55,7 +55,7 @@
         ]);
         return {
           name: linked && linked.name ? linked.name : 'Produit du coffret',
-          image: linked && linked.image ? linked.image : 'assets/product-pate-tartiner.png',
+          image: linked && linked.image ? linked.image : 'assets/product-pate-tartiner.jpg',
           meta: metaParts.join(' · '),
           unitPrice: Number(boxItem.unitPrice || 0)
         };

@@ -66,7 +66,7 @@ if (isset($pageRoutes[$path])) {
 if (preg_match('#^/categorie/([^/]+)/?$#', $path, $matches)) {
     $_GET['cat'] = $matches[1];
     $_SERVER['QUERY_STRING'] = http_build_query($_GET);
-    require __DIR__ . '/categorie.html';
+    require __DIR__ . '/categorie.php';
     exit;
 }
 
@@ -88,7 +88,7 @@ if (preg_match('#^/actualites/([^/]+)/([^/]+)/?$#', $path, $matches)) {
 if (preg_match('#^/produit/([^/]+)/?$#', $path, $matches)) {
     $_GET['slug'] = $matches[1];
     $_SERVER['QUERY_STRING'] = http_build_query($_GET);
-    require __DIR__ . '/Fiche Produit.html';
+    require __DIR__ . '/produit.php';
     exit;
 }
 

@@ -71,4 +71,15 @@ if (!move_uploaded_file($f['tmp_name'], $dest)) {
     exit;
 }
 
+// ── Compression (largeur max 1600 px), original gardé dans uploads/_originals ──
+require_once __DIR__ . '/image-optimize.php';
+$optimized = castaneas_optimize_image_file($dest, $uploadDir . '_originals');
+if (in_array($optimized['status'], ['skipped', 'unchanged'], true) && $ext === 'png') {
+    // Photo envoyée en PNG : version JPEG à côté, servie automatiquement par le site
+    $converted = castaneas_convert_png_photo($dest);
+    if ($converted['status'] === 'converted') {
+        castaneas_record_converted_image($dest, $converted['target']);
+    }
+}
+
 echo json_encode(['url' => 'uploads/' . $name]);

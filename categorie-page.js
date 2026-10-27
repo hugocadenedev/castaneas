@@ -130,7 +130,7 @@
 
   /* -- Bandeau : image de fond + teinte couleur -- */
   var SLUG_TO_BANNER = {
-    'cremes':         'assets/banniere-cremes.png',
+    'cremes':         'assets/banniere-cremes.jpg',
     'pates-tartiner': 'assets/story-atelier.jpg',
     'pates-a-tartiner': 'assets/story-atelier.jpg',
     'pate-a-tartiner': 'assets/story-atelier.jpg',
@@ -180,15 +180,17 @@
       weight: p.weight,
       offerId: defaultOffer ? defaultOffer.id : null
     }).replace(/'/g, '&#39;');
+    /* vrai lien <a href> : permet à Google de découvrir la fiche depuis la catégorie */
+    var productHref = SiteData.getProductHref ? SiteData.getProductHref(p) : '/accueil';
     return '<article class="product-card" data-price="' + startingPrice + '" style="cursor:pointer;">'
       + '<div class="product-img ' + bg + '">'
       + badge
-      + '<img class="jar" src="' + p.image + '" alt="' + p.name + '" loading="lazy" style="object-fit:cover;" onerror="this.onerror=null;this.src=\'assets/product-pate-tartiner.png\'">'
+      + '<img class="jar" src="' + p.image + '" alt="' + p.name + '" loading="lazy" style="object-fit:cover;" onerror="this.onerror=null;this.src=\'assets/product-pate-tartiner.jpg\'">'
       + stock
       + '</div>'
       + '<div class="product-body">'
       + '<span class="product-weight">' + (p.weight || '') + '</span>'
-      + '<h3 class="product-name">' + p.name + '</h3>'
+      + '<h3 class="product-name"><a href="' + productHref + '" style="color:inherit;text-decoration:none;">' + p.name + '</a></h3>'
       + '<p class="product-desc">' + (p.desc || '') + '</p>'
       + '<div class="product-foot">'
       + '<span class="product-price">' + (priceFrom ? 'À partir de ' : '') + startingPrice.toFixed(2).replace('.', ',') + '\u20ac</span>'
