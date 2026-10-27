@@ -2604,7 +2604,7 @@ const KEYS = {
 };
 
 /* ---------- Server sync ---------- */
-const SERVER_TOKEN = 'cas_srv_9e4f2b8d3a7c1065';
+// Authentification : session admin côté serveur (admin-auth.php) + en-tête X-Castaneas-Admin.
 const SERVER_KEYS = {
   [KEYS.adminAccounts]: 'admin_accounts',
   [KEYS.products]:   'products',
@@ -2725,7 +2725,7 @@ function updateBillingPreviewFromForm() {
 
 async function loadBillingSettings() {
   const response = await fetch('/billing-settings.php', {
-    headers: { 'X-Admin-Token': SERVER_TOKEN },
+    headers: { 'X-Castaneas-Admin': '1' },
   });
   const payload = await response.json().catch(() => null);
   if (!response.ok || !payload || payload.error) {
@@ -2774,7 +2774,7 @@ async function saveBillingSettings(event) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-Admin-Token': SERVER_TOKEN,
+      'X-Castaneas-Admin': '1',
     },
     body: JSON.stringify({
       format: next.format,
@@ -3402,7 +3402,7 @@ async function uploadBlogInlineImage(inputEl) {
   try {
     const fd = new FormData();
     fd.append('file', file);
-    const res = await fetch('/upload.php', { method: 'POST', headers: { 'X-Admin-Token': SERVER_TOKEN }, body: fd });
+    const res = await fetch('/upload.php', { method: 'POST', headers: { 'X-Castaneas-Admin': '1' }, body: fd });
     const data = await res.json().catch(() => null);
     if (!res.ok || !data || data.error) throw new Error((data && data.error) || 'Erreur serveur');
     const defaultAlt = file.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').trim();
@@ -3442,8 +3442,43 @@ function getBlogAdminStatusMeta(post) {
   return { code: 'draft', label: 'Brouillon', className: 'badge-gray' };
 }
 
+/* ---------- Session admin (serveur) ---------- */
+let adminSetupRequired = false;
+
+async function adminAuthRequest(action, body = null) {
+  try {
+    const response = await fetch('/admin-auth.php?action=' + action, body === null && action === 'status'
+      ? { headers: { 'X-Castaneas-Admin': '1' } }
+      : {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Castaneas-Admin': '1' },
+        body: JSON.stringify(body || {}),
+      });
+    const payload = await response.json().catch(() => null);
+    return payload || { ok: false, error: 'HTTP ' + response.status };
+  } catch (error) {
+    return { ok: false, error: 'Serveur injoignable' };
+  }
+}
+
 /* ---------- Init ---------- */
 async function init() {
+  const status = await adminAuthRequest('status');
+  if (!status || !status.ok) {
+    document.getElementById('guard-error').textContent = 'Serveur indisponible. Réessayez dans un instant.';
+    return;
+  }
+  adminSetupRequired = !!status.setupRequired;
+  if (adminSetupRequired) {
+    document.getElementById('guard-error').textContent = 'Première connexion — créez le premier compte administrateur.';
+  }
+  if (status.loggedIn && status.admin) {
+    await startAdminApp(status.admin);
+  }
+}
+
+/* Chargement des données : uniquement après une session admin validée par le serveur */
+async function startAdminApp(admin) {
   serverStorageReady = await serverLoadAll();
 
   if (!serverStorageReady) {
@@ -3477,15 +3512,11 @@ async function init() {
     return;
   }
 
-  if (!state.adminAccounts.length) {
-    document.getElementById('guard-error').textContent = 'Première connexion — créez le premier compte administrateur.';
-  }
-
-  // Check session
-  const session = sessionStorage.getItem(SESSION_KEYS.authenticated);
-  if (session === 'ok') {
-    showApp();
-  }
+  const account = findAdminAccountByUsername(admin.username)
+    || { id: admin.id, username: admin.username, displayName: admin.username, role: admin.role };
+  setCurrentAdminSession(account);
+  applyCurrentAdminUi();
+  showApp();
 }
 
 async function serverLoadAll() {
@@ -3508,7 +3539,7 @@ async function serverLoadAll() {
     await Promise.race([
       Promise.all(allKeys.map(async ({ s, l }) => {
         const r = await fetch('/save.php?key=' + s, {
-          headers: { 'X-Admin-Token': SERVER_TOKEN },
+          headers: { 'X-Castaneas-Admin': '1' },
         });
         const data = await r.json().catch(() => null);
         if (!r.ok || (data && data.error)) {
@@ -3536,40 +3567,24 @@ document.getElementById('guard-form').addEventListener('submit', async function(
   e.preventDefault();
   const user = document.getElementById('guard-user').value.trim();
   const pass = document.getElementById('guard-pass').value;
-  const hashed = await hashAdmin(pass);
-  let account = findAdminAccountByUsername(user);
+  const errorEl = document.getElementById('guard-error');
 
-  if (!state.adminAccounts.length) {
-    if (!user || pass.length < 8) {
-      document.getElementById('guard-error').textContent = 'Choisissez un nom d\'utilisateur et un mot de passe (8 caractères min).';
-      return;
-    }
-    const created = {
-      id: 'admin-' + Date.now(),
-      username: user,
-      displayName: user,
-      role: 'super_admin',
-      pass: hashed,
-      createdAt: currentIsoString(),
-      updatedAt: currentIsoString(),
-    };
-    const previous = state.adminAccounts.map(entry => ({ ...entry }));
-    state.adminAccounts = [created];
-    const ok = await save(KEYS.adminAccounts, state.adminAccounts);
-    if (!ok) {
-      state.adminAccounts = previous;
-      return;
-    }
-    account = created;
-    localStorage.setItem(KEYS.admin, JSON.stringify({ user, pass: hashed }));
-  } else if (!account || hashed !== account.pass) {
-    document.getElementById('guard-error').textContent = 'Identifiant ou mot de passe incorrect.';
+  if (adminSetupRequired && (!user || pass.length < 8)) {
+    errorEl.textContent = 'Choisissez un nom d\'utilisateur et un mot de passe (8 caractères min).';
     return;
   }
 
-  setCurrentAdminSession(account);
-  applyCurrentAdminUi();
-  showApp();
+  // Le mot de passe est vérifié par le serveur, qui ouvre la session admin
+  errorEl.textContent = '';
+  const result = await adminAuthRequest(adminSetupRequired ? 'setup' : 'login', { username: user, password: pass });
+  if (!result.ok || !result.admin) {
+    errorEl.textContent = result.error || 'Identifiant ou mot de passe incorrect.';
+    return;
+  }
+
+  adminSetupRequired = false;
+  document.getElementById('guard-pass').value = '';
+  await startAdminApp(result.admin);
 });
 
 function showApp() {
@@ -3582,8 +3597,9 @@ function showApp() {
   startOrdersAutoRefresh();
 }
 
-function logout() {
+async function logout() {
   stopOrdersAutoRefresh();
+  await adminAuthRequest('logout');
   sessionStorage.removeItem(SESSION_KEYS.authenticated);
   sessionStorage.removeItem(SESSION_KEYS.adminId);
   sessionStorage.removeItem(SESSION_KEYS.adminUsername);
@@ -3717,7 +3733,7 @@ function formatMoneyValue(value) {
 async function loadCustomersFromServer() {
   try {
     const response = await fetch('/auth.php?action=admin_customers', {
-      headers: { 'X-Admin-Token': SERVER_TOKEN },
+      headers: { 'X-Castaneas-Admin': '1' },
     });
     const payload = await response.json().catch(() => null);
     if (!response.ok || !payload || !payload.ok) {
@@ -4793,7 +4809,7 @@ function replaceOrderInState(updatedOrder) {
 
 async function reloadOrdersFromServer() {
   const response = await fetch('/save.php?key=orders', {
-    headers: { 'X-Admin-Token': SERVER_TOKEN },
+    headers: { 'X-Castaneas-Admin': '1' },
   });
   const payload = await response.json().catch(() => null);
   if (!response.ok || (payload && payload.error)) {
@@ -4887,7 +4903,7 @@ async function ensureOrderInvoice(orderId) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-Admin-Token': SERVER_TOKEN,
+      'X-Castaneas-Admin': '1',
     },
     body: JSON.stringify({ orderId }),
   });
@@ -5224,7 +5240,7 @@ async function openSendcloudLabel(id) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Admin-Token': SERVER_TOKEN,
+        'X-Castaneas-Admin': '1',
       },
       body: JSON.stringify({ ref: id }),
     });
@@ -5792,7 +5808,7 @@ async function uploadImage(isMain, inputEl) {
   try {
     const fd = new FormData();
     fd.append('file', file);
-    const res = await fetch('/upload.php', { method: 'POST', headers: { 'X-Admin-Token': SERVER_TOKEN }, body: fd });
+    const res = await fetch('/upload.php', { method: 'POST', headers: { 'X-Castaneas-Admin': '1' }, body: fd });
     const data = await res.json();
     if (!res.ok || data.error) throw new Error(data.error || 'Erreur serveur');
     const catalog = isMain ? state.imageCatalogMain : state.imageCatalogExtra;
@@ -5825,7 +5841,7 @@ async function uploadRecipeImage(inputEl) {
   try {
     const fd = new FormData();
     fd.append('file', file);
-    const res = await fetch('/upload.php', { method: 'POST', headers: { 'X-Admin-Token': SERVER_TOKEN }, body: fd });
+    const res = await fetch('/upload.php', { method: 'POST', headers: { 'X-Castaneas-Admin': '1' }, body: fd });
     const data = await res.json();
     if (!res.ok || data.error) throw new Error(data.error || 'Erreur serveur');
     if (!state.imageCatalogMain.includes(data.url)) {
@@ -6423,7 +6439,7 @@ async function uploadBlogImage(inputEl) {
   try {
     const fd = new FormData();
     fd.append('file', file);
-    const res = await fetch('/upload.php', { method: 'POST', headers: { 'X-Admin-Token': SERVER_TOKEN }, body: fd });
+    const res = await fetch('/upload.php', { method: 'POST', headers: { 'X-Castaneas-Admin': '1' }, body: fd });
     const data = await res.json();
     if (!res.ok || data.error) throw new Error(data.error || 'Erreur serveur');
     if (!state.imageCatalogMain.includes(data.url)) {
@@ -7223,7 +7239,7 @@ function serverSync(serverKey, val) {
     body: JSON.stringify(val),
     headers: {
       'Content-Type': 'application/json',
-      'X-Admin-Token': SERVER_TOKEN,
+      'X-Castaneas-Admin': '1',
       ...(serverDataVersions[Object.keys(SERVER_KEYS).find(key => SERVER_KEYS[key] === serverKey)]
         ? { 'If-Match': serverDataVersions[Object.keys(SERVER_KEYS).find(key => SERVER_KEYS[key] === serverKey)] }
         : {}),
@@ -7231,6 +7247,9 @@ function serverSync(serverKey, val) {
   }).then(function (r) {
     return r.json().catch(function () { return null; }).then(function (payload) {
       if (!r.ok || (payload && payload.error)) {
+        if (r.status === 401) {
+          throw new Error('Session admin expirée : rechargez la page et reconnectez-vous (modification non enregistrée).');
+        }
         throw new Error((payload && payload.error) || ('Sync serveur échouée (' + r.status + ')'));
       }
       const localKey = Object.keys(SERVER_KEYS).find(key => SERVER_KEYS[key] === serverKey);

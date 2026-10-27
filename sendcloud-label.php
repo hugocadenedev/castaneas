@@ -98,7 +98,7 @@ function castaneas_sendcloud_label_ensure_for_order(array $order) {
 }
 
 $token = isset($_SERVER['HTTP_X_ADMIN_TOKEN']) ? $_SERVER['HTTP_X_ADMIN_TOKEN'] : '';
-if ($token !== castaneas_admin_token()) {
+if (!castaneas_admin_authorized()) {
     castaneas_sendcloud_label_response(401, ['ok' => false, 'error' => 'Unauthorized']);
 }
 

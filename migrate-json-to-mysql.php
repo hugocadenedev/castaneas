@@ -10,7 +10,7 @@ if (PHP_SAPI !== 'cli') {
         $token = (string) $_GET['token'];
     }
 
-    if ($token !== castaneas_admin_token()) {
+    if (!castaneas_admin_authorized()) {
         http_response_code(401);
         echo json_encode(['error' => 'Unauthorized']);
         exit;

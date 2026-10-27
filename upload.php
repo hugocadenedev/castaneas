@@ -14,7 +14,7 @@ header('Content-Type: application/json; charset=utf-8');
 
 // ── Vérification du token ─────────────────────────────────
 $token = isset($_SERVER['HTTP_X_ADMIN_TOKEN']) ? $_SERVER['HTTP_X_ADMIN_TOKEN'] : '';
-if ($token !== castaneas_admin_token()) {
+if (!castaneas_admin_authorized()) {
     http_response_code(401);
     echo json_encode(['error' => 'Unauthorized']);
     exit;

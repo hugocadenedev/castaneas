@@ -114,10 +114,7 @@ function castaneas_auth_current_user() {
 }
 
 function castaneas_auth_is_admin_request() {
-    $token = trim((string) ($_SERVER['HTTP_X_ADMIN_TOKEN'] ?? ''));
-    $expected = trim((string) castaneas_admin_token());
-
-    return $token !== '' && $expected !== '' && hash_equals($expected, $token);
+    return castaneas_admin_authorized();
 }
 
 function castaneas_auth_require_user(PDO $pdo) {

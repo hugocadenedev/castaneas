@@ -1,12 +1,86 @@
 <?php
 
+/**
+ * Jeton technique optionnel (scripts, cron) : uniquement via la variable d'environnement.
+ * Plus de valeur par défaut — l'ancien jeton était public dans back-office.html.
+ */
 function castaneas_admin_token() {
     $token = getenv('CASTANEAS_ADMIN_TOKEN');
-    if (is_string($token) && $token !== '') {
-        return $token;
+
+    return is_string($token) ? trim($token) : '';
+}
+
+const CASTANEAS_ADMIN_SESSION_NAME = 'castaneas_admin';
+const CASTANEAS_ADMIN_SESSION_TTL = 12 * 3600;
+
+function castaneas_admin_session_open(array $options = []) {
+    session_name(CASTANEAS_ADMIN_SESSION_NAME);
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'domain' => '',
+        'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+        'httponly' => true,
+        'samesite' => 'Strict',
+    ]);
+
+    return session_start($options);
+}
+
+/** Administrateur connecté (session serveur), ou null. */
+function castaneas_admin_current() {
+    static $resolved = false;
+    static $admin = null;
+    if ($resolved) {
+        return $admin;
+    }
+    $resolved = true;
+
+    if (empty($_COOKIE[CASTANEAS_ADMIN_SESSION_NAME])) {
+        return null;
+    }
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        if (session_name() !== CASTANEAS_ADMIN_SESSION_NAME) {
+            return null;
+        }
+        $data = $_SESSION['castaneas_admin'] ?? null;
+    } else {
+        castaneas_admin_session_open(['read_and_close' => true]);
+        $data = $_SESSION['castaneas_admin'] ?? null;
     }
 
-    return 'cas_srv_9e4f2b8d3a7c1065';
+    if (!is_array($data) || empty($data['username']) || (time() - (int) ($data['loginAt'] ?? 0)) > CASTANEAS_ADMIN_SESSION_TTL) {
+        return null;
+    }
+
+    return $admin = $data;
+}
+
+/**
+ * Autorise une requête d'administration :
+ * - session admin ouverte via admin-auth.php + en-tête X-Castaneas-Admin (bloque les requêtes cross-site),
+ * - ou jeton technique CASTANEAS_ADMIN_TOKEN s'il est configuré sur le serveur.
+ */
+function castaneas_admin_authorized() {
+    $expected = castaneas_admin_token();
+    $provided = trim((string) ($_SERVER['HTTP_X_ADMIN_TOKEN'] ?? ''));
+    if ($expected !== '' && $provided !== '' && hash_equals($expected, $provided)) {
+        return true;
+    }
+
+    return ($_SERVER['HTTP_X_CASTANEAS_ADMIN'] ?? '') === '1' && castaneas_admin_current() !== null;
+}
+
+/** Comptes admin enregistrés (mot de passe = sha256(motdepasse + ':castaneas_admin'), format du back-office). */
+function castaneas_admin_accounts() {
+    $raw = castaneas_storage_read_raw('admin_accounts');
+    $accounts = $raw ? json_decode($raw, true) : [];
+
+    return is_array($accounts) ? array_values(array_filter($accounts, 'is_array')) : [];
+}
+
+function castaneas_admin_password_hash($password) {
+    return hash('sha256', (string) $password . ':castaneas_admin');
 }
 
 function castaneas_allowed_keys() {
