@@ -1198,13 +1198,13 @@
     <!-- GALLERY -->
     <div class="gallery">
       <div class="gallery__main">
-        <span class="gallery__badge">Bestseller · Coup de cœur</span>
+        <span class="gallery__badge" style="display:none;"></span>
         <div class="gallery__track">
           <div class="gallery__slide">
             <img src="/assets/product-huile-noisettes.jpg" alt="Pot Castaneas — Châtaigne vanillée 150g">
           </div>
         </div>
-        <span class="gallery__caption">Pot Nº 24, fournée du 14 mars</span>
+        <span class="gallery__caption" style="display:none;"></span>
         <button class="gallery__zoom" aria-label="Zoom">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5" stroke-linecap="round"/><path d="M11 8v6M8 11h6" stroke-linecap="round"/></svg>
         </button>
@@ -1239,16 +1239,9 @@
         <span class="info__price-unit" id="prod-unit">Pot de 150g · 5,00€ / 100g</span>
       </div>
 
-      <div class="opt-row" id="format-row">
-        <div class="opt-label" id="format-label">
-          Format
-          <em>3 contenances</em>
-        </div>
-        <div class="opt-pills" id="format-pills">
-          <button class="opt-pill" data-weight="110" data-price="5.90" data-unit="110g · 5,36€ / 100g"><strong>110g</strong><span>Découverte</span></button>
-          <button class="opt-pill on" data-weight="150" data-price="7.50" data-unit="150g · 5,00€ / 100g"><strong>150g</strong><span>Classique</span></button>
-          <button class="opt-pill" data-weight="300" data-price="12.90" data-unit="300g · 4,30€ / 100g"><strong>300g</strong><span>Famille</span></button>
-        </div>
+      <div class="opt-row" id="format-row" style="display:none;">
+        <div class="opt-label" id="format-label">Format</div>
+        <div class="opt-pills" id="format-pills"></div>
       </div>
 
       <div class="opt-row" id="offer-row" style="display:none;">
@@ -1283,39 +1276,16 @@
   </section>
 
   <!-- COMPOSITION -->
-  <section class="compo">
+  <section class="compo" style="display:none;">
     <div class="section-head">
       <div>
         <div class="section-head__eyebrow">Composition</div>
-        <h2 class="section-head__title">Trois ingrédients,<br><em>pas un de plus.</em></h2>
+        <h2 class="section-head__title">Ce qu&#39;il y a <em>dedans.</em></h2>
       </div>
       <div class="section-head__sub">— c'est tout, promis</div>
     </div>
 
     <div class="compo-grid">
-      <div class="ing">
-        <span class="ing__pct">72<sup>%</sup></span>
-        <div class="ing__origin">Albias · Quercy</div>
-        <h3 class="ing__name">Châtaigne</h3>
-        <p class="ing__desc">Variété « Marigoule », ramassée à la main, cuite à l'eau, épluchée à la veillée.</p>
-      </div>
-      <div class="ing">
-        <span class="ing__pct">26<sup>%</sup></span>
-        <div class="ing__origin">Île de la Réunion</div>
-        <h3 class="ing__name">Sucre roux</h3>
-        <p class="ing__desc">Sucre de canne non raffiné, à la mélasse intacte. Cuisson lente.</p>
-      </div>
-      <div class="ing">
-        <span class="ing__pct">2<sup>%</sup></span>
-        <div class="ing__origin">Madagascar</div>
-        <h3 class="ing__name">Vanille Bourbon</h3>
-        <p class="ing__desc">Gousse fendue à la main, infusée à froid pendant 48h dans le sirop.</p>
-      </div>
-      <div class="ing is-rest">
-        <span class="ing__pct">0<sup>%</sup></span>
-        <div class="ing__origin">Sans rien d'autre</div>
-        <p class="ing__desc">Sans gluten · sans huile de palme · sans pectine · sans conservateur.</p>
-      </div>
     </div>
   </section>
 
@@ -1371,54 +1341,6 @@
     </div>
 
     <div class="suggest-grid">
-      <a href="/Fiche Produit.html" class="scard" onclick="event.stopPropagation();" >
-        <div class="scard__media">
-          <span class="scard__badge">Bestseller</span>
-          <img src="/assets/product-pate-tartiner.jpg" alt="">
-        </div>
-        <div class="scard__meta">Crème · 150g</div>
-        <h3 class="scard__name">Crème de châtaigne</h3>
-        <div class="scard__foot">
-          <span class="scard__price">6,90€</span>
-          <button class="scard__add" onclick="event.stopPropagation();window.Castaneas.addToCartUI({id:'creme-nature-150',name:'Crème de châtaigne',price:6.90,image:'/assets/product-pate-tartiner.jpg',variant:'150g',weight:'150g'},this);">+
-          </button>
-        </div>
-      </a>
-      <a href="/Fiche Produit.html" class="scard">
-        <div class="scard__media bg-sauge">
-          <span class="scard__badge">Nouveau</span>
-          <img src="/assets/product-noisettes-crues.jpg" alt="">
-        </div>
-        <div class="scard__meta">Pâte · 200g</div>
-        <h3 class="scard__name">Pâte de noisette</h3>
-        <div class="scard__foot">
-          <span class="scard__price">9,90€</span>
-          <button class="scard__add" onclick="event.stopPropagation();window.Castaneas.addToCartUI({id:'pate-noisette-200',name:'Pâte de noisette',price:9.90,image:'/assets/product-noisettes-crues.jpg',variant:'200g',weight:'200g'},this);">+</button>
-        </div>
-      </a>
-      <a href="/Fiche Produit.html" class="scard">
-        <div class="scard__media bg-dore">
-          <img src="/assets/product-huile-noisettes.jpg" alt="">
-        </div>
-        <div class="scard__meta">Huile · 250ml</div>
-        <h3 class="scard__name">Huile de noisette</h3>
-        <div class="scard__foot">
-          <span class="scard__price">14,50€</span>
-          <button class="scard__add" onclick="event.stopPropagation();window.Castaneas.addToCartUI({id:'huile-noisette-250',name:'Huile de noisette',price:14.50,image:'/assets/product-huile-noisettes.jpg',variant:'250ml',weight:'250ml'},this);">+</button>
-        </div>
-      </a>
-      <a href="/Fiche Produit.html" class="scard">
-        <div class="scard__media bg-cream">
-          <span class="scard__badge">🎁 Coffret</span>
-          <img src="/assets/product-pate-tartiner.jpg" alt="">
-        </div>
-        <div class="scard__meta">3 pots + boîte bois</div>
-        <h3 class="scard__name">Coffret Quercy</h3>
-        <div class="scard__foot">
-          <span class="scard__price">29,90€</span>
-          <button class="scard__add" onclick="event.stopPropagation();window.Castaneas.addToCartUI({id:'coffret-quercy',name:'Coffret Quercy',price:29.90,image:'/assets/product-pate-tartiner.jpg',variant:'3×150g',weight:'3×150g'},this);">+</button>
-        </div>
-      </a>
     </div>
   </section>
 
@@ -2087,6 +2009,7 @@ function updateSelectedVariant(pid) {
 
       if (cards.length) {
         compoGrid.innerHTML = cards.join('');
+        document.querySelector('.compo').style.display = '';
       }
     }
   }
@@ -2298,8 +2221,7 @@ document.getElementById('buy-cta').addEventListener('click', function () {
       offerId: offer ? offer.id : null
     };
   } else {
-    // Fallback statique
-    cartProduct = { id: 'creme-vanillee-150', name: 'Châtaigne vanillée', price: selectedPrice, image: '/assets/product-huile-noisettes.jpg', variant: '150g', weight: '150g' };
+    return;
   }
   // cart.js lit product.qty pour créer/incrémenter le bon montant
   cartProduct.qty = qty;
