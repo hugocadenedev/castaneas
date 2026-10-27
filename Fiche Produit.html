@@ -1842,6 +1842,18 @@ function updateSelectedVariant(pid) {
   var p = SiteData.getProductBySlug ? SiteData.getProductBySlug(productRef) : null;
   if (!p) p = SiteData.getProductById(productRef);
   if (!p || p.status !== 'active') {
+    // Produit inconnu ou retiré : pas de contenu du modèle affiché
+    var mainEl = document.querySelector('main.product');
+    if (mainEl) {
+      mainEl.innerHTML = '<section style="text-align:center;padding:80px 16px 120px;">'
+        + '<h1 class="info__title">Produit <em>introuvable.</em></h1>'
+        + '<p class="info__desc" style="margin:16px auto 28px;max-width:460px;">Ce produit n\'existe plus ou son adresse a changé.</p>'
+        + '<a href="/" class="buy-cta" style="display:inline-flex;width:auto;padding:0 28px;">Voir la boutique</a>'
+        + '</section>';
+    }
+    document.title = 'Produit introuvable · Castaneas';
+    var robotsMeta = document.querySelector('meta[name="robots"]');
+    if (robotsMeta) robotsMeta.content = 'noindex,follow';
     finishRender();
     return;
   }

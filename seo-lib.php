@@ -206,7 +206,7 @@ function castaneas_seo_replace_jsonld($html, $id, array $data) {
 function castaneas_seo_find_product_by_slug($slug) {
     $clean = castaneas_seo_slugify($slug);
     foreach (castaneas_seo_products() as $product) {
-        if ($product['slug'] === $clean && castaneas_seo_is_active($product)) {
+        if (($product['slug'] === $clean || (string) ($product['id'] ?? '') === (string) $slug) && castaneas_seo_is_active($product)) {
             return $product;
         }
     }
